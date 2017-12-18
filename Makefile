@@ -9,7 +9,7 @@ clean:
 	ocamlbuild -clean
 	rm -f a.out tests/ex*.cmo tests/ex*.cmi tests/ex*.cmt tests/Nex* tests/ex*.glob tests/ex*.vo
 
-test:
+test: tests/Dependency.vo tests/Dependency.interface
 	ruby test.rb
 
 cmt: $(TESTS_INPUT:.ml=.cmt)
@@ -38,5 +38,10 @@ vo: $(TESTS_INPUT:.ml=.vo)
 %.v: %.cmt default
 	./$(OUTPUT) -mode v $< >$@
 
-%.vo: %.v
-	coqc $<
+%.vo: %.v OCaml
+	coqc -R tests Tests -R OCaml OCaml $<
+
+.PHONY: OCaml
+
+OCaml:
+	cd OCaml && $(MAKE)

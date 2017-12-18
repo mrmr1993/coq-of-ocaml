@@ -18,7 +18,7 @@ class Test
   end
 
   def compile
-    cmd = ['ocamlc', '-bin-annot', @source_file]
+    cmd = ['ocamlc', '-bin-annot', '-I', 'tests', 'tests/Dependency.cmo', @source_file]
     print cmd.join(" ")
     system(*cmd)
   end
@@ -42,7 +42,7 @@ class Test
   end
 
   def coq_cmd
-    "coqc #{extension('.v')} -R tests Tests"
+    "coqc #{extension('.v')} -R tests Tests -R OCaml OCaml"
   end
 
   def coq
