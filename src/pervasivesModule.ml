@@ -146,7 +146,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> open_module ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
 
-let env : unit FullEnvi.t =
-  { env_with_effects with
-    vars = Envi.map env_with_effects.vars (fun _ -> ());
+let strip_effects env : unit FullEnvi.t =
+  { env with
+    vars = Envi.map env.vars (fun _ -> ());
     leave_prefix_vars = (fun _ () -> ()) }

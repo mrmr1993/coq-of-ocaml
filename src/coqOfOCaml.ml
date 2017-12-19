@@ -1,15 +1,17 @@
 open SmartPrint
 
 let exp (structure : Typedtree.structure) : Loc.t Structure.t list =
-  let (_, defs) = Structure.of_structure PervasivesModule.env structure in
-  snd @@ Structure.monadise_let_rec PervasivesModule.env defs
+  let env = PervasivesModule.strip_effects PervasivesModule.env_with_effects in
+  let (_, defs) = Structure.of_structure env structure in
+  snd @@ Structure.monadise_let_rec env defs
 
 let effects (structure : Typedtree.structure)
   : (Loc.t * Effect.t) Structure.t list =
   snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp structure
 
 let monadise (structure : Typedtree.structure) : Loc.t Structure.t list =
-  snd @@ Structure.monadise PervasivesModule.env @@ effects structure
+  let env = PervasivesModule.strip_effects PervasivesModule.env_with_effects in
+  snd @@ Structure.monadise env @@ effects structure
 
 let interface (structure : Typedtree.structure) (module_name : string)
   : Interface.t =
