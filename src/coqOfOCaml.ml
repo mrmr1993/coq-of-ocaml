@@ -1,43 +1,47 @@
 open SmartPrint
 
-let exp (structure : Typedtree.structure) : Loc.t Structure.t list =
-  let env = PervasivesModule.strip_effects PervasivesModule.env_with_effects in
+let exp env_with_effects (structure : Typedtree.structure)
+  : Loc.t Structure.t list =
+  let env = PervasivesModule.strip_effects env_with_effects in
   let (_, defs) = Structure.of_structure env structure in
   snd @@ Structure.monadise_let_rec env defs
 
-let effects (structure : Typedtree.structure)
+let effects env_with_effects (structure : Typedtree.structure)
   : (Loc.t * Effect.t) Structure.t list =
-  snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp structure
+  snd @@ Structure.effects env_with_effects @@ exp env_with_effects structure
 
-let monadise (structure : Typedtree.structure) : Loc.t Structure.t list =
-  let env = PervasivesModule.strip_effects PervasivesModule.env_with_effects in
-  snd @@ Structure.monadise env @@ effects structure
+let monadise env_with_effects (structure : Typedtree.structure)
+  : Loc.t Structure.t list =
+  let env = PervasivesModule.strip_effects env_with_effects in
+  snd @@ Structure.monadise env @@ effects env_with_effects structure
 
-let interface (structure : Typedtree.structure) (module_name : string)
+let interface env_with_effects (structure : Typedtree.structure)
+  (module_name : string)
   : Interface.t =
-  Interface.Interface (module_name, Interface.of_structures (effects structure))
+  Interface.Interface
+    (module_name, Interface.of_structures (effects env_with_effects structure))
 
 (** Display on stdout the conversion in Coq of an OCaml structure. *)
-let of_ocaml (structure : Typedtree.structure) (mode : string)
+let of_ocaml env_with_effects (structure : Typedtree.structure) (mode : string)
   (module_name : string) : unit =
   try
     let document =
       match mode with
-      | "exp" -> Structure.pps Loc.pp @@ exp structure
+      | "exp" -> Structure.pps Loc.pp @@ exp env_with_effects structure
       | "effects" ->
         let pp_annotation (l, effect) =
           OCaml.tuple [Loc.pp l; Effect.pp effect] in
-        Structure.pps pp_annotation @@ effects structure
-      | "monadise" -> Structure.pps Loc.pp @@ monadise structure
+        Structure.pps pp_annotation @@ effects env_with_effects structure
+      | "monadise" -> Structure.pps Loc.pp @@ monadise env_with_effects structure
       | "v" ->
         concat (List.map (fun d -> d ^^ newline) [
           !^ "Require Import OCaml.OCaml." ^^ newline;
           !^ "Local Open Scope Z_scope.";
           !^ "Local Open Scope type_scope.";
           !^ "Import ListNotations."]) ^^ newline ^^
-        Structure.to_coq (monadise structure)
+        Structure.to_coq (monadise env_with_effects structure)
       | "interface" ->
-        !^ (Interface.to_json_string (interface structure module_name))
+        !^ (Interface.to_json_string (interface env_with_effects structure module_name))
       | _ -> failwith (Printf.sprintf "Unknown mode '%s'." mode) in
     to_stdout 80 2 document;
     print_newline ();
@@ -66,6 +70,8 @@ let main () =
   Arg.parse options (fun arg -> file_name := Some arg) usage_msg;
   match !file_name with
   | None -> Arg.usage options usage_msg
-  | Some file_name -> of_ocaml (parse_cmt file_name) !mode (module_name file_name);
+  | Some file_name ->
+    let env = PervasivesModule.env_with_effects in
+    of_ocaml env (parse_cmt file_name) !mode (module_name file_name);
 
 ;;main ()
