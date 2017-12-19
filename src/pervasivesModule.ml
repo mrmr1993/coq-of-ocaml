@@ -3,6 +3,9 @@ open FullEnvi
 open Effect.Type
 open SmartPrint
 
+let load_interface_from_file env file =
+  Interface.to_full_envi (Interface.of_file file) env
+
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor (path, base) =
     let x = PathName.of_name path base in
