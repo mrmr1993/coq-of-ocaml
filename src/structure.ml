@@ -40,6 +40,7 @@ end
 (** A structure. *)
 type 'a t =
   | Value of Loc.t * 'a Value.t
+  | Primitive of Loc.t * PrimitiveDeclaration.t
   | TypeDefinition of Loc.t * TypeDefinition.t
   | Exception of Loc.t * Exception.t
   | Reference of Loc.t * Reference.t
@@ -53,6 +54,8 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
   match def with
   | Value (loc, value) ->
     group (Loc.pp loc ^^ Value.pp pp_a value)
+  | Primitive (loc, prim) ->
+    group (Loc.pp loc ^^ PrimitiveDeclaration.pp prim)
   | TypeDefinition (loc, typ_def) ->
     group (Loc.pp loc ^^ TypeDefinition.pp typ_def)
   | Exception (loc, exn) -> group (Loc.pp loc ^^ Exception.pp exn)
@@ -131,6 +134,8 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
     | Value (loc, def) ->
       let (env, defs) = Exp.monadise_let_rec_definition env def in
       (env, defs |> List.rev |> List.map (fun def -> Value (loc, def)))
+    | Primitive (loc, prim) ->
+      (env, [def])
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
@@ -160,6 +165,8 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
         Error.warn loc "Toplevel effects are forbidden.");
       let env = Exp.env_after_def_with_effects env def in
       (env, Value (loc, def))
+    | Primitive (loc, prim) ->
+      (env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
@@ -201,6 +208,8 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
         (header, e)) } in
       let env = Exp.Definition.env_after_def def env in
       (env, Value (loc, def))
+    | Primitive (loc, prim) ->
+      (env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
@@ -222,6 +231,7 @@ let rec to_coq (defs : 'a t list) : SmartPrint.t =
   let to_coq_one (def : 'a t) : SmartPrint.t =
     match def with
     | Value (_, value) -> Value.to_coq value
+    | Primitive (_, prim) -> PrimitiveDeclaration.to_coq prim
     | TypeDefinition (_, typ_def) -> TypeDefinition.to_coq typ_def
     | Exception (_, exn) -> Exception.to_coq exn
     | Reference (_, r) -> Reference.to_coq r
