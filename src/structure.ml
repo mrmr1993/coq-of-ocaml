@@ -138,7 +138,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
       let (env, defs) = Exp.monadise_let_rec_definition env def in
       (env, defs |> List.rev |> List.map (fun def -> Value (loc, def)))
     | Primitive (loc, prim) ->
-      (env, [def])
+      (PrimitiveDeclaration.update_env prim env, [def])
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
@@ -169,7 +169,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
       let env = Exp.env_after_def_with_effects env def in
       (env, Value (loc, def))
     | Primitive (loc, prim) ->
-      (env, Primitive (loc, prim))
+      (PrimitiveDeclaration.update_env_with_effects prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
@@ -212,7 +212,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       let env = Exp.Definition.env_after_def def env in
       (env, Value (loc, def))
     | Primitive (loc, prim) ->
-      (env, Primitive (loc, prim))
+      (PrimitiveDeclaration.update_env prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
