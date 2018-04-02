@@ -108,7 +108,10 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       Error.raise loc "Functors not handled."
     | Tstr_module _ -> Error.raise loc "This kind of module is not handled."
     | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
-    | Tstr_primitive _ -> Error.raise loc "Structure item `primitive` not handled."
+    | Tstr_primitive val_desc ->
+      let prim = PrimitiveDeclaration.of_ocaml env loc val_desc in
+      let env = PrimitiveDeclaration.update_env prim env in
+      (env, Primitive (loc, prim))
     | Tstr_typext _ -> Error.raise loc "Structure item `typext` not handled."
     | Tstr_recmodule _ -> Error.raise loc "Structure item `recmodule` not handled."
     | Tstr_class _ -> Error.raise loc "Structure item `class` not handled."
