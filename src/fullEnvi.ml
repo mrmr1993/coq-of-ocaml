@@ -136,4 +136,65 @@ module ModList = struct
     | m :: env -> Envi.Mod.open_module m module_name :: env
     | _ -> failwith "You should have entered in at least one module."
 
+  let rec find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
+    match l with
+    | [] -> None
+    | x :: l ->
+      (match f x with
+      | None -> find_first f l
+      | y -> y)
+
+  let rec bound_name_opt (find : PathName.t -> 'a Envi.Mod.t -> bool)
+    (x : PathName.t) (env : 'a t) : BoundName.t option =
+    match env with
+    | m :: env ->
+      if find x m then
+        Some { BoundName.path_name = x; BoundName.depth = 0 }
+      else
+        m.Envi.Mod.opens |> find_first (fun path ->
+          let x = { x with PathName.path = path @ x.PathName.path } in
+          match bound_name_opt find x env with
+          | None -> None
+          | Some name -> Some { name with BoundName.depth = name.BoundName.depth + 1 })
+    | [] -> None
+
+  let bound_name (find : PathName.t -> 'a Envi.Mod.t -> bool) (loc : Loc.t)
+    (x : PathName.t) (env : 'a t) : BoundName.t =
+    match bound_name_opt find x env with
+    | Some name -> name
+    | None ->
+      let message = PathName.pp x ^^ !^ "not found." in
+      Error.raise loc (SmartPrint.to_string 80 2 message)
+
+  let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name Envi.Mod.Vars.mem loc x env
+
+  let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name Envi.Mod.Typs.mem loc x env
+
+  let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name Envi.Mod.Descriptors.mem loc x env
+
+  let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name Envi.Mod.Constructors.mem loc x env
+
+  let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name Envi.Mod.Fields.mem loc x env
+
+  let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
+    env
+    |> add_descriptor path base
+    |> add_var path ("raise_" ^ base) ()
+
+  let add_exception_with_effects (path : Name.t list) (base : Name.t)
+    (id : Effect.Descriptor.Id.t) (env : Effect.Type.t t)
+    : Effect.Type.t t =
+    let env = add_descriptor path base env in
+    let effect_typ =
+      Effect.Type.Arrow (
+        Effect.Descriptor.singleton
+          id
+          (bound_descriptor Loc.Unknown (PathName.of_name path base) env),
+        Effect.Type.Pure) in
+    add_var path ("raise_" ^ base) effect_typ env
 end
