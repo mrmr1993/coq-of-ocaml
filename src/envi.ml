@@ -43,6 +43,94 @@ module Segment = struct
     { segment with opens = module_name :: segment.opens }
 end
 
+module Mod = struct
+  type 'a t = {
+    opens : Name.t list list;
+    vars : 'a PathName.Map.t;
+    typs : unit PathName.Map.t;
+    descriptors: unit PathName.Map.t;
+    constructors : unit PathName.Map.t;
+    fields : unit PathName.Map.t }
+
+  let empty : 'a t = {
+    opens = [[]]; (** By default we open the empty path. *)
+    vars = PathName.Map.empty;
+    typs = PathName.Map.empty;
+    descriptors = PathName.Map.empty;
+    constructors = PathName.Map.empty;
+    fields = PathName.Map.empty }
+
+  let pp (m : 'a t) : SmartPrint.t =
+    let pp_map map = OCaml.list (fun (x, _) -> PathName.pp x)
+      (PathName.Map.bindings map) in
+    group (
+      nest (!^ "open" ^^ OCaml.list (fun path ->
+        double_quotes (separate (!^ ".") (List.map Name.pp path)))
+        m.opens) ^^ newline ^^
+      !^ "vars:" ^^ nest (pp_map m.vars) ^^ newline ^^
+      !^ "typs:" ^^ nest (pp_map m.typs) ^^ newline ^^
+      !^ "descriptors:" ^^ nest (pp_map m.descriptors) ^^ newline ^^
+      !^ "constructors:" ^^ nest (pp_map m.constructors) ^^ newline ^^
+      !^ "fields:" ^^ nest (pp_map m.fields))
+
+  let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
+    { m with opens = module_name :: m.opens }
+
+  module Vars = struct
+    let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
+      { m with vars = PathName.Map.add x v m.vars }
+
+    let mem (x : PathName.t) (m : 'a t) : bool =
+      PathName.Map.mem x m.vars
+
+    let find (x : PathName.t) (m : 'a t) : 'a =
+      PathName.Map.find x m.vars
+
+    let map (f : 'a -> 'b) (m : 'a t) : 'b t =
+      { m with vars = PathName.Map.map f m.vars }
+  end
+  module Typs = struct
+    let add (x : PathName.t) (m : 'a t) : 'a t =
+      { m with typs = PathName.Map.add x () m.typs }
+
+    let mem (x : PathName.t) (m : 'a t) : bool =
+      PathName.Map.mem x m.typs
+
+    let map (f : unit -> 'b) (m : 'a t) : 'b t =
+      { m with typs = PathName.Map.map f m.typs }
+  end
+  module Descriptors = struct
+    let add (x : PathName.t) (m : 'a t) : 'a t =
+      { m with descriptors = PathName.Map.add x () m.descriptors }
+
+    let mem (x : PathName.t) (m : 'a t) : bool =
+      PathName.Map.mem x m.descriptors
+
+    let map (f : unit -> 'b) (m : 'a t) : 'b t =
+      { m with descriptors = PathName.Map.map f m.descriptors }
+  end
+  module Constructors = struct
+    let add (x : PathName.t) (m : 'a t) : 'a t =
+      { m with constructors = PathName.Map.add x () m.constructors }
+
+    let mem (x : PathName.t) (m : 'a t) : bool =
+      PathName.Map.mem x m.constructors
+
+    let map (f : unit -> 'b) (m : 'a t) : 'b t =
+      { m with constructors = PathName.Map.map f m.constructors }
+  end
+  module Fields = struct
+    let add (x : PathName.t) (m : 'a t) : 'a t =
+      { m with fields = PathName.Map.add x () m.fields }
+
+    let mem (x : PathName.t) (m : 'a t) : bool =
+      PathName.Map.mem x m.fields
+
+    let map (f : unit -> 'b) (m : 'a t) : 'b t =
+      { m with fields = PathName.Map.map f m.fields }
+  end
+end
+
 type 'a t = 'a Segment.t list
 
 let pp (env : 'a t) : SmartPrint.t =
