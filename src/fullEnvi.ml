@@ -90,3 +90,50 @@ let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
     descriptors = Envi.open_module env.descriptors module_name;
     constructors = Envi.open_module env.constructors module_name;
     fields = Envi.open_module env.fields module_name }
+
+module ModList = struct
+  type 'a t = 'a Envi.Mod.t list
+
+  let pp (env : 'a t) : SmartPrint.t =
+    OCaml.list Envi.Mod.pp env
+
+  let empty : 'a t = [Envi.Mod.empty]
+
+  let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
+    : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.Vars.add (PathName.of_name path base) v m :: env
+    | [] -> failwith "The environment must be a non-empty list."
+
+  let add_typ (path : Name.t list) (base : Name.t) (env : 'a t)
+    : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.Typs.add (PathName.of_name path base) m :: env
+    | [] -> failwith "The environment must be a non-empty list."
+
+  let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
+    : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.Descriptors.add (PathName.of_name path base) m :: env
+    | [] -> failwith "The environment must be a non-empty list."
+
+  let add_constructor (path : Name.t list) (base : Name.t) (env : 'a t)
+    : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.Constructors.add (PathName.of_name path base) m :: env
+    | [] -> failwith "The environment must be a non-empty list."
+
+  let add_field (path : Name.t list) (base : Name.t) (env : 'a t)
+    : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.Fields.add (PathName.of_name path base) m :: env
+    | [] -> failwith "The environment must be a non-empty list."
+
+  let enter_module (env : 'a t) : 'a t = Envi.Mod.empty :: env
+
+  let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
+    match env with
+    | m :: env -> Envi.Mod.open_module m module_name :: env
+    | _ -> failwith "You should have entered in at least one module."
+
+end
