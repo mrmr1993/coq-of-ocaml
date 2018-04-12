@@ -40,6 +40,10 @@ let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   let add_to_path x =
     { x with PathName.path = module_name :: x.PathName.path } in
   let unit_map_union = PathName.Map.map_union add_to_path (fun _ () -> ()) in
+  let modules = PathName.Map.map_union add_to_path (fun _ v -> v)
+    m1.modules m2.modules in
+  let modules = PathName.Map.add (PathName.of_name [] module_name) m1
+    modules in
 { opens = m2.opens;
   vars = PathName.Map.map_union add_to_path (fun _ v -> prefix module_name v)
     m1.vars m2.vars;
@@ -47,8 +51,7 @@ let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   descriptors = unit_map_union m1.descriptors m2.descriptors;
   constructors = unit_map_union m1.constructors m2.constructors;
   fields = unit_map_union m1.fields m2.fields;
-  modules = PathName.Map.map_union add_to_path (fun _ v -> v)
-    m1.modules m2.modules }
+  modules }
 
 let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
   let prefix_n s n =
