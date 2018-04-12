@@ -76,6 +76,25 @@ module Mod = struct
   let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
     { m with opens = module_name :: m.opens }
 
+  let map_union (f : PathName.t -> PathName.t) (g : PathName.t -> 'a -> 'a)
+    (m1 : 'a PathName.Map.t) (m2 : 'a PathName.Map.t) : 'a PathName.Map.t =
+    PathName.Map.fold (fun name value newmap ->
+      PathName.Map.add (f name) (g name value) newmap
+    ) m1 m2
+
+  let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
+    (m1 : 'a t) (m2 : 'a t) : 'a t =
+    let add_to_path x =
+      { x with PathName.path = module_name :: x.PathName.path } in
+    let unit_map_union m1 m2 = map_union add_to_path (fun _ () -> ()) m1 m2 in
+  { opens = m2.opens;
+    vars = map_union add_to_path (fun _ v -> prefix module_name v)
+      m1.vars m2.vars;
+    typs = unit_map_union m1.typs m2.typs;
+    descriptors = unit_map_union m1.descriptors m2.descriptors;
+    constructors = unit_map_union m1.constructors m2.constructors;
+    fields = unit_map_union m1.fields m2.fields}
+
   module Vars = struct
     let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
       { m with vars = PathName.Map.add x v m.vars }
