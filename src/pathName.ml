@@ -9,7 +9,13 @@ type t = {
 
 type t' = t
 module Set = Set.Make (struct type t = t' let compare = compare end)
-module Map = Map.Make (struct type t = t' let compare = compare end)
+module Map = struct
+  include Map.Make (struct type t = t' let compare = compare end)
+
+  let map_union (f : t' -> t') (g : t' -> 'a -> 'a) (m1 : 'a t)
+    (m2 : 'a t) : 'a t =
+    fold (fun name value map -> add (f name) (g name value) map) m1 m2
+end
 
 (* Convert an identifier from OCaml to its Coq's equivalent. *)
 let convert (x : t) : t =
