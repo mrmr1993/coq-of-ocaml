@@ -6,7 +6,8 @@ type 'a t = {
   typs : unit PathName.Map.t;
   descriptors: unit PathName.Map.t;
   constructors : unit PathName.Map.t;
-  fields : unit PathName.Map.t }
+  fields : unit PathName.Map.t;
+  modules : 'a t PathName.Map.t }
 
 let empty : 'a t = {
   opens = [[]]; (** By default we open the empty path. *)
@@ -14,7 +15,8 @@ let empty : 'a t = {
   typs = PathName.Map.empty;
   descriptors = PathName.Map.empty;
   constructors = PathName.Map.empty;
-  fields = PathName.Map.empty }
+  fields = PathName.Map.empty;
+  modules = PathName.Map.empty }
 
 let pp (m : 'a t) : SmartPrint.t =
   let pp_map map = OCaml.list (fun (x, _) -> PathName.pp x)
@@ -27,7 +29,8 @@ let pp (m : 'a t) : SmartPrint.t =
     !^ "typs:" ^^ nest (pp_map m.typs) ^^ newline ^^
     !^ "descriptors:" ^^ nest (pp_map m.descriptors) ^^ newline ^^
     !^ "constructors:" ^^ nest (pp_map m.constructors) ^^ newline ^^
-    !^ "fields:" ^^ nest (pp_map m.fields))
+    !^ "fields:" ^^ nest (pp_map m.fields) ^^ newline ^^
+    !^ "modules:" ^^ nest (pp_map m.modules))
 
 let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
   { m with opens = module_name :: m.opens }
@@ -43,7 +46,9 @@ let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   typs = unit_map_union m1.typs m2.typs;
   descriptors = unit_map_union m1.descriptors m2.descriptors;
   constructors = unit_map_union m1.constructors m2.constructors;
-  fields = unit_map_union m1.fields m2.fields}
+  fields = unit_map_union m1.fields m2.fields;
+  modules = PathName.Map.map_union add_to_path (fun _ v -> v)
+    m1.modules m2.modules }
 
 let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
   let prefix_n s n =
@@ -58,8 +63,10 @@ let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
       n in
   prefix_n base_name (first_n 0)
 
-let map (f : 'a -> 'b) (m : 'a t) : 'b t =
-  { m with vars = PathName.Map.map f m.vars }
+let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
+  { m with
+    vars = PathName.Map.map f m.vars;
+    modules = PathName.Map.map (map f) m.modules }
 
 module Vars = struct
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
