@@ -6,7 +6,8 @@ type 'a t = {
   typs : unit PathName.Map.t;
   descriptors: unit PathName.Map.t;
   constructors : unit PathName.Map.t;
-  fields : unit PathName.Map.t }
+  fields : unit PathName.Map.t;
+  modules : 'a t PathName.Map.t }
 
 let empty : 'a t = {
   opens = [[]]; (** By default we open the empty path. *)
@@ -14,7 +15,8 @@ let empty : 'a t = {
   typs = PathName.Map.empty;
   descriptors = PathName.Map.empty;
   constructors = PathName.Map.empty;
-  fields = PathName.Map.empty }
+  fields = PathName.Map.empty;
+  modules = PathName.Map.empty }
 
 let pp (m : 'a t) : SmartPrint.t =
   let pp_map map = OCaml.list (fun (x, _) -> PathName.pp x)
@@ -27,23 +29,11 @@ let pp (m : 'a t) : SmartPrint.t =
     !^ "typs:" ^^ nest (pp_map m.typs) ^^ newline ^^
     !^ "descriptors:" ^^ nest (pp_map m.descriptors) ^^ newline ^^
     !^ "constructors:" ^^ nest (pp_map m.constructors) ^^ newline ^^
-    !^ "fields:" ^^ nest (pp_map m.fields))
+    !^ "fields:" ^^ nest (pp_map m.fields) ^^ newline ^^
+    !^ "modules:" ^^ nest (pp_map m.modules))
 
 let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
   { m with opens = module_name :: m.opens }
-
-let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
-  (m1 : 'a t) (m2 : 'a t) : 'a t =
-  let add_to_path x =
-    { x with PathName.path = module_name :: x.PathName.path } in
-  let unit_map_union = PathName.Map.map_union add_to_path (fun _ () -> ()) in
-{ opens = m2.opens;
-  vars = PathName.Map.map_union add_to_path (fun _ v -> prefix module_name v)
-    m1.vars m2.vars;
-  typs = unit_map_union m1.typs m2.typs;
-  descriptors = unit_map_union m1.descriptors m2.descriptors;
-  constructors = unit_map_union m1.constructors m2.constructors;
-  fields = unit_map_union m1.fields m2.fields}
 
 let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
   let prefix_n s n =
@@ -58,8 +48,10 @@ let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
       n in
   prefix_n base_name (first_n 0)
 
-let map (f : 'a -> 'b) (m : 'a t) : 'b t =
-  { m with vars = PathName.Map.map f m.vars }
+let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
+  { m with
+    vars = PathName.Map.map f m.vars;
+    modules = PathName.Map.map (map f) m.modules }
 
 module Vars = struct
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
@@ -104,3 +96,48 @@ module Fields = struct
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.fields
 end
+module Modules = struct
+  let add (x : PathName.t) (v : 'a t) (m : 'a t) : 'a t =
+    { m with modules = PathName.Map.add x v m.modules }
+
+  let mem (x : PathName.t) (m : 'a t) : bool =
+    PathName.Map.mem x m.modules
+
+  let find (x : PathName.t) (m : 'a t) : 'a t =
+    PathName.Map.find x m.modules
+end
+
+let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
+  (m1 : 'a t) (m2 : 'a t) : 'a t =
+  let add_to_path x =
+    { x with PathName.path = module_name :: x.PathName.path } in
+  let unit_map_union = PathName.Map.map_union add_to_path (fun _ () -> ()) in
+  let m =
+  { opens = m2.opens;
+    vars = PathName.Map.map_union add_to_path
+      (fun _ v -> prefix module_name v) m1.vars m2.vars;
+    typs = unit_map_union m1.typs m2.typs;
+    descriptors = unit_map_union m1.descriptors m2.descriptors;
+    constructors = unit_map_union m1.constructors m2.constructors;
+    fields = unit_map_union m1.fields m2.fields;
+    modules = PathName.Map.map_union add_to_path (fun _ v -> v)
+      m1.modules m2.modules } in
+  Modules.add (PathName.of_name [] module_name) m1 m
+
+exception NameConflict of string * PathName.t
+
+let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
+  let reject_dups typ key _ _ = raise (NameConflict (typ, key)) in
+  { opens = m.opens;
+    vars = PathName.Map.union (reject_dups "variable")
+      m_incl.vars m.vars;
+    typs = PathName.Map.union (reject_dups "type")
+      m_incl.typs m.typs;
+    descriptors = PathName.Map.union (reject_dups "descriptor")
+      m_incl.descriptors m.descriptors;
+    constructors = PathName.Map.union (reject_dups "constructor")
+      m_incl.constructors m.constructors;
+    fields = PathName.Map.union (reject_dups "field")
+      m_incl.fields m.fields;
+    modules = PathName.Map.union (reject_dups "module")
+      m_incl.modules m.modules }
