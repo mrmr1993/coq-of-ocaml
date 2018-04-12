@@ -101,7 +101,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let name = Name.of_ident name in
       let env = FullEnvi.enter_module env in
       let (env, structures) = of_structure env structure in
-      let env = FullEnvi.leave_module name env in
+      let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
     | Tstr_modtype _ -> Error.raise loc "Signatures not handled."
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
@@ -147,7 +147,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module env in
       let (env, defs) = monadise_let_rec env defs in
-      let env = FullEnvi.leave_module name env in
+      let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
   let (env, defs) = List.fold_left (fun (env, defs) def ->
     let (env, defs') = monadise_let_rec_one env def in
@@ -182,7 +182,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.leave_module name env in
+      let env = FullEnvi.leave_module name Effect.Type.leave_prefix env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
@@ -221,7 +221,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module env) defs in
-      (FullEnvi.leave_module name env, Module (loc, name, defs)) in
+      (FullEnvi.leave_module name (fun _ _ -> ()) env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
       let (env_units, def) = monadise_one env def in

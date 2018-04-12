@@ -13,7 +13,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
-  FullEnvi.empty Effect.Type.leave_prefix
+  FullEnvi.empty
   (* Values specific to the translation to Coq *)
   |> add_typ [] "nat"
   |> add_constructor [] "O"
@@ -141,12 +141,9 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* List *)
   |> enter_module
   |> Interface.to_full_envi (Interface.of_file "interfaces/list.interface")
-  |> leave_module "OCaml"
+  |> leave_module "OCaml" Effect.Type.leave_prefix
   |> enter_module
   |> open_module ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
 
-let env : unit FullEnvi.t =
-  { env_with_effects with
-    vars = Envi.map env_with_effects.vars (fun _ -> ());
-    leave_prefix_vars = (fun _ () -> ()) }
+let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects

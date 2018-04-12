@@ -19,7 +19,7 @@ module Shape = struct
     let descriptor ds : Effect.Descriptor.t =
       let ds = ds |> List.map (fun d ->
         Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether d)
-          (Envi.bound_name Loc.Unknown d env.FullEnvi.descriptors)) in
+          (FullEnvi.bound_descriptor Loc.Unknown d env)) in
       Effect.Descriptor.union ds in
     List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
       shape Effect.Type.Pure
@@ -102,7 +102,7 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module x env
+    FullEnvi.leave_module x Effect.Type.leave_prefix env
 
 let rec to_json (interface : t) : json =
   match interface with
