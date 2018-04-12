@@ -114,3 +114,13 @@ module Fields = struct
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.fields
 end
+module Modules = struct
+  let add (x : PathName.t) (v : 'a t) (m : 'a t) : 'a t =
+    { m with modules = PathName.Map.add x v m.modules }
+
+  let mem (x : PathName.t) (m : 'a t) : bool =
+    PathName.Map.mem x m.modules
+
+  let find (x : PathName.t) (m : 'a t) : 'a t =
+    PathName.Map.find x m.modules
+end
