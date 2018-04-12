@@ -135,5 +135,5 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
   match env with
-  | m :: env -> Envi.Vars.map f m :: map f env
+  | m :: env -> Envi.map f m :: map f env
   | [] -> []

@@ -58,6 +58,9 @@ let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
       n in
   prefix_n base_name (first_n 0)
 
+let map (f : 'a -> 'b) (m : 'a t) : 'b t =
+  { m with vars = PathName.Map.map f m.vars }
+
 module Vars = struct
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     { m with vars = PathName.Map.add x v m.vars }
@@ -67,9 +70,6 @@ module Vars = struct
 
   let find (x : PathName.t) (m : 'a t) : 'a =
     PathName.Map.find x m.vars
-
-  let map (f : 'a -> 'b) (m : 'a t) : 'b t =
-    { m with vars = PathName.Map.map f m.vars }
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
@@ -82,9 +82,6 @@ module Typs = struct
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.typs
-
-  let map (f : unit -> 'b) (m : 'a t) : 'b t =
-    { m with typs = PathName.Map.map f m.typs }
 end
 module Descriptors = struct
   let add (x : PathName.t) (m : 'a t) : 'a t =
@@ -92,9 +89,6 @@ module Descriptors = struct
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.descriptors
-
-  let map (f : unit -> 'b) (m : 'a t) : 'b t =
-    { m with descriptors = PathName.Map.map f m.descriptors }
 end
 module Constructors = struct
   let add (x : PathName.t) (m : 'a t) : 'a t =
@@ -102,9 +96,6 @@ module Constructors = struct
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.constructors
-
-  let map (f : unit -> 'b) (m : 'a t) : 'b t =
-    { m with constructors = PathName.Map.map f m.constructors }
 end
 module Fields = struct
   let add (x : PathName.t) (m : 'a t) : 'a t =
@@ -112,7 +103,4 @@ module Fields = struct
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.fields
-
-  let map (f : unit -> 'b) (m : 'a t) : 'b t =
-    { m with fields = PathName.Map.map f m.fields }
 end
