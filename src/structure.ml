@@ -44,6 +44,7 @@ type 'a t =
   | Exception of Loc.t * Exception.t
   | Reference of Loc.t * Reference.t
   | Open of Loc.t * Open.t
+  | Include of Loc.t * Include.t
   | Module of Loc.t * Name.t * 'a t list
 
 let rec pps (pp_a : 'a -> SmartPrint.t) (defs : 'a t list) : SmartPrint.t =
@@ -58,6 +59,7 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
   | Exception (loc, exn) -> group (Loc.pp loc ^^ Exception.pp exn)
   | Reference (loc, r) -> group (Loc.pp loc ^^ Reference.pp r)
   | Open (loc, o) -> group (Loc.pp loc ^^ Open.pp o)
+  | Include (loc, name) -> group (Loc.pp loc ^^ Include.pp name)
   | Module (loc, name, defs) ->
     nest (
       Loc.pp loc ^^ !^ "Module" ^^ Name.pp name ^-^ !^ ":" ^^ newline ^^
@@ -90,6 +92,11 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let o = Open.of_ocaml loc path in
       let env = Open.update_env o env in
       (env, Open (loc, o))
+    | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
+      let incl = Include.of_ocaml loc path in
+      let env = Include.update_env loc incl env in
+      (env, Include (loc, incl))
+    | Tstr_include _ -> Error.raise loc "This kind of include is not handled"
     | Tstr_module {mb_id = name;
       mb_expr = { mod_desc = Tmod_structure structure }}
     | Tstr_module {mb_id = name;
@@ -104,13 +111,6 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
       Error.raise loc "Functors not handled."
     | Tstr_module _ -> Error.raise loc "This kind of module is not handled."
-    | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, longident) } } ->
-      let name = PathName.of_longident longident.txt in
-      let bound_mod = FullEnvi.bound_module loc name env in
-      let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
-      let env = FullEnvi.include_module loc mod_body env in
-      env |> FullEnvi.pp |> to_string 80 2 |> Error.raise loc
-    | Tstr_include _ -> Error.raise loc "This kind of include is not handled"
     | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_primitive _ -> Error.raise loc "Structure item `primitive` not handled."
     | Tstr_typext _ -> Error.raise loc "Structure item `typext` not handled."
@@ -142,6 +142,11 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
     | Reference (loc, r) -> (Reference.update_env r env, [def])
     | Open (loc, o) -> (Open.update_env o env, [def])
+    | Include (loc, name) ->
+      let bound_mod = FullEnvi.bound_module loc name env in
+      let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
+      let env = FullEnvi.include_module loc mod_body env in
+      (env, [def])
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module env in
       let (env, defs) = monadise_let_rec env defs in
@@ -175,6 +180,8 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
       let id = Effect.Descriptor.Id.Loc loc in
       (Reference.update_env_with_effects r env id, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Include (loc, name) ->
+      (Include.update_env loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module env in
       let (env, defs) = effects env defs in
@@ -213,6 +220,8 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) -> (Reference.update_env r env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
+      (env, Include (loc, name))
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module env) defs in
       (FullEnvi.leave_module name (fun _ _ -> ()) env, Module (loc, name, defs)) in
@@ -232,6 +241,7 @@ let rec to_coq (defs : 'a t list) : SmartPrint.t =
     | Exception (_, exn) -> Exception.to_coq exn
     | Reference (_, r) -> Reference.to_coq r
     | Open (_, o) -> Open.to_coq o
+    | Include (_, incl) -> Include.to_coq incl
     | Module (_, name, defs) ->
       nest (
         !^ "Module" ^^ Name.to_coq name ^-^ !^ "." ^^ newline ^^

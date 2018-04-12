@@ -127,7 +127,7 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
 exception NameConflict of string * PathName.t
 
 let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
-  let reject_dups typ key _ _ = raise (Failure typ) in
+  let reject_dups typ key _ _ = raise (NameConflict (typ, key)) in
   { opens = m.opens;
     vars = PathName.Map.union (reject_dups "variable")
       m_incl.vars m.vars;
