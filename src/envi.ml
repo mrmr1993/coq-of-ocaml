@@ -95,6 +95,19 @@ module Mod = struct
     constructors = unit_map_union m1.constructors m2.constructors;
     fields = unit_map_union m1.fields m2.fields}
 
+  let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
+    let prefix_n s n =
+      if n = 0 then
+        Name.of_string s
+      else
+        Name.of_string @@ Printf.sprintf "%s_%d" s n in
+    let rec first_n (n : int) : int =
+      if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env then
+        first_n (n + 1)
+      else
+        n in
+    prefix_n base_name (first_n 0)
+
   module Vars = struct
     let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
       { m with vars = PathName.Map.add x v m.vars }
@@ -107,6 +120,11 @@ module Mod = struct
 
     let map (f : 'a -> 'b) (m : 'a t) : 'b t =
       { m with vars = PathName.Map.map f m.vars }
+
+    (** Add a fresh local name beginning with [prefix] in [env]. *)
+    let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
+      let name = find_free_name prefix env.vars in
+      (name, add (PathName.of_name [] name) v env)
   end
   module Typs = struct
     let add (x : PathName.t) (m : 'a t) : 'a t =
