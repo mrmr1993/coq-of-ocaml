@@ -107,7 +107,7 @@ module Modules = struct
     PathName.Map.find x m.modules
 end
 
-let close_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
+let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (m1 : 'a t) (m2 : 'a t) : 'a t =
   let add_to_path x =
     { x with PathName.path = module_name :: x.PathName.path } in
