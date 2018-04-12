@@ -224,4 +224,9 @@ module ModList = struct
       let (name, m) = Envi.Mod.Vars.fresh prefix v m in
       (name, m :: env)
     | [] -> failwith "The environment must be a non-empty list."
+
+  let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
+    match env with
+    | m :: env -> Envi.Mod.Vars.map f m :: map f env
+    | [] -> []
 end
