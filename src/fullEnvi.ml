@@ -159,3 +159,13 @@ let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
   match env with
   | m :: env -> Envi.map f m :: map f env
   | [] -> []
+
+let include_module (loc : Loc.t) (x : 'a Envi.t) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+      (try Envi.include_module x m :: env with
+      | Envi.NameConflict (typ, name) ->
+        let message = !^ "Could not include module: the" ^^ !^ typ ^^
+          PathName.pp name ^^ !^ "is already declared." in
+        Error.raise loc (SmartPrint.to_string 80 2 message))
+  | [] -> failwith "The environment must be a non-empty list."

@@ -104,13 +104,19 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
       Error.raise loc "Functors not handled."
     | Tstr_module _ -> Error.raise loc "This kind of module is not handled."
+    | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, longident) } } ->
+      let name = PathName.of_longident longident.txt in
+      let bound_mod = FullEnvi.bound_module loc name env in
+      let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
+      let env = FullEnvi.include_module loc mod_body env in
+      env |> FullEnvi.pp |> to_string 80 2 |> Error.raise loc
+    | Tstr_include _ -> Error.raise loc "This kind of include is not handled"
     | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_primitive _ -> Error.raise loc "Structure item `primitive` not handled."
     | Tstr_typext _ -> Error.raise loc "Structure item `typext` not handled."
     | Tstr_recmodule _ -> Error.raise loc "Structure item `recmodule` not handled."
     | Tstr_class _ -> Error.raise loc "Structure item `class` not handled."
     | Tstr_class_type _ -> Error.raise loc "Structure item `class_type` not handled."
-    | Tstr_include _ -> Error.raise loc "Structure item `include` not handled."
     | Tstr_attribute _ -> Error.raise loc "Structure item `attribute` not handled." in
   let (env, defs) =
     List.fold_left (fun (env, defs) item ->

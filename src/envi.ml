@@ -123,3 +123,21 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     modules = PathName.Map.map_union add_to_path (fun _ v -> v)
       m1.modules m2.modules } in
   Modules.add (PathName.of_name [] module_name) m1 m
+
+exception NameConflict of string * PathName.t
+
+let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
+  let reject_dups typ key _ _ = raise (Failure typ) in
+  { opens = m.opens;
+    vars = PathName.Map.union (reject_dups "variable")
+      m_incl.vars m.vars;
+    typs = PathName.Map.union (reject_dups "type")
+      m_incl.typs m.typs;
+    descriptors = PathName.Map.union (reject_dups "descriptor")
+      m_incl.descriptors m.descriptors;
+    constructors = PathName.Map.union (reject_dups "constructor")
+      m_incl.constructors m.constructors;
+    fields = PathName.Map.union (reject_dups "field")
+      m_incl.fields m.fields;
+    modules = PathName.Map.union (reject_dups "module")
+      m_incl.modules m.modules }
