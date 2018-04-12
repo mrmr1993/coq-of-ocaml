@@ -205,4 +205,11 @@ module ModList = struct
           (bound_descriptor Loc.Unknown (PathName.of_name path base) env),
         Effect.Type.Pure) in
     add_var path ("raise_" ^ base) effect_typ env
+
+  let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
+    match env with
+    | m :: env ->
+      let (name, m) = Envi.Mod.Vars.fresh prefix v m in
+      (name, m :: env)
+    | [] -> failwith "The environment must be a non-empty list."
 end
