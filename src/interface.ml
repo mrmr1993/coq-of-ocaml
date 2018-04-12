@@ -15,11 +15,11 @@ module Shape = struct
         x.BoundName.path_name) in
       ds :: of_effect_typ typ
 
-  let to_effect_typ (shape : t) (env : 'a FullEnvi.t) : Effect.Type.t =
+  let to_effect_typ (shape : t) (env : 'a FullEnvi.ModList.t) : Effect.Type.t =
     let descriptor ds : Effect.Descriptor.t =
       let ds = ds |> List.map (fun d ->
         Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether d)
-          (Envi.bound_name Loc.Unknown d env.FullEnvi.descriptors)) in
+          (FullEnvi.ModList.bound_descriptor Loc.Unknown d env)) in
       Effect.Descriptor.union ds in
     List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
       shape Effect.Type.Pure
@@ -88,18 +88,18 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Open _ -> []
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
 
-let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
-  : Effect.Type.t FullEnvi.t =
+let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.ModList.t)
+  : Effect.Type.t FullEnvi.ModList.t =
   match interface with
-  | Var (x, shape) -> FullEnvi.add_var [] x (Shape.to_effect_typ shape env) env
-  | Typ x -> FullEnvi.add_typ [] x env
-  | Descriptor x -> FullEnvi.add_descriptor [] x env
-  | Constructor x -> FullEnvi.add_constructor [] x env
-  | Field x -> FullEnvi.add_field [] x env
+  | Var (x, shape) -> FullEnvi.ModList.add_var [] x (Shape.to_effect_typ shape env) env
+  | Typ x -> FullEnvi.ModList.add_typ [] x env
+  | Descriptor x -> FullEnvi.ModList.add_descriptor [] x env
+  | Constructor x -> FullEnvi.ModList.add_constructor [] x env
+  | Field x -> FullEnvi.ModList.add_field [] x env
   | Interface (x, defs) ->
-    let env = FullEnvi.enter_module env in
+    let env = FullEnvi.ModList.enter_module env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module x env
+    FullEnvi.ModList.leave_module x Effect.Type.leave_prefix env
 
 let rec to_json (interface : t) : json =
   match interface with

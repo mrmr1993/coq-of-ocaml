@@ -21,7 +21,7 @@ let rec pp (typ : t) : SmartPrint.t =
     Effect.Descriptor.pp d; pp typ])
 
 (** Import an OCaml type. Add to the environment all the new free type variables. *)
-let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
+let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.ModList.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (typ : Types.type_expr)
   : t * Name.t Name.Map.t * Name.Set.t =
   match typ.desc with
@@ -47,7 +47,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
     (Tuple typs, typ_vars, new_typ_vars)
   | Tconstr (path, typs, _) ->
     let (typs, typ_vars, new_typ_vars) = of_typs_exprs_new_free_vars env loc typ_vars typs in
-    let x = Envi.bound_name loc (PathName.of_path loc path) env.FullEnvi.typs in
+    let x = FullEnvi.ModList.bound_typ loc (PathName.of_path loc path) env in
     (Apply (x, typs), typ_vars, new_typ_vars)
   | Tlink typ -> of_type_expr_new_typ_vars env loc typ_vars typ
   | Tpoly (typ, []) -> of_type_expr_new_typ_vars env loc typ_vars typ
@@ -55,7 +55,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
     Error.warn loc "Type not handled.";
     (Variable "unhandled_type", typ_vars, Name.Set.empty)
 
-and of_typs_exprs_new_free_vars (env : 'a FullEnvi.t) (loc : Loc.t)
+and of_typs_exprs_new_free_vars (env : 'a FullEnvi.ModList.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (typs : Types.type_expr list)
   : t list * Name.t Name.Map.t * Name.Set.t =
   let (typs, typ_vars, new_typ_vars) =
@@ -65,7 +65,7 @@ and of_typs_exprs_new_free_vars (env : 'a FullEnvi.t) (loc : Loc.t)
       ([], typ_vars, Name.Set.empty) typs in
   (List.rev typs, typ_vars, new_typ_vars)
 
-let rec of_type_expr (env : 'a FullEnvi.t) (loc : Loc.t)
+let rec of_type_expr (env : 'a FullEnvi.ModList.t) (loc : Loc.t)
   (typ : Types.type_expr) : t =
   match typ.desc with
   | Tvar (Some x) -> Variable x
@@ -74,7 +74,7 @@ let rec of_type_expr (env : 'a FullEnvi.t) (loc : Loc.t)
   | Ttuple typs ->
     Tuple (List.map (of_type_expr env loc) typs)
   | Tconstr (path, typs, _) ->
-    let x = Envi.bound_name loc (PathName.of_path loc path) env.FullEnvi.typs in
+    let x = FullEnvi.ModList.bound_typ loc (PathName.of_path loc path) env in
     Apply (x, List.map (of_type_expr env loc) typs)
   | Tlink typ -> of_type_expr env loc typ
   | Tpoly (typ, []) -> of_type_expr env loc typ

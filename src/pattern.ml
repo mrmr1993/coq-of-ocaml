@@ -28,20 +28,20 @@ let rec pp (p : t) : SmartPrint.t =
   | Or (p1, p2) -> nest (!^ "Or" ^^ OCaml.tuple [pp p1; pp p2])
 
 (** Import an OCaml pattern. *)
-let rec of_pattern (env : 'a FullEnvi.t) (p : pattern) : t =
+let rec of_pattern (env : 'a FullEnvi.ModList.t) (p : pattern) : t =
   let l = Loc.of_location p.pat_loc in
   match p.pat_desc with
   | Tpat_any -> Any
   | Tpat_var (x, _) -> Variable (Name.of_ident x)
   | Tpat_tuple ps -> Tuple (List.map (of_pattern env) ps)
   | Tpat_construct (x, _, ps) ->
-    let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.constructors in
+    let x = FullEnvi.ModList.bound_constructor l (PathName.of_loc x) env in
     Constructor (x, List.map (of_pattern env) ps)
   | Tpat_alias (p, x, _) -> Alias (of_pattern env p, Name.of_ident x)
   | Tpat_constant c -> Constant (Constant.of_constant l c)
   | Tpat_record (fields, _) ->
     Record (fields |> List.map (fun (x, _, p) ->
-      let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.fields in
+      let x = FullEnvi.ModList.bound_field l (PathName.of_loc x) env in
       (x, of_pattern env p)))
   | Tpat_or (p1, p2, _) -> Or (of_pattern env p1, of_pattern env p2)
   | _ -> Error.raise l "Unhandled pattern."
@@ -59,8 +59,8 @@ let rec free_variables (p : t) : Name.Set.t =
   | Record fields -> aux (List.map snd fields)
   | Or (p1, p2) -> Name.Set.inter (free_variables p1) (free_variables p2)
 
-let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  Name.Set.fold (fun x env -> FullEnvi.add_var [] x () env)
+let add_to_env (p : t) (env : unit FullEnvi.ModList.t) : unit FullEnvi.ModList.t =
+  Name.Set.fold (fun x env -> FullEnvi.ModList.add_var [] x () env)
     (free_variables p) env
 
 (** Pretty-print a pattern to Coq (inside parenthesis if the [paren] flag is set). *)

@@ -17,9 +17,9 @@ module Header = struct
         header.args;
       OCaml.option Type.pp header.typ]
 
-  let env_in_header (header : t) (env : 'a FullEnvi.t) (v : 'a)
-    : 'a FullEnvi.t =
-    List.fold_left (fun env (x, _) -> FullEnvi.add_var [] x v env)
+  let env_in_header (header : t) (env : 'a FullEnvi.ModList.t) (v : 'a)
+    : 'a FullEnvi.ModList.t =
+    List.fold_left (fun env (x, _) -> FullEnvi.ModList.add_var [] x v env)
       env header.args
 end
 
@@ -37,11 +37,11 @@ module Definition = struct
   let names (def : 'a t) : Name.t list =
     List.map (fun (header, _) -> header.Header.name) def.cases
 
-  let env_after_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-    List.fold_left (fun env x -> FullEnvi.add_var [] x () env)
+  let env_after_def (def : 'a t) (env : unit FullEnvi.ModList.t) : unit FullEnvi.ModList.t =
+    List.fold_left (fun env x -> FullEnvi.ModList.add_var [] x () env)
       env (names def)
 
-  let env_in_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
+  let env_in_def (def : 'a t) (env : unit FullEnvi.ModList.t) : unit FullEnvi.ModList.t =
     if Recursivity.to_bool def.is_rec then
       env_after_def def env
     else
@@ -164,12 +164,12 @@ let rec open_function (e : 'a t) : Name.t list * 'a t =
   | _ -> ([], e)
 
 (** Import an OCaml expression. *)
-let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
+let rec of_expression (env : unit FullEnvi.ModList.t) (typ_vars : Name.t Name.Map.t)
   (e : expression) : Loc.t t =
   let l = Loc.of_location e.exp_loc in
   match e.exp_desc with
   | Texp_ident (path, _, _) ->
-    let x = Envi.bound_name l (PathName.of_path l path) env.FullEnvi.vars in
+    let x = FullEnvi.ModList.bound_var l (PathName.of_path l path) env in
     Variable (l, x)
   | Texp_constant constant -> Constant (l, Constant.of_constant l constant)
   | Texp_let (_, [{ vb_pat = p; vb_expr = e1 }], e2)
@@ -180,7 +180,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e1 = of_expression env typ_vars e1 in
     (match p with
     | Pattern.Variable x ->
-      let env = FullEnvi.add_var [] x () env in
+      let env = FullEnvi.ModList.add_var [] x () env in
       let e2 = of_expression env typ_vars e2 in
       LetVar (l, x, e1, e2)
     | _ ->
@@ -195,7 +195,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_function { cases = [{c_lhs = { pat_desc = Tpat_alias
     ({ pat_desc = Tpat_any }, x, _)}; c_rhs = e}] } ->
     let x = Name.of_ident x in
-    let env = FullEnvi.add_var [] x () env in
+    let env = FullEnvi.ModList.add_var [] x () env in
     Function (l, x, of_expression env typ_vars e)
   | Texp_function { cases = cases } ->
     let (x, e) = open_cases env typ_vars cases in
@@ -212,7 +212,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let l_exn = Loc.of_location e_x.exp_loc in
           let x = PathName.of_loc x in
           let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
-          let x = Envi.bound_name l_exn x env.FullEnvi.vars in
+          let x = FullEnvi.ModList.bound_var l_exn x env in
           let es = List.map (of_expression env typ_vars) es in
           Apply (l, Variable (l_exn, x), [Tuple (Loc.Unknown, es)])
         | _ ->
@@ -228,7 +228,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let read = PathName.of_path l_x path in
           let read =
             { read with PathName.base = "read_" ^ read.PathName.base } in
-          let read = Envi.bound_name l_x read env.FullEnvi.vars in
+          let read = FullEnvi.ModList.bound_var l_x read env in
           Apply (l, Variable (Loc.Unknown, read), [Tuple (Loc.Unknown, [])])
         | _ -> Error.raise l "Name of a reference expected after '!'.")
       | _ -> Error.raise l "Expected one argument for '!'.")
@@ -242,7 +242,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let write = PathName.of_path l_r path in
           let write =
             { write with PathName.base = "write_" ^ write.PathName.base } in
-          let write = Envi.bound_name l_r write env.FullEnvi.vars in
+          let write = FullEnvi.ModList.bound_var l_r write env in
           let e_v = of_expression env typ_vars e_v in
           Apply (l, Variable (Loc.Unknown, write), [e_v])
         | _ -> Error.raise l "Name of a reference expected after ':='.")
@@ -264,7 +264,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     Match (l, e, cases)
   | Texp_tuple es -> Tuple (l, List.map (of_expression env typ_vars) es)
   | Texp_construct (x, _, es) ->
-    let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.constructors in
+    let x = FullEnvi.ModList.bound_constructor l (PathName.of_loc x) env in
     Constructor (l, x, List.map (of_expression env typ_vars) es)
   | Texp_record { fields = fields; extended_expression = None } ->
     Record (l, Array.to_list fields |> List.map (fun (label, definition) ->
@@ -273,10 +273,10 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         | Kept _ -> Error.raise l "Records with overwriting not handled."
         | Overridden (loc, e) -> (loc, e) in
       let loc = Loc.of_location label.lbl_loc in
-      let x = Envi.bound_name loc (PathName.of_loc x) env.FullEnvi.fields in
+      let x = FullEnvi.ModList.bound_field loc (PathName.of_loc x) env in
       (x, of_expression env typ_vars e)))
   | Texp_field (e, x, _) ->
-    let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.fields in
+    let x = FullEnvi.ModList.bound_field l (PathName.of_loc x) env in
     Field (l, of_expression env typ_vars e, x)
   | Texp_ifthenelse (e1, e2, e3) ->
     let e3 = match e3 with
@@ -289,17 +289,17 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_try (e1,
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
-    let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.descriptors in
+    let x = FullEnvi.ModList.bound_descriptor l (PathName.of_loc x) env in
     let p = Pattern.Tuple (List.map (Pattern.of_pattern env) ps) in
     Match (l, Run (Loc.Unknown, x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
-        Envi.bound_name l (PathName.of_name [] "inl") env.FullEnvi.constructors,
+        FullEnvi.ModList.bound_constructor l (PathName.of_name [] "inl") env,
         [Pattern.Variable "x"]) in
       let env = Pattern.add_to_env p env in
-      let x = Envi.bound_name l (PathName.of_name [] "x") env.FullEnvi.vars in
+      let x = FullEnvi.ModList.bound_var l (PathName.of_name [] "x") env in
       (p, Variable (Loc.Unknown, x)));
       (let p = Pattern.Constructor (
-        Envi.bound_name l (PathName.of_name [] "inr") env.FullEnvi.constructors,
+        FullEnvi.ModList.bound_constructor l (PathName.of_name [] "inr") env,
         [p]) in
       let env = Pattern.add_to_env p env in
       let e2 = of_expression env typ_vars e2 in
@@ -310,26 +310,25 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_for _ -> Error.raise l "For loops not handled."
   | Texp_assert e ->
     let assert_function =
-      Envi.bound_name l (PathName.of_name ["OCaml"] "assert") env.FullEnvi.vars in
+      FullEnvi.ModList.bound_var l (PathName.of_name ["OCaml"] "assert") env in
     Apply (l, Variable (l, assert_function), [of_expression env typ_vars e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
     patterns. *)
-and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
+and open_cases (env : unit FullEnvi.ModList.t) (typ_vars : Name.t Name.Map.t)
   (cases : case list) : Name.t * Loc.t t =
-  let (x, env_vars) = Envi.fresh "x" () env.FullEnvi.vars in
-  let env = { env with FullEnvi.vars = env_vars } in
+  let (x, env) = FullEnvi.ModList.fresh_var "x" () env in
   let cases = cases |> List.map (fun {c_lhs = p; c_rhs = e} ->
     let p = Pattern.of_pattern env p in
     let env = Pattern.add_to_env p env in
     (p, of_expression env typ_vars e)) in
-  let bound_x = Envi.bound_name Loc.Unknown (PathName.of_name [] x) env_vars in
+  let bound_x = FullEnvi.ModList.bound_var Loc.Unknown (PathName.of_name [] x) env in
   (x, Match (Loc.Unknown, Variable (Loc.Unknown, bound_x), cases))
 
-and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
+and import_let_fun (env : unit FullEnvi.ModList.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
-  (cases : value_binding list) : unit FullEnvi.t * Loc.t t Definition.t =
+  (cases : value_binding list) : unit FullEnvi.ModList.t * Loc.t t Definition.t =
   let is_rec = Recursivity.of_rec_flag is_rec in
   let attrs = cases |> List.map (fun { vb_attributes = attrs; vb_expr = e; vb_pat = p } ->
     let { exp_loc = loc } = e in
@@ -351,7 +350,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     | Pattern.Variable x -> (x, e, loc)
     | _ -> Error.raise loc "A variable name instead of a pattern was expected.") in
   let env_with_let =
-    List.fold_left (fun env (x, _, _) -> FullEnvi.add_var [] x () env)
+    List.fold_left (fun env (x, _, _) -> FullEnvi.ModList.add_var [] x () env)
       env cases in
   let env =
     if Recursivity.to_bool is_rec then
@@ -445,7 +444,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     Bind (a, e1, y, e2)
   | Lift (a, d1, d2, e) -> Lift (a, d1, d2, substitute x e' e)
 
-let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
+let rec monadise_let_rec (env : unit FullEnvi.ModList.t) (e : Loc.t t) : Loc.t t =
   match e with
   | Constant _ | Variable _ -> e
   | Tuple (a, es) ->
@@ -455,11 +454,11 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
   | Apply (a, e_f, e_xs) ->
     Apply (a, monadise_let_rec env e_f, List.map (monadise_let_rec env) e_xs)
   | Function (a, x, e) ->
-    let env = FullEnvi.add_var [] x () env in
+    let env = FullEnvi.ModList.add_var [] x () env in
     Function (a, x, monadise_let_rec env e)
   | LetVar (a, x, e1, e2) ->
     let e1 = monadise_let_rec env e1 in
-    let env = FullEnvi.add_var [] x () env in
+    let env = FullEnvi.ModList.add_var [] x () env in
     let e2 = monadise_let_rec env e2 in
     LetVar (a, x, e1, e2)
   | LetFun (a, def, e2) ->
@@ -487,23 +486,23 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
     let e1 = monadise_let_rec env e1 in
     let env = match x with
       | None -> env
-      | Some x -> FullEnvi.add_var [] x () env in
+      | Some x -> FullEnvi.ModList.add_var [] x () env in
     Bind (a, e1, x, monadise_let_rec env e2)
   | Lift (a, d1, d2, e) -> Lift (a, d1, d2, monadise_let_rec env e)
 
-and monadise_let_rec_definition (env : unit FullEnvi.t)
-  (def : Loc.t t Definition.t) : unit FullEnvi.t * Loc.t t Definition.t list =
+and monadise_let_rec_definition (env : unit FullEnvi.ModList.t)
+  (def : Loc.t t Definition.t) : unit FullEnvi.ModList.t * Loc.t t Definition.t list =
   if Recursivity.to_bool def.Definition.is_rec &&
     def.Definition.attribute <> Attribute.CoqRec then
     let var (x : Name.t) env : Loc.t t =
       Variable (Loc.Unknown,
-        Envi.bound_name Loc.Unknown (PathName.of_name [] x) env.FullEnvi.vars) in
+        FullEnvi.ModList.bound_var Loc.Unknown (PathName.of_name [] x) env) in
     let env_in_def = Definition.env_in_def def env in
     (* Add the suffix "_rec" to the names. *)
     let def' = { def with Definition.cases =
       def.Definition.cases |> List.map (fun (header, e) ->
-        let (name_rec, _) = Envi.fresh (header.Header.name ^ "_rec") ()
-          env_in_def.FullEnvi.vars in
+        let (name_rec, _) = FullEnvi.ModList.fresh_var (header.Header.name ^ "_rec") ()
+          env_in_def in
         ({ header with Header.name = name_rec }, e)) } in
     let env_after_def' = Definition.env_in_def def' env in
     (* Add the argument "counter" and monadise the bodies. *)
@@ -511,11 +510,11 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       def'.Definition.cases |> List.map (fun (header, e) ->
         let name_rec = header.Header.name in
         let (counter, _) =
-          Envi.fresh "counter" () env_after_def'.FullEnvi.vars in
+          FullEnvi.ModList.fresh_var "counter" () env_after_def' in
         let args_rec =
           (counter,
-            Type.Apply (Envi.bound_name Loc.Unknown (PathName.of_name [] "nat")
-              env_after_def'.FullEnvi.typs,
+            Type.Apply (FullEnvi.ModList.bound_typ Loc.Unknown (PathName.of_name [] "nat")
+              env_after_def',
             [])) :: header.Header.args in
         let header_rec =
           { header with Header.name = name_rec; args = args_rec } in
@@ -534,12 +533,12 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
               [var counter env])) e_name_rec)
           e (Definition.names def) def'.Definition.cases in
       let e_name_rec = Match (Loc.Unknown, var counter env, [
-        (Pattern.Constructor (Envi.bound_name Loc.Unknown (PathName.of_name [] "O")
-          env.FullEnvi.constructors, []),
+        (Pattern.Constructor (FullEnvi.ModList.bound_constructor Loc.Unknown (PathName.of_name [] "O")
+          env, []),
           Apply (Loc.Unknown, var "not_terminated" env,
             [Tuple (Loc.Unknown, [])]));
         (Pattern.Constructor (
-          Envi.bound_name Loc.Unknown (PathName.of_name [] "S") env.FullEnvi.constructors,
+          FullEnvi.ModList.bound_constructor Loc.Unknown (PathName.of_name [] "S") env,
           [Pattern.Variable counter]),
           e_name_rec)]) in
       (header, e_name_rec))
@@ -567,7 +566,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     let env = Definition.env_after_def def env in
     (env, [def])
 
-let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
+let rec effects (env : Effect.Type.t FullEnvi.ModList.t) (e : Loc.t t)
   : (Loc.t * Effect.t) t =
   let compound (es : Loc.t t list) : (Loc.t * Effect.t) t list * Effect.t =
     let es = List.map (effects env) es in
@@ -583,7 +582,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
     (try
       let effect =
         { Effect.descriptor = Effect.Descriptor.pure;
-          typ = Envi.find x env.FullEnvi.vars Effect.Type.depth_lift } in
+          typ = FullEnvi.ModList.find_var x env Effect.Type.depth_lift } in
       Variable ((l, effect), x)
     with Not_found ->
       let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
@@ -631,7 +630,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
     else
       Error.raise l "Function arguments cannot have functional effects."
   | Function (l, x, e) ->
-    let env = FullEnvi.add_var [] x Effect.Type.Pure env in
+    let env = FullEnvi.ModList.add_var [] x Effect.Type.Pure env in
     let e = effects env e in
     let effect_e = snd (annotation e) in
     let effect = {
@@ -642,7 +641,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
   | LetVar (l, x, e1, e2) ->
     let e1 = effects env e1 in
     let effect1 = snd (annotation e1) in
-    let env = FullEnvi.add_var [] x effect1.Effect.typ env in
+    let env = FullEnvi.ModList.add_var [] x effect1.Effect.typ env in
     let e2 = effects env e2 in
     let effect2 = snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [
@@ -664,7 +663,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
       let cases = cases |> List.map (fun (p, e) ->
         let pattern_vars = Pattern.free_variables p in
         let env = Name.Set.fold (fun x env ->
-          FullEnvi.add_var [] x Effect.Type.Pure env)
+          FullEnvi.ModList.add_var [] x Effect.Type.Pure env)
           pattern_vars env in
         (p, effects env e)) in
       let effect = Effect.union (cases |> List.map (fun (_, e) ->
@@ -721,22 +720,22 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
     Error.raise Loc.Unknown
       "Cannot compute effects on an explicit return, bind or lift."
 
-and env_after_def_with_effects (env : Effect.Type.t FullEnvi.t)
-  (def : (Loc.t * Effect.t) t Definition.t) : Effect.Type.t FullEnvi.t =
+and env_after_def_with_effects (env : Effect.Type.t FullEnvi.ModList.t)
+  (def : (Loc.t * Effect.t) t Definition.t) : Effect.Type.t FullEnvi.ModList.t =
   List.fold_left (fun env (header, e) ->
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
-    FullEnvi.add_var [] header.Header.name effect_typ env)
+    FullEnvi.ModList.add_var [] header.Header.name effect_typ env)
     env def.Definition.cases
 
-and effects_of_def_step (env : Effect.Type.t FullEnvi.t)
+and effects_of_def_step (env : Effect.Type.t FullEnvi.ModList.t)
   (def : Loc.t t Definition.t) : (Loc.t * Effect.t) t Definition.t =
   { def with Definition.cases =
     def.Definition.cases |> List.map (fun (header, e) ->
       let env = Header.env_in_header header env Effect.Type.Pure in
       (header, effects env e)) }
 
-and effects_of_def (env : Effect.Type.t FullEnvi.t) (def : Loc.t t Definition.t)
+and effects_of_def (env : Effect.Type.t FullEnvi.ModList.t) (def : Loc.t t Definition.t)
   : (Loc.t * Effect.t) t Definition.t =
   let rec fix_effect (def' : (Loc.t * Effect.t) t Definition.t) =
     let env =
@@ -752,13 +751,13 @@ and effects_of_def (env : Effect.Type.t FullEnvi.t) (def : Loc.t t Definition.t)
   let env =
     if Recursivity.to_bool def.Definition.is_rec then
       List.fold_left (fun env (header, _) ->
-        FullEnvi.add_var [] header.Header.name Effect.Type.Pure env)
+        FullEnvi.ModList.add_var [] header.Header.name Effect.Type.Pure env)
         env def.Definition.cases
     else
       env in
   fix_effect (effects_of_def_step env def)
 
-let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
+let rec monadise (env : unit FullEnvi.ModList.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
   let descriptor e = (snd (annotation e)).Effect.descriptor in
   let lift d1 d2 e =
     if Effect.Descriptor.eq d1 d2 then
@@ -785,11 +784,10 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         monadise_list env es d (map fst e :: es') k
       else
         let e' = monadise env e in
-        let (x, env_vars) = Envi.fresh "x" () env.FullEnvi.vars in
-        let env = { env with FullEnvi.vars = env_vars } in
+        let (x, env) = FullEnvi.ModList.fresh_var "x" () env in
         bind d_e d d e' (Some x) (monadise_list env es d
           (Variable (Loc.Unknown,
-            Envi.bound_name Loc.Unknown (PathName.of_name [] x) env.FullEnvi.vars) :: es') k) in
+            FullEnvi.ModList.bound_var Loc.Unknown (PathName.of_name [] x) env) :: es') k) in
   let d = descriptor e in
   match e with
   | Constant ((l, _), c) -> Constant (l, c)
@@ -810,12 +808,12 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         lift return_descriptor d (Apply (l, e_f, e_xs))
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Function ((l, _), x, e) ->
-    let env = FullEnvi.add_var [] x () env in
+    let env = FullEnvi.ModList.add_var [] x () env in
     Function (l, x, monadise env e)
   | LetVar ((l, _), x, e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in
-    let env = FullEnvi.add_var [] x () env in
+    let env = FullEnvi.ModList.add_var [] x () env in
     let e2 = monadise env e2 in
     bind d1 d2 d e1 (Some x) e2
   | LetFun ((l, _), def, e2) ->
@@ -837,7 +835,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       match es' with
       | [e] ->
         let cases = cases |> List.map (fun (p, e)->
-          let env = Name.Set.fold (fun x env -> FullEnvi.add_var [] x () env)
+          let env = Name.Set.fold (fun x env -> FullEnvi.ModList.add_var [] x () env)
             (Pattern.free_variables p) env in
           (p, lift (descriptor e) d (monadise env e))) in
         Match (l, e, cases)
