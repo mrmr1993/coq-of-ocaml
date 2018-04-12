@@ -206,6 +206,18 @@ module ModList = struct
         Effect.Type.Pure) in
     add_var path ("raise_" ^ base) effect_typ env
 
+  let rec find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+    let m =
+      try List.nth env x.BoundName.depth with
+      | Failure _ -> raise Not_found in
+    let rec iterate_open_lift v n =
+      if n = 0 then
+        v
+      else
+        iterate_open_lift (open_lift v) (n - 1) in
+    let v = Envi.Mod.Vars.find x.BoundName.path_name m in
+    iterate_open_lift v x.BoundName.depth
+
   let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
     match env with
     | m :: env ->
