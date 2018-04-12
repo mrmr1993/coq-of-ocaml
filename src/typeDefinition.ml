@@ -27,7 +27,7 @@ let pp (def : t) : SmartPrint.t =
     nest (!^ "Abstract" ^^ OCaml.tuple [
       Name.pp name; OCaml.list Name.pp typ_args])
 
-let of_ocaml (env : unit FullEnvi.ModList.t) (loc : Loc.t)
+let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   (typs : type_declaration list) : t =
   match typs with
   | [] -> Error.raise loc "Unexpected type definition with no case."
@@ -38,7 +38,7 @@ let of_ocaml (env : unit FullEnvi.ModList.t) (loc : Loc.t)
     (match typ.type_kind with
     | Type_variant cases ->
       let constructors =
-        let env = FullEnvi.ModList.add_typ [] name env in
+        let env = FullEnvi.add_typ [] name env in
         cases |> List.map (fun { Types.cd_id = constr; cd_args = args } ->
           let typs =
             match args with
@@ -59,17 +59,17 @@ let of_ocaml (env : unit FullEnvi.ModList.t) (loc : Loc.t)
       | Type_open -> Error.raise loc "Open type definition not handled.")
   | typ :: _ :: _ -> Error.raise loc "Type definition with 'and' not handled."
 
-let update_env (def : t) (env : 'a FullEnvi.ModList.t) : 'a FullEnvi.ModList.t =
+let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   match def with
   | Inductive (name, _, constructors) ->
-    let env = FullEnvi.ModList.add_typ [] name env in
-    List.fold_left (fun env (x, _) -> FullEnvi.ModList.add_constructor [] x env)
+    let env = FullEnvi.add_typ [] name env in
+    List.fold_left (fun env (x, _) -> FullEnvi.add_constructor [] x env)
       env constructors
   | Record (name, fields) ->
-    let env = FullEnvi.ModList.add_typ [] name env in
-    List.fold_left (fun env (x, _) -> FullEnvi.ModList.add_field [] x env)
+    let env = FullEnvi.add_typ [] name env in
+    List.fold_left (fun env (x, _) -> FullEnvi.add_field [] x env)
       env fields
-  | Synonym (name, _, _) | Abstract (name, _) -> FullEnvi.ModList.add_typ [] name env
+  | Synonym (name, _, _) | Abstract (name, _) -> FullEnvi.add_typ [] name env
 
 let to_coq (def : t) : SmartPrint.t =
   match def with

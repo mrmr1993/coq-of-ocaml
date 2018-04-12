@@ -64,10 +64,10 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
       indent (pps pp_a defs))
 
 (** Import an OCaml structure. *)
-let rec of_structure (env : unit FullEnvi.ModList.t) (structure : structure)
-  : unit FullEnvi.ModList.t * Loc.t t list =
-  let of_structure_item (env : unit FullEnvi.ModList.t) (item : structure_item)
-    : unit FullEnvi.ModList.t * Loc.t t =
+let rec of_structure (env : unit FullEnvi.t) (structure : structure)
+  : unit FullEnvi.t * Loc.t t list =
+  let of_structure_item (env : unit FullEnvi.t) (item : structure_item)
+    : unit FullEnvi.t * Loc.t t =
     let loc = Loc.of_location item.str_loc in
     match item.str_desc with
     | Tstr_value (_, cases) when Reference.is_reference loc cases ->
@@ -96,9 +96,9 @@ let rec of_structure (env : unit FullEnvi.ModList.t) (structure : structure)
       mb_expr = { mod_desc =
         Tmod_constraint ({ mod_desc = Tmod_structure structure }, _, _, _) }} ->
       let name = Name.of_ident name in
-      let env = FullEnvi.ModList.enter_module env in
+      let env = FullEnvi.enter_module env in
       let (env, structures) = of_structure env structure in
-      let env = FullEnvi.ModList.leave_module name (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
     | Tstr_modtype _ -> Error.raise loc "Signatures not handled."
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
@@ -123,10 +123,10 @@ let rec of_structure (env : unit FullEnvi.ModList.t) (structure : structure)
     (env, []) structure.str_items in
   (env, List.rev defs)
 
-let rec monadise_let_rec (env : unit FullEnvi.ModList.t) (defs : Loc.t t list)
-  : unit FullEnvi.ModList.t * Loc.t t list =
-  let rec monadise_let_rec_one (env : unit FullEnvi.ModList.t) (def : Loc.t t)
-    : unit FullEnvi.ModList.t * Loc.t t list =
+let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
+  : unit FullEnvi.t * Loc.t t list =
+  let rec monadise_let_rec_one (env : unit FullEnvi.t) (def : Loc.t t)
+    : unit FullEnvi.t * Loc.t t list =
     match def with
     | Value (loc, def) ->
       let (env, defs) = Exp.monadise_let_rec_definition env def in
@@ -137,9 +137,9 @@ let rec monadise_let_rec (env : unit FullEnvi.ModList.t) (defs : Loc.t t list)
     | Reference (loc, r) -> (Reference.update_env r env, [def])
     | Open (loc, o) -> (Open.update_env o env, [def])
     | Module (loc, name, defs) ->
-      let env = FullEnvi.ModList.enter_module env in
+      let env = FullEnvi.enter_module env in
       let (env, defs) = monadise_let_rec env defs in
-      let env = FullEnvi.ModList.leave_module name (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
   let (env, defs) = List.fold_left (fun (env, defs) def ->
     let (env, defs') = monadise_let_rec_one env def in
@@ -147,10 +147,10 @@ let rec monadise_let_rec (env : unit FullEnvi.ModList.t) (defs : Loc.t t list)
     (env, []) defs in
   (env, List.rev defs)
 
-let rec effects (env : Effect.Type.t FullEnvi.ModList.t) (defs : 'a t list)
-  : Effect.Type.t FullEnvi.ModList.t * ('a * Effect.t) t list =
-  let rec effects_one (env : Effect.Type.t FullEnvi.ModList.t) (def : 'a t)
-    : Effect.Type.t FullEnvi.ModList.t * ('a * Effect.t) t =
+let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
+  : Effect.Type.t FullEnvi.t * ('a * Effect.t) t list =
+  let rec effects_one (env : Effect.Type.t FullEnvi.t) (def : 'a t)
+    : Effect.Type.t FullEnvi.t * ('a * Effect.t) t =
     match def with
     | Value (loc, def) ->
       let def = Exp.effects_of_def env def in
@@ -170,9 +170,9 @@ let rec effects (env : Effect.Type.t FullEnvi.ModList.t) (defs : 'a t list)
       (Reference.update_env_with_effects r env id, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
     | Module (loc, name, defs) ->
-      let env = FullEnvi.ModList.enter_module env in
+      let env = FullEnvi.enter_module env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.ModList.leave_module name Effect.Type.leave_prefix env in
+      let env = FullEnvi.leave_module name Effect.Type.leave_prefix env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
@@ -182,10 +182,10 @@ let rec effects (env : Effect.Type.t FullEnvi.ModList.t) (defs : 'a t list)
       (env, []) defs in
   (env, List.rev defs)
 
-let rec monadise (env : unit FullEnvi.ModList.t) (defs : (Loc.t * Effect.t) t list)
-  : unit FullEnvi.ModList.t * Loc.t t list =
-  let rec monadise_one (env : unit FullEnvi.ModList.t) (def : (Loc.t * Effect.t) t)
-    : unit FullEnvi.ModList.t * Loc.t t =
+let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
+  : unit FullEnvi.t * Loc.t t list =
+  let rec monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Effect.t) t)
+    : unit FullEnvi.t * Loc.t t =
     match def with
     | Value (loc, def) ->
       let env_in_def = Exp.Definition.env_in_def def env in
@@ -208,8 +208,8 @@ let rec monadise (env : unit FullEnvi.ModList.t) (defs : (Loc.t * Effect.t) t li
     | Reference (loc, r) -> (Reference.update_env r env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
     | Module (loc, name, defs) ->
-      let (env, defs) = monadise (FullEnvi.ModList.enter_module env) defs in
-      (FullEnvi.ModList.leave_module name (fun _ _ -> ()) env, Module (loc, name, defs)) in
+      let (env, defs) = monadise (FullEnvi.enter_module env) defs in
+      (FullEnvi.leave_module name (fun _ _ -> ()) env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
       let (env_units, def) = monadise_one env def in

@@ -1,9 +1,9 @@
 (** The initially opened module. *)
-open FullEnvi.ModList
+open FullEnvi
 open Effect.Type
 open SmartPrint
 
-let env_with_effects : Effect.Type.t FullEnvi.ModList.t =
+let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor (path, base) =
     let x = PathName.of_name path base in
     Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x)
@@ -13,7 +13,7 @@ let env_with_effects : Effect.Type.t FullEnvi.ModList.t =
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
-  FullEnvi.ModList.empty
+  FullEnvi.empty
   (* Values specific to the translation to Coq *)
   |> add_typ [] "nat"
   |> add_constructor [] "O"
@@ -144,6 +144,6 @@ let env_with_effects : Effect.Type.t FullEnvi.ModList.t =
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> enter_module
   |> open_module ["OCaml"]
-  (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.ModList.pp env); env *)
+  (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
 
-let env : unit FullEnvi.ModList.t = FullEnvi.ModList.map (fun _ -> ()) env_with_effects
+let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects
