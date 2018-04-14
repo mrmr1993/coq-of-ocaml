@@ -58,8 +58,14 @@ let module_name (file_name : string) : string =
 let main () =
   let file_name = ref None in
   let mode = ref "" in
+  let coq_name = ref "" in
+  let interfaces = ref [] in
   let options = [
-    "-mode", Arg.Set_string mode, " v (generate Coq .v files, you probably want this option), exp (the simplified expression tree), effects (the inferred effects), monadise (the expression tree after monadisation), interface (the equivalent of .mli with effects)"] in
+    "-mode", Arg.Set_string mode,
+      " v (generate Coq .v files, you probably want this option), exp (the simplified expression tree), effects (the inferred effects), monadise (the expression tree after monadisation), interface (the equivalent of .mli with effects)";
+    "-I", Arg.Tuple [Arg.Set_string coq_name; Arg.String (fun dir ->
+        interfaces := (!coq_name, dir) :: !interfaces)],
+      "dir coqdir\t\tsearch physical dir for interface files, mapped to logical coqdir"] in
   let usage_msg = "Usage: ./coqOfOCaml.native file.cmt\nOptions are:" in
   Arg.parse options (fun arg -> file_name := Some arg) usage_msg;
   match !file_name with
