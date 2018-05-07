@@ -119,12 +119,16 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   : Effect.Type.t t =
   {env with active_module = FullMod.add_exception_with_effects path base id env.active_module}
 
+let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+  (env : 'a t) (open_lift : 'b -> 'b) : 'b =
+  FullMod.find_bound_name find x env.active_module open_lift
+
 let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
-  FullMod.find_var x env.active_module open_lift
+  find_bound_name Mod.Vars.find x env open_lift
 
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
-  FullMod.find_module x env.active_module open_lift
+  find_bound_name Mod.Modules.find x env open_lift
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in

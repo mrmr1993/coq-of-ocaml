@@ -133,7 +133,8 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
       Effect.Type.Pure) in
   add_var path ("raise_" ^ base) effect_typ env
 
-let rec find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+  (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   let m =
     try List.nth env x.BoundName.depth with
     | Failure _ -> raise Not_found in
@@ -142,21 +143,15 @@ let rec find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
       v
     else
       iterate_open_lift (open_lift v) (n - 1) in
-  let v = Mod.Vars.find x.BoundName.path_name m in
+  let v = find x.BoundName.path_name m in
   iterate_open_lift v x.BoundName.depth
 
-let rec find_module (x : BoundName.t) (env : 'a t)
+let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+  find_bound_name Mod.Vars.find x env open_lift
+
+let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
-  let m =
-    try List.nth env x.BoundName.depth with
-    | Failure _ -> raise Not_found in
-  let rec iterate_open_lift v n =
-    if n = 0 then
-      v
-    else
-      iterate_open_lift (open_lift v) (n - 1) in
-  let v = Mod.Modules.find x.BoundName.path_name m in
-  iterate_open_lift v x.BoundName.depth
+  find_bound_name Mod.Modules.find x env open_lift
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   match env with
