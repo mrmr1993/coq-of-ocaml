@@ -66,25 +66,29 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
 
 let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
   (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_name find loc x env.active_module
+  match bound_name_opt find x env with
+  | Some name -> name
+  | None ->
+    let message = PathName.pp x ^^ !^ "not found." in
+    Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_var loc x env.active_module
+  bound_name Mod.Vars.mem loc x env
 
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_typ loc x env.active_module
+  bound_name Mod.Typs.mem loc x env
 
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_descriptor loc x env.active_module
+  bound_name Mod.Descriptors.mem loc x env
 
 let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_constructor loc x env.active_module
+  bound_name Mod.Constructors.mem loc x env
 
 let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_field loc x env.active_module
+  bound_name Mod.Fields.mem loc x env
 
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  FullMod.bound_module loc x env.active_module
+  bound_name Mod.Modules.mem loc x env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   {env with active_module = FullMod.add_exception path base env.active_module}
