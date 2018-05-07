@@ -2,6 +2,7 @@ open SmartPrint
 
 type 'a t = {
   opens : Name.t list list;
+  external_opens : Name.t list list;
   vars : 'a PathName.Map.t;
   typs : unit PathName.Map.t;
   descriptors: unit PathName.Map.t;
@@ -11,6 +12,7 @@ type 'a t = {
 
 let empty : 'a t = {
   opens = [[]]; (** By default we open the empty path. *)
+  external_opens = [];
   vars = PathName.Map.empty;
   typs = PathName.Map.empty;
   descriptors = PathName.Map.empty;
@@ -25,6 +27,9 @@ let pp (m : 'a t) : SmartPrint.t =
     nest (!^ "open" ^^ OCaml.list (fun path ->
       double_quotes (separate (!^ ".") (List.map Name.pp path)))
       m.opens) ^^ newline ^^
+    nest (!^ "open (external)" ^^ OCaml.list (fun path ->
+      double_quotes (separate (!^ ".") (List.map Name.pp path)))
+      m.external_opens) ^^ newline ^^
     !^ "vars:" ^^ nest (pp_map m.vars) ^^ newline ^^
     !^ "typs:" ^^ nest (pp_map m.typs) ^^ newline ^^
     !^ "descriptors:" ^^ nest (pp_map m.descriptors) ^^ newline ^^
@@ -34,6 +39,9 @@ let pp (m : 'a t) : SmartPrint.t =
 
 let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
   { m with opens = module_name :: m.opens }
+
+let open_external_module (m : 'a t) (module_name : Name.t list) : 'a t =
+  { m with external_opens = module_name :: m.external_opens }
 
 let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
   let prefix_n s n =
@@ -114,6 +122,7 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   let unit_map_union = PathName.Map.map_union add_to_path (fun _ () -> ()) in
   let m =
   { opens = m2.opens;
+    external_opens = m2.external_opens;
     vars = PathName.Map.map_union add_to_path
       (fun _ v -> prefix module_name v) m1.vars m2.vars;
     typs = unit_map_union m1.typs m2.typs;
@@ -129,6 +138,7 @@ exception NameConflict of string * PathName.t
 let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
   let reject_dups typ key _ _ = raise (NameConflict (typ, key)) in
   { opens = m.opens;
+    external_opens = m.external_opens;
     vars = PathName.Map.union (reject_dups "variable")
       m_incl.vars m.vars;
     typs = PathName.Map.union (reject_dups "type")
