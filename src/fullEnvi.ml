@@ -23,6 +23,16 @@ let empty : 'a t = {
   available_modules = Name.Map.empty
 }
 
+(* NOTE: This is designed under the assumption that
+   - |ocaml_name| is a top-level name (ie. contains no '.' characters)
+   - no two modules share the same |ocaml_name|
+   - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
+let add_wrapped_mod (wmod : 'a WrappedMod.t) (env : 'a t) : 'a t =
+  let available_modules = env.available_modules
+  |> Name.Map.add wmod.ocaml_name wmod
+  |> Name.Map.add wmod.coq_name wmod in
+  {env with available_modules}
+
 let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_var path base v env.active_module}
@@ -71,14 +81,13 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some name
   | None ->
-    match List.find_opt (fun open_name ->
+    find_first (fun open_name ->
       let x = { x with PathName.path = open_name @ x.PathName.path } in
       let (external_module, x) = find_external_module_path x env in
-      find x external_module.m) (FullMod.external_opens env.active_module) with
-    | Some open_name ->
-      let x = { x with PathName.path = open_name @ x.PathName.path } in
-      Some { BoundName.path_name = x; BoundName.depth = -1 }
-    | None -> None
+      if find x external_module.m then
+        let x = { x with path = external_module.coq_name :: x.path } in
+        Some { BoundName.path_name = x; BoundName.depth = -1 }
+      else None) (FullMod.external_opens env.active_module)
 
 let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
   (x : PathName.t) (env : 'a t) : BoundName.t =

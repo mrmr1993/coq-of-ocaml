@@ -151,15 +151,16 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
 
   (* List *)
   |> enter_module
+  |> leave_module "OCaml" Effect.Type.leave_prefix
   |> fun env -> begin
        match find_interfaces_dir Sys.executable_name with
        | Some interface_dir ->
-         Interface.to_full_envi (Interface.of_file
-           (Filename.concat interface_dir "list.interface")) env
+         FullEnvi.add_wrapped_mod (Interface.to_wrapped_mod "OCaml"
+           (Interface.of_file (Filename.concat interface_dir "list.interface"))
+           env) env
        | None ->
          prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found");
          env end
-  |> leave_module "OCaml" Effect.Type.leave_prefix
   |> enter_module
   |> open_module' ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)

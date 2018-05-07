@@ -12,7 +12,7 @@ type 'a t = {
 
 let empty : 'a t = {
   opens = [[]]; (** By default we open the empty path. *)
-  external_opens = [];
+  external_opens = [[]];
   vars = PathName.Map.empty;
   typs = PathName.Map.empty;
   descriptors = PathName.Map.empty;
