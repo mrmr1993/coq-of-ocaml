@@ -55,6 +55,11 @@ let open_external_module (module_name : Name.t list) (env : 'a t) : 'a t =
   | m :: env -> Mod.open_external_module m module_name :: env
   | _ -> failwith "You should have entered in at least one module."
 
+let rec external_opens (env : 'a t) : Name.t list list =
+  match env with
+  | m :: env -> m.external_opens @ external_opens env
+  | [] -> []
+
 let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (env : 'a t) : 'a t =
   match env with

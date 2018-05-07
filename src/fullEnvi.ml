@@ -59,7 +59,20 @@ let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
-  FullMod.bound_name_opt find x env.active_module
+  match FullMod.bound_name_opt find x env.active_module with
+  | Some name -> Some name
+  | None ->
+    match List.find_opt (fun open_name ->
+      match open_name with
+      | [] -> failwith "Found an external open with no base"
+      | name :: module_path ->
+        let external_module = Name.Map.find name env.available_modules in
+        let x = { x with PathName.path = module_path @ x.PathName.path } in
+        find x external_module.m) (FullMod.external_opens env.active_module) with
+    | Some open_name ->
+      let x = { x with PathName.path = open_name @ x.PathName.path } in
+      Some { BoundName.path_name = x; BoundName.depth = -1 }
+    | None -> None
 
 let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
   (x : PathName.t) (env : 'a t) : BoundName.t =
