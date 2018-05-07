@@ -57,18 +57,24 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
 let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
   FullMod.find_first f l
 
+let find_external_module_path (x : PathName.t) (env : 'a t)
+  : 'a WrappedMod.t * PathName.t =
+  match x.PathName.path with
+  | [] -> failwith "Cannot look up the given path name in the available modules"
+  | module_name :: module_path ->
+    let external_module = Name.Map.find module_name env.available_modules in
+    let x = { x with PathName.path = module_path } in
+    (external_module, x)
+
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some name
   | None ->
     match List.find_opt (fun open_name ->
-      match open_name with
-      | [] -> failwith "Found an external open with no base"
-      | name :: module_path ->
-        let external_module = Name.Map.find name env.available_modules in
-        let x = { x with PathName.path = module_path @ x.PathName.path } in
-        find x external_module.m) (FullMod.external_opens env.active_module) with
+      let x = { x with PathName.path = open_name @ x.PathName.path } in
+      let (external_module, x) = find_external_module_path x env in
+      find x external_module.m) (FullMod.external_opens env.active_module) with
     | Some open_name ->
       let x = { x with PathName.path = open_name @ x.PathName.path } in
       Some { BoundName.path_name = x; BoundName.depth = -1 }
@@ -121,7 +127,11 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
 
 let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
-  FullMod.find_bound_name find x env.active_module open_lift
+  if x.BoundName.depth == -1 then
+    let (external_module, x) = find_external_module_path x.path_name env in
+    find x external_module.m
+  else
+    FullMod.find_bound_name find x env.active_module open_lift
 
 let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
   find_bound_name Mod.Vars.find x env open_lift
