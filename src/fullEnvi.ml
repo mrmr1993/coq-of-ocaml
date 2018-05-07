@@ -50,9 +50,6 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
 let enter_module (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module env.active_module}
 
-let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
-  {env with active_module = FullMod.open_module module_name env.active_module}
-
 let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module module_name prefix env.active_module}
@@ -89,6 +86,17 @@ let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
 
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Modules.mem loc x env
+
+let open_module (module_name : PathName.t) (env : 'a t) : 'a t =
+  (* TODO: create bound_*_opt and use bound_module_opt here *)
+  let module_name_list = PathName.to_name_list module_name in
+  let active_module = match bound_name_opt Mod.Modules.mem module_name env with
+  | Some _ -> FullMod.open_module module_name_list env.active_module
+  | None -> FullMod.open_external_module module_name_list env.active_module in
+  {env with active_module}
+
+let open_module' (module_name : Name.t list) (env : 'a t) : 'a t =
+  open_module (PathName.of_name_list module_name) env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   {env with active_module = FullMod.add_exception path base env.active_module}

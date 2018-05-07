@@ -143,7 +143,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Interface.to_full_envi (Interface.of_file "interfaces/list.interface")
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> enter_module
-  |> open_module ["OCaml"]
+  |> open_module' ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
 
 let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects
