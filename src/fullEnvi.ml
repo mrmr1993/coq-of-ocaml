@@ -88,9 +88,9 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Modules.mem loc x env
 
 let open_module (module_name : PathName.t) (env : 'a t) : 'a t =
-  (* TODO: create bound_*_opt and use bound_module_opt here *)
   let module_name_list = PathName.to_name_list module_name in
-  let active_module = match bound_name_opt Mod.Modules.mem module_name env with
+  let active_module = match
+    FullMod.bound_name_opt Mod.Modules.mem module_name env.active_module with
   | Some _ -> FullMod.open_module module_name_list env.active_module
   | None -> FullMod.open_external_module module_name_list env.active_module in
   {env with active_module}
