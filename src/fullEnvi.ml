@@ -138,7 +138,11 @@ let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
 
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
-  find_bound_name Mod.Modules.find x env open_lift
+  match x.path_name.path with
+  | [] when x.BoundName.depth == -1 ->
+    (* This is a reference to a top-level external module *)
+    (Name.Map.find x.path_name.base env.available_modules).m
+  | _ -> find_bound_name Mod.Modules.find x env open_lift
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in
