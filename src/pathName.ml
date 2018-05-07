@@ -136,8 +136,8 @@ let convert (x : t) : t =
   (* Program termination *)
 
   (* List *)
-  | { path = ["List"]; base = "exists" } -> { path = ["OCaml"; "List"]; base = "_exists" }
-  | { path = ["List"]; base = "exists2" } -> { path = ["OCaml"; "List"]; base = "_exists2" }
+  | { path = ["List"]; base = "exists" } -> { path = ["List"]; base = "_exists" }
+  | { path = ["List"]; base = "exists2" } -> { path = ["List"]; base = "_exists2" }
 
   | { path = path; base = base } -> { path = path; base = Name.convert base }
 
