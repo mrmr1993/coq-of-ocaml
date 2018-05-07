@@ -2,13 +2,13 @@ open SmartPrint
 
 module WrappedMod = struct
   type 'a t = {
-    m : 'a FullMod.t;
+    m : 'a Mod.t;
     ocaml_name : Name.t;
     coq_name : Name.t
   }
 
   let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
-    {wmod with m = FullMod.map f wmod.m}
+    {wmod with m = Mod.map f wmod.m}
 end
 
 type 'a t = {
