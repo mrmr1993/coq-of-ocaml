@@ -42,7 +42,7 @@ class Test
   end
 
   def coq_cmd
-    "coqc #{extension('.v')} -R tests Tests"
+    "coqc #{extension('.v')} -R tests Tests -R OCaml OCaml"
   end
 
   def coq
