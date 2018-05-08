@@ -33,6 +33,12 @@ let add_wrapped_mod (wmod : 'a WrappedMod.t) (env : 'a t) : 'a t =
   |> Name.Map.add wmod.coq_name wmod in
   {env with available_modules}
 
+let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t) : 'a WrappedMod.t option =
+  Name.Map.find_opt module_name env.available_modules
+
+let find_wrapped_mod (module_name : Name.t) (env : 'a t) : 'a WrappedMod.t =
+  Name.Map.find module_name env.available_modules
+
 let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_var path base v env.active_module}
@@ -72,7 +78,7 @@ let find_external_module_path (x : PathName.t) (env : 'a t)
   match x.PathName.path with
   | [] -> failwith "Cannot look up the given path name in the available modules"
   | module_name :: module_path ->
-    let external_module = Name.Map.find module_name env.available_modules in
+    let external_module = find_wrapped_mod module_name env in
     let x = { x with PathName.path = module_path } in
     (external_module, x)
 
@@ -116,7 +122,7 @@ let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Fields.mem loc x env
 
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  match x.path, Name.Map.find_opt x.base env.available_modules with
+  match x.path, find_wrapped_mod_opt x.base env with
   | [], Some {coq_name} -> (* This is a toplevel module *)
     Some { BoundName.path_name = {PathName.path = []; PathName.base = coq_name};
       BoundName.depth = -1 }
@@ -188,7 +194,7 @@ let find_module (x : BoundName.t) (env : 'a t)
   match x.path_name.path with
   | [] when x.BoundName.depth == -1 ->
     (* This is a reference to a top-level external module *)
-    (Name.Map.find x.path_name.base env.available_modules).m
+    (find_wrapped_mod x.path_name.base env).m
   | _ -> find_bound_name Mod.Modules.find x env open_lift
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
