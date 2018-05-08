@@ -70,6 +70,7 @@ let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
 
 and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   match def with
+  | Structure.Require names -> []
   | Structure.Value (_, value) ->
     let values = value.Exp.Definition.cases |> List.map (fun (header, e) ->
       let name = header.Exp.Header.name in
