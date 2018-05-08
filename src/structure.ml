@@ -93,7 +93,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       (env, Exception (loc, exn))
     | Tstr_open { open_path = path } ->
       let o = Open.of_ocaml loc path in
-      let env = Open.update_env o env in
+      let (o, env) = Open.update_env_struct loc o env in
       (env, Open (loc, o))
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
       let incl = Include.of_ocaml loc path in
@@ -149,7 +149,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
       (TypeDefinition.update_env typ_def env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
     | Reference (loc, r) -> (Reference.update_env r env, [def])
-    | Open (loc, o) -> (Open.update_env o env, [def])
+    | Open (loc, o) -> (Open.update_env loc o env, [def])
     | Include (loc, name) ->
       let bound_mod = FullEnvi.bound_module loc name env in
       let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
@@ -189,7 +189,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
     | Reference (loc, r) ->
       let id = Effect.Descriptor.Id.Loc loc in
       (Reference.update_env_with_effects r env id, Reference (loc, r))
-    | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
       (Include.update_env loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
@@ -231,7 +231,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) -> (Reference.update_env r env, Reference (loc, r))
-    | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Open (loc, o) -> (Open.update_env_nocheck o env, Open (loc, o))
     | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->

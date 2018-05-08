@@ -145,7 +145,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
      FullEnvi.add_wrapped_mod (Interface.to_wrapped_mod "OCaml"
        (Interface.of_file "interfaces/list.interface") env) env
   |> enter_module
-  |> open_module' ["OCaml"]
+  |> open_module' Loc.Unknown ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
 
 let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects

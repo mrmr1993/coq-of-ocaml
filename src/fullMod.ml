@@ -113,6 +113,9 @@ let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t 
 let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Fields.mem loc x env
 
+let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+  bound_name_opt Mod.Modules.mem x env
+
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Modules.mem loc x env
 
