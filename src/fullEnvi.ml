@@ -13,14 +13,18 @@ end
 
 type 'a t = {
   active_module : 'a FullMod.t;
-  available_modules : 'a WrappedMod.t Name.Map.t
+  available_modules : 'a WrappedMod.t Name.Map.t;
+  (* TODO: Move away from using a reference here by updating and passing env
+     explicitly, possibly as a monad. *)
+  required_modules : Name.Set.t ref
 }
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
 let empty : 'a t = {
   active_module = FullMod.empty;
-  available_modules = Name.Map.empty
+  available_modules = Name.Map.empty;
+  required_modules = ref Name.Set.empty
 }
 
 (* NOTE: This is designed under the assumption that
@@ -32,6 +36,12 @@ let add_wrapped_mod (wmod : 'a WrappedMod.t) (env : 'a t) : 'a t =
   |> Name.Map.add wmod.ocaml_name wmod
   |> Name.Map.add wmod.coq_name wmod in
   {env with available_modules}
+
+let module_required (module_name : Name.t) (env : 'a t) : unit =
+  env.required_modules := Name.Set.add module_name !(env.required_modules)
+
+let requires (env : 'a t) : Name.t list =
+  Name.Set.elements !(env.required_modules)
 
 let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t) : 'a WrappedMod.t option =
   Name.Map.find_opt module_name env.available_modules
@@ -89,6 +99,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> bool)
     let (external_module, x) = find_external_module_path x env in
     if find x external_module.m then
       let x = { x with path = external_module.coq_name :: x.path } in
+      module_required external_module.coq_name env;
       Some { BoundName.path_name = x; BoundName.depth = -1 }
     else None) (FullMod.external_opens env.active_module)
 
@@ -124,6 +135,7 @@ let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   match x.path, find_wrapped_mod_opt x.base env with
   | [], Some {coq_name} -> (* This is a toplevel module *)
+    module_required coq_name env;
     Some { BoundName.path_name = {PathName.path = []; PathName.base = coq_name};
       BoundName.depth = -1 }
   | _, _ -> None
@@ -203,7 +215,8 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   available_modules = Name.Map.map (WrappedMod.map f) env.available_modules}
+   available_modules = Name.Map.map (WrappedMod.map f) env.available_modules;
+   required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
   {env with active_module = FullMod.include_module loc x env.active_module}
