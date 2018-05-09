@@ -83,25 +83,36 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
 let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
   FullMod.find_first f l
 
+let find_external_module_path_opt (x : PathName.t) (env : 'a t)
+  : ('a WrappedMod.t * PathName.t) option =
+  match x.PathName.path with
+  | [] -> None
+  | module_name :: module_path ->
+    match find_wrapped_mod_opt module_name env with
+    | Some external_module ->
+      let x = { x with PathName.path = module_path } in
+      Some (external_module, x)
+    | None -> None
+
 let find_external_module_path (x : PathName.t) (env : 'a t)
   : 'a WrappedMod.t * PathName.t =
-  match x.PathName.path with
-  | [] -> failwith "Cannot look up the given path name in the available modules"
-  | module_name :: module_path ->
-    let external_module = find_wrapped_mod module_name env in
-    let x = { x with PathName.path = module_path } in
-    (external_module, x)
+  match find_external_module_path_opt x env with
+  | Some ret -> ret
+  | None ->
+    failwith ("Could not find include for " ^ to_string 80 2 (PathName.pp x) ^ ".")
 
 let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   find_first (fun open_name ->
     let x = { x with PathName.path = open_name @ x.PathName.path } in
-    let (external_module, x) = find_external_module_path x env in
-    if find x external_module.m then
-      let x = { x with path = external_module.coq_name :: x.path } in
-      module_required external_module.coq_name env;
-      Some { BoundName.path_name = x; BoundName.depth = -1 }
-    else None) (FullMod.external_opens env.active_module)
+    match find_external_module_path_opt x env with
+    | Some (external_module, x) ->
+      if find x external_module.m then
+        let x = { x with path = external_module.coq_name :: x.path } in
+        module_required external_module.coq_name env;
+        Some { BoundName.path_name = x; BoundName.depth = -1 }
+      else None
+    | None -> None) (FullMod.external_opens env.active_module)
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
