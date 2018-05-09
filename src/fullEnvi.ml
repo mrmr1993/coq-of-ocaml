@@ -1,8 +1,25 @@
 open SmartPrint
 
+module WrappedMod = struct
+  type 'a t = {
+    m : 'a Mod.t;
+    ocaml_name : Name.t;
+    coq_name : Name.t
+  }
+
+  let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
+    {wmod with m = Mod.map f wmod.m}
+
+  let opt_map (f : 'a -> 'b) (wmod : 'a t option) : 'b t option =
+    match wmod with
+    | Some wmod -> Some (map f wmod)
+    | None -> None
+end
+
+
 type 'a t = {
   active_module : 'a FullMod.t;
-  get_module : Name.t -> 'a LazyLoader.WrappedMod.t option;
+  get_module : Name.t -> 'a WrappedMod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref
@@ -10,7 +27,7 @@ type 'a t = {
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty (get_module : Name.t -> 'a LazyLoader.WrappedMod.t option) : 'a t = {
+let empty (get_module : Name.t -> 'a WrappedMod.t option) : 'a t = {
   active_module = FullMod.empty;
   get_module;
   required_modules = ref Name.Set.empty
@@ -23,11 +40,11 @@ let requires (env : 'a t) : Name.t list =
   Name.Set.elements !(env.required_modules)
 
 let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t)
-  : 'a LazyLoader.WrappedMod.t option =
+  : 'a WrappedMod.t option =
   env.get_module module_name
 
 let find_wrapped_mod (module_name : Name.t) (env : 'a t)
-  : 'a LazyLoader.WrappedMod.t =
+  : 'a WrappedMod.t =
   match find_wrapped_mod_opt module_name env with
   | Some wmod -> wmod
   | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
@@ -67,7 +84,7 @@ let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
   FullMod.find_first f l
 
 let find_external_module_path (x : PathName.t) (env : 'a t)
-  : 'a LazyLoader.WrappedMod.t * PathName.t =
+  : 'a WrappedMod.t * PathName.t =
   match x.PathName.path with
   | [] -> failwith "Cannot look up the given path name in the available modules"
   | module_name :: module_path ->
@@ -198,7 +215,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   get_module = (fun x -> LazyLoader.WrappedMod.opt_map f (env.get_module x));
+   get_module = (fun x -> WrappedMod.opt_map f (env.get_module x));
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
