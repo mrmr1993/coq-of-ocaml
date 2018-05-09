@@ -3,17 +3,6 @@ open FullEnvi
 open Effect.Type
 open SmartPrint
 
-let rec find_interfaces_dir (base : string) : string option =
-  let base_path = Filename.dirname base in
-  if base == base_path then
-    None
-  else
-    let interfaces_dir = Filename.concat base_path "interfaces" in
-    if Sys.file_exists interfaces_dir && Sys.is_directory interfaces_dir then
-      Some interfaces_dir
-    else
-      find_interfaces_dir base_path
-
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor (path, base) =
     let x = PathName.of_name path base in
@@ -153,14 +142,12 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> enter_module
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> fun env ->
-       let loader = match find_interfaces_dir Sys.executable_name with
-       | Some interface_dir ->
-         LazyLoader.add_interface env "OCaml" LazyLoader.empty
-           (Filename.concat interface_dir "list.interface")
-       | None ->
-         prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found");
-         LazyLoader.empty in
-       {env with get_module = LazyLoader.find_wrapped_mod_opt loader}
+       let lazy_loader = ref LazyLoader.empty in
+       let get_module mod_name =
+         let (wmod, loader) = LazyLoader.find_wrapped_mod_opt env !lazy_loader mod_name in
+         lazy_loader := loader;
+         wmod in
+       {env with get_module}
   |> enter_module
   |> open_module' Loc.Unknown ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
