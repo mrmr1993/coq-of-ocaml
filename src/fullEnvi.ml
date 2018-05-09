@@ -2,7 +2,7 @@ open SmartPrint
 
 type 'a t = {
   active_module : 'a FullMod.t;
-  available_modules : 'a LazyLoader.t;
+  get_module : Name.t -> 'a LazyLoader.WrappedMod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref
@@ -10,18 +10,11 @@ type 'a t = {
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty : 'a t = {
+let empty (get_module : Name.t -> 'a LazyLoader.WrappedMod.t option) : 'a t = {
   active_module = FullMod.empty;
-  available_modules = LazyLoader.empty;
+  get_module;
   required_modules = ref Name.Set.empty
 }
-
-(* NOTE: This is designed under the assumption that
-   - |ocaml_name| is a top-level name (ie. contains no '.' characters)
-   - no two modules share the same |ocaml_name|
-   - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
-let add_wrapped_mod (wmod : 'a LazyLoader.WrappedMod.t) (env : 'a t) : 'a t =
-  {env with available_modules = LazyLoader.add_wrapped_mod wmod env.available_modules}
 
 let module_required (module_name : Name.t) (env : 'a t) : unit =
   env.required_modules := Name.Set.add module_name !(env.required_modules)
@@ -31,11 +24,13 @@ let requires (env : 'a t) : Name.t list =
 
 let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t)
   : 'a LazyLoader.WrappedMod.t option =
-  LazyLoader.find_wrapped_mod_opt module_name env.available_modules
+  env.get_module module_name
 
 let find_wrapped_mod (module_name : Name.t) (env : 'a t)
   : 'a LazyLoader.WrappedMod.t =
-  LazyLoader.find_wrapped_mod module_name env.available_modules
+  match find_wrapped_mod_opt module_name env with
+  | Some wmod -> wmod
+  | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
 
 let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
@@ -203,7 +198,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   available_modules = LazyLoader.map f env.available_modules;
+   get_module = (fun x -> LazyLoader.WrappedMod.opt_map f (env.get_module x));
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =

@@ -66,6 +66,9 @@ let of_ident (i : Ident.t) : t =
 let of_string (s : string) : t =
   s
 
+let to_string (x : t) : string =
+  x
+
 (** Generate a fresh name from a given [prefix] using an internal counter. *)
 let unsafe_fresh : string -> t =
   let counters : int Map.t ref = ref Map.empty in
