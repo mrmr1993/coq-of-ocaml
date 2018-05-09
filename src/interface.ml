@@ -110,7 +110,7 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
     FullEnvi.leave_module x Effect.Type.leave_prefix env
 
 let to_wrapped_mod (coq_prefix : Name.t) (interface : t)
-  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t FullEnvi.WrappedMod.t =
+  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t LazyLoader.WrappedMod.t =
   let env = FullEnvi.enter_module env in
   let (name, env) = match interface with
   | Interface (name, defs) ->
@@ -119,7 +119,7 @@ let to_wrapped_mod (coq_prefix : Name.t) (interface : t)
   let list_mod = List.hd env.FullEnvi.active_module in
   let coq_name = if coq_prefix == "" || name == "" then coq_prefix ^ name
     else coq_prefix ^ "." ^ name in
-  ({ m = list_mod; ocaml_name = name; coq_name } : 'a FullEnvi.WrappedMod.t)
+  ({ m = list_mod; ocaml_name = name; coq_name } : 'a LazyLoader.WrappedMod.t)
 
 let rec to_json (interface : t) : json =
   match interface with
