@@ -27,11 +27,5 @@ let add_wrapped_mod (wmod : 'a WrappedMod.t) (loader : 'a t) : 'a t =
   |> Name.Map.add wmod.ocaml_name wmod
   |> Name.Map.add wmod.coq_name wmod
 
-let find_wrapped_mod_opt (module_name : Name.t) (loader : 'a t) : 'a WrappedMod.t option =
+let find_wrapped_mod_opt (loader : 'a t) (module_name : Name.t) : 'a WrappedMod.t option =
   Name.Map.find_opt module_name loader
-
-let find_wrapped_mod (module_name : Name.t) (loader : 'a t) : 'a WrappedMod.t =
-  Name.Map.find module_name loader
-
-let map (f : 'a -> 'b) (loader : 'a t) : 'b t =
-  Name.Map.map (WrappedMod.map f) loader
