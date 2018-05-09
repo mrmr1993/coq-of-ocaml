@@ -145,7 +145,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
        let loader = LazyLoader.add_wrapped_mod
        (Interface.to_wrapped_mod "OCaml"
        (Interface.of_file "interfaces/list.interface") env) LazyLoader.empty in
-       {env with get_module = fun x -> LazyLoader.find_wrapped_mod_opt x loader}
+       {env with get_module = LazyLoader.find_wrapped_mod_opt loader}
   |> enter_module
   |> open_module' Loc.Unknown ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
