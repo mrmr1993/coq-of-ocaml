@@ -13,7 +13,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
-  FullEnvi.empty
+  FullEnvi.empty (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
   |> add_typ [] "nat"
   |> add_constructor [] "O"
@@ -142,8 +142,10 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> enter_module
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> fun env ->
-     FullEnvi.add_wrapped_mod (Interface.to_wrapped_mod "OCaml"
-       (Interface.of_file "interfaces/list.interface") env) env
+       let loader = LazyLoader.add_wrapped_mod
+       (Interface.to_wrapped_mod "OCaml"
+       (Interface.of_file "interfaces/list.interface") env) LazyLoader.empty in
+       {env with get_module = fun x -> LazyLoader.find_wrapped_mod_opt x loader}
   |> enter_module
   |> open_module' Loc.Unknown ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)

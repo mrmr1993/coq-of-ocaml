@@ -7,6 +7,11 @@ module WrappedMod = struct
 
   let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
     {wmod with m = Mod.map f wmod.m}
+
+  let opt_map (f : 'a -> 'b) (wmod : 'a t option) : 'b t option =
+    match wmod with
+    | Some wmod -> Some (map f wmod)
+    | None -> None
 end
 
 type 'a t = 'a WrappedMod.t Name.Map.t
