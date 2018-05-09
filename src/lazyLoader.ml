@@ -1,20 +1,4 @@
-module WrappedMod = struct
-  type 'a t = {
-    m : 'a Mod.t;
-    ocaml_name : Name.t;
-    coq_name : Name.t
-  }
-
-  let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
-    {wmod with m = Mod.map f wmod.m}
-
-  let opt_map (f : 'a -> 'b) (wmod : 'a t option) : 'b t option =
-    match wmod with
-    | Some wmod -> Some (map f wmod)
-    | None -> None
-end
-
-type 'a t = 'a WrappedMod.t Name.Map.t
+type 'a t = 'a FullEnvi.WrappedMod.t Name.Map.t
 
 let empty = Name.Map.empty
 
@@ -22,10 +6,11 @@ let empty = Name.Map.empty
    - |ocaml_name| is a top-level name (ie. contains no '.' characters)
    - no two modules share the same |ocaml_name|
    - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
-let add_wrapped_mod (wmod : 'a WrappedMod.t) (loader : 'a t) : 'a t =
+let add_wrapped_mod (wmod : 'a FullEnvi.WrappedMod.t) (loader : 'a t) : 'a t =
   loader
   |> Name.Map.add wmod.ocaml_name wmod
   |> Name.Map.add wmod.coq_name wmod
 
-let find_wrapped_mod_opt (loader : 'a t) (module_name : Name.t) : 'a WrappedMod.t option =
+let find_wrapped_mod_opt (loader : 'a t) (module_name : Name.t)
+  : 'a FullEnvi.WrappedMod.t option =
   Name.Map.find_opt module_name loader
