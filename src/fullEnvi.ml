@@ -1,19 +1,8 @@
 open SmartPrint
 
-module WrappedMod = struct
-  type 'a t = {
-    m : 'a Mod.t;
-    ocaml_name : Name.t;
-    coq_name : Name.t
-  }
-
-  let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
-    {wmod with m = Mod.map f wmod.m}
-end
-
 type 'a t = {
   active_module : 'a FullMod.t;
-  available_modules : 'a WrappedMod.t Name.Map.t;
+  available_modules : 'a LazyLoader.t;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref
@@ -23,7 +12,7 @@ let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
 let empty : 'a t = {
   active_module = FullMod.empty;
-  available_modules = Name.Map.empty;
+  available_modules = LazyLoader.empty;
   required_modules = ref Name.Set.empty
 }
 
@@ -31,11 +20,8 @@ let empty : 'a t = {
    - |ocaml_name| is a top-level name (ie. contains no '.' characters)
    - no two modules share the same |ocaml_name|
    - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
-let add_wrapped_mod (wmod : 'a WrappedMod.t) (env : 'a t) : 'a t =
-  let available_modules = env.available_modules
-  |> Name.Map.add wmod.ocaml_name wmod
-  |> Name.Map.add wmod.coq_name wmod in
-  {env with available_modules}
+let add_wrapped_mod (wmod : 'a LazyLoader.WrappedMod.t) (env : 'a t) : 'a t =
+  {env with available_modules = LazyLoader.add_wrapped_mod wmod env.available_modules}
 
 let module_required (module_name : Name.t) (env : 'a t) : unit =
   env.required_modules := Name.Set.add module_name !(env.required_modules)
@@ -43,11 +29,13 @@ let module_required (module_name : Name.t) (env : 'a t) : unit =
 let requires (env : 'a t) : Name.t list =
   Name.Set.elements !(env.required_modules)
 
-let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t) : 'a WrappedMod.t option =
-  Name.Map.find_opt module_name env.available_modules
+let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t)
+  : 'a LazyLoader.WrappedMod.t option =
+  LazyLoader.find_wrapped_mod_opt module_name env.available_modules
 
-let find_wrapped_mod (module_name : Name.t) (env : 'a t) : 'a WrappedMod.t =
-  Name.Map.find module_name env.available_modules
+let find_wrapped_mod (module_name : Name.t) (env : 'a t)
+  : 'a LazyLoader.WrappedMod.t =
+  LazyLoader.find_wrapped_mod module_name env.available_modules
 
 let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
@@ -84,7 +72,7 @@ let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
   FullMod.find_first f l
 
 let find_external_module_path (x : PathName.t) (env : 'a t)
-  : 'a WrappedMod.t * PathName.t =
+  : 'a LazyLoader.WrappedMod.t * PathName.t =
   match x.PathName.path with
   | [] -> failwith "Cannot look up the given path name in the available modules"
   | module_name :: module_path ->
@@ -215,7 +203,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   available_modules = Name.Map.map (WrappedMod.map f) env.available_modules;
+   available_modules = LazyLoader.map f env.available_modules;
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
