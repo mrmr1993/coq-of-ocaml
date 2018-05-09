@@ -12,11 +12,21 @@ let add_wrapped_mod (wmod : 'a FullEnvi.WrappedMod.t) (loader : 'a t) : 'a t =
   |> Name.Map.add wmod.coq_name wmod
 
 let add_interface (env : Effect.Type.t FullEnvi.t) (coq_prefix : Name.t)
-  (loader : Effect.Type.t t) (file_name : string) : 'a t =
+  (loader : Effect.Type.t t) (file_name : string)
+  : Effect.Type.t FullEnvi.WrappedMod.t * Effect.Type.t t =
   let interface = Interface.of_file file_name in
   let wmod = Interface.to_wrapped_mod coq_prefix interface env in
-  add_wrapped_mod wmod loader
+  (wmod, add_wrapped_mod wmod loader)
 
-let find_wrapped_mod_opt (loader : 'a t) (module_name : Name.t)
-  : 'a FullEnvi.WrappedMod.t option =
-  Name.Map.find_opt module_name loader
+let find_wrapped_mod_opt (env : Effect.Type.t FullEnvi.t) (loader : 'a t)
+  (module_name : Name.t) : 'a FullEnvi.WrappedMod.t option * 'a t =
+  match Name.Map.find_opt module_name loader with
+  | Some wmod -> (Some wmod, loader)
+  | None ->
+    let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
+    let file_name = "interfaces/" ^ file_name ^ ".interface" in
+    if Sys.file_exists file_name then
+      let (wmod, loader) = add_interface env "OCaml" loader file_name in
+      (Some wmod, loader)
+    else
+      (None, loader)

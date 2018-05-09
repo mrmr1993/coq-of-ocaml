@@ -142,8 +142,12 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> enter_module
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> fun env ->
-       let loader = LazyLoader.add_interface env "OCaml" LazyLoader.empty "interfaces/list.interface" in
-       {env with get_module = LazyLoader.find_wrapped_mod_opt loader}
+       let lazy_loader = ref LazyLoader.empty in
+       let get_module mod_name =
+         let (wmod, loader) = LazyLoader.find_wrapped_mod_opt env !lazy_loader mod_name in
+         lazy_loader := loader;
+         wmod in
+       {env with get_module}
   |> enter_module
   |> open_module' Loc.Unknown ["OCaml"]
   (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
