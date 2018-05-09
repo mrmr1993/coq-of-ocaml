@@ -155,9 +155,8 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> fun env ->
        let loader = match find_interfaces_dir Sys.executable_name with
        | Some interface_dir ->
-         LazyLoader.add_wrapped_mod (Interface.to_wrapped_mod "OCaml"
-           (Interface.of_file (Filename.concat interface_dir "list.interface"))
-           env) LazyLoader.empty
+         LazyLoader.add_interface env "OCaml" LazyLoader.empty
+           (Filename.concat interface_dir "list.interface")
        | None ->
          prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found");
          LazyLoader.empty in
