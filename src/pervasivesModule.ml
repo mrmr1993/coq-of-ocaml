@@ -3,6 +3,17 @@ open FullEnvi
 open Effect.Type
 open SmartPrint
 
+let rec find_interfaces_dir (base : string) : string option =
+  let base_path = Filename.dirname base in
+  if base == base_path then
+    None
+  else
+    let interfaces_dir = Filename.concat base_path "interfaces" in
+    if Sys.file_exists interfaces_dir && Sys.is_directory interfaces_dir then
+      Some interfaces_dir
+    else
+      find_interfaces_dir base_path
+
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor (path, base) =
     let x = PathName.of_name path base in
@@ -140,7 +151,14 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
 
   (* List *)
   |> enter_module
-  |> Interface.to_full_envi (Interface.of_file "interfaces/list.interface")
+  |> fun env -> begin
+       match find_interfaces_dir Sys.executable_name with
+       | Some interface_dir ->
+         Interface.to_full_envi (Interface.of_file
+           (Filename.concat interface_dir "list.interface")) env
+       | None ->
+         prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found");
+         env end
   |> leave_module "OCaml" Effect.Type.leave_prefix
   |> enter_module
   |> open_module ["OCaml"]
