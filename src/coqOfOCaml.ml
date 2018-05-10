@@ -70,12 +70,12 @@ let rec find_interfaces_dir (base : string) : string option =
 let main () =
   let file_name = ref None in
   let mode = ref "" in
-  let coq_name = ref "" in
+  let dir = ref "" in
   let options = [
     "-mode", Arg.Set_string mode,
       " v (generate Coq .v files, you probably want this option), exp (the simplified expression tree), effects (the inferred effects), monadise (the expression tree after monadisation), interface (the equivalent of .mli with effects)";
-    "-I", Arg.Tuple [Arg.Set_string coq_name; Arg.String (fun dir ->
-        LazyLoader.interfaces := (Name.of_string !coq_name, dir) :: !LazyLoader.interfaces)],
+    "-I", Arg.Tuple [Arg.Set_string dir; Arg.String (fun coq_name ->
+        LazyLoader.interfaces := (Name.of_string coq_name, !dir) :: !LazyLoader.interfaces)],
       "dir coqdir\t\tsearch physical dir for interface files, mapped to logical coqdir"] in
   let usage_msg = "Usage: ./coqOfOCaml.native file.cmt\nOptions are:" in
 
