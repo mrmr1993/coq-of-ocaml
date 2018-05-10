@@ -4,39 +4,47 @@ let exp (structure : Typedtree.structure) : Loc.t Structure.t list =
   let (_, defs) = Structure.of_structure PervasivesModule.env structure in
   snd @@ Structure.monadise_let_rec PervasivesModule.env defs
 
-let effects (structure : Typedtree.structure)
+let effects (exp : Loc.t Structure.t list)
   : (Loc.t * Effect.t) Structure.t list =
-  snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp structure
+  snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp
 
-let monadise (structure : Typedtree.structure) : Loc.t Structure.t list =
-  snd @@ Structure.monadise PervasivesModule.env @@ effects structure
+let monadise (effects : (Loc.t * Effect.t) Structure.t list)
+  : Loc.t Structure.t list =
+  snd @@ Structure.monadise PervasivesModule.env @@ effects
 
-let interface (structure : Typedtree.structure) (module_name : string)
-  : Interface.t =
-  Interface.Interface (module_name, Interface.of_structures (effects structure))
+let interface (effects : (Loc.t * Effect.t) Structure.t list)
+  (module_name : string) : Interface.t =
+  Interface.Interface (module_name, Interface.of_structures effects)
 
 (** Display on stdout the conversion in Coq of an OCaml structure. *)
 let of_ocaml (structure : Typedtree.structure) (mode : string)
   (module_name : string) : unit =
   try
     let document =
-      match mode with
-      | "exp" -> Structure.pps Loc.pp @@ exp structure
-      | "effects" ->
+      (let exp = exp structure in
+
+      if String.equal mode "exp" then
+        Structure.pps Loc.pp exp
+      else let effects = effects exp in
+
+      if String.equal mode "effects" then
         let pp_annotation (l, effect) =
           OCaml.tuple [Loc.pp l; Effect.pp effect] in
-        Structure.pps pp_annotation @@ effects structure
-      | "monadise" -> Structure.pps Loc.pp @@ monadise structure
-      | "v" ->
+        Structure.pps pp_annotation effects
+
+      else if String.equal mode "interface" then
+        !^ (Interface.to_json_string (interface effects module_name))
+      else let monadise = monadise effects in
+
+      if String.equal mode "monadise" then
+        Structure.pps Loc.pp monadise
+      else (* mode == "v" *)
         concat (List.map (fun d -> d ^^ newline) [
           !^ "Require Import OCaml.OCaml." ^^ newline;
           !^ "Local Open Scope Z_scope.";
           !^ "Local Open Scope type_scope.";
           !^ "Import ListNotations."]) ^^ newline ^^
-        Structure.to_coq (monadise structure)
-      | "interface" ->
-        !^ (Interface.to_json_string (interface structure module_name))
-      | _ -> failwith (Printf.sprintf "Unknown mode '%s'." mode) in
+        Structure.to_coq monadise) in
     to_stdout 80 2 document;
     print_newline ();
     flush stdout with
