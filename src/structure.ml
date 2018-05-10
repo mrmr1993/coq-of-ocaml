@@ -39,6 +39,7 @@ end
 
 (** A structure. *)
 type 'a t =
+  | Require of Name.t list (* These should begin the structure to satisfy Coq. *)
   | Value of Loc.t * 'a Value.t
   | Primitive of Loc.t * PrimitiveDeclaration.t
   | TypeDefinition of Loc.t * TypeDefinition.t
@@ -53,6 +54,7 @@ let rec pps (pp_a : 'a -> SmartPrint.t) (defs : 'a t list) : SmartPrint.t =
 
 and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
   match def with
+  | Require names -> group (!^ "Require" ^^ OCaml.list Name.pp names)
   | Value (loc, value) ->
     group (Loc.pp loc ^^ Value.pp pp_a value)
   | Primitive (loc, prim) ->
@@ -93,7 +95,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       (env, Exception (loc, exn))
     | Tstr_open { open_path = path } ->
       let o = Open.of_ocaml loc path in
-      let env = Open.update_env o env in
+      let (o, env) = Open.update_env_struct loc o env in
       (env, Open (loc, o))
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
       let incl = Include.of_ocaml loc path in
@@ -133,13 +135,17 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
         let (env, def) = of_structure_item env item in
         (env, def :: defs))
     (env, []) structure.str_items in
-  (env, List.rev defs)
+  let requires = FullEnvi.requires env in
+  let defs = List.rev defs in
+  let defs = if requires == [] then defs else Require requires :: defs in
+  (env, defs)
 
 let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
   : unit FullEnvi.t * Loc.t t list =
   let rec monadise_let_rec_one (env : unit FullEnvi.t) (def : Loc.t t)
     : unit FullEnvi.t * Loc.t t list =
     match def with
+    | Require _ -> (env, [def])
     | Value (loc, def) ->
       let (env, defs) = Exp.monadise_let_rec_definition env def in
       (env, defs |> List.rev |> List.map (fun def -> Value (loc, def)))
@@ -149,7 +155,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
       (TypeDefinition.update_env typ_def env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
     | Reference (loc, r) -> (Reference.update_env r env, [def])
-    | Open (loc, o) -> (Open.update_env o env, [def])
+    | Open (loc, o) -> (Open.update_env loc o env, [def])
     | Include (loc, name) ->
       let bound_mod = FullEnvi.bound_module loc name env in
       let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
@@ -171,6 +177,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
   let rec effects_one (env : Effect.Type.t FullEnvi.t) (def : 'a t)
     : Effect.Type.t FullEnvi.t * ('a * Effect.t) t =
     match def with
+    | Require names -> (env, Require names)
     | Value (loc, def) ->
       let def = Exp.effects_of_def env def in
       (if def.Exp.Definition.cases |> List.exists (fun (header, e) ->
@@ -189,7 +196,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
     | Reference (loc, r) ->
       let id = Effect.Descriptor.Id.Loc loc in
       (Reference.update_env_with_effects r env id, Reference (loc, r))
-    | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
       (Include.update_env loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
@@ -210,6 +217,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
   let rec monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Effect.t) t)
     : unit FullEnvi.t * Loc.t t =
     match def with
+    | Require names -> (env, Require names)
     | Value (loc, def) ->
       let env_in_def = Exp.Definition.env_in_def def env in
       let def = { def with
@@ -231,7 +239,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) -> (Reference.update_env r env, Reference (loc, r))
-    | Open (loc, o) -> (Open.update_env o env, Open (loc, o))
+    | Open (loc, o) -> (Open.update_env_nocheck o env, Open (loc, o))
     | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
@@ -248,6 +256,8 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
 let rec to_coq (defs : 'a t list) : SmartPrint.t =
   let to_coq_one (def : 'a t) : SmartPrint.t =
     match def with
+    | Require names ->
+      group (!^ "Require" ^^ separate space (List.map Name.pp names) ^-^ !^ ".")
     | Value (_, value) -> Value.to_coq value
     | Primitive (_, prim) -> PrimitiveDeclaration.to_coq prim
     | TypeDefinition (_, typ_def) -> TypeDefinition.to_coq typ_def

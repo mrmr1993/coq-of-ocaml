@@ -55,13 +55,37 @@ let parse_cmt (file_name : string) : Typedtree.structure =
 let module_name (file_name : string) : string =
   String.capitalize_ascii @@ Filename.chop_extension @@ Filename.basename file_name
 
+let rec find_interfaces_dir (base : string) : string option =
+  let base_path = Filename.dirname base in
+  if base == base_path then
+    None
+  else
+    let interfaces_dir = Filename.concat base_path "interfaces" in
+    if Sys.file_exists interfaces_dir && Sys.is_directory interfaces_dir then
+      Some interfaces_dir
+    else
+      find_interfaces_dir base_path
+
 (** The main function. *)
 let main () =
   let file_name = ref None in
   let mode = ref "" in
+  let dir = ref "" in
   let options = [
-    "-mode", Arg.Set_string mode, " v (generate Coq .v files, you probably want this option), exp (the simplified expression tree), effects (the inferred effects), monadise (the expression tree after monadisation), interface (the equivalent of .mli with effects)"] in
+    "-mode", Arg.Set_string mode,
+      " v (generate Coq .v files, you probably want this option), exp (the simplified expression tree), effects (the inferred effects), monadise (the expression tree after monadisation), interface (the equivalent of .mli with effects)";
+    "-I", Arg.Tuple [Arg.Set_string dir; Arg.String (fun coq_name ->
+        LazyLoader.interfaces := (Name.of_string coq_name, !dir) :: !LazyLoader.interfaces)],
+      "dir coqdir\t\tsearch physical dir for interface files, mapped to logical coqdir"] in
   let usage_msg = "Usage: ./coqOfOCaml.native file.cmt\nOptions are:" in
+
+  (* Add the default interfaces directory to the interfaces list. *)
+  (match find_interfaces_dir Sys.executable_name with
+  | Some interfaces_dir ->
+    LazyLoader.interfaces := ("OCaml", interfaces_dir) :: !LazyLoader.interfaces
+  | None ->
+    prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found"));
+
   Arg.parse options (fun arg -> file_name := Some arg) usage_msg;
   match !file_name with
   | None -> Arg.usage options usage_msg

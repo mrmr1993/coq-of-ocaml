@@ -136,14 +136,14 @@ let convert (x : t) : t =
   (* Program termination *)
 
   (* List *)
-  | { path = ["List"]; base = "exists" } -> { path = ["OCaml"; "List"]; base = "_exists" }
-  | { path = ["List"]; base = "exists2" } -> { path = ["OCaml"; "List"]; base = "_exists2" }
+  | { path = ["List"]; base = "exists" } -> { path = ["List"]; base = "_exists" }
+  | { path = ["List"]; base = "exists2" } -> { path = ["List"]; base = "_exists2" }
 
   | { path = path; base = base } -> { path = path; base = Name.convert base }
 
 (** Pretty-print a global name. *)
 let pp (x : t) : SmartPrint.t =
-  separate (!^ ".") (List.map (fun s -> !^ s) (x.path @ [x.base]))
+  separate (!^ ".") (List.map Name.pp (x.path @ [x.base]))
 
 (** Lift a local name to a global name. *)
 let of_name (path : Name.t list) (base : Name.t) : t =
@@ -172,6 +172,15 @@ let of_path (loc : Loc.t) (p : Path.t) : t =
       ([], "application_of_paths") in
   let (path, base) = aux p in
   convert (of_name (List.rev path) base)
+
+let rec of_name_list (l : Name.t list) : t =
+  match l with
+  | [] -> failwith "PathName.of_name_list"
+  | [base] -> {path = []; base}
+  | path_component :: l ->
+    let p = of_name_list l in {p with path = path_component :: p.path}
+
+let to_name_list (x : t) : Name.t list = (x.path @ [x.base])
 
 let to_coq (x : t) : SmartPrint.t =
   separate (!^ ".") (List.map Name.to_coq (x.path @ [x.base]))

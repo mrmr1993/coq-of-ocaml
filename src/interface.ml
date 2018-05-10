@@ -70,6 +70,7 @@ let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
 
 and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   match def with
+  | Structure.Require names -> []
   | Structure.Value (_, value) ->
     let values = value.Exp.Definition.cases |> List.map (fun (header, e) ->
       let name = header.Exp.Header.name in
@@ -107,6 +108,18 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
     let env = FullEnvi.enter_module env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
     FullEnvi.leave_module x Effect.Type.leave_prefix env
+
+let to_wrapped_mod (coq_prefix : Name.t) (interface : t)
+  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t FullEnvi.WrappedMod.t =
+  let env = FullEnvi.enter_module env in
+  let (name, env) = match interface with
+  | Interface (name, defs) ->
+    (name, List.fold_left (fun env def -> to_full_envi def env) env defs)
+  | _ -> ("", to_full_envi interface env) in
+  let list_mod = List.hd env.FullEnvi.active_module in
+  let coq_name = if coq_prefix == "" || name == "" then coq_prefix ^ name
+    else coq_prefix ^ "." ^ name in
+  ({ m = list_mod; ocaml_name = name; coq_name } : 'a FullEnvi.WrappedMod.t)
 
 let rec to_json (interface : t) : json =
   match interface with
