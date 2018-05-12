@@ -12,42 +12,72 @@ let monadise (effects : (Loc.t * Effect.t) Structure.t list)
   : Loc.t Structure.t list =
   snd @@ Structure.monadise PervasivesModule.env @@ effects
 
-let interface (effects : (Loc.t * Effect.t) Structure.t list)
-  (module_name : string) : Interface.t =
+let interface (module_name : string)
+  (effects : (Loc.t * Effect.t) Structure.t list) : Interface.t =
   Interface.Interface (module_name, Interface.of_structures effects)
+
+let coq (monadise : Loc.t Structure.t list) : SmartPrint.t =
+  concat (List.map (fun d -> d ^^ newline) [
+    !^ "Require Import OCaml.OCaml." ^^ newline;
+    !^ "Local Open Scope Z_scope.";
+    !^ "Local Open Scope type_scope.";
+    !^ "Import ListNotations."]) ^^ newline ^^
+    Structure.to_coq monadise
+
+let map_apply (x : 'a) (l : ('a -> unit) list) : unit =
+  List.iter (fun f -> f x) l
+
+let result_map (f : 'a -> 'b) (gl : ('b -> unit) list) : ('a -> unit) list =
+  match gl with
+  | [] -> []
+  | _ -> [fun a -> map_apply (f a) gl]
+
+let to_out_channel (c : out_channel) (d : SmartPrint.t) =
+  SmartPrint.to_out_channel 80 2 c d;
+  output_char c '\n';
+  flush c
+
+let output_exp (c : out_channel) (exp : Loc.t Structure.t list) : unit =
+  to_out_channel c @@ Structure.pps Loc.pp exp
+
+let output_effects (c : out_channel)
+  (effects : (Loc.t * Effect.t) Structure.t list) : unit =
+  let pp_annotation (l, effect) =
+    OCaml.tuple [Loc.pp l; Effect.pp effect] in
+  to_out_channel c @@ Structure.pps pp_annotation effects
+
+let output_interface (c : out_channel) (interface : Interface.t) : unit =
+  to_out_channel c @@ !^ (Interface.to_json_string interface)
+
+let output_monadise (c : out_channel) (monadise : Loc.t Structure.t list)
+  : unit =
+  to_out_channel c @@ Structure.pps Loc.pp monadise
 
 (** Display on stdout the conversion in Coq of an OCaml structure. *)
 let of_ocaml (structure : Typedtree.structure) (mode : string)
   (module_name : string) : unit =
   try
-    let document =
-      (let exp = exp structure in
+    let (exp_l, effects_l, interface_l, monadise_l, coq_l) =
+      if String.equal "exp" mode then
+        [output_exp stdout], [], [], [], []
+      else if String.equal "effects" mode then
+        [], [output_effects stdout], [], [], []
+      else if String.equal "interface" mode then
+        [], [], [output_interface stdout], [], []
+      else if String.equal "monadise" mode then
+        [], [], [], [output_monadise stdout], []
+      else if String.equal "v" mode then
+        [], [], [], [], [to_out_channel stdout]
+      else
+        [], [], [], [], [] in
 
-      if String.equal mode "exp" then
-        Structure.pps Loc.pp exp
-      else let effects = effects exp in
-
-      if String.equal mode "effects" then
-        let pp_annotation (l, effect) =
-          OCaml.tuple [Loc.pp l; Effect.pp effect] in
-        Structure.pps pp_annotation effects
-
-      else if String.equal mode "interface" then
-        !^ (Interface.to_json_string (interface effects module_name))
-      else let monadise = monadise effects in
-
-      if String.equal mode "monadise" then
-        Structure.pps Loc.pp monadise
-      else (* mode == "v" *)
-        concat (List.map (fun d -> d ^^ newline) [
-          !^ "Require Import OCaml.OCaml." ^^ newline;
-          !^ "Local Open Scope Z_scope.";
-          !^ "Local Open Scope type_scope.";
-          !^ "Import ListNotations."]) ^^ newline ^^
-        Structure.to_coq monadise) in
-    to_stdout 80 2 document;
-    print_newline ();
-    flush stdout with
+    map_apply structure
+      (result_map exp (exp_l @
+      (result_map effects (effects_l @
+      (result_map (interface module_name) interface_l) @
+      (result_map monadise (monadise_l @
+      (result_map coq coq_l)))))))
+ with
   | Error.Make x ->
     prerr_endline @@ to_string 80 2 @@ (!^ "Error:" ^^ Error.pp x);
     exit 2
