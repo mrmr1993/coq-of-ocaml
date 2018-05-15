@@ -18,13 +18,13 @@ class Test
   end
 
   def compile
-    cmd = ['ocamlc', '-bin-annot', @source_file]
+    cmd = ['ocamlc', '-I', 'tests', 'dependEx38.cmo', '-bin-annot', @source_file]
     print cmd.join(" ")
     system(*cmd)
   end
 
   def coq_of_ocaml_cmd(mode)
-    cmd = ['./coqOfOCaml.native', '-mode', mode, extension('.cmt')]
+    cmd = ['./coqOfOCaml.native', '-I', 'tests', 'Tests', '-mode', mode, extension('.cmt')]
   end
 
   def coq_of_ocaml(mode)
