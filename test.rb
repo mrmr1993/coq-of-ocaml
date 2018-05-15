@@ -24,7 +24,8 @@ class Test
   end
 
   def coq_of_ocaml_cmd(mode)
-    cmd = ['./coqOfOCaml.native', '-I', 'tests', 'Tests', '-mode', mode, extension('.cmt')]
+    cmd = ['./coqOfOCaml.native', '-I', 'tests', 'Tests', '--mode', mode, extension('.cmt')]
+
   end
 
   def coq_of_ocaml(mode)
