@@ -62,7 +62,7 @@ type 'a t =
   | LetFun of 'a * 'a t Definition.t * 'a t
   | Match of 'a * 'a t * (Pattern.t * 'a t) list
     (** Match an expression to a list of patterns. *)
-  | Record of 'a * (BoundName.t * 'a t) list
+  | Record of 'a * (BoundName.t * 'a t option) list * 'a t option
     (** Construct a record giving an expression for each field. *)
   | Field of 'a * 'a t * BoundName.t (** Access to a field of a record. *)
   | IfThenElse of 'a * 'a t * 'a t * 'a t (** The "else" part may be unit. *)
@@ -100,10 +100,11 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
     nest (!^ "Match" ^^ OCaml.tuple [pp_a a; pp e;
       cases |> OCaml.list (fun (p, e) ->
         nest @@ parens (Pattern.pp p ^-^ !^ "," ^^ pp e))])
-  | Record (a, fields) ->
+  | Record (a, fields, base) ->
     nest (!^ "Record" ^^
-      OCaml.tuple (pp_a a :: (fields |> List.map (fun (x, e) ->
-        nest @@ parens (BoundName.pp x ^-^ !^ "," ^^ pp e)))))
+      OCaml.tuple (pp_a a :: OCaml.option pp base ::
+        (fields |> List.map (fun (x, e) ->
+          nest @@ parens (BoundName.pp x ^-^ !^ "," ^^ OCaml.option pp e)))))
   | Field (a, e, x) ->
     nest (!^ "Field" ^^ OCaml.tuple [pp_a a; pp e; BoundName.pp x])
   | IfThenElse (a, e1, e2, e3) ->
@@ -124,9 +125,23 @@ let annotation (e : 'a t) : 'a =
   match e with
   | Constant (a, _) | Variable (a, _) | Tuple (a, _) | Constructor (a, _, _)
   | Apply (a, _, _) | Function (a, _, _) | LetVar (a, _, _, _)
-  | LetFun (a, _, _) | Match (a, _, _) | Record (a, _) | Field (a, _, _)
+  | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
   | IfThenElse (a, _, _, _) | Sequence (a, _, _) | Return (a, _)
   | Bind (a, _, _, _) | Lift (a, _, _, _) | Run (a, _, _, _) -> a
+
+let is_some (x : 'a option) : bool =
+  match x with | Some _ -> true | None -> false
+
+let option_map (f : 'a -> 'b) (x : 'a option) : 'b option =
+  match x with
+  | Some x -> Some (f x)
+  | None -> None
+
+let rec option_filter (l : 'a option list) : 'a list =
+  match l with
+  | [] -> []
+  | Some x :: l' -> x :: option_filter l'
+  | None :: l' -> option_filter l'
 
 let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
   match e with
@@ -143,8 +158,9 @@ let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
     LetFun (f a, { def with Definition.cases = cases }, map f e2)
   | Match (a, e, cases) ->
     Match (f a, map f e, List.map (fun (p, e) -> (p, map f e)) cases)
-  | Record (a, fields) ->
-    Record (f a, List.map (fun (x, e) -> (x, map f e)) fields)
+  | Record (a, fields, base) ->
+    let opt_map = option_map (map f) in
+    Record (f a, List.map (fun (x, e) -> (x, opt_map e)) fields, opt_map base)
   | Field (a, e, x) -> Field (f a, map f e, x)
   | IfThenElse (a, e1, e2, e3) ->
     IfThenElse (f a, map f e1, map f e2, map f e3)
@@ -266,7 +282,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_construct (x, _, es) ->
     let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.constructors in
     Constructor (l, x, List.map (of_expression env typ_vars) es)
-  | Texp_record { fields = fields; extended_expression = None } ->
+  | Texp_record { fields; extended_expression } ->
     Record (l, Array.to_list fields |> List.map (fun (label, definition) ->
       let (x, e) =
         match definition with
@@ -274,7 +290,8 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         | Overridden (loc, e) -> (loc, e) in
       let loc = Loc.of_location label.lbl_loc in
       let x = Envi.bound_name loc (PathName.of_loc x) env.FullEnvi.fields in
-      (x, of_expression env typ_vars e)))
+      (x, Some (of_expression env typ_vars e))),
+      option_map (of_expression env typ_vars) extended_expression)
   | Texp_field (e, x, _) ->
     let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.fields in
     Field (l, of_expression env typ_vars e, x)
@@ -423,8 +440,9 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
       else
         (p, substitute x e' e)) in
     Match (a, e, cases)
-  | Record (a, fields) ->
-    Record (a, List.map (fun (y, e) -> (y, substitute x e' e)) fields)
+  | Record (a, fields, base) ->
+    let opt_sub = option_map (substitute x e') in
+    Record (a, List.map (fun (y, e) -> (y, opt_sub e)) fields, opt_sub base)
   | Field (a, e, y) -> Field (a, substitute x e' e, y)
   | IfThenElse (a, e1, e2, e3) ->
     IfThenElse (a, substitute x e' e1, substitute x e' e2, substitute x e' e3)
@@ -471,8 +489,9 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
       cases |> List.map (fun (p, e) ->
         let env = Pattern.add_to_env p env in
         (p, monadise_let_rec env e)))
-  | Record (a, fields) ->
-    Record (a, fields |> List.map (fun (x, e) -> (x, monadise_let_rec env e)))
+  | Record (a, fields, base) ->
+    let opt_mlr = option_map (monadise_let_rec env) in
+    Record (a, fields |> List.map (fun (x, e) -> (x, opt_mlr e)), opt_mlr base)
   | Field (a, e, x) -> Field (a, monadise_let_rec env e, x)
   | IfThenElse (a, e1, e2, e3) ->
     IfThenElse (a, monadise_let_rec env e1,
@@ -566,6 +585,26 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
         (header, monadise_let_rec (Header.env_in_header header env ()) e)) } in
     let env = Definition.env_after_def def env in
     (env, [def])
+
+let rec filter_map (f : 'a -> 'b option) (l : 'a list) : 'b list =
+  match l with
+  | [] -> []
+  | a :: l' ->
+    match f a with
+    | Some b -> b :: filter_map f l'
+    | None -> filter_map f l'
+
+let rec mix_map2 (f : 'a -> bool) (g : 'a -> 'c) (h : 'a -> 'b -> 'c)
+  (l1 : 'a list) (l2 : 'b list) : 'c list =
+  match l1 with
+  | [] -> []
+  | a :: l1' ->
+    if f a then
+      match l2 with
+      | [] -> []
+      | b :: l2' -> h a b :: mix_map2 f g h l1' l2'
+    else
+      g a :: mix_map2 f g h l1' l2
 
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
   : (Loc.t * Effect.t) t =
@@ -676,9 +715,18 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
       Match ((l, effect), e, cases)
     else
       Error.raise l "Cannot match a value with functional effects."
-  | Record (l, fields) ->
-    let (es, effect) = compound (List.map snd fields) in
-    Record ((l, effect), List.map2 (fun (x, _) e -> (x, e)) fields es)
+  | Record (l, fields, base) ->
+    let (base, (es, effect)) =
+      let expressions = option_filter @@ List.map snd fields in
+      match base with
+      | Some base ->
+        begin match compound (base :: expressions) with
+        | (base :: es, effect) -> (Some base, (es, effect))
+        | _ -> failwith "Wrong answer from 'compound'." end
+      | None -> (None, compound expressions) in
+    let fields = mix_map2 (fun (_, x) -> is_some x)
+      (fun (x, _) -> (x, None)) (fun (x, _) e -> (x, Some e)) fields es in
+    Record ((l, effect), fields, base)
   | Field (l, e, x) ->
     let e = effects env e in
     let effect = snd (annotation e) in
@@ -842,10 +890,20 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
           (p, lift (descriptor e) d (monadise env e))) in
         Match (l, e, cases)
       | _ -> failwith "Wrong answer from 'monadise_list'.")
-  | Record ((l, _), fields) ->
-    monadise_list env (List.map snd fields) d [] (fun es' ->
-      let fields = List.map2 (fun (f, _) e -> (f, e)) fields es' in
-      lift Effect.Descriptor.pure d (Record (l, fields)))
+  | Record ((l, _), fields, base) ->
+    let expressions = option_filter @@ List.map snd fields in
+    let expressions = match base with
+      | Some base -> base :: expressions
+      | None -> expressions in
+    monadise_list env expressions d [] (fun es' ->
+      let (base, es') = match base with
+        | Some _ -> begin match es' with
+          | base :: es' -> (Some base, es')
+          | _ -> failwith "Wrong answer from 'monadise_list'." end
+        | None -> (None, es') in
+      let fields = mix_map2 (fun (_, x) -> is_some x)
+        (fun (x, _) -> (x, None)) (fun (x, _) e -> (x, Some e)) fields es' in
+      lift Effect.Descriptor.pure d (Record (l, fields, base)))
   | Field ((l, _), e, x) ->
     monadise_list env [e] d [] (fun es' ->
       match es' with
@@ -923,9 +981,10 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       separate space (cases |> List.map (fun (p, e) ->
         nest (!^ "|" ^^ Pattern.to_coq false p ^^ !^ "=>" ^^ to_coq false e ^^ newline))) ^^
       !^ "end")
-  | Record (_, fields) ->
-    nest (!^ "{|" ^^ separate (!^ ";" ^^ space) (fields |> List.map (fun (x, e) ->
-      nest (BoundName.to_coq x ^-^ !^ " :=" ^^ to_coq false e))) ^^ !^ "|}")
+  | Record (_, fields, base) ->
+    nest (!^ "{|" ^^ separate (!^ ";" ^^ space)
+      (fields |> filter_map (fun (x, e) -> e |> option_map (fun e ->
+        nest (BoundName.to_coq x ^-^ !^ " :=" ^^ to_coq false e)))) ^^ !^ "|}")
   | Field (_, e, x) -> Pp.parens paren @@ nest (BoundName.to_coq x ^^ to_coq true e)
   | IfThenElse (_, e1, e2, e3) ->
     Pp.parens paren @@ nest (
