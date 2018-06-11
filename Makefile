@@ -9,7 +9,7 @@ clean:
 	ocamlbuild -clean
 	rm -f a.out tests/ex*.cmo tests/ex*.cmi tests/ex*.cmt tests/Nex* tests/ex*.glob tests/ex*.vo
 
-test:
+test: tests/dependEx38.cmt tests/DependEx38.vo
 	ruby test.rb
 
 cmt: $(TESTS_INPUT:.ml=.cmt)
@@ -24,19 +24,19 @@ vo: $(TESTS_INPUT:.ml=.vo)
 	ocamlc -bin-annot $<
 
 %.exp: %.cmt default
-	./$(OUTPUT) -mode exp $< >$@
+	./$(OUTPUT) --mode exp $< >$@
 
 %.effects: %.cmt default
-	./$(OUTPUT) -mode effects $< >$@
+	./$(OUTPUT) --mode effects $< >$@
 
 %.monadise: %.cmt default
-	./$(OUTPUT) -mode monadise $< >$@
+	./$(OUTPUT) --mode monadise $< >$@
 
 %.interface: %.cmt default
-	./$(OUTPUT) -mode interface $< >$@
+	./$(OUTPUT) --mode interface $< >$@
 
 %.v: %.cmt default
-	./$(OUTPUT) -mode v $< >$@
+	./$(OUTPUT) --mode v $< >$@
 
 %.vo: %.v
-	coqc $<
+	coqc -R tests Tests -R OCaml OCaml $<

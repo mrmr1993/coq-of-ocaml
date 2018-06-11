@@ -4,6 +4,8 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
+Require OCaml.List.
+
 Definition l1 : list Z := [].
 
 Definition l2 : list Z := cons 1 (cons 2 (cons 3 (cons 4 []))).

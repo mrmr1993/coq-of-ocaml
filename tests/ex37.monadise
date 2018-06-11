@@ -1,0 +1,41 @@
+3 Module A:
+  4
+  Value
+    (non_rec, @., [ ((a, [ ], [ ], Some Type (Z/2)), Constant (4, Int(5))) ])
+  
+  6
+  Value
+    (non_rec, @.,
+      [
+        ((c, [ A ], [ (x, Type (string/2)) ],
+          Some Monad ([ OCaml.Failure/2 ], A)),
+          Apply
+            (6, Variable (6, OCaml.Pervasives.failwith/2),
+              [ Variable (6, x/0) ]))
+      ])
+
+9 Include A
+
+11
+Value
+  (non_rec, @.,
+    [
+      ((b, [ ], [ ], Some Type (Z/1)),
+        Apply
+          (11, Variable (11, Z.add/1),
+            [ Variable (11, a/0); Constant (11, Int(2)) ]))
+    ])
+
+13
+Value
+  (non_rec, @.,
+    [
+      ((d, [ A ], [ (b, Type (bool/1)) ], Some Monad ([ OCaml.Failure/2 ], A)),
+        IfThenElse
+          (13, Variable (13, b/0),
+            Apply
+              (13, Variable (13, c/0), [ Constant (13, String("true")) ]),
+            Apply
+              (13, Variable (13, c/0),
+                [ Constant (13, String("false")) ])))
+    ])
