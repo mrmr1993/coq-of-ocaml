@@ -9,8 +9,8 @@ Value
     [
       ((r, [ ], [ ], Some Type (SizedString.t/0)),
         Record
-          (9, (SizedString.name/0, Constant (9, String("gre"))),
-            (SizedString.size/0, Constant (9, Int(3)))))
+          (9, None, (SizedString.name/0, Some Constant (9, String("gre"))),
+            (SizedString.size/0, Some Constant (9, Int(3)))))
     ])
 
 10
@@ -19,24 +19,36 @@ Value
     [
       ((r', [ ], [ ], Some Type (SizedString.t/0)),
         Record
-          (10, (SizedString.name/0, Constant (10, String("haha"))),
-            (SizedString.size/0, Constant (10, Int(4)))))
+          (10, None,
+            (SizedString.name/0, Some Constant (10, String("haha"))),
+            (SizedString.size/0, Some Constant (10, Int(4)))))
     ])
 
-12
+11
+Value
+  (non_rec, @.,
+    [
+      ((r'', [ ], [ ], Some Type (SizedString.t/0)),
+        Record
+          (11, Some Variable (11, r/0),
+            (SizedString.name/0, Some Constant (11, String("GRE"))),
+            (SizedString.size/0, None)))
+    ])
+
+13
 Value
   (non_rec, @.,
     [
       ((s, [ ], [ ], Some Type (Z/1)),
         Apply
-          (12, Variable (12, Z.add/1),
+          (13, Variable (13, Z.add/1),
             [
-              Field (12, Variable (12, r/0), SizedString.size/0);
-              Field (12, Variable (12, r'/0), SizedString.size/0)
+              Field (13, Variable (13, r/0), SizedString.size/0);
+              Field (13, Variable (13, r'/0), SizedString.size/0)
             ]))
     ])
 
-14
+15
 Value
   (non_rec, @.,
     [
@@ -45,55 +57,85 @@ Value
           (?, Variable (?, x/0),
             [
               (Record ((SizedString.size/0, Int(3))),
-                Constructor (15, true/1));
-              (Any, Constructor (16, false/1))
+                Constructor (16, true/1));
+              (Any, Constructor (17, false/1))
             ]))
-    ])
-
-18
-Value
-  (non_rec, @.,
-    [
-      ((b, [ ], [ ], Some Type (bool/1)),
-        Apply (18, Variable (18, f/0), [ Variable (18, r/0) ]))
     ])
 
 19
 Value
   (non_rec, @.,
     [
-      ((b', [ ], [ ], Some Type (bool/1)),
-        Apply (19, Variable (19, f/0), [ Variable (19, r'/0) ]))
+      ((b, [ ], [ ], Some Type (bool/1)),
+        Apply (19, Variable (19, f/0), [ Variable (19, r/0) ]))
     ])
 
-21 Module Point:
-  22
+20
+Value
+  (non_rec, @.,
+    [
+      ((b', [ ], [ ], Some Type (bool/1)),
+        Apply (20, Variable (20, f/0), [ Variable (20, r'/0) ]))
+    ])
+
+21
+Value
+  (non_rec, @.,
+    [
+      ((b'', [ ], [ ], Some Type (bool/1)),
+        Apply (21, Variable (21, f/0), [ Variable (21, r''/0) ]))
+    ])
+
+23 Module Point:
+  24
   Record t:
     [ (x, Type (Z/2)); (y, Type (Z/2)); (z, Type (Z/2)) ]
-  
-  27
-  Value
-    (non_rec, @.,
-      [
-        ((p, [ ], [ ], Some Type (t/0)),
-          Record
-            (27, (x/0, Constant (27, Int(5))),
-              (y/0, Constant (27, Int(-3))),
-              (z/0, Constant (27, Int(1)))))
-      ])
   
   29
   Value
     (non_rec, @.,
       [
+        ((p, [ ], [ ], Some Type (t/0)),
+          Record
+            (29, None, (x/0, Some Constant (29, Int(5))),
+              (y/0, Some Constant (29, Int(-3))),
+              (z/0, Some Constant (29, Int(1)))))
+      ])
+  
+  31
+  Value
+    (non_rec, @.,
+      [
         ((b, [ ], [ ], Some Type (bool/2)),
           Match
-            (29, Variable (29, p/0),
+            (31, Variable (31, p/0),
               [
                 (Record ((x/0, Int(5)), (z/0, Int(1))),
                   Constructor
-                    (30,
+                    (32,
                       true/2));
-                (Any, Constructor (31, false/2))
+                (Any, Constructor (33, false/2))
               ]))
+      ])
+  
+  35
+  Value
+    (non_rec, @.,
+      [
+        ((move_right, [ ], [ (p, Type (t/0)) ], Some Type (t/0)),
+          Record
+            (35, Some Variable (35, p/0),
+              (x/0,
+                Some
+                  Apply
+                    (35, Variable (35, Z.add/2),
+                      [
+                        Field
+                          (35,
+                            Variable
+                              (35,
+                                p/0),
+                            x/0);
+                        Constant (35, Int(1))
+                      ])), (y/0, None), (z/0, None)))
       ])

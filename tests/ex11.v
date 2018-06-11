@@ -16,6 +16,10 @@ Definition r : SizedString.t :=
 Definition r' : SizedString.t :=
   {| SizedString.name := "haha" % string; SizedString.size := 4 |}.
 
+Definition r'' : SizedString.t :=
+  {| SizedString.name := "GRE" % string; SizedString.size := SizedString.size r
+    |}.
+
 Definition s : Z := Z.add (SizedString.size r) (SizedString.size r').
 
 Definition f (x : SizedString.t) : bool :=
@@ -27,6 +31,8 @@ Definition f (x : SizedString.t) : bool :=
 Definition b : bool := f r.
 
 Definition b' : bool := f r'.
+
+Definition b'' : bool := f r''.
 
 Module Point.
   Record t := {
@@ -41,4 +47,7 @@ Module Point.
     | {| x := 5; z := 1 |} => true
     | _ => false
     end.
+  
+  Definition move_right (p : t) : t :=
+    {| x := Z.add (x p) 1; y := y p; z := z p |}.
 End Point.
