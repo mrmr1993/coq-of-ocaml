@@ -284,13 +284,20 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     Constructor (l, x, List.map (of_expression env typ_vars) es)
   | Texp_record { fields; extended_expression } ->
     Record (l, Array.to_list fields |> List.map (fun (label, definition) ->
-      let (x, e) =
-        match definition with
-        | Kept _ -> Error.raise l "Records with overwriting not handled."
-        | Overridden (loc, e) -> (loc, e) in
-      let loc = Loc.of_location label.lbl_loc in
-      let x = Envi.bound_name loc (PathName.of_loc x) env.FullEnvi.fields in
-      (x, Some (of_expression env typ_vars e))),
+      match definition with
+      | Kept _ ->
+        begin match label.lbl_res.desc with
+        | Tconstr (path, _, _) ->
+          let x = Envi.bound_name l
+            { (PathName.of_path l path) with base = label.lbl_name }
+            env.FullEnvi.fields in
+          (x, None)
+        | _ -> Error.raise l "Could not find the type of the record expression."
+        end
+      | Overridden (x, e) ->
+        let loc = Loc.of_location label.lbl_loc in
+        let x = Envi.bound_name loc (PathName.of_loc x) env.FullEnvi.fields in
+        (x, Some (of_expression env typ_vars e))),
       option_map (of_expression env typ_vars) extended_expression)
   | Texp_field (e, x, _) ->
     let x = Envi.bound_name l (PathName.of_loc x) env.FullEnvi.fields in
@@ -896,13 +903,15 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       | Some base -> base :: expressions
       | None -> expressions in
     monadise_list env expressions d [] (fun es' ->
-      let (base, es') = match base with
+      let (base, es', get_base_field) = match base with
         | Some _ -> begin match es' with
-          | base :: es' -> (Some base, es')
+          | base :: es' ->
+            (Some base, es', fun x -> Some (Field (Loc.Unknown, base, x)))
           | _ -> failwith "Wrong answer from 'monadise_list'." end
-        | None -> (None, es') in
+        | None -> (None, es', fun _ -> None) in
       let fields = mix_map2 (fun (_, x) -> is_some x)
-        (fun (x, _) -> (x, None)) (fun (x, _) e -> (x, Some e)) fields es' in
+        (fun (x, _) -> (x, get_base_field x))
+        (fun (x, _) e -> (x, Some e)) fields es' in
       lift Effect.Descriptor.pure d (Record (l, fields, base)))
   | Field ((l, _), e, x) ->
     monadise_list env [e] d [] (fun es' ->
