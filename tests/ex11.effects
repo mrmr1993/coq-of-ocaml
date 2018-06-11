@@ -9,10 +9,11 @@ Value
     [
       ((r, [ ], [ ], Some Type (SizedString.t/0)),
         Record
-          ((9, Effect ([ ], .)),
+          ((9, Effect ([ ], .)), None,
             (SizedString.name/0,
-              Constant ((9, Effect ([ ], .)), String("gre"))),
-            (SizedString.size/0, Constant ((9, Effect ([ ], .)), Int(3)))))
+              Some Constant ((9, Effect ([ ], .)), String("gre"))),
+            (SizedString.size/0,
+              Some Constant ((9, Effect ([ ], .)), Int(3)))))
     ])
 
 10
@@ -21,24 +22,38 @@ Value
     [
       ((r', [ ], [ ], Some Type (SizedString.t/0)),
         Record
-          ((10, Effect ([ ], .)),
+          ((10, Effect ([ ], .)), None,
             (SizedString.name/0,
-              Constant ((10, Effect ([ ], .)), String("haha"))),
-            (SizedString.size/0, Constant ((10, Effect ([ ], .)), Int(4)))))
+              Some Constant ((10, Effect ([ ], .)), String("haha"))),
+            (SizedString.size/0,
+              Some Constant ((10, Effect ([ ], .)), Int(4)))))
     ])
 
-12
+11
+Value
+  (non_rec, @.,
+    [
+      ((r'', [ ], [ ], Some Type (SizedString.t/0)),
+        Record
+          ((11, Effect ([ ], .)),
+            Some Variable ((11, Effect ([ ], .)), r/0),
+            (SizedString.name/0,
+              Some Constant ((11, Effect ([ ], .)), String("GRE"))),
+            (SizedString.size/0, None)))
+    ])
+
+13
 Value
   (non_rec, @.,
     [
       ((s, [ ], [ ], Some Type (Z/1)),
         Apply
-          ((12, Effect ([ ], .)), Variable ((12, Effect ([ ], .)), Z.add/1),
+          ((13, Effect ([ ], .)), Variable ((13, Effect ([ ], .)), Z.add/1),
             [
               Field
-                ((12, Effect ([ ], .)),
+                ((13, Effect ([ ], .)),
                   Variable
-                    ((12,
+                    ((13,
                       Effect
                         ([
                         ],
@@ -46,9 +61,9 @@ Value
                       r/0),
                   SizedString.size/0);
               Field
-                ((12, Effect ([ ], .)),
+                ((13, Effect ([ ], .)),
                   Variable
-                    ((12,
+                    ((13,
                       Effect
                         ([
                         ],
@@ -58,7 +73,7 @@ Value
             ]))
     ])
 
-14
+15
 Value
   (non_rec, @.,
     [
@@ -68,63 +83,74 @@ Value
             [
               (Record ((SizedString.size/0, Int(3))),
                 Constructor
-                  ((15, Effect ([ ], .)),
+                  ((16, Effect ([ ], .)),
                     true/1));
-              (Any, Constructor ((16, Effect ([ ], .)), false/1))
+              (Any, Constructor ((17, Effect ([ ], .)), false/1))
             ]))
-    ])
-
-18
-Value
-  (non_rec, @.,
-    [
-      ((b, [ ], [ ], Some Type (bool/1)),
-        Apply
-          ((18, Effect ([ ], .)),
-            Variable ((18, Effect ([ ], . -> .)), f/0),
-            [ Variable ((18, Effect ([ ], .)), r/0) ]))
     ])
 
 19
 Value
   (non_rec, @.,
     [
-      ((b', [ ], [ ], Some Type (bool/1)),
+      ((b, [ ], [ ], Some Type (bool/1)),
         Apply
           ((19, Effect ([ ], .)),
             Variable ((19, Effect ([ ], . -> .)), f/0),
-            [ Variable ((19, Effect ([ ], .)), r'/0) ]))
+            [ Variable ((19, Effect ([ ], .)), r/0) ]))
     ])
 
-21 Module Point:
-  22
+20
+Value
+  (non_rec, @.,
+    [
+      ((b', [ ], [ ], Some Type (bool/1)),
+        Apply
+          ((20, Effect ([ ], .)),
+            Variable ((20, Effect ([ ], . -> .)), f/0),
+            [ Variable ((20, Effect ([ ], .)), r'/0) ]))
+    ])
+
+21
+Value
+  (non_rec, @.,
+    [
+      ((b'', [ ], [ ], Some Type (bool/1)),
+        Apply
+          ((21, Effect ([ ], .)),
+            Variable ((21, Effect ([ ], . -> .)), f/0),
+            [ Variable ((21, Effect ([ ], .)), r''/0) ]))
+    ])
+
+23 Module Point:
+  24
   Record t:
     [ (x, Type (Z/2)); (y, Type (Z/2)); (z, Type (Z/2)) ]
-  
-  27
-  Value
-    (non_rec, @.,
-      [
-        ((p, [ ], [ ], Some Type (t/0)),
-          Record
-            ((27, Effect ([ ], .)),
-              (x/0, Constant ((27, Effect ([ ], .)), Int(5))),
-              (y/0, Constant ((27, Effect ([ ], .)), Int(-3))),
-              (z/0, Constant ((27, Effect ([ ], .)), Int(1)))))
-      ])
   
   29
   Value
     (non_rec, @.,
       [
+        ((p, [ ], [ ], Some Type (t/0)),
+          Record
+            ((29, Effect ([ ], .)), None,
+              (x/0, Some Constant ((29, Effect ([ ], .)), Int(5))),
+              (y/0, Some Constant ((29, Effect ([ ], .)), Int(-3))),
+              (z/0, Some Constant ((29, Effect ([ ], .)), Int(1)))))
+      ])
+  
+  31
+  Value
+    (non_rec, @.,
+      [
         ((b, [ ], [ ], Some Type (bool/2)),
           Match
-            ((29, Effect ([ ], .)),
-              Variable ((29, Effect ([ ], .)), p/0),
+            ((31, Effect ([ ], .)),
+              Variable ((31, Effect ([ ], .)), p/0),
               [
                 (Record ((x/0, Int(5)), (z/0, Int(1))),
                   Constructor
-                    ((30,
+                    ((32,
                       Effect
                         ([
                         ],
@@ -132,11 +158,51 @@ Value
                       true/2));
                 (Any,
                   Constructor
-                    ((31,
+                    ((33,
                       Effect
                         ([
                         ],
                           .)),
                       false/2))
               ]))
+      ])
+  
+  35
+  Value
+    (non_rec, @.,
+      [
+        ((move_right, [ ], [ (p, Type (t/0)) ], Some Type (t/0)),
+          Record
+            ((35, Effect ([ ], .)),
+              Some Variable ((35, Effect ([ ], .)), p/0),
+              (x/0,
+                Some
+                  Apply
+                    ((35, Effect ([ ], .)),
+                      Variable
+                        ((35, Effect ([ ], .)),
+                          Z.add/2),
+                      [
+                        Field
+                          ((35,
+                            Effect
+                              ([
+                              ],
+                                .)),
+                            Variable
+                              ((35,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                p/0),
+                            x/0);
+                        Constant
+                          ((35,
+                            Effect
+                              ([
+                              ],
+                                .)),
+                            Int(1))
+                      ])), (y/0, None), (z/0, None)))
       ])

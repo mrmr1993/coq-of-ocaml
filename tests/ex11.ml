@@ -8,6 +8,7 @@ end
 
 let r = { SizedString.name = "gre"; size = 3 }
 let r' = { SizedString.name = "haha"; size = 4 }
+let r'' = { r with SizedString.name = "GRE" }
 
 let s = r.SizedString.size + r'.SizedString.size
 
@@ -17,6 +18,7 @@ let f = function
 
 let b = f r
 let b' = f r'
+let b'' = f r''
 
 module Point = struct
   type t = {
@@ -29,4 +31,6 @@ module Point = struct
   let b = match p with
     | { x = 5; z = 1 } -> true
     | _ -> false
+
+  let move_right (p : t) = { p with x = p.x + 1 }
 end
