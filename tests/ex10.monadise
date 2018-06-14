@@ -9,7 +9,7 @@
       [
         ((sum_rec, [ ],
           [ (counter, Type (nat/2)); (l, Type (t/0, Type (Z/2))) ],
-          Some Monad ([ NonTermination/2 ], Type (Z/2))),
+          Monad ([ NonTermination/2 ], Type (Z/2))),
           Match
             (?, Variable (?, counter/0),
               [
@@ -86,7 +86,7 @@
     (non_rec, @.,
       [
         ((sum, [ ], [ (l, Type (t/0, Type (Z/2))) ],
-          Some Monad ([ Counter/2; NonTermination/2 ], Type (Z/2))),
+          Monad ([ Counter/2; NonTermination/2 ], Type (Z/2))),
           Bind
             (?,
               Lift
@@ -112,7 +112,7 @@
       [
         ((of_list_rec, [ A ],
           [ (counter, Type (nat/2)); (x, Type (list/2, A)) ],
-          Some Monad ([ NonTermination/2 ], Type (t/0, A))),
+          Monad ([ NonTermination/2 ], Type (t/0, A))),
           Match
             (?, Variable (?, counter/0),
               [
@@ -185,7 +185,7 @@
     (non_rec, @.,
       [
         ((of_list, [ A ], [ (x, Type (list/2, A)) ],
-          Some Monad ([ Counter/2; NonTermination/2 ], Type (t/0, A))),
+          Monad ([ Counter/2; NonTermination/2 ], Type (t/0, A))),
           Bind
             (?,
               Lift
@@ -207,15 +207,14 @@
   
   17 Module Inside:
     18
-    Value
-      (non_rec, @., [ ((x, [ ], [ ], Some Type (Z/3)), Constant (18, Int(12))) ])
+    Value (non_rec, @., [ ((x, [ ], [ ], Type (Z/3)), Constant (18, Int(12))) ])
 
 22
 Value
   (non_rec, @.,
     [
       ((n, [ A ], [ (x, A) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
         Match
           (?, Variable (?, x/0),
             [

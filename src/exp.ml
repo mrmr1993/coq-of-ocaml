@@ -2,20 +2,21 @@
 open Typedtree
 open Types
 open SmartPrint
+open Utils
 
 module Header = struct
   type t = {
     name : Name.t;
     typ_vars : Name.t list;
     args : (Name.t * Type.t) list;
-    typ : Type.t option }
+    typ : Type.t }
 
   let pp (header : t) : SmartPrint.t =
     OCaml.tuple [
       Name.pp header.name; OCaml.list Name.pp header.typ_vars;
       OCaml.list (fun (x, typ) -> OCaml.tuple [Name.pp x; Type.pp typ])
         header.args;
-      OCaml.option Type.pp header.typ]
+      Type.pp header.typ]
 
   let env_in_header (header : t) (env : 'a FullEnvi.t) (v : 'a)
     : 'a FullEnvi.t =
@@ -128,20 +129,6 @@ let annotation (e : 'a t) : 'a =
   | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
   | IfThenElse (a, _, _, _) | Sequence (a, _, _) | Return (a, _)
   | Bind (a, _, _, _) | Lift (a, _, _, _) | Run (a, _, _, _) -> a
-
-let is_some (x : 'a option) : bool =
-  match x with | Some _ -> true | None -> false
-
-let option_map (f : 'a -> 'b) (x : 'a option) : 'b option =
-  match x with
-  | Some x -> Some (f x)
-  | None -> None
-
-let rec option_filter (l : 'a option list) : 'a list =
-  match l with
-  | [] -> []
-  | Some x :: l' -> x :: option_filter l'
-  | None :: l' -> option_filter l'
 
 let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
   match e with
@@ -391,7 +378,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
       Header.name = x;
       typ_vars = Name.Set.elements new_typ_vars;
       args = List.combine args_names args_typs;
-      typ = Some e_body_typ } in
+      typ = e_body_typ } in
     (header, e_body)) in
   let def = {
     Definition.is_rec = is_rec;
@@ -590,26 +577,6 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
         (header, monadise_let_rec (Header.env_in_header header env ()) e)) } in
     let env = Definition.env_after_def def env in
     (env, [def])
-
-let rec filter_map (f : 'a -> 'b option) (l : 'a list) : 'b list =
-  match l with
-  | [] -> []
-  | a :: l' ->
-    match f a with
-    | Some b -> b :: filter_map f l'
-    | None -> filter_map f l'
-
-let rec mix_map2 (f : 'a -> bool) (g : 'a -> 'c) (h : 'a -> 'b -> 'c)
-  (l1 : 'a list) (l2 : 'b list) : 'c list =
-  match l1 with
-  | [] -> []
-  | a :: l1' ->
-    if f a then
-      match l2 with
-      | [] -> []
-      | b :: l2' -> h a b :: mix_map2 f g h l1' l2'
-    else
-      g a :: mix_map2 f g h l1' l2
 
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
   : (Loc.t * Effect.t) t =
@@ -874,9 +841,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
     let env_in_def = Definition.env_in_def def env in
     let def = { def with
       Definition.cases = def.Definition.cases |> List.map (fun (header, e) ->
-        let typ = match header.Header.typ with
-        | Some typ -> Some (Type.monadise typ (snd (annotation e)))
-        | None -> None in
+      let typ = Type.monadise header.Header.typ (snd (annotation e)) in
       let header = { header with Header.typ = typ } in
       let env = Header.env_in_header header env_in_def () in
       let e = monadise env e in
@@ -976,9 +941,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
           !^ ":" ^^ !^ "Type")) ^^
         group (separate space (header.Header.args |> List.map (fun (x, x_typ) ->
           parens (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
-        (match header.Header.typ with
-        | None -> empty
-        | Some typ -> !^ ": " ^-^ Type.to_coq false typ) ^-^
+        !^ ": " ^-^ Type.to_coq false header.Header.typ ^-^
         !^ " :=" ^^ newline ^^
         indent (to_coq false e))) ^^ !^ "in" ^^ newline ^^ to_coq false e)
   | Match (_, e, cases) ->
@@ -987,7 +950,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       separate space (cases |> List.map (fun (p, e) ->
         nest (!^ "|" ^^ Pattern.to_coq false p ^^ !^ "=>" ^^ to_coq false e ^^ newline))) ^^
       !^ "end")
-  | Record (_, fields, base) ->
+  | Record (_, fields, _) ->
     nest (!^ "{|" ^^ separate (!^ ";" ^^ space)
       (fields |> filter_map (fun (x, e) -> e |> option_map (fun e ->
         nest (BoundName.to_coq x ^-^ !^ " :=" ^^ to_coq false e)))) ^^ !^ "|}")

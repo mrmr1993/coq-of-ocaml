@@ -7,7 +7,7 @@ Require [ OCaml.List ]
   Value
     (non_rec, @.,
       [
-        ((compare, [ ], [ (x, Type (t/0)) ], Some (Type (t/0) -> Type (Z/2))),
+        ((compare, [ ], [ (x, Type (t/0)) ], (Type (t/0) -> Type (Z/2))),
           Match
             (?, Variable (?, x/0),
               [
@@ -43,7 +43,7 @@ Inductive t:
 Value
   (non_rec, @.,
     [
-      ((height, [ ], [ (x, Type (t/0)) ], Some Type (Z/1)),
+      ((height, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -58,7 +58,7 @@ Value
   (non_rec, @.,
     [
       ((create, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         LetVar 24 hl =
           Match
             (24, Variable (24, l/0),
@@ -96,7 +96,7 @@ Value
   (non_rec, @.,
     [
       ((bal, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         LetVar 34 hl =
           Match
             (34, Variable (34, l/0),
@@ -466,7 +466,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add, [ ], [ (x, Type (elt/0)); (x_1, Type (t/0)) ], Some Type (t/0)),
+      ((add, [ ], [ (x, Type (elt/0)); (x_1, Type (t/0)) ], Type (t/0)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -593,7 +593,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((singleton, [ ], [ (x, Type (elt/0)) ], Some Type (t/0)),
+      ((singleton, [ ], [ (x, Type (elt/0)) ], Type (t/0)),
         Constructor
           (73, Node/0, Constructor (73, Empty/0), Variable (73, x/0),
             Constructor (73, Empty/0), Constant (73, Int(1))))
@@ -603,8 +603,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_min_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Some Type (t/0)),
+      ((add_min_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ], Type (t/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -653,8 +652,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_max_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Some Type (t/0)),
+      ((add_max_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ], Type (t/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -709,7 +707,7 @@ Value
           (l, Type (t/0));
           (v, Type (elt/0));
           (r, Type (t/0))
-        ], Some Type (t/0)),
+        ], Type (t/0)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -929,7 +927,7 @@ Value
   (non_rec, @.,
     [
       ((join, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Apply
           (?, Variable (?, join_rec/0),
             [
@@ -944,7 +942,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((min_elt, [ ], [ (x, Type (t/0)) ], Some Type (elt/0)),
+      ((min_elt, [ ], [ (x, Type (t/0)) ], Type (elt/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -978,7 +976,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((max_elt, [ ], [ (x, Type (t/0)) ], Some Type (elt/0)),
+      ((max_elt, [ ], [ (x, Type (t/0)) ], Type (elt/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1012,7 +1010,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove_min_elt, [ ], [ (x, Type (t/0)) ], Some Type (t/0)),
+      ((remove_min_elt, [ ], [ (x, Type (t/0)) ], Type (t/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1060,7 +1058,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((merge, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Some Type (t/0)),
+      ((merge, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Type (t/0)),
         Match
           (133, Tuple (133, Variable (133, t1/0), Variable (133, t2/0)),
             [
@@ -1104,7 +1102,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((concat, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Some Type (t/0)),
+      ((concat, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Type (t/0)),
         Match
           (143, Tuple (143, Variable (143, t1/0), Variable (143, t2/0)),
             [
@@ -1149,7 +1147,7 @@ Value
   (rec, @coq_rec,
     [
       ((split, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ],
-        Some (Type (t/0) * Type (bool/1) * Type (t/0))),
+        (Type (t/0) * Type (bool/1) * Type (t/0))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1317,14 +1315,13 @@ Value
 
 168
 Value
-  (non_rec, @.,
-    [ ((empty, [ ], [ ], Some Type (t/0)), Constructor (168, Empty/0)) ])
+  (non_rec, @., [ ((empty, [ ], [ ], Type (t/0)), Constructor (168, Empty/0)) ])
 
 170
 Value
   (non_rec, @.,
     [
-      ((is_empty, [ ], [ (x, Type (t/0)) ], Some Type (bool/1)),
+      ((is_empty, [ ], [ (x, Type (t/0)) ], Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1337,7 +1334,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (bool/1)),
+      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (bool/1)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1416,7 +1413,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (t/0)),
+      ((remove, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (t/0)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1541,7 +1538,7 @@ Value
     [
       ((union_rec, [ ],
         [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -1815,7 +1812,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((union, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((union, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Apply
           (?, Variable (?, union_rec/0),
             [
@@ -1829,7 +1826,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((inter, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((inter, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Match
           (204, Tuple (204, Variable (204, s1/0), Variable (204, s2/0)),
             [
@@ -1941,7 +1938,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((diff, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((diff, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Match
           (216, Tuple (216, Variable (216, s1/0), Variable (216, s2/0)),
             [
@@ -2058,7 +2055,7 @@ Value
   (rec, @coq_rec,
     [
       ((cons_enum, [ ], [ (s, Type (t/0)); (e, Type (enumeration/0)) ],
-        Some Type (enumeration/0)),
+        Type (enumeration/0)),
         Match
           (230, Variable (230, s/0),
             [
@@ -2098,7 +2095,7 @@ Value
           (counter, Type (nat/1));
           (e1, Type (enumeration/0));
           (e2, Type (enumeration/0))
-        ], Some Type (Z/1)),
+        ], Type (Z/1)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -2242,8 +2239,7 @@ Value
   (non_rec, @.,
     [
       ((compare_aux, [ ],
-        [ (e1, Type (enumeration/0)); (e2, Type (enumeration/0)) ],
-        Some Type (Z/1)),
+        [ (e1, Type (enumeration/0)); (e2, Type (enumeration/0)) ], Type (Z/1)),
         Apply
           (?, Variable (?, compare_aux_rec/0),
             [
@@ -2257,7 +2253,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((compare, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (Z/1)),
+      ((compare, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (Z/1)),
         Apply
           (247, Variable (247, compare_aux/0),
             [
@@ -2288,7 +2284,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((equal, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (bool/1)),
+      ((equal, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (bool/1)),
         Apply
           (250, Variable (250, equiv_decb/1),
             [
@@ -2312,7 +2308,7 @@ Value
     [
       ((subset_rec, [ ],
         [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -2588,7 +2584,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((subset, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (bool/1)),
+      ((subset, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (bool/1)),
         Apply
           (?, Variable (?, subset_rec/0),
             [
@@ -2603,7 +2599,7 @@ Value
   (rec, @coq_rec,
     [
       ((iter, [ A ], [ (f, (Type (elt/0) -> A)); (x, Type (t/0)) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -2657,8 +2653,7 @@ Value
   (rec, @coq_rec,
     [
       ((fold, [ A ],
-        [ (f, (Type (elt/0) -> (A -> A))); (s, Type (t/0)); (accu, A) ],
-        Some A),
+        [ (f, (Type (elt/0) -> (A -> A))); (s, Type (t/0)); (accu, A) ], A),
         Match
           (273, Variable (273, s/0),
             [
@@ -2711,7 +2706,7 @@ Value
   (rec, @coq_rec,
     [
       ((for_all, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -2775,7 +2770,7 @@ Value
   (rec, @coq_rec,
     [
       ((exists_, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -2839,7 +2834,7 @@ Value
   (rec, @coq_rec,
     [
       ((filter, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Match
           (?, Variable (?, x/0),
             [
@@ -2930,7 +2925,7 @@ Value
     [
       ((partition, [ ],
         [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some (Type (t/0) * Type (t/0))),
+        (Type (t/0) * Type (t/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -3073,7 +3068,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((cardinal, [ ], [ (x, Type (t/0)) ], Some Type (Z/1)),
+      ((cardinal, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -3125,7 +3120,7 @@ Value
     [
       ((elements_aux, [ ],
         [ (accu, Type (list/1, Type (elt/0))); (x, Type (t/0)) ],
-        Some Type (list/1, Type (elt/0))),
+        Type (list/1, Type (elt/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -3167,7 +3162,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((elements, [ ], [ (s, Type (t/0)) ], Some Type (list/1, Type (elt/0))),
+      ((elements, [ ], [ (s, Type (t/0)) ], Type (list/1, Type (elt/0))),
         Apply
           (321, Variable (321, elements_aux/0),
             [ Constructor (321, []/1); Variable (321, s/0) ]))
@@ -3177,7 +3172,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((choose, [ ], [ ], Some (Type (t/0) -> Type (elt/0))),
+      ((choose, [ ], [ ], (Type (t/0) -> Type (elt/0))),
         Variable (323, min_elt/0))
     ])
 
@@ -3185,7 +3180,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (elt/0)),
+      ((find, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (elt/0)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -3271,8 +3266,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_sorted_list, [ ], [ (l, Type (list/1, Type (elt/0))) ],
-        Some Type (t/0)),
+      ((of_sorted_list, [ ], [ (l, Type (list/1, Type (elt/0))) ], Type (t/0)),
         LetFun 334
           (rec, @.,
             [
@@ -3286,12 +3280,11 @@ Value
                         Type
                           (elt/0)))
                 ],
-                Some
-                  (Type (t/0) *
-                    Type
-                      (list/1,
-                        Type
-                          (elt/0)))),
+                (Type (t/0) *
+                  Type
+                    (list/1,
+                      Type
+                        (elt/0)))),
                 Match
                   (?,
                     Variable
@@ -3611,12 +3604,11 @@ Value
                         Type
                           (elt/0)))
                 ],
-                Some
-                  (Type (t/0) *
-                    Type
-                      (list/1,
-                        Type
-                          (elt/0)))),
+                (Type (t/0) *
+                  Type
+                    (list/1,
+                      Type
+                        (elt/0)))),
                 Apply
                   (?,
                     Variable

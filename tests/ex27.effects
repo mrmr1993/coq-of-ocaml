@@ -3,7 +3,7 @@ Value
   (rec, @coq_rec,
     [
       ((length_aux, [ A ], [ (len, Type (Z/1)); (x, Type (list/1, A)) ],
-        Some Type (Z/1)),
+        Type (Z/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -68,7 +68,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((length, [ A ], [ (l, Type (list/1, A)) ], Some Type (Z/1)),
+      ((length, [ A ], [ (l, Type (list/1, A)) ], Type (Z/1)),
         Apply
           ((21, Effect ([ ], .)),
             Variable ((21, Effect ([ ], . -> . -> .)), length_aux/0),
@@ -82,7 +82,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((hd, [ A ], [ (x, Type (list/1, A)) ], Some A),
+      ((hd, [ A ], [ (x, Type (list/1, A)) ], A),
         Match
           ((?, Effect ([ OCaml.Failure/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -124,7 +124,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((tl, [ A ], [ (x, Type (list/1, A)) ], Some Type (list/1, A)),
+      ((tl, [ A ], [ (x, Type (list/1, A)) ], Type (list/1, A)),
         Match
           ((?, Effect ([ OCaml.Failure/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -166,7 +166,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((nth, [ A ], [ (l, Type (list/1, A)); (n, Type (Z/1)) ], Some A),
+      ((nth, [ A ], [ (l, Type (list/1, A)); (n, Type (Z/1)) ], A),
         IfThenElse
           ((32, Effect ([ OCaml.Failure/1; OCaml.Invalid_argument/1 ], .)),
             Apply
@@ -201,7 +201,7 @@ Value
                       (n,
                         Type
                           (Z/1))
-                    ], Some B),
+                    ], B),
                     Match
                       ((34,
                         Effect
@@ -370,7 +370,7 @@ Value
   (non_rec, @.,
     [
       ((append, [ A ], [ ],
-        Some (Type (list/1, A) -> (Type (list/1, A) -> Type (list/1, A)))),
+        (Type (list/1, A) -> (Type (list/1, A) -> Type (list/1, A)))),
         Variable ((39, Effect ([ ], .)), OCaml.Pervasives.app/1))
     ])
 
@@ -379,7 +379,7 @@ Value
   (rec, @coq_rec,
     [
       ((rev_append, [ A ], [ (l1, Type (list/1, A)); (l2, Type (list/1, A)) ],
-        Some Type (list/1, A)),
+        Type (list/1, A)),
         Match
           ((42, Effect ([ ], .)), Variable ((42, Effect ([ ], .)), l1/0),
             [
@@ -436,7 +436,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((rev, [ A ], [ (l, Type (list/1, A)) ], Some Type (list/1, A)),
+      ((rev, [ A ], [ (l, Type (list/1, A)) ], Type (list/1, A)),
         Apply
           ((47, Effect ([ ], .)),
             Variable ((47, Effect ([ ], . -> . -> .)), rev_append/0),
@@ -451,7 +451,7 @@ Value
   (rec, @coq_rec,
     [
       ((flatten, [ A ], [ (x, Type (list/1, Type (list/1, A))) ],
-        Some Type (list/1, A)),
+        Type (list/1, A)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -510,7 +510,7 @@ Value
   (non_rec, @.,
     [
       ((concat, [ A ], [ ],
-        Some (Type (list/1, Type (list/1, A)) -> Type (list/1, A))),
+        (Type (list/1, Type (list/1, A)) -> Type (list/1, A))),
         Variable ((54, Effect ([ ], . -> .)), flatten/0))
     ])
 
@@ -519,7 +519,7 @@ Value
   (rec, @coq_rec,
     [
       ((map, [ A; B ], [ (f, (A -> B)); (x, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -607,7 +607,7 @@ Value
           (i, Type (Z/1));
           (f, (Type (Z/1) -> (A -> B)));
           (x, Type (list/1, A))
-        ], Some Type (list/1, B)),
+        ], Type (list/1, B)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -730,7 +730,7 @@ Value
     [
       ((mapi, [ A; B ],
         [ (f, (Type (Z/1) -> (A -> B))); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Apply
           ((66, Effect ([ ], .)),
             Variable ((66, Effect ([ ], . -> . -> . -> .)), mapi_aux/0),
@@ -746,7 +746,7 @@ Value
   (non_rec, @.,
     [
       ((rev_map, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         LetFun (69, Effect ([ ], .))
           (rec, @coq_rec,
             [
@@ -757,7 +757,7 @@ Value
                       (list/1,
                         B));
                   (x, Type (list/1, A))
-                ], Some Type (list/1, B)),
+                ], Type (list/1, B)),
                 Match
                   ((?, Effect ([ ], .)),
                     Variable
@@ -858,8 +858,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((iter, [ A; B ], [ (f, (A -> B)); (x, Type (list/1, A)) ],
-        Some Type (unit/1)),
+      ((iter, [ A; B ], [ (f, (A -> B)); (x, Type (list/1, A)) ], Type (unit/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -937,7 +936,7 @@ Value
           (i, Type (Z/1));
           (f, (Type (Z/1) -> (A -> B)));
           (x, Type (list/1, A))
-        ], Some Type (unit/1)),
+        ], Type (unit/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1050,7 +1049,7 @@ Value
     [
       ((iteri, [ A; B ],
         [ (f, (Type (Z/1) -> (A -> B))); (l, Type (list/1, A)) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Apply
           ((84, Effect ([ ], .)),
             Variable ((84, Effect ([ ], . -> . -> . -> .)), iteri_aux/0),
@@ -1066,7 +1065,7 @@ Value
   (rec, @coq_rec,
     [
       ((fold_left, [ A; B ],
-        [ (f, (A -> (B -> A))); (accu, A); (l, Type (list/1, B)) ], Some A),
+        [ (f, (A -> (B -> A))); (accu, A); (l, Type (list/1, B)) ], A),
         Match
           ((87, Effect ([ ], .)), Variable ((87, Effect ([ ], .)), l/0),
             [
@@ -1141,7 +1140,7 @@ Value
   (rec, @coq_rec,
     [
       ((fold_right, [ A; B ],
-        [ (f, (A -> (B -> B))); (l, Type (list/1, A)); (accu, B) ], Some B),
+        [ (f, (A -> (B -> B))); (l, Type (list/1, A)); (accu, B) ], B),
         Match
           ((93, Effect ([ ], .)), Variable ((93, Effect ([ ], .)), l/0),
             [
@@ -1220,7 +1219,7 @@ Value
           (f, (A -> (B -> C)));
           (l1, Type (list/1, A));
           (l2, Type (list/1, B))
-        ], Some Type (list/1, C)),
+        ], Type (list/1, C)),
         Match
           ((99, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -1376,7 +1375,7 @@ Value
           (f, (A -> (B -> C)));
           (l1, Type (list/1, A));
           (l2, Type (list/1, B))
-        ], Some Type (list/1, C)),
+        ], Type (list/1, C)),
         LetFun (106, Effect ([ OCaml.Invalid_argument/1 ], .))
           (rec, @coq_rec,
             [
@@ -1388,7 +1387,7 @@ Value
                         C));
                   (l1, Type (list/1, A));
                   (l2, Type (list/1, B))
-                ], Some Type (list/1, C)),
+                ], Type (list/1, C)),
                 Match
                   ((107,
                     Effect
@@ -1575,7 +1574,7 @@ Value
           (f, (A -> (B -> C)));
           (l1, Type (list/1, A));
           (l2, Type (list/1, B))
-        ], Some Type (unit/1)),
+        ], Type (unit/1)),
         Match
           ((114, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -1715,7 +1714,7 @@ Value
           (accu, A);
           (l1, Type (list/1, B));
           (l2, Type (list/1, C))
-        ], Some A),
+        ], A),
         Match
           ((121, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -1857,7 +1856,7 @@ Value
           (l1, Type (list/1, A));
           (l2, Type (list/1, B));
           (accu, C)
-        ], Some C),
+        ], C),
         Match
           ((128, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -1995,7 +1994,7 @@ Value
   (rec, @coq_rec,
     [
       ((for_all, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -2078,7 +2077,7 @@ Value
   (rec, @coq_rec,
     [
       ((_exists, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -2165,7 +2164,7 @@ Value
           (p, (A -> (B -> Type (bool/1))));
           (l1, Type (list/1, A));
           (l2, Type (list/1, B))
-        ], Some Type (bool/1)),
+        ], Type (bool/1)),
         Match
           ((145, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -2313,7 +2312,7 @@ Value
           (p, (A -> (B -> Type (bool/1))));
           (l1, Type (list/1, A));
           (l2, Type (list/1, B))
-        ], Some Type (bool/1)),
+        ], Type (bool/1)),
         Match
           ((152, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -2456,8 +2455,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ],
-        Some A),
+      ((find, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ], A),
         Match
           ((?, Effect ([ OCaml.Not_found/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -2570,7 +2568,7 @@ Value
   (non_rec, @.,
     [
       ((find_all, [ A ], [ (p, (A -> Type (bool/1))) ],
-        Some (Type (list/1, A) -> Type (list/1, A))),
+        (Type (list/1, A) -> Type (list/1, A))),
         LetFun (197, Effect ([ ], . -> .))
           (rec, @coq_rec,
             [
@@ -2581,7 +2579,7 @@ Value
                       (list/1,
                         A));
                   (x, Type (list/1, A))
-                ], Some Type (list/1, A)),
+                ], Type (list/1, A)),
                 Match
                   ((?, Effect ([ ], .)),
                     Variable
@@ -2743,7 +2741,7 @@ Value
   (non_rec, @.,
     [
       ((filter, [ A ], [ ],
-        Some ((A -> Type (bool/1)) -> (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> Type (bool/1)) -> (Type (list/1, A) -> Type (list/1, A)))),
         Variable ((202, Effect ([ ], . -> . -> .)), find_all/0))
     ])
 
@@ -2752,7 +2750,7 @@ Value
   (non_rec, @.,
     [
       ((partition, [ A ], [ (p, (A -> Type (bool/1))); (l, Type (list/1, A)) ],
-        Some (Type (list/1, A) * Type (list/1, A))),
+        (Type (list/1, A) * Type (list/1, A))),
         LetFun (205, Effect ([ ], .))
           (rec, @coq_rec,
             [
@@ -2761,12 +2759,7 @@ Value
                   (yes, Type (list/1, A));
                   (no, Type (list/1, A));
                   (x, Type (list/1, A))
-                ],
-                Some
-                  (Type (list/1, A) *
-                    Type
-                      (list/1,
-                        A))),
+                ], (Type (list/1, A) * Type (list/1, A))),
                 Match
                   ((?, Effect ([ ], .)),
                     Variable
@@ -2995,7 +2988,7 @@ Value
   (rec, @coq_rec,
     [
       ((split, [ A; B ], [ (x, Type (list/1, (A * B))) ],
-        Some (Type (list/1, A) * Type (list/1, B))),
+        (Type (list/1, A) * Type (list/1, B))),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -3104,7 +3097,7 @@ Value
   (rec, @coq_rec,
     [
       ((combine, [ A; B ], [ (l1, Type (list/1, A)); (l2, Type (list/1, B)) ],
-        Some Type (list/1, (A * B))),
+        Type (list/1, (A * B))),
         Match
           ((221, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Tuple
@@ -3226,12 +3219,12 @@ Value
           (cmp, (A -> (A -> Type (Z/1))));
           (l1, Type (list/1, A));
           (l2, Type (list/1, A))
-        ], Some Type (list/1, A)),
+        ], Type (list/1, A)),
         LetFun (229, Effect ([ ], .))
           (rec, @coq_rec,
             [
               ((rev_merge_aux_coq_rec, [ ], [ (l2, Type (list/1, A)) ],
-                Some Type (list/1, A)),
+                Type (list/1, A)),
                 Match
                   ((230, Effect ([ ], .)),
                     Tuple
@@ -3451,7 +3444,7 @@ Value
   (rec, @coq_rec,
     [
       ((chop, [ A ], [ (k, Type (Z/1)); (l, Type (list/1, A)) ],
-        Some Type (list/1, A)),
+        Type (list/1, A)),
         IfThenElse
           ((241, Effect ([ OCaml.Assert_failure/1 ], .)),
             Apply
@@ -3566,7 +3559,7 @@ Value
             (l1, Type (list/2, A));
             (l2, Type (list/2, A));
             (accu, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           LetFun (250, Effect ([ ], .))
             (rec, @coq_rec,
               [
@@ -3580,8 +3573,7 @@ Value
                       Type
                         (list/2,
                           A))
-                  ],
-                  Some Type (list/2, A)),
+                  ], Type (list/2, A)),
                   Match
                     ((251,
                       Effect
@@ -3884,7 +3876,7 @@ Value
             (l1, Type (list/2, A));
             (l2, Type (list/2, A));
             (accu, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           LetFun (262, Effect ([ ], .))
             (rec, @coq_rec,
               [
@@ -3898,8 +3890,7 @@ Value
                       Type
                         (list/2,
                           A))
-                  ],
-                  Some Type (list/2, A)),
+                  ], Type (list/2, A)),
                   Match
                     ((263,
                       Effect
@@ -4202,7 +4193,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Match
             ((?,
               Effect
@@ -5350,7 +5341,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Match
             ((?,
               Effect
@@ -6503,7 +6494,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Apply
             ((?,
               Effect
@@ -6567,7 +6558,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Apply
             ((?,
               Effect
@@ -6628,7 +6619,7 @@ Value
     [
       ((stable_sort, [ A ],
         [ (cmp, (A -> (A -> Type (Z/1)))); (l, Type (list/1, A)) ],
-        Some Type (list/1, A)),
+        Type (list/1, A)),
         LetVar
           (319,
             Effect
@@ -6683,9 +6674,7 @@ Value
   (non_rec, @.,
     [
       ((sort, [ A ], [ ],
-        Some
-          ((A -> (A -> Type (Z/1))) ->
-            (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> (A -> Type (Z/1))) -> (Type (list/1, A) -> Type (list/1, A)))),
         Variable
           ((322,
             Effect
@@ -6704,9 +6693,7 @@ Value
   (non_rec, @.,
     [
       ((fast_sort, [ A ], [ ],
-        Some
-          ((A -> (A -> Type (Z/1))) ->
-            (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> (A -> Type (Z/1))) -> (Type (list/1, A) -> Type (list/1, A)))),
         Variable
           ((323,
             Effect
@@ -6731,7 +6718,7 @@ Value
             (l1, Type (list/2, A));
             (l2, Type (list/2, A));
             (accu, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           LetFun (328, Effect ([ ], .))
             (rec, @coq_rec,
               [
@@ -6745,8 +6732,7 @@ Value
                       Type
                         (list/2,
                           A))
-                  ],
-                  Some Type (list/2, A)),
+                  ], Type (list/2, A)),
                   Match
                     ((329,
                       Effect
@@ -7165,7 +7151,7 @@ Value
             (l1, Type (list/2, A));
             (l2, Type (list/2, A));
             (accu, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           LetFun (342, Effect ([ ], .))
             (rec, @coq_rec,
               [
@@ -7179,8 +7165,7 @@ Value
                       Type
                         (list/2,
                           A))
-                  ],
-                  Some Type (list/2, A)),
+                  ], Type (list/2, A)),
                   Match
                     ((343,
                       Effect
@@ -7599,7 +7584,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Match
             ((?,
               Effect
@@ -9413,7 +9398,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Match
             ((?,
               Effect
@@ -11232,7 +11217,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Apply
             ((?,
               Effect
@@ -11296,7 +11281,7 @@ Value
             (cmp, (A -> (A -> Type (Z/2))));
             (n, Type (Z/2));
             (l, Type (list/2, A))
-          ], Some Type (list/2, A)),
+          ], Type (list/2, A)),
           Apply
             ((?,
               Effect
@@ -11357,7 +11342,7 @@ Value
     [
       ((sort_uniq, [ A ],
         [ (cmp, (A -> (A -> Type (Z/1)))); (l, Type (list/1, A)) ],
-        Some Type (list/1, A)),
+        Type (list/1, A)),
         LetVar
           (431,
             Effect

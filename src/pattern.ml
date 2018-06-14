@@ -1,6 +1,5 @@
 (** Patterns used for the "match". *)
 open Typedtree
-open Types
 open SmartPrint
 
 type t =

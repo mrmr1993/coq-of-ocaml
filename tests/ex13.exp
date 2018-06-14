@@ -2,7 +2,7 @@
 Value
   (non_rec, @.,
     [
-      ((tail, [ A ], [ (l, Type (list/1, A)) ], Some Type (list/1, A)),
+      ((tail, [ A ], [ (l, Type (list/1, A)) ], Type (list/1, A)),
         Match
           (4, Variable (4, l/0),
             [
@@ -27,7 +27,7 @@ Value
     [
       ((print_list_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (list/1, Type (string/1))) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -91,8 +91,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((print_list, [ ], [ (x, Type (list/1, Type (string/1))) ],
-        Some Type (unit/1)),
+      ((print_list, [ ], [ (x, Type (list/1, Type (string/1))) ], Type (unit/1)),
         Apply
           (?, Variable (?, print_list_rec/0),
             [
@@ -105,7 +104,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ ], Some (Type (list/1, Type (string/1)) -> Type (unit/1))),
+      ((f, [ ], [ ], (Type (list/1, Type (string/1)) -> Type (unit/1))),
         Variable (14, print_list/0))
     ])
 
@@ -113,7 +112,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x, [ A ], [ (z, A) ], Some Type (unit/1)),
+      ((x, [ A ], [ (z, A) ], Type (unit/1)),
         Apply
           (16, Variable (16, f/0),
             [

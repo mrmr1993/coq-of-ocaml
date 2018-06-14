@@ -6,7 +6,7 @@ Inductive t1:
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Some Type (t1/0)),
+      ((n, [ ], [ ], Type (t1/0)),
         Constructor (8, C2/0, Constructor (8, false/1), Constant (8, Int(3))))
     ])
 
@@ -14,7 +14,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((m, [ ], [ ], Some Type (bool/1)),
+      ((m, [ ], [ ], Type (bool/1)),
         Match
           (10, Variable (10, n/0),
             [
@@ -32,7 +32,7 @@ Value
   (rec, @.,
     [
       ((of_list_rec, [ A ], [ (counter, Type (nat/1)); (l, Type (list/1, A)) ],
-        Some Type (t2/0, A)),
+        Type (t2/0, A)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -93,7 +93,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_list, [ A ], [ (l, Type (list/1, A)) ], Some Type (t2/0, A)),
+      ((of_list, [ A ], [ (l, Type (list/1, A)) ], Type (t2/0, A)),
         Apply
           (?, Variable (?, of_list_rec/0),
             [
@@ -107,7 +107,7 @@ Value
   (rec, @.,
     [
       ((sum_rec, [ ], [ (counter, Type (nat/1)); (l, Type (t2/0, Type (Z/1))) ],
-        Some Type (Z/1)),
+        Type (Z/1)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -172,7 +172,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sum, [ ], [ (l, Type (t2/0, Type (Z/1))) ], Some Type (Z/1)),
+      ((sum, [ ], [ (l, Type (t2/0, Type (Z/1))) ], Type (Z/1)),
         Apply
           (?, Variable (?, sum_rec/0),
             [
@@ -185,7 +185,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s, [ A ], [ (x, A) ], Some Type (Z/1)),
+      ((s, [ A ], [ (x, A) ], Type (Z/1)),
         Match
           (?, Variable (?, x/0),
             [

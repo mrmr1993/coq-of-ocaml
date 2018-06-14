@@ -1,4 +1,5 @@
 open SmartPrint
+open Utils
 
 type 'a t = 'a Mod.t list
 
@@ -68,14 +69,6 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     m :: env
   | _ -> failwith "You should have entered in at least one module."
 
-let rec find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
-  match l with
-  | [] -> None
-  | x :: l ->
-    (match f x with
-    | None -> find_first f l
-    | y -> y)
-
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with
@@ -85,9 +78,8 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
     else
       m.Mod.opens |> find_first (fun path ->
         let x = { x with PathName.path = path @ x.PathName.path } in
-        match bound_name_opt find x env with
-        | None -> None
-        | Some name -> Some { name with BoundName.depth = name.BoundName.depth + 1 })
+        bound_name_opt find x env |> option_map (fun name ->
+          { name with BoundName.depth = name.BoundName.depth + 1 }))
   | [] -> None
 
 let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
@@ -136,7 +128,7 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
       Effect.Type.Pure) in
   add_var path ("raise_" ^ base) effect_typ env
 
-let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   let m =
     try List.nth env x.BoundName.depth with

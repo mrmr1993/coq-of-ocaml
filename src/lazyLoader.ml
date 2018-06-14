@@ -1,6 +1,12 @@
 open SmartPrint
+open Utils
 
 type 'a t = 'a FullEnvi.WrappedMod.t Name.Map.t
+
+let pp (loader : 'a t) : SmartPrint.t =
+  !^ "LazyLoader" ^^ OCaml.list (fun (x, wmod) ->
+    OCaml.tuple [Name.pp x; FullEnvi.WrappedMod.pp wmod])
+    (Name.Map.bindings loader)
 
 let empty = Name.Map.empty
 
@@ -19,9 +25,6 @@ let add_interface (env : Effect.Type.t FullEnvi.t) (coq_prefix : Name.t)
   let interface = Interface.of_file file_name in
   let wmod = Interface.to_wrapped_mod coq_prefix interface env in
   (wmod, add_wrapped_mod wmod loader)
-
-let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
-  FullMod.find_first f l
 
 (* Mutable list of Coq name, interface directory pairs. *)
 let interfaces : (Name.t * string) list ref = ref []

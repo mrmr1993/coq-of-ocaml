@@ -1,4 +1,5 @@
 open SmartPrint
+open Utils
 
 module WrappedMod = struct
   type 'a t = {
@@ -7,13 +8,11 @@ module WrappedMod = struct
     coq_name : Name.t
   }
 
+  let pp (wmod : 'a t) : SmartPrint.t =
+    OCaml.tuple [Name.pp wmod.ocaml_name; Name.pp wmod.coq_name; Mod.pp wmod.m]
+
   let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
     {wmod with m = Mod.map f wmod.m}
-
-  let opt_map (f : 'a -> 'b) (wmod : 'a t option) : 'b t option =
-    match wmod with
-    | Some wmod -> Some (map f wmod)
-    | None -> None
 end
 
 
@@ -80,19 +79,15 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module module_name prefix env.active_module}
 
-let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
-  FullMod.find_first f l
-
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   : ('a WrappedMod.t * PathName.t) option =
   match x.PathName.path with
   | [] -> None
   | module_name :: module_path ->
-    match find_wrapped_mod_opt module_name env with
-    | Some external_module ->
-      let x = { x with PathName.path = module_path } in
-      Some (external_module, x)
-    | None -> None
+    find_wrapped_mod_opt module_name env |>
+      option_map (fun external_module ->
+        let x = { x with PathName.path = module_path } in
+        (external_module, x))
 
 let find_external_module_path (x : PathName.t) (env : 'a t)
   : 'a WrappedMod.t * PathName.t =
@@ -114,7 +109,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> bool)
       else None
     | None -> None) (FullMod.external_opens env.active_module)
 
-let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
+let bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some name
@@ -201,7 +196,7 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   : Effect.Type.t t =
   {env with active_module = FullMod.add_exception_with_effects path base id env.active_module}
 
-let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
     let (external_module, x) = find_external_module_path x.path_name env in
@@ -226,7 +221,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   get_module = (fun x -> WrappedMod.opt_map f (env.get_module x));
+   get_module = (fun x -> option_map (WrappedMod.map f) (env.get_module x));
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =

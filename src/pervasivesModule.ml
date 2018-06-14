@@ -150,6 +150,10 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
        {env with get_module}
   |> enter_module
   |> open_module' Loc.Unknown ["OCaml"]
-  (* |> fun env -> SmartPrint.to_stdout 80 2 (FullEnvi.pp env); env *)
+
+let show out_channel : unit =
+  to_out_channel 80 2 out_channel (FullEnvi.pp env_with_effects)
+
+(* show stdout;; *)
 
 let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects

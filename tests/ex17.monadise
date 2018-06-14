@@ -4,7 +4,7 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], Some Monad ([ Outside/0 ], B)),
+      ((f, [ A; B ], [ (x, A) ], Monad ([ Outside/0 ], B)),
         Apply (5, Variable (5, raise_Outside/0), [ Tuple (?) ]))
     ])
 
@@ -15,8 +15,7 @@ Value
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/2)) ],
-          Some Monad ([ Outside/1; Inside/0 ], A)),
+        ((g, [ A ], [ (b, Type (bool/2)) ], Monad ([ Outside/1; Inside/0 ], A)),
           IfThenElse
             (11, Variable (11, b/0),
               Lift
@@ -45,7 +44,7 @@ Value
   (rec, @.,
     [
       ((h_rec, [ A; B ], [ (counter, Type (nat/1)); (l, Type (list/1, A)) ],
-        Some Monad ([ IO/1; NonTermination/1; Outside/0; G.Inside/0 ], B)),
+        Monad ([ IO/1; NonTermination/1; Outside/0; G.Inside/0 ], B)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -197,10 +196,8 @@ Value
   (non_rec, @.,
     [
       ((h, [ A; B ], [ (l, Type (list/1, A)) ],
-        Some
-          Monad
-            ([ Counter/1; IO/1; NonTermination/1; Outside/0; G.Inside/0 ],
-              B)),
+        Monad
+          ([ Counter/1; IO/1; NonTermination/1; Outside/0; G.Inside/0 ], B)),
         Bind
           (?,
             Lift
