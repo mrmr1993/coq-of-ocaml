@@ -1,5 +1,4 @@
 (** A structure represents the contents of a ".ml" file. *)
-open Types
 open Typedtree
 open SmartPrint
 

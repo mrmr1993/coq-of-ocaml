@@ -1,5 +1,4 @@
 (** Local identifiers, used for variable names in patterns for example. *)
-open Typedtree
 open SmartPrint
 open Yojson.Basic
 

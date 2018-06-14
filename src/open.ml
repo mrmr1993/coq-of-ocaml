@@ -1,4 +1,3 @@
-open Typedtree
 open SmartPrint
 
 type t = PathName.t
