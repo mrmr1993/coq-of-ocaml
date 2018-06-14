@@ -950,7 +950,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       separate space (cases |> List.map (fun (p, e) ->
         nest (!^ "|" ^^ Pattern.to_coq false p ^^ !^ "=>" ^^ to_coq false e ^^ newline))) ^^
       !^ "end")
-  | Record (_, fields, base) ->
+  | Record (_, fields, _) ->
     nest (!^ "{|" ^^ separate (!^ ";" ^^ space)
       (fields |> filter_map (fun (x, e) -> e |> option_map (fun e ->
         nest (BoundName.to_coq x ^-^ !^ " :=" ^^ to_coq false e)))) ^^ !^ "|}")
