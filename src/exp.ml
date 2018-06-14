@@ -2,6 +2,7 @@
 open Typedtree
 open Types
 open SmartPrint
+open Utils
 
 module Header = struct
   type t = {
@@ -128,20 +129,6 @@ let annotation (e : 'a t) : 'a =
   | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
   | IfThenElse (a, _, _, _) | Sequence (a, _, _) | Return (a, _)
   | Bind (a, _, _, _) | Lift (a, _, _, _) | Run (a, _, _, _) -> a
-
-let is_some (x : 'a option) : bool =
-  match x with | Some _ -> true | None -> false
-
-let option_map (f : 'a -> 'b) (x : 'a option) : 'b option =
-  match x with
-  | Some x -> Some (f x)
-  | None -> None
-
-let rec option_filter (l : 'a option list) : 'a list =
-  match l with
-  | [] -> []
-  | Some x :: l' -> x :: option_filter l'
-  | None :: l' -> option_filter l'
 
 let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
   match e with
@@ -590,26 +577,6 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
         (header, monadise_let_rec (Header.env_in_header header env ()) e)) } in
     let env = Definition.env_after_def def env in
     (env, [def])
-
-let rec filter_map (f : 'a -> 'b option) (l : 'a list) : 'b list =
-  match l with
-  | [] -> []
-  | a :: l' ->
-    match f a with
-    | Some b -> b :: filter_map f l'
-    | None -> filter_map f l'
-
-let rec mix_map2 (f : 'a -> bool) (g : 'a -> 'c) (h : 'a -> 'b -> 'c)
-  (l1 : 'a list) (l2 : 'b list) : 'c list =
-  match l1 with
-  | [] -> []
-  | a :: l1' ->
-    if f a then
-      match l2 with
-      | [] -> []
-      | b :: l2' -> h a b :: mix_map2 f g h l1' l2'
-    else
-      g a :: mix_map2 f g h l1' l2
 
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
   : (Loc.t * Effect.t) t =
