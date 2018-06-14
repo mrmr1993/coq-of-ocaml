@@ -3,7 +3,7 @@ Value
   (rec, @coq_rec,
     [
       ((f_map, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Match
           ((4, Effect ([ ], .)), Variable ((4, Effect ([ ], .)), l/0),
             [
@@ -77,7 +77,7 @@ Value
     [
       ((f_map2_rec, [ A; B ],
         [ (counter, Type (nat/1)); (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -236,7 +236,7 @@ Value
   (non_rec, @.,
     [
       ((f_map2, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -273,12 +273,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Some Type (Z/1)),
+      ((n, [ ], [ ], Type (Z/1)),
         LetFun (16, Effect ([ ], .))
           (rec, @coq_rec,
             [
               ((sum_coq_rec, [ ], [ (l, Type (list/1, Type (Z/1))) ],
-                Some Type (Z/1)),
+                Type (Z/1)),
                 Match
                   ((17, Effect ([ ], .)),
                     Variable
@@ -405,7 +405,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n2, [ A ], [ (x, A) ], Some Type (Z/1)),
+      ((n2, [ A ], [ (x, A) ], Type (Z/1)),
         Match
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -434,9 +434,8 @@ Value
                                 Type
                                   (Z/1)))
                         ],
-                        Some
-                          Type
-                            (Z/1)),
+                        Type
+                          (Z/1)),
                         Match
                           ((?,
                             Effect
@@ -606,9 +605,8 @@ Value
                                 Type
                                   (Z/1)))
                         ],
-                        Some
-                          Type
-                            (Z/1)),
+                        Type
+                          (Z/1)),
                         Apply
                           ((?,
                             Effect

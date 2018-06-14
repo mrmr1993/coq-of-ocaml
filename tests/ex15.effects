@@ -6,7 +6,7 @@ Inductive set:
 Value
   (non_rec, @.,
     [
-      ((empty, [ ], [ ], Some Type (set/0)),
+      ((empty, [ ], [ ], Type (set/0)),
         Constructor ((7, Effect ([ ], .)), Empty/0))
     ])
 
@@ -16,7 +16,7 @@ Value
     [
       ((member_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -283,7 +283,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Some Type (bool/1)),
+      ((member, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (bool/1)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -322,7 +322,7 @@ Value
     [
       ((insert_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Type (set/0)),
+        Type (set/0)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -654,7 +654,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Some Type (set/0)),
+      ((insert, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (set/0)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable

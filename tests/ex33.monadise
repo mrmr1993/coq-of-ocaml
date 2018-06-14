@@ -5,7 +5,7 @@
   Value
     (non_rec, @.,
       [
-        ((compare, [ ], [ (x, Type (t/0)) ], Some (Type (t/0) -> Type (Z/2))),
+        ((compare, [ ], [ (x, Type (t/0)) ], (Type (t/0) -> Type (Z/2))),
           Match
             (?, Variable (?, x/0),
               [
@@ -41,7 +41,7 @@ Inductive t:
 Value
   (non_rec, @.,
     [
-      ((height, [ A ], [ (x, Type (t/0, A)) ], Some Type (Z/1)),
+      ((height, [ A ], [ (x, Type (t/0, A)) ], Type (Z/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -57,7 +57,7 @@ Value
     [
       ((create, [ A ],
         [ (l, Type (t/0, A)); (x, Type (key/0)); (d, A); (r, Type (t/0, A)) ],
-        Some Type (t/0, A)),
+        Type (t/0, A)),
         LetVar ? hl =
           Apply (19, Variable (19, height/0), [ Variable (19, l/0) ]) in
         LetVar ? hr =
@@ -82,7 +82,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((singleton, [ A ], [ (x, Type (key/0)); (d, A) ], Some Type (t/0, A)),
+      ((singleton, [ A ], [ (x, Type (key/0)); (d, A) ], Type (t/0, A)),
         Constructor
           (23, Node/0, Constructor (23, Empty/0), Variable (23, x/0),
             Variable (23, d/0), Constructor (23, Empty/0),
@@ -95,7 +95,7 @@ Value
     [
       ((bal, [ A ],
         [ (l, Type (t/0, A)); (x, Type (key/0)); (d, A); (r, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
         LetVar ? hl =
           Match
             (26, Variable (26, l/0),
@@ -523,13 +523,13 @@ Value
 55
 Value
   (non_rec, @.,
-    [ ((empty, [ A ], [ ], Some Type (t/0, A)), Constructor (55, Empty/0)) ])
+    [ ((empty, [ A ], [ ], Type (t/0, A)), Constructor (55, Empty/0)) ])
 
 57
 Value
   (non_rec, @.,
     [
-      ((is_empty, [ A ], [ (x, Type (t/0, A)) ], Some Type (bool/1)),
+      ((is_empty, [ A ], [ (x, Type (t/0, A)) ], Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -543,7 +543,7 @@ Value
   (rec, @coq_rec,
     [
       ((add, [ A ], [ (x, Type (key/0)); (data, A); (x_1, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -720,7 +720,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ A ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Not_found/1 ], A)),
+        Monad ([ OCaml.Not_found/1 ], A)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -808,8 +808,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mem, [ A ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0, A)) ],
-        Some Type (bool/1)),
+      ((mem, [ A ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0, A)) ], Type (bool/1)),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -889,7 +888,7 @@ Value
   (rec, @coq_rec,
     [
       ((min_binding, [ A ], [ (x, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A))),
+        Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -933,7 +932,7 @@ Value
   (rec, @coq_rec,
     [
       ((max_binding, [ A ], [ (x, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A))),
+        Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -977,7 +976,7 @@ Value
   (rec, @coq_rec,
     [
       ((remove_min_binding, [ A ], [ (x, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1036,10 +1035,7 @@ Value
   (non_rec, @.,
     [
       ((remove_merge, [ A ], [ (t1, Type (t/0, A)); (t2, Type (t/0, A)) ],
-        Some
-          Monad
-            ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ],
-              Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], Type (t/0, A))),
         Match
           (108, Tuple (108, Variable (108, t1/0), Variable (108, t2/0)),
             [
@@ -1131,10 +1127,7 @@ Value
   (rec, @coq_rec,
     [
       ((remove, [ A ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0, A)) ],
-        Some
-          Monad
-            ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ],
-              Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1297,7 +1290,7 @@ Value
   (rec, @coq_rec,
     [
       ((iter, [ A; B ], [ (f, (Type (key/0) -> (A -> B))); (x, Type (t/0, A)) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1323,7 +1316,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (t/0, A)) ], Some Type (t/0, B)),
+      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (t/0, A)) ], Type (t/0, B)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1396,7 +1389,7 @@ Value
   (rec, @coq_rec,
     [
       ((mapi, [ A; B ], [ (f, (Type (key/0) -> (A -> B))); (x, Type (t/0, A)) ],
-        Some Type (t/0, B)),
+        Type (t/0, B)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1476,7 +1469,7 @@ Value
           (f, (Type (key/0) -> (A -> (B -> B))));
           (m, Type (t/0, A));
           (accu, B)
-        ], Some B),
+        ], B),
         Match
           (155, Variable (155, m/0),
             [
@@ -1533,7 +1526,7 @@ Value
     [
       ((for_all, [ A ],
         [ (p, (Type (key/0) -> (A -> Type (bool/1)))); (x, Type (t/0, A)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1601,7 +1594,7 @@ Value
     [
       ((exists_, [ A ],
         [ (p, (Type (key/0) -> (A -> Type (bool/1)))); (x, Type (t/0, A)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -1669,7 +1662,7 @@ Value
     [
       ((add_min_binding, [ A ],
         [ (k, Type (key/0)); (v, A); (x, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1738,7 +1731,7 @@ Value
     [
       ((add_max_binding, [ A ],
         [ (k, Type (key/0)); (v, A); (x, Type (t/0, A)) ],
-        Some Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1813,9 +1806,7 @@ Value
           (d, A);
           (r, Type (t/0, A))
         ],
-        Some
-          Monad
-            ([ NonTermination/1; OCaml.Invalid_argument/1 ], Type (t/0, A))),
+        Monad ([ NonTermination/1; OCaml.Invalid_argument/1 ], Type (t/0, A))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -2120,10 +2111,9 @@ Value
     [
       ((join, [ A ],
         [ (l, Type (t/0, A)); (v, Type (key/0)); (d, A); (r, Type (t/0, A)) ],
-        Some
-          Monad
-            ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
-              Type (t/0, A))),
+        Monad
+          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
+            Type (t/0, A))),
         Bind
           (?,
             Lift
@@ -2158,14 +2148,13 @@ Value
   (non_rec, @.,
     [
       ((concat, [ A ], [ (t1, Type (t/0, A)); (t2, Type (t/0, A)) ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], Type (t/0, A))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], Type (t/0, A))),
         Match
           (208, Tuple (208, Variable (208, t1/0), Variable (208, t2/0)),
             [
@@ -2279,14 +2268,13 @@ Value
           (d, Type (option/1, A));
           (t2, Type (t/0, A))
         ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], Type (t/0, A))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], Type (t/0, A))),
         Match
           (216, Variable (216, d/0),
             [
@@ -2345,10 +2333,9 @@ Value
   (rec, @coq_rec,
     [
       ((split, [ A ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0, A)) ],
-        Some
-          Monad
-            ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
-              (Type (t/0, A) * Type (option/1, A) * Type (t/0, A)))),
+        Monad
+          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
+            (Type (t/0, A) * Type (option/1, A) * Type (t/0, A)))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -2574,14 +2561,13 @@ Value
           (s1, Type (t/0, A));
           (s2, Type (t/0, B))
         ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], Type (t/0, C))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], Type (t/0, C))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -2924,14 +2910,13 @@ Value
           (s1, Type (t/0, A));
           (s2, Type (t/0, B))
         ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], Type (t/0, C))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], Type (t/0, C))),
         Bind
           (?,
             Lift
@@ -2960,14 +2945,13 @@ Value
     [
       ((filter, [ A ],
         [ (p, (Type (key/0) -> (A -> Type (bool/1)))); (x, Type (t/0, A)) ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], Type (t/0, A))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], Type (t/0, A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -3085,14 +3069,13 @@ Value
     [
       ((partition, [ A ],
         [ (p, (Type (key/0) -> (A -> Type (bool/1)))); (x, Type (t/0, A)) ],
-        Some
-          Monad
-            ([
-              Counter/1;
-              NonTermination/1;
-              OCaml.Invalid_argument/1;
-              OCaml.Not_found/1
-            ], (Type (t/0, A) * Type (t/0, A)))),
+        Monad
+          ([
+            Counter/1;
+            NonTermination/1;
+            OCaml.Invalid_argument/1;
+            OCaml.Not_found/1
+          ], (Type (t/0, A) * Type (t/0, A)))),
         Match
           (?, Variable (?, x/0),
             [
@@ -3327,7 +3310,7 @@ Value
   (rec, @coq_rec,
     [
       ((cons_enum, [ A ], [ (m, Type (t/0, A)); (e, Type (enumeration/0, A)) ],
-        Some Type (enumeration/0, A)),
+        Type (enumeration/0, A)),
         Match
           (267, Variable (267, m/0),
             [
@@ -3370,7 +3353,7 @@ Value
           (cmp, (A -> (B -> Type (Z/1))));
           (m1, Type (t/0, A));
           (m2, Type (t/0, B))
-        ], Some Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        ], Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
         LetFun 273
           (rec, @.,
             [
@@ -3386,13 +3369,7 @@ Value
                       (enumeration/0,
                         B))
                 ],
-                Some
-                  Monad
-                    ([
-                      NonTermination/1
-                    ],
-                      Type
-                        (Z/1))),
+                Monad ([ NonTermination/1 ], Type (Z/1))),
                 Match
                   (?,
                     Variable
@@ -3598,14 +3575,11 @@ Value
                       (enumeration/0,
                         B))
                 ],
-                Some
-                  Monad
-                    ([
-                      Counter/1;
-                      NonTermination/1
-                    ],
-                      Type
-                        (Z/1))),
+                Monad
+                  ([
+                    Counter/1;
+                    NonTermination/1
+                  ], Type (Z/1))),
                 Bind
                   (?,
                     Lift
@@ -3689,7 +3663,7 @@ Value
           (cmp, (A -> (B -> Type (bool/1))));
           (m1, Type (t/0, A));
           (m2, Type (t/0, B))
-        ], Some Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        ], Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
         LetFun 287
           (rec, @.,
             [
@@ -3705,13 +3679,10 @@ Value
                       (enumeration/0,
                         B))
                 ],
-                Some
-                  Monad
-                    ([
-                      NonTermination/1
-                    ],
-                      Type
-                        (bool/1))),
+                Monad
+                  ([ NonTermination/1 ],
+                    Type
+                      (bool/1))),
                 Match
                   (?,
                     Variable
@@ -3909,14 +3880,11 @@ Value
                       (enumeration/0,
                         B))
                 ],
-                Some
-                  Monad
-                    ([
-                      Counter/1;
-                      NonTermination/1
-                    ],
-                      Type
-                        (bool/1))),
+                Monad
+                  ([
+                    Counter/1;
+                    NonTermination/1
+                  ], Type (bool/1))),
                 Bind
                   (?,
                     Lift
@@ -3995,7 +3963,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((cardinal, [ A ], [ (x, Type (t/0, A)) ], Some Type (Z/1)),
+      ((cardinal, [ A ], [ (x, Type (t/0, A)) ], Type (Z/1)),
         Match
           (?, Variable (?, x/0),
             [
@@ -4047,7 +4015,7 @@ Value
     [
       ((bindings_aux, [ A ],
         [ (accu, Type (list/1, (Type (key/0) * A))); (x, Type (t/0, A)) ],
-        Some Type (list/1, (Type (key/0) * A))),
+        Type (list/1, (Type (key/0) * A))),
         Match
           (?, Variable (?, x/0),
             [
@@ -4095,7 +4063,7 @@ Value
   (non_rec, @.,
     [
       ((bindings, [ A ], [ (s, Type (t/0, A)) ],
-        Some Type (list/1, (Type (key/0) * A))),
+        Type (list/1, (Type (key/0) * A))),
         Apply
           (308, Variable (308, bindings_aux/0),
             [ Constructor (308, []/1); Variable (308, s/0) ]))
@@ -4106,8 +4074,6 @@ Value
   (non_rec, @.,
     [
       ((choose, [ A ], [ ],
-        Some
-          (Type (t/0, A) ->
-            Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A)))),
+        (Type (t/0, A) -> Monad ([ OCaml.Not_found/1 ], (Type (key/0) * A)))),
         Variable (310, min_binding/0))
     ])

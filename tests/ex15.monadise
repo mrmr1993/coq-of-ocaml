@@ -4,8 +4,7 @@ Inductive set:
 
 7
 Value
-  (non_rec, @.,
-    [ ((empty, [ ], [ ], Some Type (set/0)), Constructor (7, Empty/0)) ])
+  (non_rec, @., [ ((empty, [ ], [ ], Type (set/0)), Constructor (7, Empty/0)) ])
 
 9
 Value
@@ -13,7 +12,7 @@ Value
     [
       ((member_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Monad ([ NonTermination/1 ], Type (bool/1))),
+        Monad ([ NonTermination/1 ], Type (bool/1))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -130,7 +129,7 @@ Value
   (non_rec, @.,
     [
       ((member, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
         Bind
           (?,
             Lift
@@ -154,7 +153,7 @@ Value
     [
       ((insert_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Monad ([ NonTermination/1 ], Type (set/0))),
+        Monad ([ NonTermination/1 ], Type (set/0))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -316,7 +315,7 @@ Value
   (non_rec, @.,
     [
       ((insert, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (set/0))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (set/0))),
         Bind
           (?,
             Lift

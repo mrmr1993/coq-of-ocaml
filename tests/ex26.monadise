@@ -3,7 +3,7 @@ Value
   (rec, @coq_rec,
     [
       ((f_map, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Match
           (4, Variable (4, l/0),
             [
@@ -43,7 +43,7 @@ Value
     [
       ((f_map2_rec, [ A; B ],
         [ (counter, Type (nat/1)); (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Monad ([ NonTermination/1 ], Type (list/1, B))),
+        Monad ([ NonTermination/1 ], Type (list/1, B))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -126,7 +126,7 @@ Value
   (non_rec, @.,
     [
       ((f_map2, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (list/1, B))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (list/1, B))),
         Bind
           (?,
             Lift
@@ -148,12 +148,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Some Type (Z/1)),
+      ((n, [ ], [ ], Type (Z/1)),
         LetFun 16
           (rec, @coq_rec,
             [
               ((sum_coq_rec, [ ], [ (l, Type (list/1, Type (Z/1))) ],
-                Some Type (Z/1)),
+                Type (Z/1)),
                 Match
                   (17,
                     Variable
@@ -219,7 +219,7 @@ Value
   (non_rec, @.,
     [
       ((n2, [ A ], [ (x, A) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
         Match
           (?, Variable (?, x/0),
             [
@@ -240,13 +240,12 @@ Value
                                 Type
                                   (Z/1)))
                         ],
-                        Some
-                          Monad
-                            ([
-                              NonTermination/1
-                            ],
-                              Type
-                                (Z/1))),
+                        Monad
+                          ([
+                            NonTermination/1
+                          ],
+                            Type
+                              (Z/1))),
                         Match
                           (?,
                             Variable
@@ -337,14 +336,13 @@ Value
                                 Type
                                   (Z/1)))
                         ],
-                        Some
-                          Monad
-                            ([
-                              Counter/1;
-                              NonTermination/1
-                            ],
-                              Type
-                                (Z/1))),
+                        Monad
+                          ([
+                            Counter/1;
+                            NonTermination/1
+                          ],
+                            Type
+                              (Z/1))),
                         Bind
                           (?,
                             Lift

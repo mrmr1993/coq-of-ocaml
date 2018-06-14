@@ -2,7 +2,7 @@
 Value
   (non_rec, @.,
     [
-      ((e_invalid, [ A; B ], [ (x, A) ], Some B),
+      ((e_invalid, [ A; B ], [ (x, A) ], B),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -42,7 +42,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Some B),
+      ((e_failure, [ A; B ], [ (x, A) ], B),
         Match
           ((?, Effect ([ OCaml.Failure/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -82,7 +82,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit1, [ A; B ], [ (x, A) ], Some B),
+      ((e_exit1, [ A; B ], [ (x, A) ], B),
         Match
           ((?, Effect ([ OCaml.Pervasives.Exit/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -121,7 +121,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit2, [ A; B ], [ (x, A) ], Some B),
+      ((e_exit2, [ A; B ], [ (x, A) ], B),
         Match
           ((?, Effect ([ OCaml.Pervasives.Exit/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -160,7 +160,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_eq, [ ], [ ], Some Type (bool/1)),
+      ((b_eq, [ ], [ ], Type (bool/1)),
         Apply
           ((11, Effect ([ ], .)),
             Variable ((11, Effect ([ ], .)), equiv_decb/1),
@@ -174,7 +174,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_neq1, [ ], [ ], Some Type (bool/1)),
+      ((b_neq1, [ ], [ ], Type (bool/1)),
         Apply
           ((12, Effect ([ ], .)),
             Variable ((12, Effect ([ ], .)), nequiv_decb/1),
@@ -188,7 +188,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_neq2, [ ], [ ], Some Type (bool/1)),
+      ((b_neq2, [ ], [ ], Type (bool/1)),
         Apply
           ((13, Effect ([ ], .)),
             Variable ((13, Effect ([ ], .)), nequiv_decb/1),
@@ -202,7 +202,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_lt, [ ], [ ], Some Type (bool/1)),
+      ((b_lt, [ ], [ ], Type (bool/1)),
         Apply
           ((14, Effect ([ ], .)),
             Variable ((14, Effect ([ ], .)), OCaml.Pervasives.lt/1),
@@ -216,7 +216,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_gt, [ ], [ ], Some Type (bool/1)),
+      ((b_gt, [ ], [ ], Type (bool/1)),
         Apply
           ((15, Effect ([ ], .)),
             Variable ((15, Effect ([ ], .)), OCaml.Pervasives.gt/1),
@@ -230,7 +230,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_le, [ ], [ ], Some Type (bool/1)),
+      ((b_le, [ ], [ ], Type (bool/1)),
         Apply
           ((16, Effect ([ ], .)),
             Variable ((16, Effect ([ ], .)), OCaml.Pervasives.le/1),
@@ -244,7 +244,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_ge, [ ], [ ], Some Type (bool/1)),
+      ((b_ge, [ ], [ ], Type (bool/1)),
         Apply
           ((17, Effect ([ ], .)),
             Variable ((17, Effect ([ ], .)), OCaml.Pervasives.ge/1),
@@ -258,7 +258,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((comp, [ ], [ ], Some Type (Z/1)),
+      ((comp, [ ], [ ], Type (Z/1)),
         Apply
           ((18, Effect ([ ], .)),
             Variable ((18, Effect ([ ], .)), OCaml.Pervasives.compare/1),
@@ -272,7 +272,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_min, [ ], [ ], Some Type (Z/1)),
+      ((n_min, [ ], [ ], Type (Z/1)),
         Apply
           ((19, Effect ([ ], .)),
             Variable ((19, Effect ([ ], .)), OCaml.Pervasives.min/1),
@@ -286,7 +286,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_max, [ ], [ ], Some Type (Z/1)),
+      ((n_max, [ ], [ ], Type (Z/1)),
         Apply
           ((20, Effect ([ ], .)),
             Variable ((20, Effect ([ ], .)), OCaml.Pervasives.max/1),
@@ -300,7 +300,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_not, [ ], [ ], Some Type (bool/1)),
+      ((b_not, [ ], [ ], Type (bool/1)),
         Apply
           ((25, Effect ([ ], .)), Variable ((25, Effect ([ ], .)), negb/1),
             [ Constructor ((25, Effect ([ ], .)), false/1) ]))
@@ -310,7 +310,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_and, [ ], [ ], Some Type (bool/1)),
+      ((b_and, [ ], [ ], Type (bool/1)),
         Apply
           ((26, Effect ([ ], .)), Variable ((26, Effect ([ ], .)), andb/1),
             [
@@ -323,7 +323,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_and_old, [ ], [ ], Some Type (bool/1)),
+      ((b_and_old, [ ], [ ], Type (bool/1)),
         Apply
           ((27, Effect ([ ], .)), Variable ((27, Effect ([ ], .)), andb/1),
             [
@@ -336,7 +336,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_or, [ ], [ ], Some Type (bool/1)),
+      ((b_or, [ ], [ ], Type (bool/1)),
         Apply
           ((28, Effect ([ ], .)), Variable ((28, Effect ([ ], .)), orb/1),
             [
@@ -349,7 +349,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_or_old, [ ], [ ], Some Type (bool/1)),
+      ((b_or_old, [ ], [ ], Type (bool/1)),
         Apply
           ((29, Effect ([ ], .)), Variable ((29, Effect ([ ], .)), orb/1),
             [
@@ -362,7 +362,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((app1, [ ], [ ], Some Type (Z/1)),
+      ((app1, [ ], [ ], Type (Z/1)),
         Apply
           ((32, Effect ([ ], .)),
             Variable
@@ -385,7 +385,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((app2, [ ], [ ], Some Type (Z/1)),
+      ((app2, [ ], [ ], Type (Z/1)),
         Apply
           ((33, Effect ([ ], .)), Variable ((33, Effect ([ ], .)), apply/1),
             [
@@ -406,7 +406,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_neg1, [ ], [ ], Some Type (Z/1)),
+      ((n_neg1, [ ], [ ], Type (Z/1)),
         Apply
           ((36, Effect ([ ], .)), Variable ((36, Effect ([ ], .)), Z.opp/1),
             [ Constant ((36, Effect ([ ], .)), Int(12)) ]))
@@ -416,7 +416,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_neg2, [ ], [ ], Some Type (Z/1)),
+      ((n_neg2, [ ], [ ], Type (Z/1)),
         Constant ((37, Effect ([ ], .)), Int(-12)))
     ])
 
@@ -424,7 +424,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_pos1, [ ], [ ], Some Type (Z/1)),
+      ((n_pos1, [ ], [ ], Type (Z/1)),
         Apply
           ((38, Effect ([ ], .)), Variable ((38, Effect ([ ], .)), /1),
             [ Constant ((38, Effect ([ ], .)), Int(12)) ]))
@@ -434,15 +434,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_pos2, [ ], [ ], Some Type (Z/1)),
-        Constant ((39, Effect ([ ], .)), Int(12)))
+      ((n_pos2, [ ], [ ], Type (Z/1)), Constant ((39, Effect ([ ], .)), Int(12)))
     ])
 
 40
 Value
   (non_rec, @.,
     [
-      ((n_succ, [ ], [ ], Some Type (Z/1)),
+      ((n_succ, [ ], [ ], Type (Z/1)),
         Apply
           ((40, Effect ([ ], .)),
             Variable ((40, Effect ([ ], .)), Z.succ/1),
@@ -453,7 +452,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_pred, [ ], [ ], Some Type (Z/1)),
+      ((n_pred, [ ], [ ], Type (Z/1)),
         Apply
           ((41, Effect ([ ], .)),
             Variable ((41, Effect ([ ], .)), Z.pred/1),
@@ -464,7 +463,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_plus, [ ], [ ], Some Type (Z/1)),
+      ((n_plus, [ ], [ ], Type (Z/1)),
         Apply
           ((42, Effect ([ ], .)), Variable ((42, Effect ([ ], .)), Z.add/1),
             [
@@ -477,7 +476,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_minus, [ ], [ ], Some Type (Z/1)),
+      ((n_minus, [ ], [ ], Type (Z/1)),
         Apply
           ((43, Effect ([ ], .)), Variable ((43, Effect ([ ], .)), Z.sub/1),
             [
@@ -490,7 +489,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_times, [ ], [ ], Some Type (Z/1)),
+      ((n_times, [ ], [ ], Type (Z/1)),
         Apply
           ((44, Effect ([ ], .)), Variable ((44, Effect ([ ], .)), Z.mul/1),
             [
@@ -503,7 +502,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_div, [ ], [ ], Some Type (Z/1)),
+      ((n_div, [ ], [ ], Type (Z/1)),
         Apply
           ((45, Effect ([ ], .)), Variable ((45, Effect ([ ], .)), Z.div/1),
             [
@@ -516,7 +515,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_mod, [ ], [ ], Some Type (Z/1)),
+      ((n_mod, [ ], [ ], Type (Z/1)),
         Apply
           ((46, Effect ([ ], .)),
             Variable ((46, Effect ([ ], .)), Z.modulo/1),
@@ -530,7 +529,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_abs, [ ], [ ], Some Type (Z/1)),
+      ((n_abs, [ ], [ ], Type (Z/1)),
         Apply
           ((47, Effect ([ ], .)), Variable ((47, Effect ([ ], .)), Z.abs/1),
             [ Constant ((47, Effect ([ ], .)), Int(1)) ]))
@@ -540,7 +539,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_land, [ ], [ ], Some Type (Z/1)),
+      ((n_land, [ ], [ ], Type (Z/1)),
         Apply
           ((52, Effect ([ ], .)),
             Variable ((52, Effect ([ ], .)), Z.land/1),
@@ -554,7 +553,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lor, [ ], [ ], Some Type (Z/1)),
+      ((n_lor, [ ], [ ], Type (Z/1)),
         Apply
           ((53, Effect ([ ], .)), Variable ((53, Effect ([ ], .)), Z.lor/1),
             [
@@ -567,7 +566,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lxor, [ ], [ ], Some Type (Z/1)),
+      ((n_lxor, [ ], [ ], Type (Z/1)),
         Apply
           ((54, Effect ([ ], .)),
             Variable ((54, Effect ([ ], .)), Z.lxor/1),
@@ -581,7 +580,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lsl, [ ], [ ], Some Type (Z/1)),
+      ((n_lsl, [ ], [ ], Type (Z/1)),
         Apply
           ((56, Effect ([ ], .)),
             Variable ((56, Effect ([ ], .)), Z.shiftl/1),
@@ -595,7 +594,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lsr, [ ], [ ], Some Type (Z/1)),
+      ((n_lsr, [ ], [ ], Type (Z/1)),
         Apply
           ((57, Effect ([ ], .)),
             Variable ((57, Effect ([ ], .)), Z.shiftr/1),
@@ -609,7 +608,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ss, [ ], [ ], Some Type (string/1)),
+      ((ss, [ ], [ ], Type (string/1)),
         Apply
           ((64, Effect ([ ], .)),
             Variable ((64, Effect ([ ], .)), String.append/1),
@@ -623,7 +622,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_char, [ ], [ ], Some Type (Z/1)),
+      ((n_char, [ ], [ ], Type (Z/1)),
         Apply
           ((67, Effect ([ ], .)),
             Variable
@@ -635,7 +634,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((char_n, [ A ], [ (x, A) ], Some Type (ascii/1)),
+      ((char_n, [ A ], [ (x, A) ], Type (ascii/1)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -675,7 +674,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((i, [ ], [ ], Some Type (unit/1)),
+      ((i, [ ], [ ], Type (unit/1)),
         Apply
           ((71, Effect ([ ], .)),
             Variable ((71, Effect ([ ], .)), OCaml.Pervasives.ignore/1),
@@ -686,7 +685,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s_bool, [ ], [ ], Some Type (string/1)),
+      ((s_bool, [ ], [ ], Type (string/1)),
         Apply
           ((74, Effect ([ ], .)),
             Variable
@@ -698,7 +697,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((bool_s, [ ], [ ], Some Type (bool/1)),
+      ((bool_s, [ ], [ ], Type (bool/1)),
         Apply
           ((75, Effect ([ ], .)),
             Variable
@@ -710,7 +709,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s_n, [ ], [ ], Some Type (string/1)),
+      ((s_n, [ ], [ ], Type (string/1)),
         Apply
           ((76, Effect ([ ], .)),
             Variable
@@ -722,7 +721,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_s, [ ], [ ], Some Type (Z/1)),
+      ((n_s, [ ], [ ], Type (Z/1)),
         Apply
           ((77, Effect ([ ], .)),
             Variable
@@ -734,7 +733,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n1, [ ], [ ], Some Type (Z/1)),
+      ((n1, [ ], [ ], Type (Z/1)),
         Apply
           ((82, Effect ([ ], .)), Variable ((82, Effect ([ ], .)), fst/1),
             [
@@ -761,7 +760,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n2, [ ], [ ], Some Type (Z/1)),
+      ((n2, [ ], [ ], Type (Z/1)),
         Apply
           ((83, Effect ([ ], .)), Variable ((83, Effect ([ ], .)), snd/1),
             [
@@ -788,7 +787,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ll, [ ], [ ], Some Type (list/1, Type (Z/1))),
+      ((ll, [ ], [ ], Type (list/1, Type (Z/1))),
         Apply
           ((86, Effect ([ ], .)),
             Variable ((86, Effect ([ ], .)), OCaml.Pervasives.app/1),
@@ -860,7 +859,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_c, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((p_c, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -899,7 +898,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_s, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((p_s, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -938,7 +937,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_n, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((p_n, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -977,7 +976,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_endline, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((p_endline, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1016,7 +1015,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_newline, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((p_newline, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1055,7 +1054,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_c, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((perr_c, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1094,7 +1093,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_s, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((perr_s, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1133,7 +1132,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_n, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((perr_n, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1172,7 +1171,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_endline, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((perr_endline, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1211,7 +1210,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_newline, [ A ], [ (x, A) ], Some Type (unit/1)),
+      ((perr_newline, [ A ], [ (x, A) ], Type (unit/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1250,7 +1249,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_s, [ A ], [ (x, A) ], Some Type (string/1)),
+      ((r_s, [ A ], [ (x, A) ], Type (string/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -1289,7 +1288,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_n, [ A ], [ (x, A) ], Some Type (Z/1)),
+      ((r_n, [ A ], [ (x, A) ], Type (Z/1)),
         Match
           ((?, Effect ([ IO/1 ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [

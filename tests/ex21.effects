@@ -2,7 +2,7 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B; C ], [ (x, A) ], Some (B -> C)),
+      ((f, [ A; B; C ], [ (x, A) ], (B -> C)),
         Sequence
           ((4, Effect ([ IO/1 ], . -[ OCaml.Failure/1 ]-> .)),
             Apply
@@ -35,7 +35,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], Some B),
+      ((r, [ A; B ], [ (x, A) ], B),
         Match
           ((?, Effect ([ IO/1; OCaml.Failure/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),

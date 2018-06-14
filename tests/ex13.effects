@@ -2,7 +2,7 @@
 Value
   (non_rec, @.,
     [
-      ((tail, [ A ], [ (l, Type (list/1, A)) ], Some Type (list/1, A)),
+      ((tail, [ A ], [ (l, Type (list/1, A)) ], Type (list/1, A)),
         Match
           ((4, Effect ([ OCaml.Failure/1 ], .)),
             Variable ((4, Effect ([ ], .)), l/0),
@@ -46,7 +46,7 @@ Value
     [
       ((print_list_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (list/1, Type (string/1))) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Match
           ((?, Effect ([ IO/1; NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -202,8 +202,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((print_list, [ ], [ (x, Type (list/1, Type (string/1))) ],
-        Some Type (unit/1)),
+      ((print_list, [ ], [ (x, Type (list/1, Type (string/1))) ], Type (unit/1)),
         Apply
           ((?, Effect ([ Counter/1; IO/1; NonTermination/1 ], .)),
             Variable
@@ -239,7 +238,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ ], Some (Type (list/1, Type (string/1)) -> Type (unit/1))),
+      ((f, [ ], [ ], (Type (list/1, Type (string/1)) -> Type (unit/1))),
         Variable
           ((14, Effect ([ ], . -[ Counter/1; IO/1; NonTermination/1 ]-> .)),
             print_list/0))
@@ -249,7 +248,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x, [ A ], [ (z, A) ], Some Type (unit/1)),
+      ((x, [ A ], [ (z, A) ], Type (unit/1)),
         Apply
           ((16,
             Effect

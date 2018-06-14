@@ -4,7 +4,7 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], Some B),
+      ((f, [ A; B ], [ (x, A) ], B),
         Apply
           ((5, Effect ([ Outside/0 ], .)),
             Variable
@@ -19,7 +19,7 @@ Value
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/2)) ], Some A),
+        ((g, [ A ], [ (b, Type (bool/2)) ], A),
           IfThenElse
             ((11, Effect ([ Outside/1; Inside/0 ], .)),
               Variable ((11, Effect ([ ], .)), b/0),
@@ -70,8 +70,7 @@ Value
 Value
   (rec, @.,
     [
-      ((h_rec, [ A; B ], [ (counter, Type (nat/1)); (l, Type (list/1, A)) ],
-        Some B),
+      ((h_rec, [ A; B ], [ (counter, Type (nat/1)); (l, Type (list/1, A)) ], B),
         Match
           ((?, Effect ([ IO/1; NonTermination/1; Outside/0; G.Inside/0 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -303,7 +302,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A; B ], [ (l, Type (list/1, A)) ], Some B),
+      ((h, [ A; B ], [ (l, Type (list/1, A)) ], B),
         Apply
           ((?,
             Effect

@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((tail, [ A ], [ (l, Type (list/1, A)) ],
-        Some Monad ([ OCaml.Failure/1 ], Type (list/1, A))),
+        Monad ([ OCaml.Failure/1 ], Type (list/1, A))),
         Match
           (4, Variable (4, l/0),
             [
@@ -29,7 +29,7 @@ Value
     [
       ((print_list_rec, [ ],
         [ (counter, Type (nat/1)); (x, Type (list/1, Type (string/1))) ],
-        Some Monad ([ IO/1; NonTermination/1 ], Type (unit/1))),
+        Monad ([ IO/1; NonTermination/1 ], Type (unit/1))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -115,7 +115,7 @@ Value
   (non_rec, @.,
     [
       ((print_list, [ ], [ (x, Type (list/1, Type (string/1))) ],
-        Some Monad ([ Counter/1; IO/1; NonTermination/1 ], Type (unit/1))),
+        Monad ([ Counter/1; IO/1; NonTermination/1 ], Type (unit/1))),
         Bind
           (?,
             Lift
@@ -135,9 +135,8 @@ Value
   (non_rec, @.,
     [
       ((f, [ ], [ ],
-        Some
-          (Type (list/1, Type (string/1)) ->
-            Monad ([ Counter/1; IO/1; NonTermination/1 ], Type (unit/1)))),
+        (Type (list/1, Type (string/1)) ->
+          Monad ([ Counter/1; IO/1; NonTermination/1 ], Type (unit/1)))),
         Variable (14, print_list/0))
     ])
 
@@ -146,10 +145,9 @@ Value
   (non_rec, @.,
     [
       ((x, [ A ], [ (z, A) ],
-        Some
-          Monad
-            ([ Counter/1; IO/1; NonTermination/1; OCaml.Failure/1 ],
-              Type (unit/1))),
+        Monad
+          ([ Counter/1; IO/1; NonTermination/1; OCaml.Failure/1 ],
+            Type (unit/1))),
         Bind
           (?,
             Lift

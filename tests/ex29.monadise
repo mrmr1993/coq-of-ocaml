@@ -2,7 +2,7 @@
 Value
   (rec, @coq_rec,
     [
-      ((odd_length, [ A ], [ (l, Type (list/1, A)) ], Some Type (bool/1)),
+      ((odd_length, [ A ], [ (l, Type (list/1, A)) ], Type (bool/1)),
         Match
           (4, Variable (4, l/0),
             [
@@ -26,7 +26,7 @@ Value
                           ])
                     ]))
             ]));
-      ((even_length, [ A ], [ (l, Type (list/1, A)) ], Some Type (bool/1)),
+      ((even_length, [ A ], [ (l, Type (list/1, A)) ], Type (bool/1)),
         Match
           (10, Variable (10, l/0),
             [
@@ -57,7 +57,7 @@ Value
   (rec, @coq_rec,
     [
       ((odd_length_with_print, [ A ], [ (l, Type (list/1, A)) ],
-        Some Monad ([ IO/1 ], Type (bool/1))),
+        Monad ([ IO/1 ], Type (bool/1))),
         Match
           (15, Variable (15, l/0),
             [
@@ -109,7 +109,7 @@ Value
                             ]))))
             ]));
       ((even_length_with_print, [ A ], [ (l, Type (list/1, A)) ],
-        Some Monad ([ IO/1 ], Type (bool/1))),
+        Monad ([ IO/1 ], Type (bool/1))),
         Match
           (21, Variable (21, l/0),
             [
@@ -150,7 +150,7 @@ Value
     [
       ((odd_length_free_rec, [ A ],
         [ (counter, Type (nat/1)); (l, Type (list/1, A)) ],
-        Some Monad ([ NonTermination/1 ], Type (bool/1))),
+        Monad ([ NonTermination/1 ], Type (bool/1))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -219,7 +219,7 @@ Value
             ]));
       ((even_length_free_rec, [ A ],
         [ (counter, Type (nat/1)); (l, Type (list/1, A)) ],
-        Some Monad ([ NonTermination/1 ], Type (bool/1))),
+        Monad ([ NonTermination/1 ], Type (bool/1))),
         Match
           (?, Variable (?, counter/0),
             [
@@ -293,7 +293,7 @@ Value
   (non_rec, @.,
     [
       ((odd_length_free, [ A ], [ (l, Type (list/1, A)) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
         Bind
           (?,
             Lift
@@ -312,7 +312,7 @@ Value
   (non_rec, @.,
     [
       ((even_length_free, [ A ], [ (l, Type (list/1, A)) ],
-        Some Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
         Bind
           (?,
             Lift

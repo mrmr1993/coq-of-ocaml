@@ -7,7 +7,7 @@ Require [ OCaml.List ]
   Value
     (non_rec, @.,
       [
-        ((compare, [ ], [ (x, Type (t/0)) ], Some (Type (t/0) -> Type (Z/2))),
+        ((compare, [ ], [ (x, Type (t/0)) ], (Type (t/0) -> Type (Z/2))),
           Match
             ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
               [
@@ -61,7 +61,7 @@ Inductive t:
 Value
   (non_rec, @.,
     [
-      ((height, [ ], [ (x, Type (t/0)) ], Some Type (Z/1)),
+      ((height, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -77,7 +77,7 @@ Value
   (non_rec, @.,
     [
       ((create, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         LetVar (24, Effect ([ ], .)) hl =
           Match
             ((24, Effect ([ ], .)), Variable ((24, Effect ([ ], .)), l/0),
@@ -157,7 +157,7 @@ Value
   (non_rec, @.,
     [
       ((bal, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         LetVar (34, Effect ([ OCaml.Invalid_argument/1 ], .)) hl =
           Match
             ((34, Effect ([ ], .)), Variable ((34, Effect ([ ], .)), l/0),
@@ -1037,7 +1037,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add, [ ], [ (x, Type (elt/0)); (x_1, Type (t/0)) ], Some Type (t/0)),
+      ((add, [ ], [ (x, Type (elt/0)); (x_1, Type (t/0)) ], Type (t/0)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x_1/0),
@@ -1349,7 +1349,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((singleton, [ ], [ (x, Type (elt/0)) ], Some Type (t/0)),
+      ((singleton, [ ], [ (x, Type (elt/0)) ], Type (t/0)),
         Constructor
           ((73, Effect ([ ], .)), Node/0,
             Constructor ((73, Effect ([ ], .)), Empty/0),
@@ -1362,8 +1362,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_min_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Some Type (t/0)),
+      ((add_min_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ], Type (t/0)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -1471,8 +1470,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_max_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Some Type (t/0)),
+      ((add_max_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ], Type (t/0)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -1586,7 +1584,7 @@ Value
           (l, Type (t/0));
           (v, Type (elt/0));
           (r, Type (t/0))
-        ], Some Type (t/0)),
+        ], Type (t/0)),
         Match
           ((?, Effect ([ NonTermination/1; OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -2134,7 +2132,7 @@ Value
   (non_rec, @.,
     [
       ((join, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Apply
           ((?,
             Effect
@@ -2184,7 +2182,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((min_elt, [ ], [ (x, Type (t/0)) ], Some Type (elt/0)),
+      ((min_elt, [ ], [ (x, Type (t/0)) ], Type (elt/0)),
         Match
           ((?, Effect ([ OCaml.Not_found/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -2253,7 +2251,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((max_elt, [ ], [ (x, Type (t/0)) ], Some Type (elt/0)),
+      ((max_elt, [ ], [ (x, Type (t/0)) ], Type (elt/0)),
         Match
           ((?, Effect ([ OCaml.Not_found/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -2322,7 +2320,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove_min_elt, [ ], [ (x, Type (t/0)) ], Some Type (t/0)),
+      ((remove_min_elt, [ ], [ (x, Type (t/0)) ], Type (t/0)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
@@ -2430,7 +2428,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((merge, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Some Type (t/0)),
+      ((merge, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Type (t/0)),
         Match
           ((133, Effect ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], .)),
             Tuple
@@ -2536,7 +2534,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((concat, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Some Type (t/0)),
+      ((concat, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ], Type (t/0)),
         Match
           ((143,
             Effect
@@ -2654,7 +2652,7 @@ Value
   (rec, @coq_rec,
     [
       ((split, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ],
-        Some (Type (t/0) * Type (bool/1) * Type (t/0))),
+        (Type (t/0) * Type (bool/1) * Type (t/0))),
         Match
           ((?,
             Effect
@@ -3092,7 +3090,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((empty, [ ], [ ], Some Type (t/0)),
+      ((empty, [ ], [ ], Type (t/0)),
         Constructor ((168, Effect ([ ], .)), Empty/0))
     ])
 
@@ -3100,7 +3098,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((is_empty, [ ], [ (x, Type (t/0)) ], Some Type (bool/1)),
+      ((is_empty, [ ], [ (x, Type (t/0)) ], Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -3116,7 +3114,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (bool/1)),
+      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x_1/0),
             [
@@ -3280,7 +3278,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (t/0)),
+      ((remove, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (t/0)),
         Match
           ((?, Effect ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], .)),
             Variable ((?, Effect ([ ], .)), x_1/0),
@@ -3606,7 +3604,7 @@ Value
     [
       ((union_rec, [ ],
         [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Match
           ((?,
             Effect
@@ -4340,7 +4338,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((union, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((union, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Apply
           ((?,
             Effect
@@ -4389,7 +4387,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((inter, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((inter, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Match
           ((204,
             Effect
@@ -4714,7 +4712,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((diff, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (t/0)),
+      ((diff, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (t/0)),
         Match
           ((216,
             Effect
@@ -5043,7 +5041,7 @@ Value
   (rec, @coq_rec,
     [
       ((cons_enum, [ ], [ (s, Type (t/0)); (e, Type (enumeration/0)) ],
-        Some Type (enumeration/0)),
+        Type (enumeration/0)),
         Match
           ((230, Effect ([ ], .)), Variable ((230, Effect ([ ], .)), s/0),
             [
@@ -5112,7 +5110,7 @@ Value
           (counter, Type (nat/1));
           (e1, Type (enumeration/0));
           (e2, Type (enumeration/0))
-        ], Some Type (Z/1)),
+        ], Type (Z/1)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -5422,8 +5420,7 @@ Value
   (non_rec, @.,
     [
       ((compare_aux, [ ],
-        [ (e1, Type (enumeration/0)); (e2, Type (enumeration/0)) ],
-        Some Type (Z/1)),
+        [ (e1, Type (enumeration/0)); (e2, Type (enumeration/0)) ], Type (Z/1)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -5460,7 +5457,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((compare, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (Z/1)),
+      ((compare, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (Z/1)),
         Apply
           ((247, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -5534,7 +5531,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((equal, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (bool/1)),
+      ((equal, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (bool/1)),
         Apply
           ((250, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable ((250, Effect ([ ], .)), equiv_decb/1),
@@ -5586,7 +5583,7 @@ Value
     [
       ((subset_rec, [ ],
         [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -6263,7 +6260,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((subset, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Some Type (bool/1)),
+      ((subset, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ], Type (bool/1)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -6301,7 +6298,7 @@ Value
   (rec, @coq_rec,
     [
       ((iter, [ A ], [ (f, (Type (elt/0) -> A)); (x, Type (t/0)) ],
-        Some Type (unit/1)),
+        Type (unit/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -6414,8 +6411,7 @@ Value
   (rec, @coq_rec,
     [
       ((fold, [ A ],
-        [ (f, (Type (elt/0) -> (A -> A))); (s, Type (t/0)); (accu, A) ],
-        Some A),
+        [ (f, (Type (elt/0) -> (A -> A))); (s, Type (t/0)); (accu, A) ], A),
         Match
           ((273, Effect ([ ], .)), Variable ((273, Effect ([ ], .)), s/0),
             [
@@ -6527,7 +6523,7 @@ Value
   (rec, @coq_rec,
     [
       ((for_all, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -6658,7 +6654,7 @@ Value
   (rec, @coq_rec,
     [
       ((exists_, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (bool/1)),
+        Type (bool/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -6789,7 +6785,7 @@ Value
   (rec, @coq_rec,
     [
       ((filter, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some Type (t/0)),
+        Type (t/0)),
         Match
           ((?,
             Effect
@@ -7064,7 +7060,7 @@ Value
     [
       ((partition, [ ],
         [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Some (Type (t/0) * Type (t/0))),
+        (Type (t/0) * Type (t/0))),
         Match
           ((?,
             Effect
@@ -7468,7 +7464,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((cardinal, [ ], [ (x, Type (t/0)) ], Some Type (Z/1)),
+      ((cardinal, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -7567,7 +7563,7 @@ Value
     [
       ((elements_aux, [ ],
         [ (accu, Type (list/1, Type (elt/0))); (x, Type (t/0)) ],
-        Some Type (list/1, Type (elt/0))),
+        Type (list/1, Type (elt/0))),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
@@ -7652,7 +7648,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((elements, [ ], [ (s, Type (t/0)) ], Some Type (list/1, Type (elt/0))),
+      ((elements, [ ], [ (s, Type (t/0)) ], Type (list/1, Type (elt/0))),
         Apply
           ((321, Effect ([ ], .)),
             Variable ((321, Effect ([ ], . -> . -> .)), elements_aux/0),
@@ -7666,7 +7662,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((choose, [ ], [ ], Some (Type (t/0) -> Type (elt/0))),
+      ((choose, [ ], [ ], (Type (t/0) -> Type (elt/0))),
         Variable
           ((323, Effect ([ ], . -[ OCaml.Not_found/1 ]-> .)), min_elt/0))
     ])
@@ -7675,7 +7671,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Some Type (elt/0)),
+      ((find, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (elt/0)),
         Match
           ((?, Effect ([ OCaml.Not_found/1 ], .)),
             Variable ((?, Effect ([ ], .)), x_1/0),
@@ -7876,8 +7872,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_sorted_list, [ ], [ (l, Type (list/1, Type (elt/0))) ],
-        Some Type (t/0)),
+      ((of_sorted_list, [ ], [ (l, Type (list/1, Type (elt/0))) ], Type (t/0)),
         LetFun
           (334,
             Effect
@@ -7895,12 +7890,11 @@ Value
                         Type
                           (elt/0)))
                 ],
-                Some
-                  (Type (t/0) *
-                    Type
-                      (list/1,
-                        Type
-                          (elt/0)))),
+                (Type (t/0) *
+                  Type
+                    (list/1,
+                      Type
+                        (elt/0)))),
                 Match
                   ((?,
                     Effect
@@ -8616,12 +8610,11 @@ Value
                         Type
                           (elt/0)))
                 ],
-                Some
-                  (Type (t/0) *
-                    Type
-                      (list/1,
-                        Type
-                          (elt/0)))),
+                (Type (t/0) *
+                  Type
+                    (list/1,
+                      Type
+                        (elt/0)))),
                 Apply
                   ((?,
                     Effect

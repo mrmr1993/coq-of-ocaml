@@ -4,7 +4,7 @@ Value
     [
       ((map_rec, [ A; B ],
         [ (counter, Type (nat/1)); (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -163,7 +163,7 @@ Value
   (non_rec, @.,
     [
       ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Some Type (list/1, B)),
+        Type (list/1, B)),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -206,7 +206,7 @@ Value
           (f, (A -> (B -> A)));
           (a, A);
           (l, Type (list/1, B))
-        ], Some A),
+        ], A),
         Match
           ((?, Effect ([ NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
@@ -368,7 +368,7 @@ Value
   (non_rec, @.,
     [
       ((fold, [ A; B ], [ (f, (A -> (B -> A))); (a, A); (l, Type (list/1, B)) ],
-        Some A),
+        A),
         Apply
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable
@@ -408,7 +408,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((l, [ ], [ ], Some Type (list/1, Type (Z/1))),
+      ((l, [ ], [ ], Type (list/1, Type (Z/1))),
         Constructor
           ((13, Effect ([ ], .)), cons/1,
             Constant ((13, Effect ([ ], .)), Int(5)),
@@ -434,7 +434,7 @@ Value
         [
           (incr, (Type (Z/1) -> A));
           (plus, (Type (Z/1) -> (A -> Type (Z/1))))
-        ], Some Type (Z/1)),
+        ], Type (Z/1)),
         Apply
           ((16, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable

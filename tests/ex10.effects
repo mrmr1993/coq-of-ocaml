@@ -9,7 +9,7 @@
       [
         ((sum_rec, [ ],
           [ (counter, Type (nat/2)); (l, Type (t/0, Type (Z/2))) ],
-          Some Type (Z/2)),
+          Type (Z/2)),
           Match
             ((?, Effect ([ NonTermination/2 ], .)),
               Variable ((?, Effect ([ ], .)), counter/0),
@@ -149,7 +149,7 @@
   Value
     (non_rec, @.,
       [
-        ((sum, [ ], [ (l, Type (t/0, Type (Z/2))) ], Some Type (Z/2)),
+        ((sum, [ ], [ (l, Type (t/0, Type (Z/2))) ], Type (Z/2)),
           Apply
             ((?, Effect ([ Counter/2; NonTermination/2 ], .)),
               Variable
@@ -197,8 +197,7 @@
     (rec, @.,
       [
         ((of_list_rec, [ A ],
-          [ (counter, Type (nat/2)); (x, Type (list/2, A)) ],
-          Some Type (t/0, A)),
+          [ (counter, Type (nat/2)); (x, Type (list/2, A)) ], Type (t/0, A)),
           Match
             ((?, Effect ([ NonTermination/2 ], .)),
               Variable ((?, Effect ([ ], .)), counter/0),
@@ -330,7 +329,7 @@
   Value
     (non_rec, @.,
       [
-        ((of_list, [ A ], [ (x, Type (list/2, A)) ], Some Type (t/0, A)),
+        ((of_list, [ A ], [ (x, Type (list/2, A)) ], Type (t/0, A)),
           Apply
             ((?, Effect ([ Counter/2; NonTermination/2 ], .)),
               Variable
@@ -379,15 +378,14 @@
     Value
       (non_rec, @.,
         [
-          ((x, [ ], [ ], Some Type (Z/3)),
-            Constant ((18, Effect ([ ], .)), Int(12)))
+          ((x, [ ], [ ], Type (Z/3)), Constant ((18, Effect ([ ], .)), Int(12)))
         ])
 
 22
 Value
   (non_rec, @.,
     [
-      ((n, [ A ], [ (x, A) ], Some Type (Z/1)),
+      ((n, [ A ], [ (x, A) ], Type (Z/1)),
         Match
           ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
