@@ -136,7 +136,7 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
       Effect.Type.Pure) in
   add_var path ("raise_" ^ base) effect_typ env
 
-let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   let m =
     try List.nth env x.BoundName.depth with

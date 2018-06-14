@@ -109,7 +109,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> bool)
       else None
     | None -> None) (FullMod.external_opens env.active_module)
 
-let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
+let bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some name
@@ -196,7 +196,7 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   : Effect.Type.t t =
   {env with active_module = FullMod.add_exception_with_effects path base id env.active_module}
 
-let rec find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
     let (external_module, x) = find_external_module_path x.path_name env in
