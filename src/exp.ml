@@ -8,14 +8,14 @@ module Header = struct
     name : Name.t;
     typ_vars : Name.t list;
     args : (Name.t * Type.t) list;
-    typ : Type.t option }
+    typ : Type.t }
 
   let pp (header : t) : SmartPrint.t =
     OCaml.tuple [
       Name.pp header.name; OCaml.list Name.pp header.typ_vars;
       OCaml.list (fun (x, typ) -> OCaml.tuple [Name.pp x; Type.pp typ])
         header.args;
-      OCaml.option Type.pp header.typ]
+      Type.pp header.typ]
 
   let env_in_header (header : t) (env : 'a FullEnvi.t) (v : 'a)
     : 'a FullEnvi.t =
@@ -391,7 +391,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
       Header.name = x;
       typ_vars = Name.Set.elements new_typ_vars;
       args = List.combine args_names args_typs;
-      typ = Some e_body_typ } in
+      typ = e_body_typ } in
     (header, e_body)) in
   let def = {
     Definition.is_rec = is_rec;
@@ -874,9 +874,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
     let env_in_def = Definition.env_in_def def env in
     let def = { def with
       Definition.cases = def.Definition.cases |> List.map (fun (header, e) ->
-        let typ = match header.Header.typ with
-        | Some typ -> Some (Type.monadise typ (snd (annotation e)))
-        | None -> None in
+      let typ = Type.monadise header.Header.typ (snd (annotation e)) in
       let header = { header with Header.typ = typ } in
       let env = Header.env_in_header header env_in_def () in
       let e = monadise env e in
@@ -976,9 +974,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
           !^ ":" ^^ !^ "Type")) ^^
         group (separate space (header.Header.args |> List.map (fun (x, x_typ) ->
           parens (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
-        (match header.Header.typ with
-        | None -> empty
-        | Some typ -> !^ ": " ^-^ Type.to_coq false typ) ^-^
+        !^ ": " ^-^ Type.to_coq false header.Header.typ ^-^
         !^ " :=" ^^ newline ^^
         indent (to_coq false e))) ^^ !^ "in" ^^ newline ^^ to_coq false e)
   | Match (_, e, cases) ->

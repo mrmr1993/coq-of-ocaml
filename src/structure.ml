@@ -31,9 +31,7 @@ module Value = struct
           !^ ":" ^^ !^ "Type")) ^^
         group (separate space (header.Exp.Header.args |> List.map (fun (x, t) ->
           parens @@ nest (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
-        (match header.Exp.Header.typ with
-        | None -> empty
-        | Some typ -> !^ ": " ^-^ Type.to_coq false typ) ^-^
+        !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
         !^ " :=" ^^ Exp.to_coq false e))) ^-^ !^ "."
 end
 
@@ -223,9 +221,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       let def = { def with
         Exp.Definition.cases =
           def.Exp.Definition.cases |> List.map (fun (header, e) ->
-            let typ = match header.Exp.Header.typ with
-            | Some typ -> Some (Type.monadise typ (snd (Exp.annotation e)))
-            | None -> None in
+            let typ = Type.monadise header.Exp.Header.typ (snd (Exp.annotation e)) in
         let header = { header with Exp.Header.typ = typ } in
         let env = Exp.Header.env_in_header header env_in_def () in
         let e = Exp.monadise env e in
