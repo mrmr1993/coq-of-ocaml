@@ -2,6 +2,11 @@ open SmartPrint
 
 type 'a t = 'a FullEnvi.WrappedMod.t Name.Map.t
 
+let pp (loader : 'a t) : SmartPrint.t =
+  !^ "LazyLoader" ^^ OCaml.list (fun (x, wmod) ->
+    OCaml.tuple [Name.pp x; FullEnvi.WrappedMod.pp wmod])
+    (Name.Map.bindings loader)
+
 let empty = Name.Map.empty
 
 (* NOTE: This is designed under the assumption that

@@ -8,6 +8,9 @@ module WrappedMod = struct
     coq_name : Name.t
   }
 
+  let pp (wmod : 'a t) : SmartPrint.t =
+    OCaml.tuple [Name.pp wmod.ocaml_name; Name.pp wmod.coq_name; Mod.pp wmod.m]
+
   let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
     {wmod with m = Mod.map f wmod.m}
 end
