@@ -21,6 +21,7 @@ class Test
     cmd = ['ocamlc', '-I', 'tests', 'dependEx38.cmo', '-bin-annot', @source_file]
     print cmd.join(" ")
     system(*cmd)
+    return $?.exitstatus == 0
   end
 
   def coq_of_ocaml_cmd(mode)
@@ -76,12 +77,18 @@ class Tests
     @tests = source_files.sort.map {|source_file| Test.new(source_file) }
     @valid_tests = 0
     @invalid_tests = 0
+    @section_valid_tests = 0
+    @section_invalid_tests = 0
   end
 
   def compile
     puts "\e[1mCompiling:\e[0m"
     for test in @tests do
-      test.compile
+      if test.compile
+        @section_valid_tests += 1
+      else
+        @section_invalid_tests += 1
+      end
       puts
     end
   end
@@ -89,8 +96,10 @@ class Tests
   def print_result(result)
     if result
       @valid_tests += 1
+      @section_valid_tests += 1
       print " \e[1;32m✓\e[0m "
     else
+      @section_invalid_tests += 1
       @invalid_tests += 1
       print " \e[31m✗\e[0m "
     end
@@ -120,6 +129,16 @@ class Tests
     end
   end
 
+  def print_section_summary(subtotal = true)
+    puts
+    puts "Section Total: #{@section_valid_tests} / #{@section_valid_tests + @section_invalid_tests}."
+    if subtotal
+      puts "Subtotal: #{@valid_tests} / #{@valid_tests + @invalid_tests}."
+    end
+    @section_valid_tests = 0
+    @section_invalid_tests = 0
+  end
+
   def print_summary
     puts
     puts "Total: #{@valid_tests} / #{@valid_tests + @invalid_tests}."
@@ -132,20 +151,28 @@ end
 
 tests = Tests.new(Dir.glob('tests/ex*.ml'))
 tests.compile
+tests.print_section_summary(false)
 puts
 tests.check('exp')
+tests.print_section_summary
 puts
 tests.check('effects')
+tests.print_section_summary
 puts
 tests.check('monadise')
+tests.print_section_summary
 puts
 tests.check('interface')
+tests.print_section_summary
 puts
 tests.check('v')
+tests.print_section_summary
 puts
 tests.coq
+tests.print_section_summary
 puts
 tests.extraction
+tests.print_section_summary(false)
 tests.print_summary
 
 exit(1) if tests.invalid?
