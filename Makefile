@@ -24,19 +24,19 @@ vo: $(TESTS_INPUT:.ml=.vo)
 	ocamlc -bin-annot $<
 
 %.exp: %.cmt default
-	./$(OUTPUT) --mode exp $< >$@
+	./$(OUTPUT) -I tests Tests --mode exp $< >$@
 
 %.effects: %.cmt default
-	./$(OUTPUT) --mode effects $< >$@
+	./$(OUTPUT) -I tests Tests --mode effects $< >$@
 
 %.monadise: %.cmt default
-	./$(OUTPUT) --mode monadise $< >$@
+	./$(OUTPUT) -I tests Tests --mode monadise $< >$@
 
 %.interface: %.cmt default
-	./$(OUTPUT) --mode interface $< >$@
+	./$(OUTPUT) -I tests Tests --mode interface $< >$@
 
 %.v: %.cmt default
-	./$(OUTPUT) --mode v $< >$@
+	./$(OUTPUT) -I tests Tests --mode v $< >$@
 
 %.vo: %.v
 	coqc -R tests Tests -R OCaml OCaml $<
