@@ -79,9 +79,6 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module module_name prefix env.active_module}
 
-let find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
-  FullMod.find_first f l
-
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   : ('a WrappedMod.t * PathName.t) option =
   match x.PathName.path with

@@ -69,14 +69,6 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     m :: env
   | _ -> failwith "You should have entered in at least one module."
 
-let rec find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
-  match l with
-  | [] -> None
-  | x :: l ->
-    (match f x with
-    | None -> find_first f l
-    | y -> y)
-
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with

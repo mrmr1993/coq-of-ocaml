@@ -20,6 +20,14 @@ let rec filter_map (f : 'a -> 'b option) (l : 'a list) : 'b list =
     | Some b -> b :: filter_map f l'
     | None -> filter_map f l'
 
+let rec find_first (f : 'a -> 'b option) (l : 'a list) : 'b option =
+  match l with
+  | [] -> None
+  | x :: l ->
+    (match f x with
+    | None -> find_first f l
+    | y -> y)
+
 let rec mix_map2 (f : 'a -> bool) (g : 'a -> 'c) (h : 'a -> 'b -> 'c)
   (l1 : 'a list) (l2 : 'b list) : 'c list =
   match l1 with
