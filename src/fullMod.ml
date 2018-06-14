@@ -1,4 +1,5 @@
 open SmartPrint
+open Utils
 
 type 'a t = 'a Mod.t list
 
@@ -85,9 +86,8 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
     else
       m.Mod.opens |> find_first (fun path ->
         let x = { x with PathName.path = path @ x.PathName.path } in
-        match bound_name_opt find x env with
-        | None -> None
-        | Some name -> Some { name with BoundName.depth = name.BoundName.depth + 1 })
+        bound_name_opt find x env |> option_map (fun name ->
+          { name with BoundName.depth = name.BoundName.depth + 1 }))
   | [] -> None
 
 let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)

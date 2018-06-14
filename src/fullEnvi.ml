@@ -1,4 +1,5 @@
 open SmartPrint
+open Utils
 
 module WrappedMod = struct
   type 'a t = {
@@ -9,11 +10,6 @@ module WrappedMod = struct
 
   let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
     {wmod with m = Mod.map f wmod.m}
-
-  let opt_map (f : 'a -> 'b) (wmod : 'a t option) : 'b t option =
-    match wmod with
-    | Some wmod -> Some (map f wmod)
-    | None -> None
 end
 
 
@@ -88,11 +84,10 @@ let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   match x.PathName.path with
   | [] -> None
   | module_name :: module_path ->
-    match find_wrapped_mod_opt module_name env with
-    | Some external_module ->
-      let x = { x with PathName.path = module_path } in
-      Some (external_module, x)
-    | None -> None
+    find_wrapped_mod_opt module_name env |>
+      option_map (fun external_module ->
+        let x = { x with PathName.path = module_path } in
+        (external_module, x))
 
 let find_external_module_path (x : PathName.t) (env : 'a t)
   : 'a WrappedMod.t * PathName.t =
@@ -226,7 +221,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   get_module = (fun x -> WrappedMod.opt_map f (env.get_module x));
+   get_module = (fun x -> option_map (WrappedMod.map f) (env.get_module x));
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
