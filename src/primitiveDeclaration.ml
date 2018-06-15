@@ -12,16 +12,6 @@ let pp (prim : t) : SmartPrint.t =
     OCaml.tuple
       [Name.pp prim.name; OCaml.list Name.pp prim.typ_args; Type.pp prim.typ])
 
-
-let get_type_params (typ : type_expr) : Name.t list =
-  let params = ref Name.Set.empty in
-  let rec get_params typ =
-    match typ.desc with
-    | Tvar (Some name) -> params := Name.Set.add (Name.of_string name) !params
-    | _ -> Btype.iter_type_expr get_params typ
-  in get_params typ;
-  Name.Set.elements !params
-
 let to_coq (prim : t) : SmartPrint.t =
   nest (
     !^ "Parameter" ^^ Name.to_coq prim.name ^^ !^ ":" ^^
@@ -36,9 +26,11 @@ let to_coq (prim : t) : SmartPrint.t =
 let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (desc : value_description)
   : t =
     let type_expr = desc.val_val.val_type in
+    let (typ, _, new_typ_vars) =
+      Type.of_type_expr_new_typ_vars env loc Name.Map.empty type_expr in
     { name = Name.of_ident desc.val_id;
-      typ_args = get_type_params type_expr;
-      typ = Type.of_type_expr env loc type_expr }
+      typ_args = Name.Set.elements new_typ_vars;
+      typ }
 
 let update_env (prim : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   FullEnvi.add_var [] prim.name () env

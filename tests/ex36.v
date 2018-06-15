@@ -9,7 +9,7 @@ Parameter op_eq_eq : bool -> bool -> bool.
 Definition all_eqb (x : bool) (y : bool) (z : bool) : bool :=
   andb (op_eq_eq x y) (op_eq_eq y z).
 
-Parameter op_eq : forall {a : Type}, a -> a -> bool.
+Parameter op_eq : forall {A : Type}, A -> A -> bool.
 
 Definition all_equal {A : Type} (x : A) (y : A) (z : A) : bool :=
   andb (op_eq x y) (op_eq y z).
