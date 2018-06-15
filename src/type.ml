@@ -25,7 +25,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (typ : Types.type_expr)
   : t * Name.t Name.Map.t * Name.Set.t =
   match typ.desc with
-  | Tvar None ->
+  | Tvar _ ->
     let x = Printf.sprintf "A%d" typ.id in
     let (typ_vars, new_typ_vars, name) =
       if Name.Map.mem x typ_vars then (
@@ -33,7 +33,10 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
         (typ_vars, Name.Set.empty, name)
       ) else (
         let n = Name.Map.cardinal typ_vars in
-        let name = String.make 1 (Char.chr (Char.code 'A' + n)) in
+        let name = if n < 25 then
+            String.make 1 (Char.chr (Char.code 'A' + n))
+          else (* We've used all the capital letters, switch to A1.. *)
+            Printf.sprintf "A%d" (n-24) in
         let typ_vars = Name.Map.add x name typ_vars in
         (typ_vars, Name.Set.singleton name, name)) in
     let typ = Variable name in
