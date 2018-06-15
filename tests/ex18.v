@@ -7,10 +7,10 @@ Import ListNotations.
 Definition r := Effect.make Z Empty_set.
 
 Definition read_r (_ : unit) : M [ r ] Z :=
-  fun s => (inl (fst s), s).
+  Effect.State.read r tt.
 
 Definition write_r (x : Z) : M [ r ] unit :=
-  fun s => (inl tt, (x, tt)).
+  Effect.State.write r x.
 
 Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
   match x with
@@ -22,10 +22,10 @@ Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
 Definition s := Effect.make string Empty_set.
 
 Definition read_s (_ : unit) : M [ s ] string :=
-  fun s => (inl (fst s), s).
+  Effect.State.read s tt.
 
 Definition write_s (x : string) : M [ s ] unit :=
-  fun s => (inl tt, (x, tt)).
+  Effect.State.write s x.
 
 Definition fail {A B : Type} (x : A) : M [ OCaml.Failure; s ] B :=
   match x with

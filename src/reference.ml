@@ -51,10 +51,10 @@ let to_coq (r : t) : SmartPrint.t =
   !^ "Definition" ^^ Name.to_coq ("read_" ^ r.name) ^^ !^ "(_ : unit)" ^^ !^ ":" ^^
     !^ "M" ^^ !^ "[" ^^ Name.to_coq r.name ^^ !^ "]" ^^ Type.to_coq true r.typ ^^ !^ ":=" ^^
   newline ^^ indent (
-    !^ "fun s => (inl (fst s), s).") ^^
+    !^ "State.read" ^^ Name.to_coq r.name ^^ !^ "tt.") ^^
   newline ^^ newline ^^
   !^ "Definition" ^^ Name.to_coq ("write_" ^ r.name) ^^
     parens (!^ "x" ^^ !^ ":" ^^ Type.to_coq false r.typ) ^^ !^ ":" ^^
     !^ "M" ^^ !^ "[" ^^ Name.to_coq r.name ^^ !^ "]" ^^ !^ "unit" ^^ !^ ":=" ^^
   newline ^^ indent (
-    !^ "fun s => (inl tt, (x, tt)).")
+    !^ "State.write" ^^ Name.to_coq r.name ^^ !^ "x.")

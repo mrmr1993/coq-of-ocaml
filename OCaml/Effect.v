@@ -306,6 +306,18 @@ Module Run.
       end.
 End Run.
 
+Module State.
+  Unset Implicit Arguments.
+
+  Definition read (state : Effect.t) (_ : unit) : M [ state ] (Effect.S state) :=
+    fun s => (inl (fst s), s).
+
+  Definition write (state : Effect.t) (x : Effect.S state) : M [ state ] unit :=
+    fun s => (inl tt, (x, tt)).
+
+  Set Implicit Arguments.
+End State.
+
 (** A stream which may be finite. *)
 Module FiniteStream.
   CoInductive t (A : Type) : Type :=
