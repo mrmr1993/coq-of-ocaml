@@ -6,12 +6,6 @@ Import ListNotations.
 
 Definition r := Effect.make Z Empty_set.
 
-Definition read_r (_ : unit) : M [ r ] Z :=
-  State.read r tt.
-
-Definition write_r (x : Z) : M [ r ] unit :=
-  State.write r x.
-
 Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
   match x with
   | _ =>
@@ -20,12 +14,6 @@ Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
   end.
 
 Definition s := Effect.make string Empty_set.
-
-Definition read_s (_ : unit) : M [ s ] string :=
-  State.read s tt.
-
-Definition write_s (x : string) : M [ s ] unit :=
-  State.write s x.
 
 Definition fail {A B : Type} (x : A) : M [ s; OCaml.Failure ] B :=
   match x with

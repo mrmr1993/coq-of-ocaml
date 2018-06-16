@@ -87,10 +87,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [ Descriptor name; Var (name, [[PathName.of_name [] name]]) ]
   | Structure.Reference (_, r) ->
     let name = r.Reference.name in
-    let shape = [[PathName.of_name [] name]] in
-    [ Descriptor name;
-      Var ("read_" ^ name, shape);
-      Var ("write_" ^ name, shape) ]
+    [ Var (name, []); Descriptor name ]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
