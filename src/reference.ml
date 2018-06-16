@@ -27,8 +27,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
 
 let update_env (r : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   env
-  |> FullEnvi.add_var [] ("read_" ^ r.name) ()
-  |> FullEnvi.add_var [] ("write_" ^ r.name) ()
+  |> FullEnvi.add_var [] r.name ()
   |> FullEnvi.add_descriptor [] r.name
 
 let update_env_with_effects (r : t) (env : Effect.Type.t FullEnvi.t)
@@ -41,8 +40,8 @@ let update_env_with_effects (r : t) (env : Effect.Type.t FullEnvi.t)
         (FullEnvi.bound_descriptor Loc.Unknown (PathName.of_name [] r.name) env),
       Effect.Type.Pure) in
   env
-  |> FullEnvi.add_var [] ("read_" ^ r.name) effect_typ
-  |> FullEnvi.add_var [] ("write_" ^ r.name) effect_typ
+  |> FullEnvi.add_var [] r.name Effect.Type.Pure
+  |> FullEnvi.add_descriptor [] r.name
 
 let to_coq (r : t) : SmartPrint.t =
   !^ "Definition" ^^ Name.to_coq r.name ^^ !^ ":=" ^^

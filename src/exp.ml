@@ -228,11 +228,14 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_ident (path, _, _) ->
           let l_x = Loc.of_location e_x.exp_loc in
-          let read = PathName.of_path l_x path in
-          let read =
-            { read with PathName.base = "read_" ^ read.PathName.base } in
-          let read = FullEnvi.bound_var l_x read env in
-          Apply (l, Variable (Loc.Unknown, read), [Tuple (Loc.Unknown, [])])
+          let var = PathName.of_path l_x path in
+          let var = FullEnvi.bound_var l_x var env in
+          let read = {
+            PathName.path = ["OCaml"; "Effect"; "State"];
+            PathName.base = "read" } in
+          let read = FullEnvi.bound_var l read env in
+          Apply (l, Variable (l_f, read),
+            [Variable (l_x, var); Tuple (Loc.Unknown, [])])
         | _ -> Error.raise l "Name of a reference expected after '!'.")
       | _ -> Error.raise l "Expected one argument for '!'.")
     | Texp_ident (path, _, _)
@@ -242,12 +245,14 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_r.exp_desc with
         | Texp_ident (path, _, _) ->
           let l_r = Loc.of_location e_r.exp_loc in
-          let write = PathName.of_path l_r path in
-          let write =
-            { write with PathName.base = "write_" ^ write.PathName.base } in
-          let write = FullEnvi.bound_var l_r write env in
+          let var = PathName.of_path l_r path in
+          let var = FullEnvi.bound_var l_r var env in
+          let write = {
+            PathName.path = ["OCaml"; "Effect"; "State"];
+            PathName.base = "write" } in
+          let write = FullEnvi.bound_var l write env in
           let e_v = of_expression env typ_vars e_v in
-          Apply (l, Variable (Loc.Unknown, write), [e_v])
+          Apply (l, Variable (Loc.Unknown, write), [Variable (l_r, var); e_v])
         | _ -> Error.raise l "Name of a reference expected after ':='.")
       | _ -> Error.raise l "Expected two arguments for ':='.")
     | _ ->
@@ -609,7 +614,23 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
     let (es, effect) = compound es in
     Constructor ((l, effect), x, es)
   | Apply (l, e_f, e_xs) ->
-    let e_f = effects env e_f in
+    let e_f = match e_f with
+      | Variable (_, ({ BoundName.path_name =
+          { PathName.path = ["OCaml"; "Effect"; "State"] }} as x)) ->
+        begin match e_xs with
+        | Variable (l_var, state_var) :: _ ->
+          Variable ((l,
+            { Effect.descriptor = Effect.Descriptor.pure;
+              Effect.typ = Effect.Type.Arrow (Effect.Descriptor.pure,
+                Effect.Type.Arrow (
+                  Effect.Descriptor.singleton
+                    (Effect.Descriptor.Id.Ether state_var.BoundName.path_name)
+                    state_var,
+                  Effect.Type.Pure)) }), x)
+        | _ ->
+          Error.raise l "Could not find state variable."
+        end
+      | _ -> effects env e_f in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in

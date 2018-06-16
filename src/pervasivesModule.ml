@@ -57,6 +57,9 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> add_exn ["OCaml"] "Division_by_zero"
   |> add_exn ["OCaml"] "Sys_blocked_io"
   |> add_exn ["OCaml"] "Undefined_recursive_module"
+  (* State *)
+  |> add_var ["OCaml"; "Effect"; "State"] "read" Pure
+  |> add_var ["OCaml"; "Effect"; "State"] "write" Pure
 
   (* Pervasives *)
   (* Exceptions *)
