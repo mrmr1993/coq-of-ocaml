@@ -309,7 +309,7 @@ End Run.
 Module State.
   Unset Implicit Arguments.
 
-  Definition read (state : Effect.t) (_ : unit) : M [ state ] (Effect.S state) :=
+  Definition read (state : Effect.t) : M [ state ] (Effect.S state) :=
     fun s => (inl (fst s), s).
 
   Definition write (state : Effect.t) (x : Effect.S state) : M [ state ] unit :=

@@ -20,8 +20,10 @@ end
 (* Convert an identifier from OCaml to its Coq's equivalent. *)
 let convert (x : t) : t =
   match x with
-  | { path = ["Pervasives"]; base = "!" } -> { path = ["Pervasives"]; base = "!" }
-  | { path = ["Pervasives"]; base = ":=" } -> { path = ["Pervasives"]; base = ":=" }
+  | { path = ["Pervasives"]; base = "!" } ->
+    { path = ["OCaml"; "Effect"; "State"]; base = "read" }
+  | { path = ["Pervasives"]; base = ":=" } ->
+    { path = ["OCaml"; "Effect"; "State"]; base = "write" }
   (* The core library *)
   (* Built-in types *)
   | { path = []; base = "int" } -> { path = []; base = "Z" }
