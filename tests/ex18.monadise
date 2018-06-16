@@ -14,11 +14,12 @@ Value
                     Apply
                       (4,
                         Variable
-                          (?,
-                            read_r/0),
+                          (4,
+                            OCaml.Effect.State.read/1),
                         [
-                          Tuple
-                            (?)
+                          Variable
+                            (4,
+                              r/0)
                         ]),
                     Some
                       x_1,
@@ -46,7 +47,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fail, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure/1; s/0 ], B)),
+      ((fail, [ A; B ], [ (x, A) ], Monad ([ s/0; OCaml.Failure/1 ], B)),
         Match
           (?, Variable (?, x/0),
             [
@@ -59,17 +60,18 @@ Value
                           s/0
                         ],
                         [
-                          OCaml.Failure/1;
-                          s/0
+                          s/0;
+                          OCaml.Failure/1
                         ],
                         Apply
                           (8,
                             Variable
-                              (?,
-                                read_s/0),
+                              (8,
+                                OCaml.Effect.State.read/1),
                             [
-                              Tuple
-                                (?)
+                              Variable
+                                (8,
+                                  s/0)
                             ])),
                     Some
                       x_1,
@@ -79,8 +81,8 @@ Value
                           OCaml.Failure/1
                         ],
                         [
-                          OCaml.Failure/1;
-                          s/0
+                          s/0;
+                          OCaml.Failure/1
                         ],
                         Apply
                           (8,
@@ -107,9 +109,12 @@ Value
                 Apply
                   (11,
                     Variable
-                      (?,
-                        write_r/0),
+                      (11,
+                        OCaml.Effect.State.write/1),
                     [
+                      Variable
+                        (11,
+                          r/0);
                       Constant
                         (11,
                           Int(0))
@@ -133,11 +138,12 @@ Value
                         Apply
                           (14,
                             Variable
-                              (?,
-                                read_r/0),
+                              (14,
+                                OCaml.Effect.State.read/1),
                             [
-                              Tuple
-                                (?)
+                              Variable
+                                (14,
+                                  r/0)
                             ]),
                         Some
                           x_1,
@@ -161,9 +167,12 @@ Value
                     Apply
                       (14,
                         Variable
-                          (?,
-                            write_r/0),
+                          (14,
+                            OCaml.Effect.State.write/1),
                         [
+                          Variable
+                            (14,
+                              r/0);
                           Variable
                             (?,
                               x_1/0)

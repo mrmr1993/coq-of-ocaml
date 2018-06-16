@@ -221,35 +221,6 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")
       | _ -> Error.raise l "Expected one argument for 'raise'.")
-    | Texp_ident (path, _, _)
-      when PathName.of_path l_f path = PathName.of_name ["Pervasives"] "!" ->
-      (match e_xs with
-      | [(_, Some e_x)] ->
-        (match e_x.exp_desc with
-        | Texp_ident (path, _, _) ->
-          let l_x = Loc.of_location e_x.exp_loc in
-          let read = PathName.of_path l_x path in
-          let read =
-            { read with PathName.base = "read_" ^ read.PathName.base } in
-          let read = FullEnvi.bound_var l_x read env in
-          Apply (l, Variable (Loc.Unknown, read), [Tuple (Loc.Unknown, [])])
-        | _ -> Error.raise l "Name of a reference expected after '!'.")
-      | _ -> Error.raise l "Expected one argument for '!'.")
-    | Texp_ident (path, _, _)
-      when PathName.of_path l_f path = PathName.of_name ["Pervasives"] ":=" ->
-      (match e_xs with
-      | [(_, Some e_r); (_, Some e_v)] ->
-        (match e_r.exp_desc with
-        | Texp_ident (path, _, _) ->
-          let l_r = Loc.of_location e_r.exp_loc in
-          let write = PathName.of_path l_r path in
-          let write =
-            { write with PathName.base = "write_" ^ write.PathName.base } in
-          let write = FullEnvi.bound_var l_r write env in
-          let e_v = of_expression env typ_vars e_v in
-          Apply (l, Variable (Loc.Unknown, write), [e_v])
-        | _ -> Error.raise l "Name of a reference expected after ':='.")
-      | _ -> Error.raise l "Expected two arguments for ':='.")
     | _ ->
       let e_f = of_expression env typ_vars e_f in
       let e_xs = List.map (fun (_, e_x) ->
@@ -609,7 +580,27 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
     let (es, effect) = compound es in
     Constructor ((l, effect), x, es)
   | Apply (l, e_f, e_xs) ->
-    let e_f = effects env e_f in
+    let e_f = match e_f with
+      | Variable (_, ({ BoundName.path_name =
+          { PathName.path = ["OCaml"; "Effect"; "State"];
+            PathName.base = base}} as x)) ->
+        begin match e_xs with
+        | Variable (l_var, state_var) :: _ ->
+          let effect_typ = Effect.Type.Arrow (
+            Effect.Descriptor.singleton
+              (Effect.Descriptor.Id.Ether state_var.BoundName.path_name)
+              state_var,
+            Effect.Type.Pure) in
+          let effect_typ = if String.equal base "write" then
+              Effect.Type.Arrow (Effect.Descriptor.pure, effect_typ)
+            else effect_typ in
+          Variable ((l,
+            { Effect.descriptor = Effect.Descriptor.pure;
+              Effect.typ = effect_typ }), x)
+        | _ ->
+          Error.raise l "Could not find state variable."
+        end
+      | _ -> effects env e_f in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
