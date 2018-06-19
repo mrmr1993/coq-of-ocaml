@@ -4,7 +4,7 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition r := Effect.make Z Empty_set.
+Definition r := @OCaml.Effect.State.state Z.
 
 Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
   match x with
@@ -13,7 +13,7 @@ Definition plus_one {A : Type} (x : A) : M [ r ] Z :=
     ret (Z.add x_1 1)
   end.
 
-Definition s := Effect.make string Empty_set.
+Definition s := @OCaml.Effect.State.state string.
 
 Definition fail {A B : Type} (x : A) : M [ s; OCaml.Failure ] B :=
   match x with

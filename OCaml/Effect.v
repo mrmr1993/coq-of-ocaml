@@ -309,11 +309,17 @@ End Run.
 Module State.
   Unset Implicit Arguments.
 
-  Definition read (state : Effect.t) : M [ state ] (Effect.S state) :=
+  Definition state {A : Type} : Effect.t :=
+    Effect.make A Empty_set.
+
+  Definition read {A : Type} (_ : Effect.t) : M [ @state A ] A :=
     fun s => (inl (fst s), s).
 
-  Definition write (state : Effect.t) (x : Effect.S state) : M [ state ] unit :=
+  Definition write {A : Type} (_ : Effect.t) (x : Effect.S state) : M [ @state A ] unit :=
     fun s => (inl tt, (x, tt)).
+
+  Definition ref {A : Type} (x : A) : M [ @state A ] Effect.t :=
+    fun s => (inl (@state A), (x, tt)).
 
   Set Implicit Arguments.
 End State.
