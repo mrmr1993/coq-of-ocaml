@@ -1,0 +1,63 @@
+3
+Value
+  (non_rec, @.,
+    [
+      ((get_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+        LetVar (4, Effect ([ OCaml.Effect.State.state/1 ], .)) x =
+          Apply
+            ((4, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              Variable
+                ((4,
+                  Effect
+                    ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
+                  OCaml.Pervasives.ref/1),
+              [ Constant ((4, Effect ([ ], .)), Int(12)) ]) in
+        Apply
+          ((5, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Variable
+              ((5, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
+                OCaml.Effect.State.read/1),
+            [ Variable ((5, Effect ([ ], .)), x/0) ]))
+    ])
+
+7
+Value
+  (non_rec, @.,
+    [
+      ((set_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+        LetVar (8, Effect ([ OCaml.Effect.State.state/1 ], .)) x =
+          Apply
+            ((8, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              Variable
+                ((8,
+                  Effect
+                    ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
+                  OCaml.Pervasives.ref/1),
+              [ Constant ((8, Effect ([ ], .)), Int(12)) ]) in
+        Sequence
+          ((9, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Apply
+              ((9, Effect ([ OCaml.Effect.State.state/1 ], .)),
+                Variable
+                  ((9,
+                    Effect
+                      ([ ],
+                        . ->
+                          .
+                            -[ OCaml.Effect.State.state/1 ]->
+                            .)),
+                    OCaml.Effect.State.write/1),
+                [
+                  Variable ((9, Effect ([ ], .)), x/0);
+                  Constant ((9, Effect ([ ], .)), Int(15))
+                ]),
+            Apply
+              ((10, Effect ([ OCaml.Effect.State.state/1 ], .)),
+                Variable
+                  ((10,
+                    Effect
+                      ([ ],
+                        . -[ OCaml.Effect.State.state/1 ]-> .)),
+                    OCaml.Effect.State.read/1),
+                [ Variable ((10, Effect ([ ], .)), x/0) ])))
+    ])

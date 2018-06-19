@@ -139,6 +139,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
+  |> add_var ["OCaml"; "Pervasives"] "ref" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
   (* Operations on format strings *)
   (* Program termination *)
 

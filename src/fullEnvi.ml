@@ -129,6 +129,9 @@ let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Typs.mem loc x env
 
+let bound_descriptor_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+  bound_name_opt Mod.Descriptors.mem x env
+
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Descriptors.mem loc x env
 

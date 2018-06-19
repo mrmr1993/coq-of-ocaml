@@ -1,0 +1,31 @@
+3
+Value
+  (non_rec, @.,
+    [
+      ((get_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+        LetVar 4 x =
+          Apply
+            (4, Variable (4, OCaml.Pervasives.ref/1),
+              [ Constant (4, Int(12)) ]) in
+        Apply
+          (5, Variable (5, OCaml.Effect.State.read/1), [ Variable (5, x/0) ]))
+    ])
+
+7
+Value
+  (non_rec, @.,
+    [
+      ((set_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+        LetVar 8 x =
+          Apply
+            (8, Variable (8, OCaml.Pervasives.ref/1),
+              [ Constant (8, Int(12)) ]) in
+        Sequence
+          (9,
+            Apply
+              (9, Variable (9, OCaml.Effect.State.write/1),
+                [ Variable (9, x/0); Constant (9, Int(15)) ]),
+            Apply
+              (10, Variable (10, OCaml.Effect.State.read/1),
+                [ Variable (10, x/0) ])))
+    ])
