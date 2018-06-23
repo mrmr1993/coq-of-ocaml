@@ -68,19 +68,21 @@ and of_typs_exprs_new_free_vars (env : 'a FullEnvi.t) (loc : Loc.t)
       ([], typ_vars, Name.Set.empty) typs in
   (List.rev typs, typ_vars, new_typ_vars)
 
-let rec of_type_expr (env : 'a FullEnvi.t) (loc : Loc.t)
-  (typ : Types.type_expr) : t =
+let rec of_type_expr ?allow_anon:(anon_var=false) (env : 'a FullEnvi.t)
+  (loc : Loc.t) (typ : Types.type_expr) : t =
   match typ.desc with
   | Tvar (Some x) -> Variable x
   | Tarrow (_, typ_x, typ_y, _) ->
-    Arrow (of_type_expr env loc typ_x, of_type_expr env loc typ_y)
+    Arrow (of_type_expr ~allow_anon:anon_var env loc typ_x,
+     of_type_expr ~allow_anon:anon_var env loc typ_y)
   | Ttuple typs ->
-    Tuple (List.map (of_type_expr env loc) typs)
+    Tuple (List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
   | Tconstr (path, typs, _) ->
     let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
-    Apply (x, List.map (of_type_expr env loc) typs)
-  | Tlink typ -> of_type_expr env loc typ
-  | Tpoly (typ, []) -> of_type_expr env loc typ
+    Apply (x, List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
+  | Tlink typ -> of_type_expr ~allow_anon:anon_var env loc typ
+  | Tpoly (typ, []) -> of_type_expr ~allow_anon:anon_var env loc typ
+  | Tvar None when anon_var -> Variable "_"
   | _ ->
     Error.warn loc "Type not handled.";
     Variable "unhandled_type"

@@ -26,7 +26,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     { name = Name.of_ident x;
       typ = Type.of_type_expr env loc typ;
-      expr = Exp.of_expression env Name.Map.empty expr }
+      expr = Exp.map fst @@ Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)

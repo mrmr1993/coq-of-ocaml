@@ -45,6 +45,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> add_constructor [] "None"
   |> add_constructor [] "Some"
   (* Predefined exceptions *)
+  |> add_typ ["OCaml"] "exn" Pure
   |> add_exn ["OCaml"] "Match_failure"
   |> add_exn ["OCaml"] "Assert_failure"
   |> add_exn ["OCaml"] "Invalid_argument"

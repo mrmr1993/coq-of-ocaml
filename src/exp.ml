@@ -47,6 +47,9 @@ module Definition = struct
       env_after_def def env
     else
       env
+
+  let map (f : 'a -> 'b) (def : 'a t) : 'b t =
+    { def with cases = List.map (fun (header, e) -> (header, f e)) def.cases }
 end
 
 (** The simplified OCaml AST we use. We do not use a mutualy recursive type to
@@ -139,10 +142,7 @@ let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
   | Apply (a, e_f, e_xs) -> Apply (f a, map f e_f, List.map (map f) e_xs)
   | Function (a, x, e) -> Function (f a, x, map f e)
   | LetVar (a, x, e1, e2) -> LetVar (f a, x, map f e1, map f e2)
-  | LetFun (a, def, e2) ->
-    let cases = def.Definition.cases |> List.map (fun (header, e) ->
-      (header, map f e)) in
-    LetFun (f a, { def with Definition.cases = cases }, map f e2)
+  | LetFun (a, def, e2) -> LetFun (f a, Definition.map (map f) def, map f e2)
   | Match (a, e, cases) ->
     Match (f a, map f e, List.map (fun (p, e) -> (p, map f e)) cases)
   | Record (a, fields, base) ->
@@ -168,13 +168,15 @@ let rec open_function (e : 'a t) : Name.t list * 'a t =
 
 (** Import an OCaml expression. *)
 let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
-  (e : expression) : Loc.t t =
+  (e : expression) : (Loc.t * Type.t) t =
   let l = Loc.of_location e.exp_loc in
+  let typ = Type.of_type_expr ~allow_anon:true env l e.exp_type in
+  let a = (l, typ) in
   match e.exp_desc with
   | Texp_ident (path, _, _) ->
     let x = FullEnvi.bound_var l (PathName.of_path l path) env in
-    Variable (l, x)
-  | Texp_constant constant -> Constant (l, Constant.of_constant l constant)
+    Variable (a, x)
+  | Texp_constant constant -> Constant (a, Constant.of_constant l constant)
   | Texp_let (_, [{ vb_pat = p; vb_expr = e1 }], e2)
     when (match e1.exp_desc with
     | Texp_function _ -> false
@@ -185,24 +187,24 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     | Pattern.Variable x ->
       let env = FullEnvi.add_var [] x () env in
       let e2 = of_expression env typ_vars e2 in
-      LetVar (l, x, e1, e2)
+      LetVar (a, x, e1, e2)
     | _ ->
       let env = Pattern.add_to_env p env in
       let e2 = of_expression env typ_vars e2 in
-      Match (l, e1, [p, e2]))
+      Match (a, e1, [p, e2]))
   | Texp_let (is_rec, cases, e) ->
     let (env, def) = import_let_fun env l typ_vars is_rec cases in
     let e = of_expression env typ_vars e in
-    LetFun (l, def, e)
+    LetFun (a, def, e)
   | Texp_function { cases = [{c_lhs = {pat_desc = Tpat_var (x, _)}; c_rhs = e}] }
   | Texp_function { cases = [{c_lhs = { pat_desc = Tpat_alias
     ({ pat_desc = Tpat_any }, x, _)}; c_rhs = e}] } ->
     let x = Name.of_ident x in
     let env = FullEnvi.add_var [] x () env in
-    Function (l, x, of_expression env typ_vars e)
+    Function (a, x, of_expression env typ_vars e)
   | Texp_function { cases = cases } ->
-    let (x, e) = open_cases env typ_vars cases in
-    Function (l, x, e)
+    let (x, e) = open_cases env typ_vars typ cases in
+    Function (a, x, e)
   | Texp_apply (e_f, e_xs) ->
     let l_f = Loc.of_location e_f.exp_loc in
     (match e_f.exp_desc with
@@ -213,11 +215,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
+          let t_exn = Type.of_type_expr ~allow_anon:true env l_exn e_x.exp_type in
           let x = PathName.of_loc x in
           let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
           let x = FullEnvi.bound_var l_exn x env in
+          let typs = List.map (fun e_arg ->
+            Type.of_type_expr ~allow_anon:true env
+              (Loc.of_location e_arg.exp_loc) e_arg.exp_type) es in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (l, Variable (l_exn, x), [Tuple (Loc.Unknown, es)])
+          Apply (a, Variable ((l_exn, t_exn), x),
+            [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")
       | _ -> Error.raise l "Expected one argument for 'raise'.")
@@ -227,7 +234,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         match e_x with
         | Some e_x -> of_expression env typ_vars e_x
         | None -> Error.raise l "expected an argument") e_xs in
-      Apply (l, e_f, e_xs))
+      Apply (a, e_f, e_xs))
   | Texp_match (e, cases, _, _) ->
     let e = of_expression env typ_vars e in
     let cases = cases |> List.map (fun {c_lhs = p; c_guard = g; c_rhs = e} ->
@@ -235,13 +242,13 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let p = Pattern.of_pattern env p in
       let env = Pattern.add_to_env p env in
       (p, of_expression env typ_vars e)) in
-    Match (l, e, cases)
-  | Texp_tuple es -> Tuple (l, List.map (of_expression env typ_vars) es)
+    Match (a, e, cases)
+  | Texp_tuple es -> Tuple (a, List.map (of_expression env typ_vars) es)
   | Texp_construct (x, _, es) ->
     let x = FullEnvi.bound_constructor l (PathName.of_loc x) env in
-    Constructor (l, x, List.map (of_expression env typ_vars) es)
+    Constructor (a, x, List.map (of_expression env typ_vars) es)
   | Texp_record { fields; extended_expression } ->
-    Record (l, Array.to_list fields |> List.map (fun (label, definition) ->
+    Record (a, Array.to_list fields |> List.map (fun (label, definition) ->
       match definition with
       | Kept _ ->
         begin match label.lbl_res.desc with
@@ -258,27 +265,27 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       option_map (of_expression env typ_vars) extended_expression)
   | Texp_field (e, x, _) ->
     let x = FullEnvi.bound_field l (PathName.of_loc x) env in
-    Field (l, of_expression env typ_vars e, x)
+    Field (a, of_expression env typ_vars e, x)
   | Texp_ifthenelse (e1, e2, e3) ->
     let e3 = match e3 with
-      | None -> Tuple (Loc.Unknown, [])
+      | None -> Tuple ((Loc.Unknown, Type.Tuple []), [])
       | Some e3 -> of_expression env typ_vars e3 in
-    IfThenElse (l, of_expression env typ_vars e1,
+    IfThenElse (a, of_expression env typ_vars e1,
       of_expression env typ_vars e2, e3)
   | Texp_sequence (e1, e2) ->
-    Sequence (l, of_expression env typ_vars e1, of_expression env typ_vars e2)
+    Sequence (a, of_expression env typ_vars e1, of_expression env typ_vars e2)
   | Texp_try (e1,
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
     let x = FullEnvi.bound_descriptor l (PathName.of_loc x) env in
     let p = Pattern.Tuple (List.map (Pattern.of_pattern env) ps) in
-    Match (l, Run (Loc.Unknown, x, Effect.Descriptor.pure, e1), [
+    Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
         FullEnvi.bound_constructor l (PathName.of_name [] "inl") env,
         [Pattern.Variable "x"]) in
       let env = Pattern.add_to_env p env in
       let x = FullEnvi.bound_var l (PathName.of_name [] "x") env in
-      (p, Variable (Loc.Unknown, x)));
+      (p, Variable ((Loc.Unknown, typ), x)));
       (let p = Pattern.Constructor (
         FullEnvi.bound_constructor l (PathName.of_name [] "inr") env,
         [p]) in
@@ -292,24 +299,29 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_assert e ->
     let assert_function =
       FullEnvi.bound_var l (PathName.of_name ["OCaml"] "assert") env in
-    Apply (l, Variable (l, assert_function), [of_expression env typ_vars e])
+    Apply (a, Variable (a, assert_function), [of_expression env typ_vars e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
     patterns. *)
 and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
-  (cases : case list) : Name.t * Loc.t t =
+  (typ : Type.t) (cases : case list) : Name.t * (Loc.t * Type.t) t =
   let (x, env) = FullEnvi.fresh_var "x" () env in
+  let p1 = (List.hd cases).c_lhs in
   let cases = cases |> List.map (fun {c_lhs = p; c_rhs = e} ->
     let p = Pattern.of_pattern env p in
     let env = Pattern.add_to_env p env in
     (p, of_expression env typ_vars e)) in
   let bound_x = FullEnvi.bound_var Loc.Unknown (PathName.of_name [] x) env in
-  (x, Match (Loc.Unknown, Variable (Loc.Unknown, bound_x), cases))
+  let l = Loc.of_location p1.pat_loc in
+  let typ_x = Type.of_type_expr ~allow_anon:true env l p1.pat_type in
+  (x, Match ((Loc.Unknown, typ),
+    Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
 and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
-  (cases : value_binding list) : unit FullEnvi.t * Loc.t t Definition.t =
+  (cases : value_binding list)
+  : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t =
   let is_rec = Recursivity.of_rec_flag is_rec in
   let attrs = cases |> List.map (fun { vb_attributes = attrs; vb_expr = e; vb_pat = p } ->
     let { exp_loc = loc } = e in
