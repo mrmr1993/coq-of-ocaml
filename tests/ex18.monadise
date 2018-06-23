@@ -4,7 +4,8 @@
 Value
   (non_rec, @.,
     [
-      ((plus_one, [ A ], [ (x, A) ], Monad ([ r/0 ], Type (Z/1))),
+      ((plus_one, [ A ], [ (x, A) ],
+        Monad ([ OCaml.Effect.State.state/1 ], Type (Z/1))),
         Match
           (?, Variable (?, x/0),
             [
@@ -47,7 +48,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fail, [ A; B ], [ (x, A) ], Monad ([ s/0; OCaml.Failure/1 ], B)),
+      ((fail, [ A; B ], [ (x, A) ],
+        Monad ([ OCaml.Failure/1; OCaml.Effect.State.state/1 ], B)),
         Match
           (?, Variable (?, x/0),
             [
@@ -57,11 +59,11 @@ Value
                     Lift
                       (?,
                         [
-                          s/0
+                          OCaml.Effect.State.state/1
                         ],
                         [
-                          s/0;
-                          OCaml.Failure/1
+                          OCaml.Failure/1;
+                          OCaml.Effect.State.state/1
                         ],
                         Apply
                           (8,
@@ -81,8 +83,8 @@ Value
                           OCaml.Failure/1
                         ],
                         [
-                          s/0;
-                          OCaml.Failure/1
+                          OCaml.Failure/1;
+                          OCaml.Effect.State.state/1
                         ],
                         Apply
                           (8,
@@ -101,7 +103,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((reset, [ A ], [ (x, A) ], Monad ([ r/0 ], Type (unit/1))),
+      ((reset, [ A ], [ (x, A) ],
+        Monad ([ OCaml.Effect.State.state/1 ], Type (unit/1))),
         Match
           (?, Variable (?, x/0),
             [
@@ -126,7 +129,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((incr, [ A ], [ (x, A) ], Monad ([ r/0 ], Type (unit/1))),
+      ((incr, [ A ], [ (x, A) ],
+        Monad ([ OCaml.Effect.State.state/1 ], Type (unit/1))),
         Match
           (?, Variable (?, x/0),
             [
