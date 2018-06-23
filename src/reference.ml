@@ -33,7 +33,7 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
   let env = env
   |> FullEnvi.add_var [] r.name ()
-  |> FullEnvi.add_descriptor [] r.name in
+  |> FullEnvi.add_descriptor [] (r.name ^ "_state") in
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : Loc.t t) (env : Effect.Type.t FullEnvi.t)
@@ -41,9 +41,12 @@ let update_env_with_effects (r : Loc.t t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
   let env = env
   |> FullEnvi.add_var [] r.name Effect.Type.Pure
-  |> FullEnvi.add_descriptor [] r.name in
+  |> FullEnvi.add_descriptor [] (r.name ^ "_state") in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =
-  !^ "Definition" ^^ Name.to_coq r.name ^^ !^ ":=" ^^
-    !^ "@OCaml.Effect.State.state" ^^ Type.to_coq true r.typ ^-^ !^ "."
+  nest (!^ "Definition" ^^ Name.to_coq r.name ^^ !^ ":=" ^^
+    !^ "OCaml.Effect.State.init" ^^ Exp.to_coq true r.expr ^-^ !^ ".")
+  ^^ newline ^^
+  nest (!^ "Definition" ^^ Name.to_coq r.name ^-^ !^ "_state" ^^ !^ ":=" ^^
+    !^ "@OCaml.Effect.State.state" ^^ Type.to_coq true r.typ ^-^ !^ ".")

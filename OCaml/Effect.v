@@ -309,17 +309,50 @@ End Run.
 Module State.
   Unset Implicit Arguments.
 
+  Record t (A : Type) := {pos : nat; default_value : A}.
+
+  Arguments pos {A} _.
+  Arguments default_value {A} _.
+
+  Fixpoint replace (n : nat) {A : Type} (v : A) (l : list A) : list A :=
+    match n, l with
+    | O, [] => [v]
+    | O, a :: l' => v :: l'
+    | S _, [] => []
+    | S n', a :: l' => a :: replace n' v l'
+    end.
+
+  Definition position {A : Type} (x : t A) (l : list A) : nat :=
+    Lists.List.length l - S (pos x).
+
   Definition state {A : Type} : Effect.t :=
-    Effect.make A Empty_set.
+    Effect.make (list A) Empty_set.
 
-  Definition read {A : Type} (_ : Effect.t) : M [ @state A ] A :=
-    fun s => (inl (fst s), s).
+  Definition peek {A B : Type}
+    (mval : (A + Effect.error [@state B]) * Effect.state [@state B])
+    : A * list B :=
+    match mval with
+    | (inl x, (l, _)) => (x, l)
+    | (inr (inl x), _) => Empty_set_rect _ x
+    | (inr (inr x), _) => Empty_set_rect _ x
+    end.
 
-  Definition write {A : Type} (_ : Effect.t) (x : Effect.S state) : M [ @state A ] unit :=
-    fun s => (inl tt, (x, tt)).
+  Definition write {A : Type} (x : t A) (value : A)
+    : M [ state ] unit :=
+    fun s => (inl tt, (replace (position x (fst s)) value (fst s), tt)).
 
-  Definition ref {A : Type} (x : A) : M [ @state A ] Effect.t :=
-    fun s => (inl (@state A), (x, tt)).
+  Definition read {A : Type} (x : t A) : M [ @state A ] A :=
+    fun s => (inl (Lists.List.nth (position x (fst s)) (fst s) (default_value x)), s).
+
+  Definition ref {A : Type} (x : A) : M [ @state A ] (t A) :=
+    fun s => let l := fst s in
+      (inl {|
+          pos := Lists.List.length l;
+          default_value := x
+        |}, (x :: l, tt)).
+
+  Definition init {A : Type} (x : A) : t A :=
+    {| pos := 0; default_value := x |}.
 
   Set Implicit Arguments.
 End State.

@@ -323,7 +323,8 @@ Module Pervasives.
   (* TODO *)
 
   (** * References *)
-  Definition ref {A : Type} (x : A) : M [ OCaml.Effect.State.state ] Effect.t :=
+  Definition ref {A : Type} (x : A)
+    : M [ OCaml.Effect.State.state ] (OCaml.Effect.State.t A) :=
     OCaml.Effect.State.ref x.
 
   (** * Operations on format strings *)
