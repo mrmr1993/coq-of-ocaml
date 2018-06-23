@@ -52,9 +52,9 @@ let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_var path base v env.active_module}
 
-let add_typ (path : Name.t list) (base : Name.t) (env : 'a t)
+let add_typ (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
-  {env with active_module = FullMod.add_typ path base env.active_module}
+  {env with active_module = FullMod.add_typ path base v env.active_module}
 
 let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
   : 'a t =

@@ -15,10 +15,10 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
   FullEnvi.empty (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
-  |> add_typ [] "nat"
+  |> add_typ [] "nat" Pure
   |> add_constructor [] "O"
   |> add_constructor [] "S"
-  |> add_typ [] "sum"
+  |> add_typ [] "sum" Pure
   |> add_constructor [] "inl"
   |> add_constructor [] "inr"
   |> add_descriptor [] "IO"
@@ -30,18 +30,18 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
 
   (* The core library *)
   (* Built-in types *)
-  |> add_typ [] "Z"
-  |> add_typ [] "ascii"
-  |> add_typ [] "string"
-  |> add_typ [] "bool"
+  |> add_typ [] "Z" Pure
+  |> add_typ [] "ascii" Pure
+  |> add_typ [] "string" Pure
+  |> add_typ [] "bool" Pure
   |> add_constructor [] "false"
   |> add_constructor [] "true"
-  |> add_typ [] "unit"
+  |> add_typ [] "unit" Pure
   |> add_constructor [] "tt"
-  |> add_typ [] "list"
+  |> add_typ [] "list" Pure
   |> add_constructor [] "[]"
   |> add_constructor [] "cons"
-  |> add_typ [] "option"
+  |> add_typ [] "option" Pure
   |> add_constructor [] "None"
   |> add_constructor [] "Some"
   (* Predefined exceptions *)
@@ -58,7 +58,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> add_exn ["OCaml"] "Sys_blocked_io"
   |> add_exn ["OCaml"] "Undefined_recursive_module"
   (* State *)
-  |> add_typ ["OCaml"; "Effect"; "State"] "t"
+  |> add_typ ["OCaml"; "Effect"; "State"] "t" Pure
   |> add_descriptor ["OCaml"; "Effect"; "State"] "state"
   |> add_var ["OCaml"; "Effect"; "State"] "read" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
   |> add_var ["OCaml"; "Effect"; "State"] "write" (Arrow (d [], Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure)))
