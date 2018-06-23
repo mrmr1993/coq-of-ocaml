@@ -438,7 +438,8 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     Bind (a, e1, y, e2)
   | Lift (a, d1, d2, e) -> Lift (a, d1, d2, substitute x e' e)
 
-let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
+let rec monadise_let_rec (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t)
+  : (Loc.t * Type.t) t =
   match e with
   | Constant _ | Variable _ -> e
   | Tuple (a, es) ->
@@ -486,11 +487,12 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : Loc.t t) : Loc.t t =
   | Lift (a, d1, d2, e) -> Lift (a, d1, d2, monadise_let_rec env e)
 
 and monadise_let_rec_definition (env : unit FullEnvi.t)
-  (def : Loc.t t Definition.t) : unit FullEnvi.t * Loc.t t Definition.t list =
+  (def : (Loc.t * Type.t) t Definition.t)
+  : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
   if Recursivity.to_bool def.Definition.is_rec &&
     def.Definition.attribute <> Attribute.CoqRec then
-    let var (x : Name.t) env : Loc.t t =
-      Variable (Loc.Unknown,
+    let var (x : Name.t) (typ : Type.t) env : (Loc.t * Type.t) t =
+      Variable ((Loc.Unknown, typ),
         FullEnvi.bound_var Loc.Unknown (PathName.of_name [] x) env) in
     let env_in_def = Definition.env_in_def def env in
     (* Add the suffix "_rec" to the names. *)
@@ -500,17 +502,15 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
           env_in_def in
         ({ header with Header.name = name_rec }, e)) } in
     let env_after_def' = Definition.env_in_def def' env in
+    let nat_type = Type.Apply (FullEnvi.bound_typ Loc.Unknown
+      (PathName.of_name [] "nat") env_after_def', []) in
     (* Add the argument "counter" and monadise the bodies. *)
     let def' = { def' with Definition.cases =
       def'.Definition.cases |> List.map (fun (header, e) ->
         let name_rec = header.Header.name in
         let (counter, _) =
           FullEnvi.fresh_var "counter" () env_after_def' in
-        let args_rec =
-          (counter,
-            Type.Apply (FullEnvi.bound_typ Loc.Unknown (PathName.of_name [] "nat")
-              env_after_def',
-            [])) :: header.Header.args in
+        let args_rec = (counter, nat_type) :: header.Header.args in
         let header_rec =
           { header with Header.name = name_rec; args = args_rec } in
         let env_in_name_rec =
@@ -519,19 +519,25 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
         (header_rec, e_name_rec)) } in
     (* Do the substitutions. *)
     let def' = { def' with Definition.cases = List.map2 (fun name (header, e) ->
-      let counter = fst (List.hd header.Header.args) in
+      let (counter, counter_typ) = List.hd header.Header.args in
       let env = Header.env_in_header header env_after_def' () in
+      let rec_typ = List.fold_right (fun (_, arg_typ) typ ->
+          Type.Arrow (arg_typ, typ))
+        (List.tl header.Header.args) header.Header.typ in
       let e_name_rec =
         List.fold_left2 (fun e_name_rec name (header, e) ->
           substitute name
-            (Apply (Loc.Unknown, var header.Header.name env,
-              [var counter env])) e_name_rec)
+            (Apply ((Loc.Unknown, rec_typ), var header.Header.name
+                (Arrow (counter_typ, rec_typ)) env,
+              [var counter counter_typ env])) e_name_rec)
           e (Definition.names def) def'.Definition.cases in
-      let e_name_rec = Match (Loc.Unknown, var counter env, [
+      let nt_type = snd (annotation e_name_rec) in
+      let e_name_rec = Match ((Loc.Unknown, nt_type), var counter counter_typ env, [
         (Pattern.Constructor (FullEnvi.bound_constructor Loc.Unknown (PathName.of_name [] "O")
           env, []),
-          Apply (Loc.Unknown, var "not_terminated" env,
-            [Tuple (Loc.Unknown, [])]));
+          Apply ((Loc.Unknown, nt_type), var "not_terminated"
+              (Type.Arrow (Type.Tuple [], nt_type)) env,
+            [Tuple ((Loc.Unknown, Type.Tuple []), [])]));
         (Pattern.Constructor (
           FullEnvi.bound_constructor Loc.Unknown (PathName.of_name [] "S") env,
           [Pattern.Variable counter]),
@@ -539,13 +545,17 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       (header, e_name_rec))
       (Definition.names def) def'.Definition.cases } in
     (* Add the definitions without the "_rec" suffix. *)
-    let defs = List.map2 (fun name_rec (header, _) ->
+    let defs = List.map2 (fun name_rec (header, rec_e) ->
       let env = Header.env_in_header header env_after_def' () in
-      let e = Apply (Loc.Unknown,
-        var name_rec env,
-        Apply (Loc.Unknown, var "read_counter" env,
-          [Tuple (Loc.Unknown, [])]) ::
-            List.map (fun (x, _) -> var x env) header.Header.args) in
+      let rec_typ = List.fold_right (fun (_, arg_typ) typ ->
+          Type.Arrow (arg_typ, typ))
+        header.Header.args (snd (annotation rec_e)) in
+      let e = Apply ((Loc.Unknown, snd (annotation rec_e)),
+        var name_rec (Type.Arrow (nat_type, rec_typ)) env,
+        Apply ((Loc.Unknown, nat_type),
+          var "read_counter" (Type.Arrow (Type.Tuple [], nat_type)) env,
+          [Tuple ((Loc.Unknown, Type.Tuple []), [])])
+        :: List.map (fun (x, typ) -> var x typ env) header.Header.args) in
       { Definition.is_rec = Recursivity.New false;
         attribute = Attribute.None;
         cases = [header, e] })

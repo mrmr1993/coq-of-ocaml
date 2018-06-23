@@ -26,7 +26,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     { name = Name.of_ident x;
       typ = Type.of_type_expr env loc typ;
-      expr = Exp.map fst @@ Exp.of_expression env Name.Map.empty expr }
+      expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
@@ -36,13 +36,13 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   |> FullEnvi.add_descriptor [] (r.name ^ "_state") in
   (env, {r with expr = update_exp env r.expr})
 
-let update_env_with_effects (r : Loc.t t) (env : Effect.Type.t FullEnvi.t)
-  (id : Effect.Descriptor.Id.t)
+let update_env_with_effects (r : (Loc.t * Type.t) t)
+  (env : Effect.Type.t FullEnvi.t) (id : Effect.Descriptor.Id.t)
   : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
   let env = env
   |> FullEnvi.add_var [] r.name Effect.Type.Pure
   |> FullEnvi.add_descriptor [] (r.name ^ "_state") in
-  (env, {r with expr = Exp.effects env r.expr})
+  (env, {r with expr = Exp.effects env @@ Exp.map fst r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =
   nest (!^ "Definition" ^^ Name.to_coq r.name ^^ !^ ":=" ^^

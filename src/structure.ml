@@ -69,9 +69,9 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
 
 (** Import an OCaml structure. *)
 let rec of_structure (env : unit FullEnvi.t) (structure : structure)
-  : unit FullEnvi.t * Loc.t t list =
+  : unit FullEnvi.t * (Loc.t * Type.t) t list =
   let of_structure_item (env : unit FullEnvi.t) (item : structure_item)
-    : unit FullEnvi.t * Loc.t t =
+    : unit FullEnvi.t * (Loc.t * Type.t) t =
     let loc = Loc.of_location item.str_loc in
     match item.str_desc with
     | Tstr_value (_, cases) when Reference.is_reference loc cases ->
@@ -81,7 +81,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
     | Tstr_value (is_rec, cases) ->
       let (env, def) =
         Exp.import_let_fun env loc Name.Map.empty is_rec cases in
-      (env, Value (loc, Exp.Definition.map (Exp.map fst) def))
+      (env, Value (loc, def))
     | Tstr_type (_, typs) ->
       let def = TypeDefinition.of_ocaml env loc typs in
       let env = TypeDefinition.update_env def () env in
@@ -137,10 +137,11 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
   let defs = if requires == [] then defs else Require requires :: defs in
   (env, defs)
 
-let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
-  : unit FullEnvi.t * Loc.t t list =
-  let monadise_let_rec_one (env : unit FullEnvi.t) (def : Loc.t t)
-    : unit FullEnvi.t * Loc.t t list =
+let rec monadise_let_rec (env : unit FullEnvi.t)
+  (defs : (Loc.t * Type.t) t list)
+  : unit FullEnvi.t * (Loc.t * Type.t) t list =
+  let monadise_let_rec_one (env : unit FullEnvi.t) (def : (Loc.t * Type.t) t)
+    : unit FullEnvi.t * (Loc.t * Type.t) t list =
     match def with
     | Require _ -> (env, [def])
     | Value (loc, def) ->
@@ -171,13 +172,14 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (defs : Loc.t t list)
     (env, []) defs in
   (env, List.rev defs)
 
-let rec effects (env : Effect.Type.t FullEnvi.t) (defs : 'a t list)
+let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
   : Effect.Type.t FullEnvi.t * ('a * Effect.t) t list =
-  let effects_one (env : Effect.Type.t FullEnvi.t) (def : 'a t)
+  let effects_one (env : Effect.Type.t FullEnvi.t) (def : ('a * Type.t) t)
     : Effect.Type.t FullEnvi.t * ('a * Effect.t) t =
     match def with
     | Require names -> (env, Require names)
     | Value (loc, def) ->
+      let def = Exp.Definition.map (Exp.map fst) def in
       let def = Exp.effects_of_def env def in
       (if def.Exp.Definition.cases |> List.exists (fun (header, e) ->
         header.Exp.Header.args = [] &&
