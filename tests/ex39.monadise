@@ -35,3 +35,161 @@ Value
                   (10, Variable (10, OCaml.Effect.State.read/1),
                     [ Variable (10, x/0) ]))))
     ])
+
+12
+Value
+  (non_rec, @.,
+    [
+      ((add_multiple_by_refs, [ ],
+        [ (a, Type (Z/1)); (b, Type (Z/1)); (c, Type (Z/1)); (d, Type (Z/1)) ],
+        Monad ([ OCaml.Effect.State.state/1 ], Type (Z/1))),
+        Bind
+          (?,
+            Apply
+              (13, Variable (13, OCaml.Pervasives.ref/1),
+                [ Variable (13, a/0) ]), Some x,
+            Bind
+              (?,
+                Bind
+                  (?,
+                    Bind
+                      (?,
+                        Apply
+                          (14,
+                            Variable
+                              (14,
+                                OCaml.Effect.State.read/1),
+                            [ Variable (14, x/0) ]),
+                        Some x_1,
+                        Return
+                          (?,
+                            Apply
+                              (14,
+                                Variable (14, Z.add/1),
+                                [
+                                  Variable
+                                    (?,
+                                      x_1/0);
+                                  Variable (14, b/0)
+                                ]))), Some x_1,
+                    Apply
+                      (14,
+                        Variable
+                          (14, OCaml.Effect.State.write/1),
+                        [
+                          Variable (14, x/0);
+                          Variable (?, x_1/0)
+                        ])), None,
+                Bind
+                  (?,
+                    Apply
+                      (15,
+                        Variable (15, OCaml.Pervasives.ref/1),
+                        [ Variable (15, c/0) ]), Some y,
+                    Bind
+                      (?,
+                        Bind
+                          (?,
+                            Bind
+                              (?,
+                                Apply
+                                  (16,
+                                    Variable
+                                      (16,
+                                        OCaml.Effect.State.read/1),
+                                    [
+                                      Variable
+                                        (16,
+                                          y/0)
+                                    ]), Some x_1,
+                                Return
+                                  (?,
+                                    Apply
+                                      (16,
+                                        Variable
+                                          (16,
+                                            Z.add/1),
+                                        [
+                                          Variable
+                                            (?,
+                                              x_1/0);
+                                          Variable
+                                            (16,
+                                              d/0)
+                                        ]))),
+                            Some x_1,
+                            Apply
+                              (16,
+                                Variable
+                                  (16,
+                                    OCaml.Effect.State.write/1),
+                                [
+                                  Variable (16, y/0);
+                                  Variable
+                                    (?,
+                                      x_1/0)
+                                ])), None,
+                        Bind
+                          (?,
+                            Bind
+                              (?,
+                                Bind
+                                  (?,
+                                    Apply
+                                      (17,
+                                        Variable
+                                          (17,
+                                            OCaml.Effect.State.read/1),
+                                        [
+                                          Variable
+                                            (17,
+                                              x/0)
+                                        ]),
+                                    Some x_1,
+                                    Bind
+                                      (?,
+                                        Apply
+                                          (17,
+                                            Variable
+                                              (17,
+                                                OCaml.Effect.State.read/1),
+                                            [
+                                              Variable
+                                                (17,
+                                                  y/0)
+                                            ]),
+                                        Some
+                                          x_2,
+                                        Return
+                                          (?,
+                                            Apply
+                                              (17,
+                                                Variable
+                                                  (17,
+                                                    Z.add/1),
+                                                [
+                                                  Variable
+                                                    (?,
+                                                      x_1/0);
+                                                  Variable
+                                                    (?,
+                                                      x_2/0)
+                                                ])))),
+                                Some x_1,
+                                Apply
+                                  (17,
+                                    Variable
+                                      (17,
+                                        OCaml.Pervasives.ref/1),
+                                    [
+                                      Variable
+                                        (?,
+                                          x_1/0)
+                                    ])), Some z,
+                            Apply
+                              (18,
+                                Variable
+                                  (18,
+                                    OCaml.Effect.State.read/1),
+                                [ Variable (18, z/0) ])))))))
+    ])

@@ -29,3 +29,109 @@ Value
               (10, Variable (10, OCaml.Effect.State.read/1),
                 [ Variable (10, x/0) ])))
     ])
+
+12
+Value
+  (non_rec, @.,
+    [
+      ((add_multiple_by_refs, [ ],
+        [ (a, Type (Z/1)); (b, Type (Z/1)); (c, Type (Z/1)); (d, Type (Z/1)) ],
+        Type (Z/1)),
+        LetVar 13 x =
+          Apply
+            (13, Variable (13, OCaml.Pervasives.ref/1),
+              [ Variable (13, a/0) ]) in
+        Sequence
+          (14,
+            Apply
+              (14, Variable (14, OCaml.Effect.State.write/1),
+                [
+                  Variable (14, x/0);
+                  Apply
+                    (14,
+                      Variable
+                        (14,
+                          Z.add/1),
+                      [
+                        Apply
+                          (14,
+                            Variable
+                              (14,
+                                OCaml.Effect.State.read/1),
+                            [
+                              Variable
+                                (14,
+                                  x/0)
+                            ]);
+                        Variable
+                          (14,
+                            b/0)
+                      ])
+                ]),
+            LetVar 15 y =
+              Apply
+                (15, Variable (15, OCaml.Pervasives.ref/1),
+                  [ Variable (15, c/0) ]) in
+            Sequence
+              (16,
+                Apply
+                  (16, Variable (16, OCaml.Effect.State.write/1),
+                    [
+                      Variable (16, y/0);
+                      Apply
+                        (16,
+                          Variable
+                            (16,
+                              Z.add/1),
+                          [
+                            Apply
+                              (16,
+                                Variable
+                                  (16,
+                                    OCaml.Effect.State.read/1),
+                                [
+                                  Variable
+                                    (16,
+                                      y/0)
+                                ]);
+                            Variable
+                              (16,
+                                d/0)
+                          ])
+                    ]),
+                LetVar 17 z =
+                  Apply
+                    (17, Variable (17, OCaml.Pervasives.ref/1),
+                      [
+                        Apply
+                          (17,
+                            Variable
+                              (17,
+                                Z.add/1),
+                            [
+                              Apply
+                                (17,
+                                  Variable
+                                    (17,
+                                      OCaml.Effect.State.read/1),
+                                  [
+                                    Variable
+                                      (17,
+                                        x/0)
+                                  ]);
+                              Apply
+                                (17,
+                                  Variable
+                                    (17,
+                                      OCaml.Effect.State.read/1),
+                                  [
+                                    Variable
+                                      (17,
+                                        y/0)
+                                  ])
+                            ])
+                      ]) in
+                Apply
+                  (18, Variable (18, OCaml.Effect.State.read/1),
+                    [ Variable (18, z/0) ]))))
+    ])
