@@ -1,12 +1,14 @@
 open Typedtree
 open SmartPrint
 
-type t = {
+type 'a t = {
   name : Name.t;
-  typ : Type.t }
+  typ : Type.t;
+  expr : 'a Exp.t }
 
-let pp (r : t) : SmartPrint.t =
-  nest (!^ "Reference" ^^ OCaml.tuple [Name.pp r.name; Type.pp r.typ])
+let pp (pp_a : 'a -> SmartPrint.t) (r : 'a t) : SmartPrint.t =
+  nest (!^ "Reference" ^^ OCaml.tuple
+    [Name.pp r.name; Type.pp r.typ; Exp.pp pp_a r.expr])
 
 let is_reference (loc : Loc.t) (cases : value_binding list) : bool =
   match cases with
@@ -17,26 +19,31 @@ let is_reference (loc : Loc.t) (cases : value_binding list) : bool =
   | _ -> false
 
 let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
-  : t =
+  : 'a t =
   match cases with
   | [{ vb_pat = { pat_desc = Tpat_var (x, _) };
-    vb_expr = { exp_type = {Types.desc = Types.Tconstr (_, [typ], _) }}}] ->
+    vb_expr = { exp_type = {Types.desc = Types.Tconstr (_, [typ], _) };
+                exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     { name = Name.of_ident x;
-      typ = Type.of_type_expr env loc typ }
+      typ = Type.of_type_expr env loc typ;
+      expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
-let update_env (r : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  env
+let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
+  (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
+  let env = env
   |> FullEnvi.add_var [] r.name ()
-  |> FullEnvi.add_descriptor [] r.name
+  |> FullEnvi.add_descriptor [] r.name in
+  (env, {r with expr = update_exp env r.expr})
 
-let update_env_with_effects (r : t) (env : Effect.Type.t FullEnvi.t)
-  (id : Effect.Descriptor.Id.t) : Effect.Type.t FullEnvi.t =
-  let env = FullEnvi.add_descriptor [] r.name env in
-  env
+let update_env_with_effects (r : Loc.t t) (env : Effect.Type.t FullEnvi.t)
+  (id : Effect.Descriptor.Id.t)
+  : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
+  let env = env
   |> FullEnvi.add_var [] r.name Effect.Type.Pure
-  |> FullEnvi.add_descriptor [] r.name
+  |> FullEnvi.add_descriptor [] r.name in
+  (env, {r with expr = Exp.effects env r.expr})
 
-let to_coq (r : t) : SmartPrint.t =
+let to_coq (r : 'a t) : SmartPrint.t =
   !^ "Definition" ^^ Name.to_coq r.name ^^ !^ ":=" ^^
     !^ "@OCaml.Effect.State.state" ^^ Type.to_coq true r.typ ^-^ !^ "."

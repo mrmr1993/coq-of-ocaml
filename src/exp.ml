@@ -586,26 +586,17 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
             PathName.base = base}} as x)) ->
         begin match e_xs with
         | Variable (l_var, state_var) :: _ ->
-          (* This tests whether the variable is associated with its own effect.
-             If not, we assume it's a local variable, and infer the default
-             effect [OCaml.Effect.State.state].
-             FIXME: This is a hack. *)
-          begin match FullEnvi.bound_descriptor_opt
-              state_var.BoundName.path_name env with
-          | Some _ ->
-            let effect_typ = Effect.Type.Arrow (
-              Effect.Descriptor.singleton
-                (Effect.Descriptor.Id.Ether state_var.BoundName.path_name)
-                state_var,
-              Effect.Type.Pure) in
-            let effect_typ = if String.equal base "write" then
-                Effect.Type.Arrow (Effect.Descriptor.pure, effect_typ)
-              else effect_typ in
-            Variable ((l,
-              { Effect.descriptor = Effect.Descriptor.pure;
-                Effect.typ = effect_typ }), x)
-          | None -> effects env e_f
-          end
+          let effect_typ = Effect.Type.Arrow (
+            Effect.Descriptor.singleton
+              (Effect.Descriptor.Id.Ether state_var.BoundName.path_name)
+              state_var,
+            Effect.Type.Pure) in
+          let effect_typ = if String.equal base "write" then
+              Effect.Type.Arrow (Effect.Descriptor.pure, effect_typ)
+            else effect_typ in
+          Variable ((l,
+            { Effect.descriptor = Effect.Descriptor.pure;
+              Effect.typ = effect_typ }), x)
         | _ ->
           Error.raise l "Could not find state variable."
         end
