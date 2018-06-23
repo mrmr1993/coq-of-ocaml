@@ -34,20 +34,3 @@ Definition add_multiple_by_refs (a : Z) (b : Z) (c : Z) (d : Z)
       ret (Z.add x_1 x_2) in
     OCaml.Pervasives.ref x_1 in
   OCaml.Effect.State.read z.
-
-Definition set_ref (x : OCaml.Effect.State.t Z)
-  : M [ OCaml.Effect.State.state ] unit := OCaml.Effect.State.write x 15.
-
-Definition get_ref (x : OCaml.Effect.State.t Z)
-  : M [ OCaml.Effect.State.state ] Z := OCaml.Effect.State.read x.
-
-Definition update_ref (x : OCaml.Effect.State.t Z)
-  : M [ OCaml.Effect.State.state ] unit :=
-  let! x_1 :=
-    let! x_1 := OCaml.Effect.State.read x in
-    ret (Z.add x_1 5) in
-  OCaml.Effect.State.write x x_1.
-
-Definition new_ref (x : unit)
-  : M [ OCaml.Effect.State.state ] (OCaml.Effect.State.t Z) :=
-  OCaml.Pervasives.ref 15.

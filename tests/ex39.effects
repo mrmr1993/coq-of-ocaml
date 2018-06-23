@@ -322,3 +322,117 @@ Value
                         OCaml.Effect.State.read/1),
                     [ Variable ((18, Effect ([ ], .)), z/0) ]))))
     ])
+
+20
+Value
+  (non_rec, @.,
+    [
+      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
+        Type (unit/1)),
+        Apply
+          ((21, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Variable
+              ((21,
+                Effect
+                  ([ ], . -> . -[ OCaml.Effect.State.state/1 ]-> .)),
+                OCaml.Effect.State.write/1),
+            [
+              Variable ((21, Effect ([ ], .)), x/0);
+              Constant ((21, Effect ([ ], .)), Int(15))
+            ]))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
+        Type (Z/1)),
+        Apply
+          ((24, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Variable
+              ((24, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
+                OCaml.Effect.State.read/1),
+            [ Variable ((24, Effect ([ ], .)), x/0) ]))
+    ])
+
+26
+Value
+  (non_rec, @.,
+    [
+      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
+        Type (unit/1)),
+        Apply
+          ((27, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Variable
+              ((27,
+                Effect
+                  ([ ], . -> . -[ OCaml.Effect.State.state/1 ]-> .)),
+                OCaml.Effect.State.write/1),
+            [
+              Variable ((27, Effect ([ ], .)), x/0);
+              Apply
+                ((27,
+                  Effect
+                    ([
+                      OCaml.Effect.State.state/1
+                    ], .)),
+                  Variable
+                    ((27,
+                      Effect
+                        ([
+                        ],
+                          .)),
+                      Z.add/1),
+                  [
+                    Apply
+                      ((27,
+                        Effect
+                          ([
+                            OCaml.Effect.State.state/1
+                          ],
+                            .)),
+                        Variable
+                          ((27,
+                            Effect
+                              ([
+                              ],
+                                .
+                                  -[
+                                    OCaml.Effect.State.state/1
+                                  ]->
+                                  .)),
+                            OCaml.Effect.State.read/1),
+                        [
+                          Variable
+                            ((27,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              x/0)
+                        ]);
+                    Constant
+                      ((27,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        Int(5))
+                  ])
+            ]))
+    ])
+
+29
+Value
+  (non_rec, @.,
+    [
+      ((new_ref, [ ], [ (x, Type (unit/1)) ],
+        Type (OCaml.Effect.State.t/1, Type (Z/1))),
+        Apply
+          ((30, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            Variable
+              ((30, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
+                OCaml.Pervasives.ref/1),
+            [ Constant ((30, Effect ([ ], .)), Int(15)) ]))
+    ])
