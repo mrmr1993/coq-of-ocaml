@@ -50,7 +50,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
     (Tuple typs, typ_vars, new_typ_vars)
   | Tconstr (path, typs, _) ->
     let (typs, typ_vars, new_typ_vars) = of_typs_exprs_new_free_vars env loc typ_vars typs in
-    let x = FullEnvi.bound_typ loc (PathName.of_path loc path) env in
+    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
     (Apply (x, typs), typ_vars, new_typ_vars)
   | Tlink typ -> of_type_expr_new_typ_vars env loc typ_vars typ
   | Tpoly (typ, []) -> of_type_expr_new_typ_vars env loc typ_vars typ
@@ -77,7 +77,7 @@ let rec of_type_expr (env : 'a FullEnvi.t) (loc : Loc.t)
   | Ttuple typs ->
     Tuple (List.map (of_type_expr env loc) typs)
   | Tconstr (path, typs, _) ->
-    let x = FullEnvi.bound_typ loc (PathName.of_path loc path) env in
+    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
     Apply (x, List.map (of_type_expr env loc) typs)
   | Tlink typ -> of_type_expr env loc typ
   | Tpoly (typ, []) -> of_type_expr env loc typ
