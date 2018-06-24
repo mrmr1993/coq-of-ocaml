@@ -255,3 +255,119 @@ Value
                   (43, Variable (43, OCaml.Effect.State.read/1),
                     [ Variable (43, r/0) ]))))
     ])
+
+45
+Value
+  (non_rec, @.,
+    [
+      ((mixed_type, [ ], [ (x, Type (unit/1)) ],
+        (Type (bool/1) * Type (string/1) * Type (Z/1))),
+        LetVar 46 b =
+          Apply
+            (46, Variable (46, OCaml.Pervasives.ref/1),
+              [ Constructor (46, true/1) ]) in
+        LetVar 47 str =
+          Apply
+            (47, Variable (47, OCaml.Pervasives.ref/1),
+              [ Constant (47, String("")) ]) in
+        LetFun 48
+          (non_rec, @.,
+            [
+              ((update, [ ], [ (x_1, Type (unit/1)) ], Type (unit/1)),
+                Match
+                  (?,
+                    Variable
+                      (?,
+                        x_1/0),
+                    [
+                      (Constructor
+                        (tt/1),
+                        Sequence
+                          (49,
+                            Apply
+                              (49,
+                                Variable
+                                  (49,
+                                    OCaml.Effect.State.write/1),
+                                [
+                                  Variable
+                                    (49,
+                                      b/0);
+                                  Apply
+                                    (49,
+                                      Variable
+                                        (49,
+                                          OCaml.Effect.State.read/1),
+                                      [
+                                        Variable
+                                          (49,
+                                            b/0)
+                                      ])
+                                ]),
+                            Apply
+                              (50,
+                                Variable
+                                  (50,
+                                    OCaml.Effect.State.write/1),
+                                [
+                                  Variable
+                                    (50,
+                                      str/0);
+                                  Apply
+                                    (50,
+                                      Variable
+                                        (50,
+                                          String.append/1),
+                                      [
+                                        Constant
+                                          (50,
+                                            String("toggle "));
+                                        Apply
+                                          (50,
+                                            Variable
+                                              (50,
+                                                OCaml.Effect.State.read/1),
+                                            [
+                                              Variable
+                                                (50,
+                                                  str/0)
+                                            ])
+                                      ])
+                                ])))
+                    ]))
+            ]) in
+        Sequence
+          (51,
+            Apply
+              (51, Variable (51, update/0), [ Constructor (51, tt/1) ]),
+            Sequence
+              (52,
+                Apply
+                  (52, Variable (52, update/0),
+                    [ Constructor (52, tt/1) ]),
+                Sequence
+                  (53,
+                    Apply
+                      (53, Variable (53, update/0),
+                        [ Constructor (53, tt/1) ]),
+                    Tuple
+                      (54,
+                        Apply
+                          (54,
+                            Variable
+                              (54,
+                                OCaml.Effect.State.read/1),
+                            [ Variable (54, b/0) ]),
+                        Apply
+                          (54,
+                            Variable
+                              (54,
+                                OCaml.Effect.State.read/1),
+                            [ Variable (54, str/0) ]),
+                        Apply
+                          (54,
+                            Variable
+                              (54,
+                                OCaml.Effect.State.read/1),
+                            [ Variable (54, r/0) ]))))))
+    ])

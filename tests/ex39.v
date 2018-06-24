@@ -83,3 +83,40 @@ Definition r_add_15 (x : unit)
     let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
     lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
   lift [_;_] "10" (OCaml.Effect.State.read x_1).
+
+Definition mixed_type (x : unit)
+  : M
+    [
+      OCaml.Effect.State.state Z;
+      OCaml.Effect.State.state bool;
+      OCaml.Effect.State.state r_state;
+      OCaml.Effect.State.state string
+    ] (bool * string * Z) :=
+  let! b := lift [_;_;_;_] "0100" (OCaml.Pervasives.ref true) in
+  let! str := lift [_;_;_;_] "0001" (OCaml.Pervasives.ref "" % string) in
+  let update (x_1 : unit)
+    : M [ OCaml.Effect.State.state bool; OCaml.Effect.State.state string ] unit :=
+    match x_1 with
+    | tt =>
+      let! _ :=
+        lift [_;_] "10"
+          (let! x_2 := OCaml.Effect.State.read b in
+          OCaml.Effect.State.write b x_2) in
+      lift [_;_] "01"
+        (let! x_2 :=
+          let! x_2 := OCaml.Effect.State.read str in
+          ret (String.append "toggle " % string x_2) in
+        OCaml.Effect.State.write str x_2)
+    end in
+  let! _ := lift [_;_;_;_] "0101" (update tt) in
+  let! _ := lift [_;_;_;_] "0101" (update tt) in
+  let! _ := lift [_;_;_;_] "0101" (update tt) in
+  let! x_1 := lift [_;_;_;_] "0100" (OCaml.Effect.State.read b) in
+  let! x_2 := lift [_;_;_;_] "0001" (OCaml.Effect.State.read str) in
+  let! x_3 :=
+    lift [_;_;_;_] "1010"
+      (let! x_3 :=
+        let! x_3 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
+        lift [_;_] "01" (OCaml.Effect.State.global r x_3) in
+      lift [_;_] "10" (OCaml.Effect.State.read x_3)) in
+  ret (x_1, x_2, x_3).

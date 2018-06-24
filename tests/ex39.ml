@@ -41,3 +41,14 @@ let r_add_15 (x : unit) : int =
   let j = get_r () in
   r := i + j;
   !r
+
+let mixed_type (x : unit) : bool * string * int =
+  let b = ref true in
+  let str = ref "" in
+  let update () =
+    b := !b;
+    str := "toggle " ^ !str in
+  update ();
+  update ();
+  update ();
+  (!b, !str, !r)

@@ -629,3 +629,527 @@ Value
                                           x_1/0)
                                     ]))))))))
     ])
+
+45
+Value
+  (non_rec, @.,
+    [
+      ((mixed_type, [ ], [ (x, Type (unit/1)) ],
+        Monad
+          ([
+            TypeEffect
+            (Type (Z/1), OCaml.Effect.State.state/1);
+            TypeEffect
+            (Type (bool/1), OCaml.Effect.State.state/1);
+            TypeEffect
+            (Type (r_state/0), OCaml.Effect.State.state/1);
+            TypeEffect
+            (Type (string/1), OCaml.Effect.State.state/1)
+          ], (Type (bool/1) * Type (string/1) * Type (Z/1)))),
+        Bind
+          (?,
+            Lift
+              (?,
+                [
+                  TypeEffect
+                  (Type (bool/1), OCaml.Effect.State.state/1)
+                ],
+                [
+                  TypeEffect
+                  (Type (Z/1), OCaml.Effect.State.state/1);
+                  TypeEffect
+                  (Type (bool/1), OCaml.Effect.State.state/1);
+                  TypeEffect
+                  (Type (r_state/0), OCaml.Effect.State.state/1);
+                  TypeEffect
+                  (Type (string/1), OCaml.Effect.State.state/1)
+                ],
+                Apply
+                  (46, Variable (46, OCaml.Pervasives.ref/1),
+                    [ Constructor (46, true/1) ])), Some b,
+            Bind
+              (?,
+                Lift
+                  (?,
+                    [
+                      TypeEffect
+                      (Type (string/1),
+                        OCaml.Effect.State.state/1)
+                    ],
+                    [
+                      TypeEffect
+                      (Type (Z/1), OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type (bool/1), OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type (r_state/0),
+                        OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type (string/1),
+                        OCaml.Effect.State.state/1)
+                    ],
+                    Apply
+                      (47,
+                        Variable (47, OCaml.Pervasives.ref/1),
+                        [ Constant (47, String("")) ])),
+                Some str,
+                LetFun 48
+                  (non_rec, @.,
+                    [
+                      ((update, [ ], [ (x_1, Type (unit/1)) ],
+                        Monad
+                          ([
+                            TypeEffect
+                            (Type
+                              (bool/1),
+                              OCaml.Effect.State.state/1);
+                            TypeEffect
+                            (Type
+                              (string/1),
+                              OCaml.Effect.State.state/1)
+                          ],
+                            Type
+                              (unit/1))),
+                        Match
+                          (?,
+                            Variable
+                              (?,
+                                x_1/0),
+                            [
+                              (Constructor
+                                (tt/1),
+                                Bind
+                                  (?,
+                                    Lift
+                                      (?,
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (bool/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (bool/1),
+                                            OCaml.Effect.State.state/1);
+                                          TypeEffect
+                                          (Type
+                                            (string/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        Bind
+                                          (?,
+                                            Apply
+                                              (49,
+                                                Variable
+                                                  (49,
+                                                    OCaml.Effect.State.read/1),
+                                                [
+                                                  Variable
+                                                    (49,
+                                                      b/0)
+                                                ]),
+                                            Some
+                                              x_2,
+                                            Apply
+                                              (49,
+                                                Variable
+                                                  (49,
+                                                    OCaml.Effect.State.write/1),
+                                                [
+                                                  Variable
+                                                    (49,
+                                                      b/0);
+                                                  Variable
+                                                    (?,
+                                                      x_2/0)
+                                                ]))),
+                                    None,
+                                    Lift
+                                      (?,
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (string/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (bool/1),
+                                            OCaml.Effect.State.state/1);
+                                          TypeEffect
+                                          (Type
+                                            (string/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        Bind
+                                          (?,
+                                            Bind
+                                              (?,
+                                                Apply
+                                                  (50,
+                                                    Variable
+                                                      (50,
+                                                        OCaml.Effect.State.read/1),
+                                                    [
+                                                      Variable
+                                                        (50,
+                                                          str/0)
+                                                    ]),
+                                                Some
+                                                  x_2,
+                                                Return
+                                                  (?,
+                                                    Apply
+                                                      (50,
+                                                        Variable
+                                                          (50,
+                                                            String.append/1),
+                                                        [
+                                                          Constant
+                                                            (50,
+                                                              String("toggle "));
+                                                          Variable
+                                                            (?,
+                                                              x_2/0)
+                                                        ]))),
+                                            Some
+                                              x_2,
+                                            Apply
+                                              (50,
+                                                Variable
+                                                  (50,
+                                                    OCaml.Effect.State.write/1),
+                                                [
+                                                  Variable
+                                                    (50,
+                                                      str/0);
+                                                  Variable
+                                                    (?,
+                                                      x_2/0)
+                                                ])))))
+                            ]))
+                    ]) in
+                Bind
+                  (?,
+                    Lift
+                      (?,
+                        [
+                          TypeEffect
+                          (Type (bool/1),
+                            OCaml.Effect.State.state/1);
+                          TypeEffect
+                          (Type (string/1),
+                            OCaml.Effect.State.state/1)
+                        ],
+                        [
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1);
+                          TypeEffect
+                          (Type (bool/1),
+                            OCaml.Effect.State.state/1);
+                          TypeEffect
+                          (Type (r_state/0),
+                            OCaml.Effect.State.state/1);
+                          TypeEffect
+                          (Type (string/1),
+                            OCaml.Effect.State.state/1)
+                        ],
+                        Apply
+                          (51, Variable (51, update/0),
+                            [ Constructor (51, tt/1) ])),
+                    None,
+                    Bind
+                      (?,
+                        Lift
+                          (?,
+                            [
+                              TypeEffect
+                              (Type (bool/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type (string/1),
+                                OCaml.Effect.State.state/1)
+                            ],
+                            [
+                              TypeEffect
+                              (Type (Z/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type (bool/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type (r_state/0),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type (string/1),
+                                OCaml.Effect.State.state/1)
+                            ],
+                            Apply
+                              (52,
+                                Variable
+                                  (52, update/0),
+                                [
+                                  Constructor
+                                    (52,
+                                      tt/1)
+                                ])), None,
+                        Bind
+                          (?,
+                            Lift
+                              (?,
+                                [
+                                  TypeEffect
+                                  (Type (bool/1),
+                                    OCaml.Effect.State.state/1);
+                                  TypeEffect
+                                  (Type (string/1),
+                                    OCaml.Effect.State.state/1)
+                                ],
+                                [
+                                  TypeEffect
+                                  (Type (Z/1),
+                                    OCaml.Effect.State.state/1);
+                                  TypeEffect
+                                  (Type (bool/1),
+                                    OCaml.Effect.State.state/1);
+                                  TypeEffect
+                                  (Type (r_state/0),
+                                    OCaml.Effect.State.state/1);
+                                  TypeEffect
+                                  (Type (string/1),
+                                    OCaml.Effect.State.state/1)
+                                ],
+                                Apply
+                                  (53,
+                                    Variable
+                                      (53,
+                                        update/0),
+                                    [
+                                      Constructor
+                                        (53,
+                                          tt/1)
+                                    ])), None,
+                            Bind
+                              (?,
+                                Lift
+                                  (?,
+                                    [
+                                      TypeEffect
+                                      (Type
+                                        (bool/1),
+                                        OCaml.Effect.State.state/1)
+                                    ],
+                                    [
+                                      TypeEffect
+                                      (Type
+                                        (Z/1),
+                                        OCaml.Effect.State.state/1);
+                                      TypeEffect
+                                      (Type
+                                        (bool/1),
+                                        OCaml.Effect.State.state/1);
+                                      TypeEffect
+                                      (Type
+                                        (r_state/0),
+                                        OCaml.Effect.State.state/1);
+                                      TypeEffect
+                                      (Type
+                                        (string/1),
+                                        OCaml.Effect.State.state/1)
+                                    ],
+                                    Apply
+                                      (54,
+                                        Variable
+                                          (54,
+                                            OCaml.Effect.State.read/1),
+                                        [
+                                          Variable
+                                            (54,
+                                              b/0)
+                                        ])),
+                                Some x_1,
+                                Bind
+                                  (?,
+                                    Lift
+                                      (?,
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (string/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        [
+                                          TypeEffect
+                                          (Type
+                                            (Z/1),
+                                            OCaml.Effect.State.state/1);
+                                          TypeEffect
+                                          (Type
+                                            (bool/1),
+                                            OCaml.Effect.State.state/1);
+                                          TypeEffect
+                                          (Type
+                                            (r_state/0),
+                                            OCaml.Effect.State.state/1);
+                                          TypeEffect
+                                          (Type
+                                            (string/1),
+                                            OCaml.Effect.State.state/1)
+                                        ],
+                                        Apply
+                                          (54,
+                                            Variable
+                                              (54,
+                                                OCaml.Effect.State.read/1),
+                                            [
+                                              Variable
+                                                (54,
+                                                  str/0)
+                                            ])),
+                                    Some x_2,
+                                    Bind
+                                      (?,
+                                        Lift
+                                          (?,
+                                            [
+                                              TypeEffect
+                                              (Type
+                                                (Z/1),
+                                                OCaml.Effect.State.state/1);
+                                              TypeEffect
+                                              (Type
+                                                (r_state/0),
+                                                OCaml.Effect.State.state/1)
+                                            ],
+                                            [
+                                              TypeEffect
+                                              (Type
+                                                (Z/1),
+                                                OCaml.Effect.State.state/1);
+                                              TypeEffect
+                                              (Type
+                                                (bool/1),
+                                                OCaml.Effect.State.state/1);
+                                              TypeEffect
+                                              (Type
+                                                (r_state/0),
+                                                OCaml.Effect.State.state/1);
+                                              TypeEffect
+                                              (Type
+                                                (string/1),
+                                                OCaml.Effect.State.state/1)
+                                            ],
+                                            Bind
+                                              (?,
+                                                Bind
+                                                  (?,
+                                                    Lift
+                                                      (?,
+                                                        [
+                                                          TypeEffect
+                                                          (Type
+                                                            (Z/1),
+                                                            OCaml.Effect.State.state/1)
+                                                        ],
+                                                        [
+                                                          TypeEffect
+                                                          (Type
+                                                            (Z/1),
+                                                            OCaml.Effect.State.state/1);
+                                                          TypeEffect
+                                                          (Type
+                                                            (r_state/0),
+                                                            OCaml.Effect.State.state/1)
+                                                        ],
+                                                        Apply
+                                                          (?,
+                                                            Variable
+                                                              (?,
+                                                                OCaml.Effect.State.peekstate/1),
+                                                            [
+                                                              Tuple
+                                                                (?)
+                                                            ])),
+                                                    Some
+                                                      x_3,
+                                                    Lift
+                                                      (?,
+                                                        [
+                                                          TypeEffect
+                                                          (Type
+                                                            (r_state/0),
+                                                            OCaml.Effect.State.state/1)
+                                                        ],
+                                                        [
+                                                          TypeEffect
+                                                          (Type
+                                                            (Z/1),
+                                                            OCaml.Effect.State.state/1);
+                                                          TypeEffect
+                                                          (Type
+                                                            (r_state/0),
+                                                            OCaml.Effect.State.state/1)
+                                                        ],
+                                                        Apply
+                                                          (?,
+                                                            Variable
+                                                              (?,
+                                                                OCaml.Effect.State.global/1),
+                                                            [
+                                                              Variable
+                                                                (54,
+                                                                  r/0);
+                                                              Variable
+                                                                (?,
+                                                                  x_3/0)
+                                                            ]))),
+                                                Some
+                                                  x_3,
+                                                Lift
+                                                  (?,
+                                                    [
+                                                      TypeEffect
+                                                      (Type
+                                                        (Z/1),
+                                                        OCaml.Effect.State.state/1)
+                                                    ],
+                                                    [
+                                                      TypeEffect
+                                                      (Type
+                                                        (Z/1),
+                                                        OCaml.Effect.State.state/1);
+                                                      TypeEffect
+                                                      (Type
+                                                        (r_state/0),
+                                                        OCaml.Effect.State.state/1)
+                                                    ],
+                                                    Apply
+                                                      (54,
+                                                        Variable
+                                                          (54,
+                                                            OCaml.Effect.State.read/1),
+                                                        [
+                                                          Variable
+                                                            (?,
+                                                              x_3/0)
+                                                        ])))),
+                                        Some
+                                          x_3,
+                                        Return
+                                          (?,
+                                            Tuple
+                                              (54,
+                                                Variable
+                                                  (?,
+                                                    x_1/0),
+                                                Variable
+                                                  (?,
+                                                    x_2/0),
+                                                Variable
+                                                  (?,
+                                                    x_3/0))))))))))))
+    ])
