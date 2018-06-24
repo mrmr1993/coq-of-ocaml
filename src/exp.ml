@@ -612,6 +612,9 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : Loc.t t)
              If not, we assume it's a local variable, and infer the default
              effect [OCaml.Effect.State.state].
              FIXME: This is a hack. *)
+          let state_var = { state_var with BoundName.path_name =
+            { state_var.BoundName.path_name with PathName.base =
+              state_var.BoundName.path_name.PathName.base ^ "_state" } } in
           begin match FullEnvi.bound_descriptor_opt
               state_var.BoundName.path_name env with
           | Some _ ->

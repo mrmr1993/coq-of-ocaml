@@ -6,7 +6,7 @@ Value
     [
       ((plus_one, [ A ], [ (x, A) ], Type (Z/1)),
         Match
-          ((?, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((?, Effect ([ r_state/0 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
             [
               (Any,
@@ -14,7 +14,7 @@ Value
                   ((4,
                     Effect
                       ([
-                        OCaml.Effect.State.state/1
+                        r_state/0
                       ],
                         .)),
                     Variable
@@ -29,7 +29,7 @@ Value
                         ((4,
                           Effect
                             ([
-                              OCaml.Effect.State.state/1
+                              r_state/0
                             ],
                               .)),
                           Variable
@@ -39,7 +39,7 @@ Value
                                 ],
                                   .
                                     -[
-                                      OCaml.Effect.State.state/1
+                                      r_state/0
                                     ]->
                                     .)),
                               OCaml.Effect.State.read/1),
@@ -71,7 +71,7 @@ Value
     [
       ((fail, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Failure/1; OCaml.Effect.State.state/1 ], .)),
+          ((?, Effect ([ s_state/0; OCaml.Failure/1 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
             [
               (Any,
@@ -79,8 +79,8 @@ Value
                   ((8,
                     Effect
                       ([
-                        OCaml.Failure/1;
-                        OCaml.Effect.State.state/1
+                        s_state/0;
+                        OCaml.Failure/1
                       ],
                         .)),
                     Variable
@@ -99,7 +99,7 @@ Value
                         ((8,
                           Effect
                             ([
-                              OCaml.Effect.State.state/1
+                              s_state/0
                             ],
                               .)),
                           Variable
@@ -109,7 +109,7 @@ Value
                                 ],
                                   .
                                     -[
-                                      OCaml.Effect.State.state/1
+                                      s_state/0
                                     ]->
                                     .)),
                               OCaml.Effect.State.read/1),
@@ -132,7 +132,7 @@ Value
     [
       ((reset, [ A ], [ (x, A) ], Type (unit/1)),
         Match
-          ((?, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((?, Effect ([ r_state/0 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
             [
               (Any,
@@ -140,7 +140,7 @@ Value
                   ((11,
                     Effect
                       ([
-                        OCaml.Effect.State.state/1
+                        r_state/0
                       ],
                         .)),
                     Variable
@@ -152,7 +152,7 @@ Value
                               ->
                               .
                                 -[
-                                  OCaml.Effect.State.state/1
+                                  r_state/0
                                 ]->
                                 .)),
                         OCaml.Effect.State.write/1),
@@ -181,7 +181,7 @@ Value
     [
       ((incr, [ A ], [ (x, A) ], Type (unit/1)),
         Match
-          ((?, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((?, Effect ([ r_state/0 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
             [
               (Any,
@@ -189,7 +189,7 @@ Value
                   ((14,
                     Effect
                       ([
-                        OCaml.Effect.State.state/1
+                        r_state/0
                       ],
                         .)),
                     Variable
@@ -201,7 +201,7 @@ Value
                               ->
                               .
                                 -[
-                                  OCaml.Effect.State.state/1
+                                  r_state/0
                                 ]->
                                 .)),
                         OCaml.Effect.State.write/1),
@@ -217,7 +217,7 @@ Value
                         ((14,
                           Effect
                             ([
-                              OCaml.Effect.State.state/1
+                              r_state/0
                             ],
                               .)),
                           Variable
@@ -232,7 +232,7 @@ Value
                               ((14,
                                 Effect
                                   ([
-                                    OCaml.Effect.State.state/1
+                                    r_state/0
                                   ],
                                     .)),
                                 Variable
@@ -242,7 +242,7 @@ Value
                                       ],
                                         .
                                           -[
-                                            OCaml.Effect.State.state/1
+                                            r_state/0
                                           ]->
                                           .)),
                                     OCaml.Effect.State.read/1),

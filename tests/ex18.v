@@ -7,7 +7,7 @@ Import ListNotations.
 Definition r := OCaml.Effect.State.init 12.
 Definition r_state := @OCaml.Effect.State.state Z.
 
-Definition plus_one {A : Type} (x : A) : M [ OCaml.Effect.State.state ] Z :=
+Definition plus_one {A : Type} (x : A) : M [ r_state ] Z :=
   match x with
   | _ =>
     let! x_1 := OCaml.Effect.State.read r in
@@ -17,20 +17,19 @@ Definition plus_one {A : Type} (x : A) : M [ OCaml.Effect.State.state ] Z :=
 Definition s := OCaml.Effect.State.init "Hi" % string.
 Definition s_state := @OCaml.Effect.State.state string.
 
-Definition fail {A B : Type} (x : A)
-  : M [ OCaml.Failure; OCaml.Effect.State.state ] B :=
+Definition fail {A B : Type} (x : A) : M [ s_state; OCaml.Failure ] B :=
   match x with
   | _ =>
-    let! x_1 := lift [_;_] "01" (OCaml.Effect.State.read s) in
-    lift [_;_] "10" (OCaml.Pervasives.failwith x_1)
+    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.read s) in
+    lift [_;_] "01" (OCaml.Pervasives.failwith x_1)
   end.
 
-Definition reset {A : Type} (x : A) : M [ OCaml.Effect.State.state ] unit :=
+Definition reset {A : Type} (x : A) : M [ r_state ] unit :=
   match x with
   | _ => OCaml.Effect.State.write r 0
   end.
 
-Definition incr {A : Type} (x : A) : M [ OCaml.Effect.State.state ] unit :=
+Definition incr {A : Type} (x : A) : M [ r_state ] unit :=
   match x with
   | _ =>
     let! x_1 :=
