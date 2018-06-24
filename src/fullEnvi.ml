@@ -210,6 +210,9 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
 let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
   find_bound_name Mod.Vars.find x env open_lift
 
+let find_typ (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+  find_bound_name Mod.Typs.find x env open_lift
+
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
   match x.path_name.path with

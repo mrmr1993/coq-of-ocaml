@@ -59,10 +59,12 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> add_exn ["OCaml"] "Sys_blocked_io"
   |> add_exn ["OCaml"] "Undefined_recursive_module"
   (* State *)
-  |> add_typ ["OCaml"; "Effect"; "State"] "t" Pure
   |> add_descriptor ["OCaml"; "Effect"; "State"] "state"
-  |> add_var ["OCaml"; "Effect"; "State"] "read" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
-  |> add_var ["OCaml"; "Effect"; "State"] "write" (Arrow (d [], Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure)))
+  |> add_typ ["OCaml"; "Effect"; "State"] "t" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
+  |> add_var ["OCaml"; "Effect"; "State"] "peekstate" Pure
+  |> add_var ["OCaml"; "Effect"; "State"] "global" Pure
+  |> add_var ["OCaml"; "Effect"; "State"] "read" Pure
+  |> add_var ["OCaml"; "Effect"; "State"] "write" Pure
 
   (* Pervasives *)
   (* Exceptions *)
@@ -141,7 +143,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
-  |> add_var ["OCaml"; "Pervasives"] "ref" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
+  |> add_var ["OCaml"; "Pervasives"] "ref" Pure
   (* Operations on format strings *)
   (* Program termination *)
 

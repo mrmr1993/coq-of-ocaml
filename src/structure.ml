@@ -179,7 +179,6 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     match def with
     | Require names -> (env, Require names)
     | Value (loc, def) ->
-      let def = Exp.Definition.map (Exp.map fst) def in
       let def = Exp.effects_of_def env def in
       (if def.Exp.Definition.cases |> List.exists (fun (header, e) ->
         header.Exp.Header.args = [] &&

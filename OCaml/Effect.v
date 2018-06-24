@@ -325,11 +325,11 @@ Module State.
   Definition position {A : Type} (x : t A) (l : list A) : nat :=
     Lists.List.length l - S (pos x).
 
-  Definition state {A : Type} : Effect.t :=
+  Definition state (A : Type) : Effect.t :=
     Effect.make (list A) Empty_set.
 
   Definition peek {A B : Type}
-    (mval : (A + Effect.error [@state B]) * Effect.state [@state B])
+    (mval : (A + Effect.error [state B]) * Effect.state [state B])
     : A * list B :=
     match mval with
     | (inl x, (l, _)) => (x, l)
@@ -338,13 +338,13 @@ Module State.
     end.
 
   Definition write {A : Type} (x : t A) (value : A)
-    : M [ state ] unit :=
+    : M [ state A ] unit :=
     fun s => (inl tt, (replace (position x (fst s)) value (fst s), tt)).
 
-  Definition read {A : Type} (x : t A) : M [ @state A ] A :=
+  Definition read {A : Type} (x : t A) : M [ state A ] A :=
     fun s => (inl (Lists.List.nth (position x (fst s)) (fst s) (default_value x)), s).
 
-  Definition ref {A : Type} (x : A) : M [ @state A ] (t A) :=
+  Definition ref {A : Type} (x : A) : M [ state A ] (t A) :=
     fun s => let l := fst s in
       (inl {|
           pos := Lists.List.length l;
@@ -353,6 +353,15 @@ Module State.
 
   Definition init {A : Type} (x : A) : t A :=
     {| pos := 0; default_value := x |}.
+
+  Definition peekstate {A : Type} (x : unit) : M [ state A ] (list A) :=
+    fun s => (inl (fst s), s).
+
+  Definition global {A : Type} (x : t A) (l : list A)
+    : M [ state nat] (t A) :=
+    fun s =>
+      let n := match fst s with | [n] => n | _ => length l end in
+      (inl {| pos := n; default_value := default_value x |}, ([n], tt)).
 
   Set Implicit Arguments.
 End State.
