@@ -28,3 +28,16 @@ let update_ref (x : int ref) : unit =
 
 let new_ref (x : unit) : int ref =
   ref 15
+
+let r : int ref = ref 18
+
+let set_r (x : unit) : unit = set_ref r
+
+let get_r (x : unit) : int = get_ref r
+
+let r_add_15 (x : unit) : int =
+  let i = get_r () in
+  set_r ();
+  let j = get_r () in
+  r := i + j;
+  !r
