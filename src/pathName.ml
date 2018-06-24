@@ -143,6 +143,11 @@ let convert (x : t) : t =
 
   | { path = path; base = base } -> { path = path; base = Name.convert base }
 
+let convert_type (x : t) : t =
+  match x with
+  | { path = ["Pervasives"]; base = "ref" } -> { path = ["OCaml"; "Effect"; "State"]; base = "t" }
+  | _ -> convert x
+
 (** Pretty-print a global name. *)
 let pp (x : t) : SmartPrint.t =
   separate (!^ ".") (List.map Name.pp (x.path @ [x.base]))
@@ -161,19 +166,25 @@ let of_longident (longident : Longident.t) : t =
 let of_loc (loc : Longident.t loc) : t =
   of_longident loc.txt
 
+let rec of_path_aux (loc : Loc.t) (p : Path.t) : Name.t list * Name.t =
+  match p with
+  | Path.Pident x -> ([], Name.of_ident x)
+  | Path.Pdot (p, s, _) ->
+    let (path, base) = of_path_aux loc p in
+    (base :: path, s)
+  | Path.Papply _ ->
+    Error.warn loc "Application of paths not handled.";
+    ([], "application_of_paths")
+
 (** Import an OCaml [Path.t]. *)
 let of_path (loc : Loc.t) (p : Path.t) : t =
-  let rec aux p : Name.t list * Name.t =
-    match p with
-    | Path.Pident x -> ([], Name.of_ident x)
-    | Path.Pdot (p, s, _) ->
-      let (path, base) = aux p in
-      (base :: path, s)
-    | Path.Papply _ ->
-      Error.warn loc "Application of paths not handled.";
-      ([], "application_of_paths") in
-  let (path, base) = aux p in
+  let (path, base) = of_path_aux loc p in
   convert (of_name (List.rev path) base)
+
+(** Import an OCaml [Path.t] representing a Type. *)
+let of_type_path (loc : Loc.t) (p : Path.t) : t =
+  let (path, base) = of_path_aux loc p in
+  convert_type (of_name (List.rev path) base)
 
 let rec of_name_list (l : Name.t list) : t =
   match l with

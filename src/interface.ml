@@ -96,7 +96,7 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
   match interface with
   | Var (x, shape) -> FullEnvi.add_var [] x (Shape.to_effect_typ shape env) env
-  | Typ x -> FullEnvi.add_typ [] x env
+  | Typ x -> FullEnvi.add_typ [] x Effect.Type.Pure env
   | Descriptor x -> FullEnvi.add_descriptor [] x env
   | Constructor x -> FullEnvi.add_constructor [] x env
   | Field x -> FullEnvi.add_field [] x env

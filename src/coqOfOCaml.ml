@@ -1,10 +1,11 @@
 open SmartPrint
 
-let exp (structure : Typedtree.structure) : Loc.t Structure.t list =
+let exp (structure : Typedtree.structure)
+  : (Loc.t * Type.t) Structure.t list =
   let (_, defs) = Structure.of_structure PervasivesModule.env structure in
   snd @@ Structure.monadise_let_rec PervasivesModule.env defs
 
-let effects (exp : Loc.t Structure.t list)
+let effects (exp : (Loc.t * Type.t) Structure.t list)
   : (Loc.t * Effect.t) Structure.t list =
   snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp
 
@@ -37,8 +38,10 @@ let to_out_channel (c : out_channel) (d : SmartPrint.t) =
   output_char c '\n';
   flush c
 
-let output_exp (c : out_channel) (exp : Loc.t Structure.t list) : unit =
-  to_out_channel c @@ Structure.pps Loc.pp exp
+let output_exp (c : out_channel) (exp : (Loc.t * Type.t) Structure.t list)
+  : unit =
+  let pp_annotation (l, typ) = Loc.pp l in
+  to_out_channel c @@ Structure.pps pp_annotation exp
 
 let output_effects (c : out_channel)
   (effects : (Loc.t * Effect.t) Structure.t list) : unit =

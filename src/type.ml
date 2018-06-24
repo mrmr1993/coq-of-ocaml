@@ -50,7 +50,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
     (Tuple typs, typ_vars, new_typ_vars)
   | Tconstr (path, typs, _) ->
     let (typs, typ_vars, new_typ_vars) = of_typs_exprs_new_free_vars env loc typ_vars typs in
-    let x = FullEnvi.bound_typ loc (PathName.of_path loc path) env in
+    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
     (Apply (x, typs), typ_vars, new_typ_vars)
   | Tlink typ -> of_type_expr_new_typ_vars env loc typ_vars typ
   | Tpoly (typ, []) -> of_type_expr_new_typ_vars env loc typ_vars typ
@@ -68,19 +68,21 @@ and of_typs_exprs_new_free_vars (env : 'a FullEnvi.t) (loc : Loc.t)
       ([], typ_vars, Name.Set.empty) typs in
   (List.rev typs, typ_vars, new_typ_vars)
 
-let rec of_type_expr (env : 'a FullEnvi.t) (loc : Loc.t)
-  (typ : Types.type_expr) : t =
+let rec of_type_expr ?allow_anon:(anon_var=false) (env : 'a FullEnvi.t)
+  (loc : Loc.t) (typ : Types.type_expr) : t =
   match typ.desc with
   | Tvar (Some x) -> Variable x
   | Tarrow (_, typ_x, typ_y, _) ->
-    Arrow (of_type_expr env loc typ_x, of_type_expr env loc typ_y)
+    Arrow (of_type_expr ~allow_anon:anon_var env loc typ_x,
+     of_type_expr ~allow_anon:anon_var env loc typ_y)
   | Ttuple typs ->
-    Tuple (List.map (of_type_expr env loc) typs)
+    Tuple (List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
   | Tconstr (path, typs, _) ->
-    let x = FullEnvi.bound_typ loc (PathName.of_path loc path) env in
-    Apply (x, List.map (of_type_expr env loc) typs)
-  | Tlink typ -> of_type_expr env loc typ
-  | Tpoly (typ, []) -> of_type_expr env loc typ
+    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
+    Apply (x, List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
+  | Tlink typ -> of_type_expr ~allow_anon:anon_var env loc typ
+  | Tpoly (typ, []) -> of_type_expr ~allow_anon:anon_var env loc typ
+  | Tvar None when anon_var -> Variable "_"
   | _ ->
     Error.warn loc "Type not handled.";
     Variable "unhandled_type"
@@ -91,6 +93,27 @@ let of_type_expr_variable (loc : Loc.t) (typ : Types.type_expr) : Name.t =
   | _ ->
     Error.warn loc "The type parameter was expected to be a variable.";
     "expected_a_type_variable"
+
+let rec type_effects (env : Effect.Type.t FullEnvi.t) (typ : t)
+  : Effect.Type.t =
+  match typ with
+  | Variable x -> Effect.Type.Pure
+  | Arrow (typ1, typ2) ->
+    Effect.Type.union (List.map (type_effects env) [typ1; typ2])
+  | Tuple typs -> Effect.Type.union (List.map (type_effects env) typs)
+  | Apply (x, typs) ->
+    Effect.Type.union (FullEnvi.find_typ x env Effect.Type.depth_lift ::
+      List.map (type_effects env) typs)
+  | Monad (x, typ) -> type_effects env typ
+
+let rec pure_type (typ : t) : Effect.PureType.t =
+  match typ with
+  | Variable x -> Effect.PureType.Variable x
+  | Arrow (typ1, typ2) ->
+    Effect.PureType.Arrow (pure_type typ1, pure_type typ2)
+  | Tuple typs -> Effect.PureType.Tuple (List.map pure_type typs)
+  | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
+  | Monad (x, typ) -> pure_type typ
 
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with

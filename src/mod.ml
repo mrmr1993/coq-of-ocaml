@@ -4,7 +4,7 @@ type 'a t = {
   opens : Name.t list list;
   external_opens : Name.t list list;
   vars : 'a PathName.Map.t;
-  typs : unit PathName.Map.t;
+  typs : 'a PathName.Map.t;
   descriptors: unit PathName.Map.t;
   constructors : unit PathName.Map.t;
   fields : unit PathName.Map.t;
@@ -59,6 +59,7 @@ let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
 let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
   { m with
     vars = PathName.Map.map f m.vars;
+    typs = PathName.Map.map f m.typs;
     modules = PathName.Map.map (map f) m.modules }
 
 module Vars = struct
@@ -77,11 +78,14 @@ module Vars = struct
     (name, add (PathName.of_name [] name) v env)
 end
 module Typs = struct
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    { m with typs = PathName.Map.add x () m.typs }
+  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
+    { m with typs = PathName.Map.add x v m.typs }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.typs
+
+  let find (x : PathName.t) (m : 'a t) : 'a =
+    PathName.Map.find x m.typs
 end
 module Descriptors = struct
   let add (x : PathName.t) (m : 'a t) : 'a t =
@@ -125,7 +129,8 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     external_opens = m2.external_opens;
     vars = PathName.Map.map_union add_to_path
       (fun _ v -> prefix module_name v) m1.vars m2.vars;
-    typs = unit_map_union m1.typs m2.typs;
+    typs = PathName.Map.map_union add_to_path
+      (fun _ v -> prefix module_name v) m1.typs m2.typs;
     descriptors = unit_map_union m1.descriptors m2.descriptors;
     constructors = unit_map_union m1.constructors m2.constructors;
     fields = unit_map_union m1.fields m2.fields;

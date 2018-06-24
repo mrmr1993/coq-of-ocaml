@@ -1,17 +1,59 @@
 (** Types for the effects. *)
 open SmartPrint
 
+module PureType = struct
+  type t =
+  | Variable of Name.t
+  | Arrow of t * t
+  | Tuple of t list
+  | Apply of BoundName.t * t list
+
+let rec pp (typ : t) : SmartPrint.t =
+  match typ with
+  | Variable x -> Name.pp x
+  | Arrow (typ1, typ2) -> nest @@ parens (pp typ1 ^^ !^ "->" ^^ pp typ2)
+  | Tuple typs -> nest @@ parens (separate (space ^^ !^ "*" ^^ space) (List.map pp typs))
+  | Apply (x, typs) ->
+    nest (!^ "Type" ^^ nest (parens (
+      separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs))))
+
+let first_param (typ : t) : t =
+  match typ with
+  | Apply (_, typ :: _) -> typ
+  | _ -> Variable "_"
+
+let rec to_coq (paren : bool) (typ : t) : SmartPrint.t =
+  match typ with
+  | Variable x -> Name.to_coq x
+  | Arrow (typ_x, typ_y) ->
+    Pp.parens paren @@ nest (to_coq true typ_x ^^ !^ "->" ^^ to_coq false typ_y)
+  | Tuple typs ->
+    (match typs with
+    | [] -> !^ "unit"
+    | _ ->
+      Pp.parens paren @@ nest @@ separate (space ^^ !^ "*" ^^ space)
+        (List.map (to_coq true) typs))
+  | Apply (path, typs) ->
+    Pp.parens (paren && typs <> []) @@ nest @@ separate space
+      (BoundName.to_coq path :: List.map (to_coq true) typs)
+end
+
+
 module Descriptor = struct
   module Id = struct
     type t =
       | Ether of PathName.t
       | Loc of Loc.t
+      | Type of PureType.t
   end
   module Map = Map.Make (struct type t = Id.t let compare = compare end)
   type t = BoundName.t Map.t
 
   let pp (d : t) : SmartPrint.t =
-    OCaml.list (fun (_, x) -> BoundName.pp x) (Map.bindings d)
+    OCaml.list (fun (id, x) ->
+      match id with
+      | Id.Type pt -> !^ "TypeEffect" ^^ OCaml.tuple [PureType.pp pt; BoundName.pp x]
+      | _ -> BoundName.pp x) (Map.bindings d)
 
   let pure : t = Map.empty
 
@@ -44,7 +86,10 @@ module Descriptor = struct
     find_index (Map.bindings d) (fun (_, y) -> y = x)
 
   let to_coq (d : t) : SmartPrint.t =
-    OCaml.list (fun (_, x) -> BoundName.to_coq x) (Map.bindings d)
+    OCaml.list (fun (id, x) ->
+      match id with
+      | Id.Type pt -> nest (BoundName.to_coq x ^^ PureType.to_coq true pt)
+      | _ -> BoundName.to_coq x) (Map.bindings d)
 
   let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
     let rec aux xs1 xs2 : bool list =

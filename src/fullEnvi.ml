@@ -52,9 +52,9 @@ let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_var path base v env.active_module}
 
-let add_typ (path : Name.t list) (base : Name.t) (env : 'a t)
+let add_typ (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
-  {env with active_module = FullMod.add_typ path base env.active_module}
+  {env with active_module = FullMod.add_typ path base v env.active_module}
 
 let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
   : 'a t =
@@ -128,6 +128,9 @@ let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
 
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Typs.mem loc x env
+
+let bound_descriptor_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+  bound_name_opt Mod.Descriptors.mem x env
 
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Descriptors.mem loc x env
@@ -206,6 +209,9 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
 
 let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
   find_bound_name Mod.Vars.find x env open_lift
+
+let find_typ (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+  find_bound_name Mod.Typs.find x env open_lift
 
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =

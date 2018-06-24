@@ -14,10 +14,10 @@ let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   | m :: env -> Mod.Vars.add (PathName.of_name path base) v m :: env
   | [] -> failwith "The environment must be a non-empty list."
 
-let add_typ (path : Name.t list) (base : Name.t) (env : 'a t)
+let add_typ (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
   : 'a t =
   match env with
-  | m :: env -> Mod.Typs.add (PathName.of_name path base) m :: env
+  | m :: env -> Mod.Typs.add (PathName.of_name path base) v m :: env
   | [] -> failwith "The environment must be a non-empty list."
 
 let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
@@ -143,6 +143,9 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
 
 let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
   find_bound_name Mod.Vars.find x env open_lift
+
+let find_typ (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+  find_bound_name Mod.Typs.find x env open_lift
 
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
