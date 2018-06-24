@@ -198,3 +198,60 @@ Value
           (30, Variable (30, OCaml.Pervasives.ref/1),
             [ Constant (30, Int(15)) ]))
     ])
+
+32 Reference (r, Type (Z/1), Constant (32, Int(18)))
+
+34
+Value
+  (non_rec, @.,
+    [
+      ((set_r, [ ], [ (x, Type (unit/1)) ], Type (unit/1)),
+        Apply (34, Variable (34, set_ref/0), [ Variable (34, r/0) ]))
+    ])
+
+36
+Value
+  (non_rec, @.,
+    [
+      ((get_r, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+        Apply (36, Variable (36, get_ref/0), [ Variable (36, r/0) ]))
+    ])
+
+38
+Value
+  (non_rec, @.,
+    [
+      ((r_add_15, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+        LetVar 39 i =
+          Apply (39, Variable (39, get_r/0), [ Constructor (39, tt/1) ]) in
+        Sequence
+          (40,
+            Apply (40, Variable (40, set_r/0), [ Constructor (40, tt/1) ]),
+            LetVar 41 j =
+              Apply
+                (41, Variable (41, get_r/0),
+                  [ Constructor (41, tt/1) ]) in
+            Sequence
+              (42,
+                Apply
+                  (42, Variable (42, OCaml.Effect.State.write/1),
+                    [
+                      Variable (42, r/0);
+                      Apply
+                        (42,
+                          Variable
+                            (42,
+                              Z.add/1),
+                          [
+                            Variable
+                              (42,
+                                i/0);
+                            Variable
+                              (42,
+                                j/0)
+                          ])
+                    ]),
+                Apply
+                  (43, Variable (43, OCaml.Effect.State.read/1),
+                    [ Variable (43, r/0) ]))))
+    ])

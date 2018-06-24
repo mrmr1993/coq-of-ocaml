@@ -3,20 +3,44 @@ Value
   (non_rec, @.,
     [
       ((get_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
-        LetVar (4, Effect ([ OCaml.Effect.State.state/1 ], .)) x =
+        LetVar
+          (4,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)) x =
           Apply
-            ((4, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            ((4,
+              Effect
+                ([
+                  TypeEffect
+                  (Type (Z/1), OCaml.Effect.State.state/1)
+                ], .)),
               Variable
                 ((4,
                   Effect
-                    ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                  OCaml.Pervasives.ref/1),
+                    ([ ],
+                      .
+                        -[
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1)
+                        ]-> .)), OCaml.Pervasives.ref/1),
               [ Constant ((4, Effect ([ ], .)), Int(12)) ]) in
         Apply
-          ((5, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((5,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Variable
-              ((5, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                OCaml.Effect.State.read/1),
+              ((5,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), OCaml.Effect.State.read/1),
             [ Variable ((5, Effect ([ ], .)), x/0) ]))
     ])
 
@@ -25,40 +49,73 @@ Value
   (non_rec, @.,
     [
       ((set_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
-        LetVar (8, Effect ([ OCaml.Effect.State.state/1 ], .)) x =
+        LetVar
+          (8,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)) x =
           Apply
-            ((8, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            ((8,
+              Effect
+                ([
+                  TypeEffect
+                  (Type (Z/1), OCaml.Effect.State.state/1)
+                ], .)),
               Variable
                 ((8,
                   Effect
-                    ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                  OCaml.Pervasives.ref/1),
+                    ([ ],
+                      .
+                        -[
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1)
+                        ]-> .)), OCaml.Pervasives.ref/1),
               [ Constant ((8, Effect ([ ], .)), Int(12)) ]) in
         Sequence
-          ((9, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((9,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Apply
-              ((9, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              ((9,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1)
+                  ], .)),
                 Variable
                   ((9,
                     Effect
                       ([ ],
-                        . ->
-                          .
-                            -[ OCaml.Effect.State.state/1 ]->
-                            .)),
+                        .
+                          -[
+                            TypeEffect
+                            (Type (Z/1),
+                              OCaml.Effect.State.state/1)
+                          ]-> .)),
                     OCaml.Effect.State.write/1),
                 [
                   Variable ((9, Effect ([ ], .)), x/0);
                   Constant ((9, Effect ([ ], .)), Int(15))
                 ]),
             Apply
-              ((10, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              ((10,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1)
+                  ], .)),
                 Variable
                   ((10,
                     Effect
                       ([ ],
-                        . -[ OCaml.Effect.State.state/1 ]-> .)),
-                    OCaml.Effect.State.read/1),
+                        .
+                          -[
+                            TypeEffect
+                            (Type (Z/1),
+                              OCaml.Effect.State.state/1)
+                          ]-> .)), OCaml.Effect.State.read/1),
                 [ Variable ((10, Effect ([ ], .)), x/0) ])))
     ])
 
@@ -69,27 +126,51 @@ Value
       ((add_multiple_by_refs, [ ],
         [ (a, Type (Z/1)); (b, Type (Z/1)); (c, Type (Z/1)); (d, Type (Z/1)) ],
         Type (Z/1)),
-        LetVar (13, Effect ([ OCaml.Effect.State.state/1 ], .)) x =
+        LetVar
+          (13,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)) x =
           Apply
-            ((13, Effect ([ OCaml.Effect.State.state/1 ], .)),
+            ((13,
+              Effect
+                ([
+                  TypeEffect
+                  (Type (Z/1), OCaml.Effect.State.state/1)
+                ], .)),
               Variable
                 ((13,
                   Effect
-                    ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                  OCaml.Pervasives.ref/1),
+                    ([ ],
+                      .
+                        -[
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1)
+                        ]-> .)), OCaml.Pervasives.ref/1),
               [ Variable ((13, Effect ([ ], .)), a/0) ]) in
         Sequence
-          ((14, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((14,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Apply
-              ((14, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              ((14,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1)
+                  ], .)),
                 Variable
                   ((14,
                     Effect
                       ([ ],
-                        . ->
-                          .
-                            -[ OCaml.Effect.State.state/1 ]->
-                            .)),
+                        .
+                          -[
+                            TypeEffect
+                            (Type (Z/1),
+                              OCaml.Effect.State.state/1)
+                          ]-> .)),
                     OCaml.Effect.State.write/1),
                 [
                   Variable ((14, Effect ([ ], .)), x/0);
@@ -97,7 +178,10 @@ Value
                     ((14,
                       Effect
                         ([
-                          OCaml.Effect.State.state/1
+                          TypeEffect
+                          (Type
+                            (Z/1),
+                            OCaml.Effect.State.state/1)
                         ],
                           .)),
                       Variable
@@ -112,7 +196,10 @@ Value
                           ((14,
                             Effect
                               ([
-                                OCaml.Effect.State.state/1
+                                TypeEffect
+                                (Type
+                                  (Z/1),
+                                  OCaml.Effect.State.state/1)
                               ],
                                 .)),
                             Variable
@@ -122,7 +209,10 @@ Value
                                   ],
                                     .
                                       -[
-                                        OCaml.Effect.State.state/1
+                                        TypeEffect
+                                        (Type
+                                          (Z/1),
+                                          OCaml.Effect.State.state/1)
                                       ]->
                                       .)),
                                 OCaml.Effect.State.read/1),
@@ -144,30 +234,57 @@ Value
                             b/0)
                       ])
                 ]),
-            LetVar (15, Effect ([ OCaml.Effect.State.state/1 ], .)) y =
+            LetVar
+              (15,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1)
+                  ], .)) y =
               Apply
-                ((15, Effect ([ OCaml.Effect.State.state/1 ], .)),
+                ((15,
+                  Effect
+                    ([
+                      TypeEffect
+                      (Type (Z/1), OCaml.Effect.State.state/1)
+                    ], .)),
                   Variable
                     ((15,
                       Effect
                         ([ ],
                           .
-                            -[ OCaml.Effect.State.state/1 ]->
-                            .)), OCaml.Pervasives.ref/1),
+                            -[
+                              TypeEffect
+                              (Type (Z/1),
+                                OCaml.Effect.State.state/1)
+                            ]-> .)),
+                      OCaml.Pervasives.ref/1),
                   [ Variable ((15, Effect ([ ], .)), c/0) ]) in
             Sequence
-              ((16, Effect ([ OCaml.Effect.State.state/1 ], .)),
+              ((16,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1)
+                  ], .)),
                 Apply
-                  ((16, Effect ([ OCaml.Effect.State.state/1 ], .)),
+                  ((16,
+                    Effect
+                      ([
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ], .)),
                     Variable
                       ((16,
                         Effect
                           ([ ],
-                            . ->
-                              .
-                                -[
-                                  OCaml.Effect.State.state/1
-                                ]-> .)),
+                            .
+                              -[
+                                TypeEffect
+                                (Type (Z/1),
+                                  OCaml.Effect.State.state/1)
+                              ]-> .)),
                         OCaml.Effect.State.write/1),
                     [
                       Variable ((16, Effect ([ ], .)), y/0);
@@ -175,7 +292,10 @@ Value
                         ((16,
                           Effect
                             ([
-                              OCaml.Effect.State.state/1
+                              TypeEffect
+                              (Type
+                                (Z/1),
+                                OCaml.Effect.State.state/1)
                             ],
                               .)),
                           Variable
@@ -190,7 +310,10 @@ Value
                               ((16,
                                 Effect
                                   ([
-                                    OCaml.Effect.State.state/1
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
                                   ],
                                     .)),
                                 Variable
@@ -200,7 +323,10 @@ Value
                                       ],
                                         .
                                           -[
-                                            OCaml.Effect.State.state/1
+                                            TypeEffect
+                                            (Type
+                                              (Z/1),
+                                              OCaml.Effect.State.state/1)
                                           ]->
                                           .)),
                                     OCaml.Effect.State.read/1),
@@ -223,18 +349,30 @@ Value
                           ])
                     ]),
                 LetVar
-                  (17, Effect ([ OCaml.Effect.State.state/1 ], .)) z
-                  =
+                  (17,
+                    Effect
+                      ([
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ], .)) z =
                   Apply
                     ((17,
-                      Effect ([ OCaml.Effect.State.state/1 ], .)),
+                      Effect
+                        ([
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1)
+                        ], .)),
                       Variable
                         ((17,
                           Effect
                             ([ ],
                               .
                                 -[
-                                  OCaml.Effect.State.state/1
+                                  TypeEffect
+                                  (Type (Z/1),
+                                    OCaml.Effect.State.state/1)
                                 ]-> .)),
                           OCaml.Pervasives.ref/1),
                       [
@@ -242,7 +380,10 @@ Value
                           ((17,
                             Effect
                               ([
-                                OCaml.Effect.State.state/1
+                                TypeEffect
+                                (Type
+                                  (Z/1),
+                                  OCaml.Effect.State.state/1)
                               ],
                                 .)),
                             Variable
@@ -257,7 +398,10 @@ Value
                                 ((17,
                                   Effect
                                     ([
-                                      OCaml.Effect.State.state/1
+                                      TypeEffect
+                                      (Type
+                                        (Z/1),
+                                        OCaml.Effect.State.state/1)
                                     ],
                                       .)),
                                   Variable
@@ -267,7 +411,10 @@ Value
                                         ],
                                           .
                                             -[
-                                              OCaml.Effect.State.state/1
+                                              TypeEffect
+                                              (Type
+                                                (Z/1),
+                                                OCaml.Effect.State.state/1)
                                             ]->
                                             .)),
                                       OCaml.Effect.State.read/1),
@@ -284,7 +431,10 @@ Value
                                 ((17,
                                   Effect
                                     ([
-                                      OCaml.Effect.State.state/1
+                                      TypeEffect
+                                      (Type
+                                        (Z/1),
+                                        OCaml.Effect.State.state/1)
                                     ],
                                       .)),
                                   Variable
@@ -294,7 +444,10 @@ Value
                                         ],
                                           .
                                             -[
-                                              OCaml.Effect.State.state/1
+                                              TypeEffect
+                                              (Type
+                                                (Z/1),
+                                                OCaml.Effect.State.state/1)
                                             ]->
                                             .)),
                                       OCaml.Effect.State.read/1),
@@ -310,14 +463,22 @@ Value
                             ])
                       ]) in
                 Apply
-                  ((18, Effect ([ OCaml.Effect.State.state/1 ], .)),
+                  ((18,
+                    Effect
+                      ([
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ], .)),
                     Variable
                       ((18,
                         Effect
                           ([ ],
                             .
                               -[
-                                OCaml.Effect.State.state/1
+                                TypeEffect
+                                (Type (Z/1),
+                                  OCaml.Effect.State.state/1)
                               ]-> .)),
                         OCaml.Effect.State.read/1),
                     [ Variable ((18, Effect ([ ], .)), z/0) ]))))
@@ -330,12 +491,20 @@ Value
       ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
         Type (unit/1)),
         Apply
-          ((21, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((21,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Variable
               ((21,
                 Effect
-                  ([ ], . -> . -[ OCaml.Effect.State.state/1 ]-> .)),
-                OCaml.Effect.State.write/1),
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), OCaml.Effect.State.write/1),
             [
               Variable ((21, Effect ([ ], .)), x/0);
               Constant ((21, Effect ([ ], .)), Int(15))
@@ -349,10 +518,20 @@ Value
       ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
         Type (Z/1)),
         Apply
-          ((24, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((24,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Variable
-              ((24, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                OCaml.Effect.State.read/1),
+              ((24,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), OCaml.Effect.State.read/1),
             [ Variable ((24, Effect ([ ], .)), x/0) ]))
     ])
 
@@ -363,19 +542,30 @@ Value
       ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
         Type (unit/1)),
         Apply
-          ((27, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((27,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Variable
               ((27,
                 Effect
-                  ([ ], . -> . -[ OCaml.Effect.State.state/1 ]-> .)),
-                OCaml.Effect.State.write/1),
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), OCaml.Effect.State.write/1),
             [
               Variable ((27, Effect ([ ], .)), x/0);
               Apply
                 ((27,
                   Effect
                     ([
-                      OCaml.Effect.State.state/1
+                      TypeEffect
+                      (Type
+                        (Z/1),
+                        OCaml.Effect.State.state/1)
                     ], .)),
                   Variable
                     ((27,
@@ -389,7 +579,10 @@ Value
                       ((27,
                         Effect
                           ([
-                            OCaml.Effect.State.state/1
+                            TypeEffect
+                            (Type
+                              (Z/1),
+                              OCaml.Effect.State.state/1)
                           ],
                             .)),
                         Variable
@@ -399,7 +592,10 @@ Value
                               ],
                                 .
                                   -[
-                                    OCaml.Effect.State.state/1
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
                                   ]->
                                   .)),
                             OCaml.Effect.State.read/1),
@@ -430,9 +626,549 @@ Value
       ((new_ref, [ ], [ (x, Type (unit/1)) ],
         Type (OCaml.Effect.State.t/1, Type (Z/1))),
         Apply
-          ((30, Effect ([ OCaml.Effect.State.state/1 ], .)),
+          ((30,
+            Effect
+              ([ TypeEffect (Type (Z/1), OCaml.Effect.State.state/1) ],
+                .)),
             Variable
-              ((30, Effect ([ ], . -[ OCaml.Effect.State.state/1 ]-> .)),
-                OCaml.Pervasives.ref/1),
+              ((30,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), OCaml.Pervasives.ref/1),
             [ Constant ((30, Effect ([ ], .)), Int(15)) ]))
+    ])
+
+32 Reference (r, Type (Z/1), Constant ((32, Effect ([ ], .)), Int(18)))
+
+34
+Value
+  (non_rec, @.,
+    [
+      ((set_r, [ ], [ (x, Type (unit/1)) ], Type (unit/1)),
+        Apply
+          ((34,
+            Effect
+              ([
+                TypeEffect
+                (Type (Z/1), OCaml.Effect.State.state/1);
+                TypeEffect
+                (Type (r_state/0), OCaml.Effect.State.state/1)
+              ], .)),
+            Variable
+              ((34,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), set_ref/0),
+            [
+              Apply
+                ((?,
+                  Effect
+                    ([
+                      TypeEffect
+                      (Type
+                        (Z/1),
+                        OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type
+                        (r_state/0),
+                        OCaml.Effect.State.state/1)
+                    ], .)),
+                  Variable
+                    ((?,
+                      Effect
+                        ([
+                        ],
+                          .
+                            ->
+                            .
+                              -[
+                                TypeEffect
+                                (Type
+                                  (r_state/0),
+                                  OCaml.Effect.State.state/1)
+                              ]->
+                              .)),
+                      OCaml.Effect.State.global/1),
+                  [
+                    Variable
+                      ((34,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        r/0);
+                    Apply
+                      ((?,
+                        Effect
+                          ([
+                            TypeEffect
+                            (Type
+                              (Z/1),
+                              OCaml.Effect.State.state/1)
+                          ],
+                            .)),
+                        Variable
+                          ((?,
+                            Effect
+                              ([
+                              ],
+                                .
+                                  -[
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
+                                  ]->
+                                  .)),
+                            OCaml.Effect.State.peekstate/1),
+                        [
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .)))
+                        ])
+                  ])
+            ]))
+    ])
+
+36
+Value
+  (non_rec, @.,
+    [
+      ((get_r, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+        Apply
+          ((36,
+            Effect
+              ([
+                TypeEffect
+                (Type (Z/1), OCaml.Effect.State.state/1);
+                TypeEffect
+                (Type (r_state/0), OCaml.Effect.State.state/1)
+              ], .)),
+            Variable
+              ((36,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1)
+                      ]-> .)), get_ref/0),
+            [
+              Apply
+                ((?,
+                  Effect
+                    ([
+                      TypeEffect
+                      (Type
+                        (Z/1),
+                        OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type
+                        (r_state/0),
+                        OCaml.Effect.State.state/1)
+                    ], .)),
+                  Variable
+                    ((?,
+                      Effect
+                        ([
+                        ],
+                          .
+                            ->
+                            .
+                              -[
+                                TypeEffect
+                                (Type
+                                  (r_state/0),
+                                  OCaml.Effect.State.state/1)
+                              ]->
+                              .)),
+                      OCaml.Effect.State.global/1),
+                  [
+                    Variable
+                      ((36,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        r/0);
+                    Apply
+                      ((?,
+                        Effect
+                          ([
+                            TypeEffect
+                            (Type
+                              (Z/1),
+                              OCaml.Effect.State.state/1)
+                          ],
+                            .)),
+                        Variable
+                          ((?,
+                            Effect
+                              ([
+                              ],
+                                .
+                                  -[
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
+                                  ]->
+                                  .)),
+                            OCaml.Effect.State.peekstate/1),
+                        [
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .)))
+                        ])
+                  ])
+            ]))
+    ])
+
+38
+Value
+  (non_rec, @.,
+    [
+      ((r_add_15, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+        LetVar
+          (39,
+            Effect
+              ([
+                TypeEffect
+                (Type (Z/1), OCaml.Effect.State.state/1);
+                TypeEffect
+                (Type (r_state/0), OCaml.Effect.State.state/1)
+              ], .)) i =
+          Apply
+            ((39,
+              Effect
+                ([
+                  TypeEffect
+                  (Type (Z/1), OCaml.Effect.State.state/1);
+                  TypeEffect
+                  (Type (r_state/0), OCaml.Effect.State.state/1)
+                ], .)),
+              Variable
+                ((39,
+                  Effect
+                    ([ ],
+                      .
+                        -[
+                          TypeEffect
+                          (Type (Z/1),
+                            OCaml.Effect.State.state/1);
+                          TypeEffect
+                          (Type (r_state/0),
+                            OCaml.Effect.State.state/1)
+                        ]-> .)), get_r/0),
+              [ Constructor ((39, Effect ([ ], .)), tt/1) ]) in
+        Sequence
+          ((40,
+            Effect
+              ([
+                TypeEffect
+                (Type (Z/1), OCaml.Effect.State.state/1);
+                TypeEffect
+                (Type (r_state/0), OCaml.Effect.State.state/1)
+              ], .)),
+            Apply
+              ((40,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1);
+                    TypeEffect
+                    (Type (r_state/0), OCaml.Effect.State.state/1)
+                  ], .)),
+                Variable
+                  ((40,
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            TypeEffect
+                            (Type (Z/1),
+                              OCaml.Effect.State.state/1);
+                            TypeEffect
+                            (Type (r_state/0),
+                              OCaml.Effect.State.state/1)
+                          ]-> .)), set_r/0),
+                [ Constructor ((40, Effect ([ ], .)), tt/1) ]),
+            LetVar
+              (41,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1);
+                    TypeEffect
+                    (Type (r_state/0), OCaml.Effect.State.state/1)
+                  ], .)) j =
+              Apply
+                ((41,
+                  Effect
+                    ([
+                      TypeEffect
+                      (Type (Z/1), OCaml.Effect.State.state/1);
+                      TypeEffect
+                      (Type (r_state/0),
+                        OCaml.Effect.State.state/1)
+                    ], .)),
+                  Variable
+                    ((41,
+                      Effect
+                        ([ ],
+                          .
+                            -[
+                              TypeEffect
+                              (Type (Z/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type (r_state/0),
+                                OCaml.Effect.State.state/1)
+                            ]-> .)), get_r/0),
+                  [ Constructor ((41, Effect ([ ], .)), tt/1) ]) in
+            Sequence
+              ((42,
+                Effect
+                  ([
+                    TypeEffect
+                    (Type (Z/1), OCaml.Effect.State.state/1);
+                    TypeEffect
+                    (Type (r_state/0), OCaml.Effect.State.state/1)
+                  ], .)),
+                Apply
+                  ((42,
+                    Effect
+                      ([
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1);
+                        TypeEffect
+                        (Type (r_state/0),
+                          OCaml.Effect.State.state/1)
+                      ], .)),
+                    Variable
+                      ((42,
+                        Effect
+                          ([ ],
+                            .
+                              -[
+                                TypeEffect
+                                (Type (Z/1),
+                                  OCaml.Effect.State.state/1)
+                              ]-> .)),
+                        OCaml.Effect.State.write/1),
+                    [
+                      Apply
+                        ((?,
+                          Effect
+                            ([
+                              TypeEffect
+                              (Type
+                                (Z/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type
+                                (r_state/0),
+                                OCaml.Effect.State.state/1)
+                            ],
+                              .)),
+                          Variable
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .
+                                    ->
+                                    .
+                                      -[
+                                        TypeEffect
+                                        (Type
+                                          (r_state/0),
+                                          OCaml.Effect.State.state/1)
+                                      ]->
+                                      .)),
+                              OCaml.Effect.State.global/1),
+                          [
+                            Variable
+                              ((42,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                r/0);
+                            Apply
+                              ((?,
+                                Effect
+                                  ([
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
+                                  ],
+                                    .)),
+                                Variable
+                                  ((?,
+                                    Effect
+                                      ([
+                                      ],
+                                        .
+                                          -[
+                                            TypeEffect
+                                            (Type
+                                              (Z/1),
+                                              OCaml.Effect.State.state/1)
+                                          ]->
+                                          .)),
+                                    OCaml.Effect.State.peekstate/1),
+                                [
+                                  Tuple
+                                    ((?,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)))
+                                ])
+                          ]);
+                      Apply
+                        ((42,
+                          Effect
+                            ([
+                            ],
+                              .)),
+                          Variable
+                            ((42,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              Z.add/1),
+                          [
+                            Variable
+                              ((42,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                i/0);
+                            Variable
+                              ((42,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                j/0)
+                          ])
+                    ]),
+                Apply
+                  ((43,
+                    Effect
+                      ([
+                        TypeEffect
+                        (Type (Z/1),
+                          OCaml.Effect.State.state/1);
+                        TypeEffect
+                        (Type (r_state/0),
+                          OCaml.Effect.State.state/1)
+                      ], .)),
+                    Variable
+                      ((43,
+                        Effect
+                          ([ ],
+                            .
+                              -[
+                                TypeEffect
+                                (Type (Z/1),
+                                  OCaml.Effect.State.state/1)
+                              ]-> .)),
+                        OCaml.Effect.State.read/1),
+                    [
+                      Apply
+                        ((?,
+                          Effect
+                            ([
+                              TypeEffect
+                              (Type
+                                (Z/1),
+                                OCaml.Effect.State.state/1);
+                              TypeEffect
+                              (Type
+                                (r_state/0),
+                                OCaml.Effect.State.state/1)
+                            ],
+                              .)),
+                          Variable
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .
+                                    ->
+                                    .
+                                      -[
+                                        TypeEffect
+                                        (Type
+                                          (r_state/0),
+                                          OCaml.Effect.State.state/1)
+                                      ]->
+                                      .)),
+                              OCaml.Effect.State.global/1),
+                          [
+                            Variable
+                              ((43,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                r/0);
+                            Apply
+                              ((?,
+                                Effect
+                                  ([
+                                    TypeEffect
+                                    (Type
+                                      (Z/1),
+                                      OCaml.Effect.State.state/1)
+                                  ],
+                                    .)),
+                                Variable
+                                  ((?,
+                                    Effect
+                                      ([
+                                      ],
+                                        .
+                                          -[
+                                            TypeEffect
+                                            (Type
+                                              (Z/1),
+                                              OCaml.Effect.State.state/1)
+                                          ]->
+                                          .)),
+                                    OCaml.Effect.State.peekstate/1),
+                                [
+                                  Tuple
+                                    ((?,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)))
+                                ])
+                          ])
+                    ]))))
     ])
