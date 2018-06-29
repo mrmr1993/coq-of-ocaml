@@ -52,3 +52,34 @@ let mixed_type (x : unit) : bool * string * int =
   update ();
   update ();
   (!b, !str, !r)
+
+let partials_test () =
+  let f1 (x : int ref) (y : int) : int ref =
+    x := y;
+    x in
+  let f1_test = f1 r in
+  let f1_test = f1_test 15 in
+  let f2 (l1 : 'a list ref) (l2 : 'b list) : int ref =
+    ref (List.length !l1 + List.length l2) in
+  let f2_test = f2 (ref [1; 2; 3]) in
+  let f2_test = f2_test ["hi"; "hey"] in
+  f1 f2_test !f1_test
+
+let multiple_returns_test () =
+  let f (x : int ref) (y : int) =
+    x := y;
+    fun (z : int) -> begin
+      x := !x + z;
+      fun (w : int ref) -> begin
+        let tmp = !w in
+        w := 2 * !x;
+        x := tmp;
+        x
+      end
+    end in
+  let s = ref 110 in
+  let f1 = f (ref 5) in
+  let f2 = f1 2 in
+  let f3 = f2 7 in
+  let f4 = f3 s in
+  (!f4, s)
