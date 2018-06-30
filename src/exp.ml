@@ -628,30 +628,77 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         (FullEnvi.bound_descriptor Loc.Unknown
           (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env) in
     let type_effect_of_exp e =
-      if Effect.Type.is_pure @@ Type.type_effects env @@ snd @@
-          annotation e then None
+      if Type.is_function @@ snd @@ annotation e ||
+          Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
+      then None
       else
         let typ = Effect.PureType.first_param @@
           Type.pure_type @@ snd @@ annotation e in
         Some (Effect.Type.Arrow (type_effect typ, Effect.Type.Pure)) in
-    let type_effect_e = type_effect_of_exp e in
+    let typ_f = snd @@ annotation e_f in
     let e_f = effects env e_f in
+    (* Resolve effects with type variables *)
+    (* FIXME: This is a hack to handle the type parameters in
+       OCaml.Effect.State.read/write. *)
+    let e_f = update_annotation (fun (l, eff) ->
+      (l, { eff with Effect.typ = Effect.Type.map (fun i desc ->
+        let type_desc = Effect.Descriptor.filter (fun id ->
+          match id with
+          | Effect.Descriptor.Id.Type (Effect.PureType.Variable _) -> true
+          | _ -> false) desc in
+          if Effect.Descriptor.is_pure type_desc then
+            desc
+          else
+            Effect.Descriptor.Map.fold (fun key' eff desc ->
+              let key = match key' with
+              | Effect.Descriptor.Id.Type (Effect.PureType.Variable key) ->
+                Effect.Descriptor.Id.Type
+                  begin match int_of_string_opt key with
+                  | Some i ->
+                    begin match List.nth_opt e_xs i with
+                    | Some e_x ->
+                      Effect.PureType.first_param @@ Type.pure_type @@
+                        snd @@ annotation e_x
+                    | None ->
+                      Effect.PureType.Variable
+                        (string_of_int (i - List.length e_xs))
+                    end
+                  | None -> Effect.PureType.Variable key
+                  end
+              | _ -> key' in
+              desc
+              |> Effect.Descriptor.Map.remove key'
+              |> Effect.Descriptor.Map.add key eff) type_desc desc)
+        eff.Effect.typ })) e_f in
+    (* Add an effect for the type, if there is one *)
+    let e_f = match type_effect_of_exp e with
+      | None -> e_f
+      | Some e_e -> update_annotation (fun (l, eff) ->
+          let rec change_last_eff typ eff =
+            match typ with
+            | Type.Arrow (_, (Arrow _ as typ)) ->
+              begin match eff with
+              | Effect.Type.Arrow (desc, eff) ->
+                Effect.Type.Arrow (desc, change_last_eff typ eff)
+              | Effect.Type.Pure ->
+                Effect.Type.Arrow (Effect.Descriptor.pure,
+                  change_last_eff typ Effect.Type.Pure)
+              end
+            | Type.Arrow (_, typ) -> Effect.Type.union [eff; e_e]
+            | _ -> eff in
+          (l, {eff with
+            Effect.typ = change_last_eff typ_f eff.Effect.typ})) e_f in
     let effect_e_f = snd (annotation e_f) in
-    let typ_effects_e_xs = List.map type_effect_of_exp e_xs in
-    let e_f = update_annotation (fun (l, eff) -> let open Effect in
-      match option_filter (type_effect_e :: typ_effects_e_xs) with
-      | [] -> (l, eff)
-      | _ as typ_effects_e_xs ->
-        (l, { descriptor = eff.descriptor;
-          typ = Type.union (eff.typ :: typ_effects_e_xs) })) e_f in
-    let e_xs = List.map2 (fun e typ_eff ->
-      match e, typ_eff with
-        | Variable ((l, _), state_var), Some typ_eff ->
-          let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
-          let state_dsc = { state_var.BoundName.path_name with PathName.base =
-              state_var.BoundName.path_name.PathName.base ^ "_state" } in
-          begin match FullEnvi.bound_descriptor_opt state_dsc env with
-          | Some state_dsc' ->
+    let e_xs = List.map (fun e ->
+      match e with
+      | Variable ((l, typ), state_var) ->
+        let state_dsc = { state_var.BoundName.path_name with PathName.base =
+            state_var.BoundName.path_name.PathName.base ^ "_state" } in
+        begin match FullEnvi.bound_descriptor_opt state_dsc env with
+        | Some state_dsc' ->
+          begin match type_effect_of_exp e with
+          | Some typ_eff ->
+            let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
             (* This variable is a global reference. Since it can be used
             anywhere a regular reference can be, we carry the actual value on
             the normal stack for its type, and only record its position in that
@@ -674,7 +721,9 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
                 [Tuple ((u, mk pure Pure), [])])])
           | None -> effects env e
           end
-        | _, _ -> effects env e) e_xs typ_effects_e_xs in
+        | None -> effects env e
+        end
+      | _ -> effects env e) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
     if effects_e_xs |> List.for_all (fun effect_e_x ->
       Effect.Type.is_pure effect_e_x.Effect.typ) then

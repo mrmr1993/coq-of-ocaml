@@ -75,6 +75,9 @@ module Descriptor = struct
   let remove (x : BoundName.t) (d : t) : t =
     Map.filter (fun _ y -> x <> y) d
 
+  let filter (f : Id.t -> bool) (d : t) : t =
+    Map.filter (fun id _ -> f id) d
+
   let elements (d : t) : BoundName.t list =
     List.map snd (Map.bindings d)
 
@@ -149,6 +152,13 @@ module Type = struct
     | (_, Pure) -> is_pure typ1
     | (Arrow (d1, typ1), Arrow (d2, typ2)) ->
       (Descriptor.eq d1 d2) && eq typ1 typ2
+
+  let map (f : int -> Descriptor.t -> Descriptor.t) (x : t) =
+    let rec map i x =
+      match x with
+      | Arrow (desc, x) -> Arrow (f i desc, map (i+1) x)
+      | Pure -> Pure in
+    map 0 x
 
   let rec return_descriptor (typ : t) (nb_args : int) : Descriptor.t =
     if nb_args = 0 then

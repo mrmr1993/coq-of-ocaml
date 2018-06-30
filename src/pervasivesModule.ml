@@ -10,6 +10,12 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
       { BoundName.path_name = x; depth = 0 } in
   let d xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map descriptor xs) in
+  let typ_d (x : int) : Effect.Descriptor.t =
+    let i = string_of_int x in
+    Effect.Descriptor.singleton
+      (Effect.Descriptor.Id.Type (Effect.PureType.Variable i))
+      { BoundName.depth = 0; BoundName.path_name =
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") } in
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
@@ -63,8 +69,8 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> add_typ ["OCaml"; "Effect"; "State"] "t" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
   |> add_var ["OCaml"; "Effect"; "State"] "peekstate" Pure
   |> add_var ["OCaml"; "Effect"; "State"] "global" Pure
-  |> add_var ["OCaml"; "Effect"; "State"] "read" Pure
-  |> add_var ["OCaml"; "Effect"; "State"] "write" Pure
+  |> add_var ["OCaml"; "Effect"; "State"] "read" (Arrow (typ_d 0, Pure))
+  |> add_var ["OCaml"; "Effect"; "State"] "write" (Arrow (d [], Arrow (typ_d 0, Pure)))
 
   (* Pervasives *)
   (* Exceptions *)
