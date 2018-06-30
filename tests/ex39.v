@@ -4,6 +4,8 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
+Require OCaml.List.
+
 Definition get_local_ref (tt : unit) : M [ OCaml.Effect.State.state Z ] Z :=
   let! x := OCaml.Pervasives.ref 12 in
   OCaml.Effect.State.read x.
@@ -120,3 +122,83 @@ Definition mixed_type (x : unit)
         lift [_;_] "01" (OCaml.Effect.State.global r x_3) in
       lift [_;_] "10" (OCaml.Effect.State.read x_3)) in
   ret (x_1, x_2, x_3).
+
+Definition partials_test (x : unit)
+  : M
+    [
+      OCaml.Effect.State.state Z;
+      OCaml.Effect.State.state (list Z);
+      OCaml.Effect.State.state r_state
+    ] (OCaml.Effect.State.t Z) :=
+  match x with
+  | tt =>
+    let f1 (x : OCaml.Effect.State.t Z) (y : Z)
+      : M [ OCaml.Effect.State.state Z ] (OCaml.Effect.State.t Z) :=
+      let! _ := OCaml.Effect.State.write x y in
+      ret x in
+    let! f1_test :=
+      lift [_;_;_] "101"
+        (let! x_1 :=
+          let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
+          lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+        ret (f1 x_1)) in
+    lift [_;_;_] "110"
+      (let! f1_test := lift [_;_] "10" (f1_test 15) in
+      let f2 (l1 : OCaml.Effect.State.t (list Z)) (l2 : list string)
+        : M [ OCaml.Effect.State.state Z; OCaml.Effect.State.state (list Z) ]
+          (OCaml.Effect.State.t Z) :=
+        let! x_1 :=
+          lift [_;_] "01"
+            (let! x_1 :=
+              let! x_1 := OCaml.Effect.State.read l1 in
+              ret (OCaml.List.length x_1) in
+            ret (Z.add x_1 (OCaml.List.length l2))) in
+        lift [_;_] "10" (OCaml.Pervasives.ref x_1) in
+      let! f2_test :=
+        lift [_;_] "01"
+          (let! x_1 := OCaml.Pervasives.ref (cons 1 (cons 2 (cons 3 []))) in
+          ret (f2 x_1)) in
+      let! f2_test := f2_test (cons "hi" % string (cons "hey" % string [])) in
+      lift [_;_] "10"
+        (let! x_1 := OCaml.Effect.State.read f1_test in
+        f1 f2_test x_1))
+  end.
+
+Definition multiple_returns_test (x : unit)
+  : M [ OCaml.Effect.State.state Z ] (Z * (OCaml.Effect.State.t Z)) :=
+  match x with
+  | tt =>
+    let f (x : OCaml.Effect.State.t Z) (y : Z)
+      : M [ OCaml.Effect.State.state Z ]
+        (Z ->
+          M [ OCaml.Effect.State.state Z ]
+            ((OCaml.Effect.State.t Z) ->
+              M [ OCaml.Effect.State.state Z ] (OCaml.Effect.State.t Z))) :=
+      let! _ := OCaml.Effect.State.write x y in
+      ret
+        (fun z =>
+          let! _ :=
+            let! x_1 :=
+              let! x_1 := OCaml.Effect.State.read x in
+              ret (Z.add x_1 z) in
+            OCaml.Effect.State.write x x_1 in
+          ret
+            (fun w =>
+              let! tmp := OCaml.Effect.State.read w in
+              let! _ :=
+                let! x_1 :=
+                  let! x_1 := OCaml.Effect.State.read x in
+                  ret (Z.mul 2 x_1) in
+                OCaml.Effect.State.write w x_1 in
+              let! _ := OCaml.Effect.State.write x tmp in
+              ret x)) in
+    let! s := OCaml.Pervasives.ref 110 in
+    let! f1 :=
+      let! x_1 := OCaml.Pervasives.ref 5 in
+      ret (f x_1) in
+    let! f2 := f1 2 in
+    let! f3 := f2 7 in
+    let! f4 := f3 s in
+    let! x_1 := OCaml.Effect.State.read f4 in
+    ret (x_1, s)
+  end.

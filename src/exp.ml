@@ -593,6 +593,18 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
+  let type_effect typ = let open Effect.Descriptor in
+    singleton (Id.Type typ)
+      (FullEnvi.bound_descriptor Loc.Unknown
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env) in
+  let type_effect_of_exp e =
+    if Type.is_function @@ snd @@ annotation e ||
+        Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
+    then None
+    else
+      let typ = Effect.PureType.first_param @@
+        Type.pure_type @@ snd @@ annotation e in
+      Some (Effect.Type.Arrow (type_effect typ, Effect.Type.Pure)) in
   let compound (es : (Loc.t * Type.t) t list)
   : (Loc.t * Effect.t) t list * Effect.t =
     let es = List.map (effects env) es in
@@ -605,17 +617,52 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   match e with
   | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
   | Variable ((l, typ), x) ->
-    (try
-      let effect =
-        { Effect.descriptor = Effect.Descriptor.pure;
-          typ = FullEnvi.find_var x env Effect.Type.depth_lift } in
-      Variable ((l, effect), x)
-    with Not_found ->
-      let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
-      Error.warn l (SmartPrint.to_string 80 2 message);
-      Variable ((l, {
-        Effect.descriptor = Effect.Descriptor.pure;
-        typ = Effect.Type.Pure }), x))
+    let normal_variable () = (try
+        let effect =
+          { Effect.descriptor = Effect.Descriptor.pure;
+            typ = FullEnvi.find_var x env Effect.Type.depth_lift } in
+        Variable ((l, effect), x)
+      with Not_found ->
+        let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
+        Error.warn l (SmartPrint.to_string 80 2 message);
+        Variable ((l, {
+          Effect.descriptor = Effect.Descriptor.pure;
+          typ = Effect.Type.Pure }), x)) in
+    let state_dsc = { x.BoundName.path_name with PathName.base =
+        x.BoundName.path_name.PathName.base ^ "_state" } in
+    begin match FullEnvi.bound_descriptor_opt state_dsc env with
+    | Some state_dsc' ->
+      begin match type_effect_of_exp e with
+      | Some typ_eff ->
+        let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
+        (* This variable is a global reference. Since it can be used
+        anywhere a regular reference can be, we carry the actual value on
+        the normal stack for its type, and only record its position in that
+        stack in its dedicated state. *)
+        let u = Loc.Unknown in
+        let get_var p b =
+          FullEnvi.bound_var Loc.Unknown (PathName.of_name p b) env in
+        let var a path base = Variable (a, get_var path base) in
+        let state_dsc_eff = type_effect
+          (Effect.PureType.Apply (state_dsc', [])) in
+        let open Effect.Type in let open Effect.Descriptor in
+        let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
+        Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
+          var (u, mk pure (Arrow (pure, Arrow (state_dsc_eff, Pure))))
+            ["OCaml"; "Effect"; "State"] "global",
+          [Variable ((l, mk pure Pure), x);
+          Apply ((u, mk typ_eff Pure),
+            var (u, mk pure (Arrow (typ_eff, Pure)))
+              ["OCaml"; "Effect"; "State"] "peekstate",
+            [Tuple ((u, mk pure Pure), [])])])
+      | None ->
+        (* FIXME: This case shouldn't happen, but may be hit if a immutable
+           local variable has been given the same name as a mutable global
+           variable. *)
+        normal_variable ()
+      end
+    | None -> normal_variable ()
+    end
   | Tuple ((l, typ), es) ->
     let (es, effect) = compound es in
     Tuple ((l, effect), es)
@@ -623,58 +670,61 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (es, effect) = compound es in
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
-    let type_effect typ = let open Effect.Descriptor in
-      singleton (Id.Type typ)
-        (FullEnvi.bound_descriptor Loc.Unknown
-          (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env) in
-    let type_effect_of_exp e =
-      if Effect.Type.is_pure @@ Type.type_effects env @@ snd @@
-          annotation e then None
-      else
-        let typ = Effect.PureType.first_param @@
-          Type.pure_type @@ snd @@ annotation e in
-        Some (Effect.Type.Arrow (type_effect typ, Effect.Type.Pure)) in
-    let type_effect_e = type_effect_of_exp e in
+    let typ_f = snd @@ annotation e_f in
     let e_f = effects env e_f in
+    (* Resolve effects with type variables *)
+    (* FIXME: This is a hack to handle the type parameters in
+       OCaml.Effect.State.read/write. *)
+    let e_f = update_annotation (fun (l, eff) ->
+      (l, { eff with Effect.typ = Effect.Type.map (fun i desc ->
+        let type_desc = Effect.Descriptor.filter (fun id ->
+          match id with
+          | Effect.Descriptor.Id.Type (Effect.PureType.Variable _) -> true
+          | _ -> false) desc in
+          if Effect.Descriptor.is_pure type_desc then
+            desc
+          else
+            Effect.Descriptor.Map.fold (fun key' eff desc ->
+              let key = match key' with
+              | Effect.Descriptor.Id.Type (Effect.PureType.Variable key) ->
+                Effect.Descriptor.Id.Type
+                  begin match int_of_string_opt key with
+                  | Some i ->
+                    begin match List.nth_opt e_xs i with
+                    | Some e_x ->
+                      Effect.PureType.first_param @@ Type.pure_type @@
+                        snd @@ annotation e_x
+                    | None ->
+                      Effect.PureType.Variable
+                        (string_of_int (i - List.length e_xs))
+                    end
+                  | None -> Effect.PureType.Variable key
+                  end
+              | _ -> key' in
+              desc
+              |> Effect.Descriptor.Map.remove key'
+              |> Effect.Descriptor.Map.add key eff) type_desc desc)
+        eff.Effect.typ })) e_f in
+    (* Add an effect for the type, if there is one *)
+    let e_f = match type_effect_of_exp e with
+      | None -> e_f
+      | Some e_e -> update_annotation (fun (l, eff) ->
+          let rec change_last_eff typ eff =
+            match typ with
+            | Type.Arrow (_, (Arrow _ as typ)) ->
+              begin match eff with
+              | Effect.Type.Arrow (desc, eff) ->
+                Effect.Type.Arrow (desc, change_last_eff typ eff)
+              | Effect.Type.Pure ->
+                Effect.Type.Arrow (Effect.Descriptor.pure,
+                  change_last_eff typ Effect.Type.Pure)
+              end
+            | Type.Arrow (_, typ) -> Effect.Type.union [eff; e_e]
+            | _ -> eff in
+          (l, {eff with
+            Effect.typ = change_last_eff typ_f eff.Effect.typ})) e_f in
     let effect_e_f = snd (annotation e_f) in
-    let typ_effects_e_xs = List.map type_effect_of_exp e_xs in
-    let e_f = update_annotation (fun (l, eff) -> let open Effect in
-      match option_filter (type_effect_e :: typ_effects_e_xs) with
-      | [] -> (l, eff)
-      | _ as typ_effects_e_xs ->
-        (l, { descriptor = eff.descriptor;
-          typ = Type.union (eff.typ :: typ_effects_e_xs) })) e_f in
-    let e_xs = List.map2 (fun e typ_eff ->
-      match e, typ_eff with
-        | Variable ((l, _), state_var), Some typ_eff ->
-          let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
-          let state_dsc = { state_var.BoundName.path_name with PathName.base =
-              state_var.BoundName.path_name.PathName.base ^ "_state" } in
-          begin match FullEnvi.bound_descriptor_opt state_dsc env with
-          | Some state_dsc' ->
-            (* This variable is a global reference. Since it can be used
-            anywhere a regular reference can be, we carry the actual value on
-            the normal stack for its type, and only record its position in that
-            stack in its dedicated state. *)
-            let u = Loc.Unknown in
-            let get_var p b =
-              FullEnvi.bound_var Loc.Unknown (PathName.of_name p b) env in
-            let var a path base = Variable (a, get_var path base) in
-            let state_dsc_eff = type_effect
-              (Effect.PureType.Apply (state_dsc', [])) in
-            let open Effect.Type in let open Effect.Descriptor in
-            let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
-            Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
-              var (u, mk pure (Arrow (pure, Arrow (state_dsc_eff, Pure))))
-                ["OCaml"; "Effect"; "State"] "global",
-              [Variable ((l, mk pure Pure), state_var);
-              Apply ((u, mk typ_eff Pure),
-                var (u, mk pure (Arrow (typ_eff, Pure)))
-                  ["OCaml"; "Effect"; "State"] "peekstate",
-                [Tuple ((u, mk pure Pure), [])])])
-          | None -> effects env e
-          end
-        | _, _ -> effects env e) e_xs typ_effects_e_xs in
+    let e_xs = List.map (effects env) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
     if effects_e_xs |> List.for_all (fun effect_e_x ->
       Effect.Type.is_pure effect_e_x.Effect.typ) then

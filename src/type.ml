@@ -106,6 +106,11 @@ let rec type_effects (env : Effect.Type.t FullEnvi.t) (typ : t)
       List.map (type_effects env) typs)
   | Monad (x, typ) -> type_effects env typ
 
+let is_function (typ : t) : bool =
+  match typ with
+  | Arrow _ -> true
+  | _ -> false
+
 let rec pure_type (typ : t) : Effect.PureType.t =
   match typ with
   | Variable x -> Effect.PureType.Variable x
