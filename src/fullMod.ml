@@ -167,8 +167,8 @@ let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
   match env with
   | m :: env ->
       (try Mod.include_module x m :: env with
-      | Mod.NameConflict (typ, name) ->
-        let message = !^ "Could not include module: the" ^^ !^ typ ^^
-          PathName.pp name ^^ !^ "is already declared." in
+      | Mod.NameConflict (typ1, typ2, name) ->
+        let message = !^ "Could not include module: the" ^^ !^ typ1 ^^
+          PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
         Error.raise loc (SmartPrint.to_string 80 2 message))
   | [] -> failwith "The environment must be a non-empty list."
