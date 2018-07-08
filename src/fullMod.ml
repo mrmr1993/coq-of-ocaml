@@ -69,21 +69,22 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     m :: env
   | _ -> failwith "You should have entered in at least one module."
 
-let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
+let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with
   | m :: env ->
-    if find x m then
-      Some { BoundName.path_name = x; BoundName.depth = 0 }
-    else
+    begin match find x m with
+    | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
+    | None ->
       m.Mod.opens |> find_first (fun path ->
         let x = { x with PathName.path = path @ x.PathName.path } in
         bound_name_opt find x env |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 }))
+    end
   | [] -> None
 
-let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
-  (x : PathName.t) (env : 'a t) : BoundName.t =
+let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
+  (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   match bound_name_opt find x env with
   | Some name -> name
   | None ->
@@ -91,25 +92,25 @@ let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Vars.mem loc x env
+  bound_name Mod.Vars.resolve_opt loc x env
 
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Typs.mem loc x env
+  bound_name Mod.Typs.resolve_opt loc x env
 
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Descriptors.mem loc x env
+  bound_name Mod.Descriptors.resolve_opt loc x env
 
 let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Constructors.mem loc x env
+  bound_name Mod.Constructors.resolve_opt loc x env
 
 let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Fields.mem loc x env
+  bound_name Mod.Fields.resolve_opt loc x env
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Modules.mem x env
+  bound_name_opt Mod.Modules.resolve_opt x env
 
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Modules.mem loc x env
+  bound_name Mod.Modules.resolve_opt loc x env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   env

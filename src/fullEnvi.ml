@@ -96,27 +96,26 @@ let find_external_module_path (x : PathName.t) (env : 'a t)
   | None ->
     failwith ("Could not find include for " ^ to_string 80 2 (PathName.pp x) ^ ".")
 
-let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> bool)
+let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   find_first (fun open_name ->
     let x = { x with PathName.path = open_name @ x.PathName.path } in
     match find_external_module_path_opt x env with
     | Some (external_module, x) ->
-      if find x external_module.m then
+      find x external_module.m |> option_map (fun (x : PathName.t) ->
         let x = { x with path = external_module.coq_name :: x.path } in
         module_required external_module.coq_name env;
-        Some { BoundName.path_name = x; BoundName.depth = -1 }
-      else None
+        { BoundName.path_name = x; BoundName.depth = -1 })
     | None -> None) (FullMod.external_opens env.active_module)
 
-let bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
+let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some name
   | None -> bound_name_external_opt find x env
 
-let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
-  (x : PathName.t) (env : 'a t) : BoundName.t =
+let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
+  (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   match bound_name_opt find x env with
   | Some name -> name
   | None ->
@@ -124,22 +123,22 @@ let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Vars.mem loc x env
+  bound_name Mod.Vars.resolve_opt loc x env
 
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Typs.mem loc x env
+  bound_name Mod.Typs.resolve_opt loc x env
 
 let bound_descriptor_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Descriptors.mem x env
+  bound_name_opt Mod.Descriptors.resolve_opt x env
 
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Descriptors.mem loc x env
+  bound_name Mod.Descriptors.resolve_opt loc x env
 
 let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Constructors.mem loc x env
+  bound_name Mod.Constructors.resolve_opt loc x env
 
 let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Fields.mem loc x env
+  bound_name Mod.Fields.resolve_opt loc x env
 
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   match x.path, find_wrapped_mod_opt x.base env with
@@ -157,7 +156,7 @@ let bound_external_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundNam
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  match bound_name_opt Mod.Modules.mem x env with
+  match bound_name_opt Mod.Modules.resolve_opt x env with
   | Some name -> Some name
   | None -> bound_external_module_opt x env
 

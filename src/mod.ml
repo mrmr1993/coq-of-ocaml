@@ -1,3 +1,4 @@
+open Utils
 open SmartPrint
 
 type 'a value =
@@ -23,15 +24,41 @@ let string_of_value (v : 'a value) : string =
   | Constructor -> "constructor"
   | Field -> "field"
 
+module Locator = struct
+  type t = {
+    vars : Name.t PathName.Map.t;
+    typs : Name.t PathName.Map.t;
+    descriptors : Name.t PathName.Map.t;
+    constructors : Name.t PathName.Map.t;
+    fields : Name.t PathName.Map.t }
+
+  let empty = {
+    vars = PathName.Map.empty;
+    typs = PathName.Map.empty;
+    descriptors = PathName.Map.empty;
+    constructors = PathName.Map.empty;
+    fields = PathName.Map.empty }
+
+  let join (f : Name.t PathName.Map.t -> Name.t PathName.Map.t -> Name.t PathName.Map.t)
+    (l1 : t) (l2 : t) : t = {
+    vars = f l1.vars l2.vars;
+    typs = f l1.typs l2.typs;
+    descriptors = f l1.descriptors l2.descriptors;
+    constructors = f l1.constructors l2.constructors;
+    fields = f l1.fields l2.fields }
+end
+
 type 'a t = {
   opens : Name.t list list;
   external_opens : Name.t list list;
+  locator : Locator.t;
   values : 'a value PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
 let empty : 'a t = {
   opens = [[]]; (** By default we open the empty path. *)
   external_opens = [[]];
+  locator = Locator.empty;
   values = PathName.Map.empty;
   modules = PathName.Map.empty }
 
@@ -83,14 +110,27 @@ let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
       n in
   prefix_n base_name (first_n 0)
 
+let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
+  { x with base = find_free_name x.base env.values }
+
 let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
   { m with
     values = m.values |> PathName.Map.map (value_map f);
     modules = PathName.Map.map (map f) m.modules }
 
 module Vars = struct
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    option_map (fun name -> { x with base = name }) @@
+      PathName.Map.find_opt x m.locator.vars
+
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    { m with values = PathName.Map.add x (Variable v) m.values }
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    { m with
+      values = PathName.Map.add y (Variable v) m.values;
+      locator = { m.locator with
+        vars = PathName.Map.add x y.base m.locator.vars } }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -109,8 +149,18 @@ module Vars = struct
     (name, add (PathName.of_name [] name) v env)
 end
 module Typs = struct
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    option_map (fun name -> { x with base = name }) @@
+      PathName.Map.find_opt x m.locator.typs
+
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    { m with values = PathName.Map.add x (Type v) m.values }
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    { m with
+      values = PathName.Map.add y (Type v) m.values;
+      locator = { m.locator with
+        typs = PathName.Map.add x y.base m.locator.typs } }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -124,8 +174,18 @@ module Typs = struct
       String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Type"
 end
 module Descriptors = struct
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    option_map (fun name -> { x with base = name }) @@
+      PathName.Map.find_opt x m.locator.descriptors
+
   let add (x : PathName.t) (m : 'a t) : 'a t =
-    { m with values = PathName.Map.add x Descriptor m.values }
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    { m with
+      values = PathName.Map.add y Descriptor m.values;
+      locator = { m.locator with
+        descriptors = PathName.Map.add x y.base m.locator.descriptors } }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -133,8 +193,18 @@ module Descriptors = struct
     | _ -> false
 end
 module Constructors = struct
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    option_map (fun name -> { x with base = name }) @@
+      PathName.Map.find_opt x m.locator.constructors
+
   let add (x : PathName.t) (m : 'a t) : 'a t =
-    { m with values = PathName.Map.add x Constructor m.values }
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    { m with
+      values = PathName.Map.add y Constructor m.values;
+      locator = { m.locator with
+        constructors = PathName.Map.add x y.base m.locator.constructors } }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -142,8 +212,18 @@ module Constructors = struct
     | _ -> false
 end
 module Fields = struct
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    option_map (fun name -> { x with base = name }) @@
+      PathName.Map.find_opt x m.locator.fields
+
   let add (x : PathName.t) (m : 'a t) : 'a t =
-    { m with values = PathName.Map.add x Field m.values }
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    { m with
+      values = PathName.Map.add y Field m.values;
+      locator = { m.locator with
+        fields = PathName.Map.add x y.base m.locator.fields } }
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -157,6 +237,9 @@ module Modules = struct
   let mem (x : PathName.t) (m : 'a t) : bool =
     PathName.Map.mem x m.modules
 
+  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
+    if mem x m then Some x else None
+
   let find (x : PathName.t) (m : 'a t) : 'a t =
     PathName.Map.find x m.modules
 end
@@ -168,6 +251,9 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   let m =
   { opens = m2.opens;
     external_opens = m2.external_opens;
+    locator = Locator.join
+      (PathName.Map.map_union add_to_path (fun _ v -> v))
+      m1.locator m2.locator;
     values = PathName.Map.map_union add_to_path
       (fun _ v -> value_map (prefix module_name) v)
       m1.values m2.values;
@@ -183,6 +269,8 @@ let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
     values = PathName.Map.union (fun key v1 v2 ->
       raise (NameConflict (string_of_value v1, string_of_value v2, key)))
      m_incl.values m.values;
+    locator = Locator.join (fun v1 v2 -> v1 (* will fail in values *))
+      m_incl.locator m.locator;
     modules = PathName.Map.union (fun key _ _ ->
         raise (NameConflict ("module", "module", key)))
       m_incl.modules m.modules }
