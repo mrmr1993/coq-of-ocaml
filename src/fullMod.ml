@@ -126,26 +126,8 @@ let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
     let message = PathName.pp x ^^ !^ "not found." in
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
-let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Vars.resolve_opt loc x env
-
-let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Typs.resolve_opt loc x env
-
-let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Descriptors.resolve_opt loc x env
-
-let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Constructors.resolve_opt loc x env
-
-let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Fields.resolve_opt loc x env
-
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
-
-let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Modules.resolve_opt loc x env
 
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
