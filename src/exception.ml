@@ -19,11 +19,20 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   { name = name; typ = typ}
 
 let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  FullEnvi.add_exception [] exn.name env
+  env
+  |> FullEnvi.add_descriptor [] exn.name
+  |> FullEnvi.add_var [] ("raise_" ^ exn.name) ()
 
 let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
   (id : Effect.Descriptor.Id.t) : Effect.Type.t FullEnvi.t =
-  FullEnvi.add_exception_with_effects [] exn.name id env
+  let env = FullEnvi.add_descriptor [] exn.name env in
+  let effect_typ =
+    Effect.Type.Arrow (
+      Effect.Descriptor.singleton
+        id
+        (FullEnvi.bound_descriptor Loc.Unknown (PathName.of_name [] exn.name) env),
+      Effect.Type.Pure) in
+  FullEnvi.add_var [] ("raise_" ^ exn.name) effect_typ env
 
 let to_coq (exn : t) : SmartPrint.t =
   !^ "Definition" ^^ Name.to_coq exn.name ^^ !^ ":=" ^^
