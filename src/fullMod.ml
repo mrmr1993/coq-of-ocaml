@@ -143,15 +143,11 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   iterate_open_lift v x.BoundName.depth
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-  match env with
-  | m :: env ->
+  hd_map (fun m env ->
     let (name, m) = Mod.Vars.fresh prefix v m in
-    (name, m :: env)
-  | [] -> failwith "The environment must be a non-empty list."
+    (name, m :: env)) env
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t = List.map (Mod.map f) env
 
-let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
-  match env with
-  | m :: env -> Mod.include_module x m :: env
-  | [] -> failwith "The environment must be a non-empty list."
+let include_module (x : 'a Mod.t) (env : 'a t) : 'a t =
+  hd_mod_map (Mod.include_module x) env

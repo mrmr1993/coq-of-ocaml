@@ -274,7 +274,7 @@ let map (f : 'a -> 'b) (env : 'a t) : 'b t =
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
-  try {env with active_module = FullMod.include_module loc x env.active_module}
+  try {env with active_module = FullMod.include_module x env.active_module}
   with Mod.NameConflict (typ1, typ2, name) ->
     let message = !^ "Could not include module: the" ^^ !^ typ1 ^^
       PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
