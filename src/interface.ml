@@ -60,7 +60,7 @@ let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   match typ_def with
   | TypeDefinition.Inductive (name, _, constructors) ->
     Typ (CoqName.ocaml_name name) ::
-      List.map (fun (x, _) -> Constructor x) constructors
+      List.map (fun (x, _) -> Constructor (CoqName.ocaml_name x)) constructors
   | TypeDefinition.Record (name, fields) ->
     Typ (CoqName.ocaml_name name) :: List.map (fun (x, _) -> Field x) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->

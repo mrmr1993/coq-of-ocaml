@@ -3,7 +3,7 @@ open Typedtree
 open SmartPrint
 
 type t =
-  | Inductive of CoqName.t * Name.t list * (Name.t * Type.t list) list
+  | Inductive of CoqName.t * Name.t list * (CoqName.t * Type.t list) list
   | Record of CoqName.t * (Name.t * Type.t) list
   | Synonym of CoqName.t * Name.t list * Type.t
   | Abstract of CoqName.t * Name.t list
@@ -15,7 +15,7 @@ let pp (def : t) : SmartPrint.t =
       indent (OCaml.tuple [
         OCaml.list Name.pp typ_args;
         constructors |> OCaml.list (fun (x, typs) ->
-          OCaml.tuple [Name.pp x; OCaml.list Type.pp typs])]))
+          OCaml.tuple [CoqName.pp x; OCaml.list Type.pp typs])]))
   | Record (name, fields) ->
     nest (!^ "Record" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
       indent (fields |> OCaml.list (fun (x, typ) ->
@@ -46,7 +46,10 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
             match args with
             | Cstr_tuple typs -> typs
             | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
-          (Name.of_ident constr, typs |> List.map (fun typ ->
+          let constr = Name.of_ident constr in
+          let coq_constr = (FullEnvi.resolve_constructor [] constr env).base in
+          let constr_name = CoqName.of_names constr coq_constr in
+          (constr_name, typs |> List.map (fun typ ->
             Type.of_type_expr env loc typ))) in
       Inductive (x, typ_args, constructors)
     | Type_record (fields, _) ->
@@ -66,7 +69,9 @@ let update_env (def : t) (v : 'a) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   | Inductive (name, _, constructors) ->
     let (name, coq_name) = CoqName.assoc_names name in
     let env = FullEnvi.assoc_typ [] name coq_name v env in
-    List.fold_left (fun env (x, _) -> FullEnvi.add_constructor [] x env)
+    List.fold_left (fun env (x, _) ->
+      let (name, coq_name) = CoqName.assoc_names x in
+      FullEnvi.assoc_constructor [] name coq_name env)
       env constructors
   | Record (name, fields) ->
     let (name, coq_name) = CoqName.assoc_names name in
@@ -90,7 +95,7 @@ let to_coq (def : t) : SmartPrint.t =
       !^ ":" ^^ !^ "Type" ^^ !^ ":=" ^-^
       separate empty (constructors |> List.map (fun (constr, args) ->
         newline ^^ nest (
-          !^ "|" ^^ Name.to_coq constr ^^ !^ ":" ^^
+          !^ "|" ^^ CoqName.to_coq constr ^^ !^ ":" ^^
           separate space (args |> List.map (fun arg -> Type.to_coq true arg ^^ !^ "->")) ^^
           separate space (CoqName.to_coq name :: List.map Name.to_coq typ_args)))) ^-^ !^ "." ^^
       separate empty (constructors |> List.map (fun (name, args) ->
@@ -98,7 +103,7 @@ let to_coq (def : t) : SmartPrint.t =
           empty
         else
           newline ^^ nest (separate space (
-            !^ "Arguments" :: Name.to_coq name ::
+            !^ "Arguments" :: CoqName.to_coq name ::
             (List.map (fun x -> braces @@ Name.to_coq x) typ_args) @
             (List.map (fun _ -> !^ "_") args)) ^-^ !^ "."))))
   | Record (name, fields) ->
