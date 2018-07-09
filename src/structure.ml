@@ -29,7 +29,7 @@ module Value = struct
           braces @@ group (separate space (List.map Name.to_coq header.Exp.Header.typ_vars) ^^
           !^ ":" ^^ !^ "Type")) ^^
         group (separate space (header.Exp.Header.args |> List.map (fun (x, t) ->
-          parens @@ nest (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
+          parens @@ nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
         !^ " :=" ^^ Exp.to_coq false e))) ^-^ !^ "."
 end
