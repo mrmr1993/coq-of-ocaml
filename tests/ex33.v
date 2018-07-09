@@ -170,8 +170,8 @@ Fixpoint remove_min_binding {A : Type} (x : t A)
 Definition remove_merge {A : Type} (t1 : t A) (t2 : t A)
   : M [ OCaml.Invalid_argument; OCaml.Not_found ] (t A) :=
   match (t1, t2) with
-  | (Empty, t) => ret t
-  | (t, Empty) => ret t
+  | (Empty, t_1) => ret t_1
+  | (t_1, Empty) => ret t_1
   | (_, _) =>
     let! x := lift [_;_] "01" (min_binding t2) in
     match x with
@@ -291,8 +291,8 @@ Definition join {A : Type} (l : t A) (v : key) (d : A) (r : t A)
 Definition concat {A : Type} (t1 : t A) (t2 : t A)
   : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] (t A) :=
   match (t1, t2) with
-  | (Empty, t) => ret t
-  | (t, Empty) => ret t
+  | (Empty, t_1) => ret t_1
+  | (t_1, Empty) => ret t_1
   | (_, _) =>
     let! x := lift [_;_;_;_] "0001" (min_binding t2) in
     match x with
