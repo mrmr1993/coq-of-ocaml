@@ -48,9 +48,12 @@ let find_wrapped_mod (module_name : Name.t) (env : 'a t)
   | Some wmod -> wmod
   | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
 
+let update_active (f : 'a Mod.t -> 'a Mod.t) (env : 'a t) : 'a t =
+  { env with active_module = FullMod.hd_mod_map f env.active_module }
+
 let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   : 'a t =
-  {env with active_module = FullMod.add_module path base v env.active_module}
+  update_active (Mod.Modules.add (PathName.of_name path base) v) env
 
 let enter_module (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module env.active_module}
@@ -204,14 +207,12 @@ end
 module ValueCarrier (M : Mod.ValueCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
-    { env with active_module = env.active_module |> FullMod.hd_mod_map
-        (M.add (PathName.of_name path base) v) }
+    update_active (M.add (PathName.of_name path base) v) env
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (env : 'a t) : 'a t =
-    { env with active_module = env.active_module |> FullMod.hd_mod_map
-        (M.assoc (PathName.of_name path base)
-          (PathName.of_name path assoc_base) v) }
+    update_active (M.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v) env
 
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
@@ -223,14 +224,12 @@ module Typ = ValueCarrier(Mod.Typs)
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
-    { env with active_module = env.active_module |> FullMod.hd_mod_map
-        (M.add (PathName.of_name path base)) }
+    update_active (M.add (PathName.of_name path base)) env
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
     (env : 'a t) : 'a t =
-    { env with active_module = env.active_module |> FullMod.hd_mod_map
-        (M.assoc (PathName.of_name path base)
-          (PathName.of_name path assoc_base)) }
+    update_active (M.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base)) env
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)

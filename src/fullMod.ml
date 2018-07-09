@@ -16,10 +16,6 @@ let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
 let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
   hd_map (fun m env -> f m :: env)
 
-let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Modules.add (PathName.of_name path base) v) env
-
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
 
 let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
@@ -54,14 +50,6 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
           { name with BoundName.depth = name.BoundName.depth + 1 }))
     end
   | [] -> None
-
-let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  match bound_name_opt find x env with
-  | Some name -> name
-  | None ->
-    let message = PathName.pp x ^^ !^ "not found." in
-    Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
