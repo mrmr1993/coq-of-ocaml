@@ -147,23 +147,6 @@ let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   bound_name Mod.Modules.resolve_opt loc x env
 
-let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
-  env
-  |> add_descriptor path base
-  |> add_var path ("raise_" ^ base) ()
-
-let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (id : Effect.Descriptor.Id.t) (env : Effect.Type.t t)
-  : Effect.Type.t t =
-  let env = add_descriptor path base env in
-  let effect_typ =
-    Effect.Type.Arrow (
-      Effect.Descriptor.singleton
-        id
-        (bound_descriptor Loc.Unknown (PathName.of_name path base) env),
-      Effect.Type.Pure) in
-  add_var path ("raise_" ^ base) effect_typ env
-
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   let m =

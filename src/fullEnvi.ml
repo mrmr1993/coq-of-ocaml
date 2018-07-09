@@ -226,12 +226,21 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   open_module loc (PathName.of_name_list module_name) env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
-  {env with active_module = FullMod.add_exception path base env.active_module}
+  env
+  |> add_descriptor path base
+  |> add_var path ("raise_" ^ base) ()
 
 let add_exception_with_effects (path : Name.t list) (base : Name.t)
   (id : Effect.Descriptor.Id.t) (env : Effect.Type.t t)
   : Effect.Type.t t =
-  {env with active_module = FullMod.add_exception_with_effects path base id env.active_module}
+  let env = add_descriptor path base env in
+  let effect_typ =
+    Effect.Type.Arrow (
+      Effect.Descriptor.singleton
+        id
+        (bound_descriptor Loc.Unknown (PathName.of_name path base) env),
+      Effect.Type.Pure) in
+  add_var path ("raise_" ^ base) effect_typ env
 
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
