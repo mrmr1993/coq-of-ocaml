@@ -89,8 +89,9 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let raise_name = CoqName.ocaml_name exn.Exception.raise_name in
     [ Descriptor name; Var (raise_name, [[PathName.of_name [] name]]) ]
   | Structure.Reference (_, r) ->
-    let name = r.Reference.name in
-    [ Var (name, []); Descriptor name ]
+    let name = CoqName.ocaml_name r.Reference.name in
+    let state_name = CoqName.ocaml_name r.Reference.state_name in
+    [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
