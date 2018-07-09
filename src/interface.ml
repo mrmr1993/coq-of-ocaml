@@ -85,8 +85,9 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [Var (prim.PrimitiveDeclaration.name, [])]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
-    let name = exn.Exception.name in
-    [ Descriptor name; Var (name, [[PathName.of_name [] name]]) ]
+    let name = CoqName.ocaml_name exn.Exception.name in
+    let raise_name = CoqName.ocaml_name exn.Exception.raise_name in
+    [ Descriptor name; Var (raise_name, [[PathName.of_name [] name]]) ]
   | Structure.Reference (_, r) ->
     let name = r.Reference.name in
     [ Var (name, []); Descriptor name ]
