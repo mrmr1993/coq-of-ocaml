@@ -44,6 +44,74 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   | m :: env -> Mod.Modules.add (PathName.of_name path base) v m :: env
   | [] -> failwith "The environment must be a non-empty list."
 
+let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (v : 'a) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Vars.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let assoc_typ (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (v : 'a) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Typs.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let assoc_descriptor (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Descriptors.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let assoc_constructor (path : Name.t list) (base : Name.t)
+  (assoc_base : Name.t) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Constructors.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let assoc_field (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Fields.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+  match env with
+  | m :: env -> Mod.Vars.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_typ (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+  match env with
+  | m :: env -> Mod.Typs.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
+  : PathName.t =
+  match env with
+  | m :: env -> Mod.Descriptors.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_constructor (path : Name.t list) (base : Name.t) (env : 'a t)
+  : PathName.t =
+  match env with
+  | m :: env -> Mod.Constructors.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_field (path : Name.t list) (base : Name.t) (env : 'a t)
+  : PathName.t =
+  match env with
+  | m :: env -> Mod.Fields.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
 
 let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
@@ -69,21 +137,22 @@ let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
     m :: env
   | _ -> failwith "You should have entered in at least one module."
 
-let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> bool)
+let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with
   | m :: env ->
-    if find x m then
-      Some { BoundName.path_name = x; BoundName.depth = 0 }
-    else
+    begin match find x m with
+    | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
+    | None ->
       m.Mod.opens |> find_first (fun path ->
         let x = { x with PathName.path = path @ x.PathName.path } in
         bound_name_opt find x env |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 }))
+    end
   | [] -> None
 
-let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
-  (x : PathName.t) (env : 'a t) : BoundName.t =
+let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
+  (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   match bound_name_opt find x env with
   | Some name -> name
   | None ->
@@ -91,25 +160,25 @@ let bound_name (find : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t)
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Vars.mem loc x env
+  bound_name Mod.Vars.resolve_opt loc x env
 
 let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Typs.mem loc x env
+  bound_name Mod.Typs.resolve_opt loc x env
 
 let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Descriptors.mem loc x env
+  bound_name Mod.Descriptors.resolve_opt loc x env
 
 let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Constructors.mem loc x env
+  bound_name Mod.Constructors.resolve_opt loc x env
 
 let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Fields.mem loc x env
+  bound_name Mod.Fields.resolve_opt loc x env
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Modules.mem x env
+  bound_name_opt Mod.Modules.resolve_opt x env
 
 let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Modules.mem loc x env
+  bound_name Mod.Modules.resolve_opt loc x env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   env
@@ -167,8 +236,8 @@ let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
   match env with
   | m :: env ->
       (try Mod.include_module x m :: env with
-      | Mod.NameConflict (typ, name) ->
-        let message = !^ "Could not include module: the" ^^ !^ typ ^^
-          PathName.pp name ^^ !^ "is already declared." in
+      | Mod.NameConflict (typ1, typ2, name) ->
+        let message = !^ "Could not include module: the" ^^ !^ typ1 ^^
+          PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
         Error.raise loc (SmartPrint.to_string 80 2 message))
   | [] -> failwith "The environment must be a non-empty list."

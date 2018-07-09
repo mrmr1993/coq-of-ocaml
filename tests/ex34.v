@@ -97,10 +97,10 @@ Definition bal (l : t) (v : elt) (r : t) : M [ OCaml.Invalid_argument ] t :=
 Fixpoint add (x : elt) (x_1 : t) : M [ OCaml.Invalid_argument ] t :=
   match x_1 with
   | Empty => ret (Node Empty x Empty 1)
-  | Node l v r _ as t =>
+  | Node l v r _ as t_1 =>
     let c := Ord.compare x v in
     if equiv_decb c 0 then
-      ret t
+      ret t_1
     else
       if OCaml.Pervasives.lt c 0 then
         let! x_2 := add x l in
@@ -180,8 +180,8 @@ Fixpoint remove_min_elt (x : t) : M [ OCaml.Invalid_argument ] t :=
 Definition merge (t1 : t) (t2 : t)
   : M [ OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match (t1, t2) with
-  | (Empty, t) => ret t
-  | (t, Empty) => ret t
+  | (Empty, t_1) => ret t_1
+  | (t_1, Empty) => ret t_1
   | (_, _) =>
     let! x := lift [_;_] "01" (min_elt t2) in
     let! x_1 := lift [_;_] "10" (remove_min_elt t2) in
@@ -191,8 +191,8 @@ Definition merge (t1 : t) (t2 : t)
 Definition concat (t1 : t) (t2 : t)
   : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match (t1, t2) with
-  | (Empty, t) => ret t
-  | (t, Empty) => ret t
+  | (Empty, t_1) => ret t_1
+  | (t_1, Empty) => ret t_1
   | (_, _) =>
     let! x := lift [_;_;_;_] "0001" (min_elt t2) in
     let! x_1 := lift [_;_;_;_] "0010" (remove_min_elt t2) in

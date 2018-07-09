@@ -22,14 +22,14 @@ module Value = struct
             !^ "Definition"
         ) else
           !^ "with") ^^
-        Name.to_coq header.Exp.Header.name ^^
+        CoqName.to_coq header.Exp.Header.name ^^
         (match header.Exp.Header.typ_vars with
         | [] -> empty
         | _ :: _ ->
           braces @@ group (separate space (List.map Name.to_coq header.Exp.Header.typ_vars) ^^
           !^ ":" ^^ !^ "Type")) ^^
         group (separate space (header.Exp.Header.args |> List.map (fun (x, t) ->
-          parens @@ nest (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
+          parens @@ nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
         !^ " :=" ^^ Exp.to_coq false e))) ^-^ !^ "."
 end

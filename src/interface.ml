@@ -59,11 +59,13 @@ let rec pp (interface : t) : SmartPrint.t =
 let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   match typ_def with
   | TypeDefinition.Inductive (name, _, constructors) ->
-    Typ name :: List.map (fun (x, _) -> Constructor x) constructors
+    Typ (CoqName.ocaml_name name) ::
+      List.map (fun (x, _) -> Constructor (CoqName.ocaml_name x)) constructors
   | TypeDefinition.Record (name, fields) ->
-    Typ name :: List.map (fun (x, _) -> Field x) fields
+    Typ (CoqName.ocaml_name name) ::
+      List.map (fun (x, _) -> Field (CoqName.ocaml_name x)) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
-    [Typ name]
+    [Typ (CoqName.ocaml_name name)]
 
 let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
   List.flatten (List.map of_structure defs)
@@ -73,21 +75,23 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Require names -> []
   | Structure.Value (_, value) ->
     let values = value.Exp.Definition.cases |> List.map (fun (header, e) ->
-      let name = header.Exp.Header.name in
+      let name = CoqName.ocaml_name header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
       (name, Shape.of_effect_typ @@ Effect.Type.compress typ)) in
     values |> List.map (fun (name, typ) -> Var (name, typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
-    [Var (prim.PrimitiveDeclaration.name, [])]
+    [Var (CoqName.ocaml_name prim.PrimitiveDeclaration.name, [])]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
-    let name = exn.Exception.name in
-    [ Descriptor name; Var (name, [[PathName.of_name [] name]]) ]
+    let name = CoqName.ocaml_name exn.Exception.name in
+    let raise_name = CoqName.ocaml_name exn.Exception.raise_name in
+    [ Descriptor name; Var (raise_name, [[PathName.of_name [] name]]) ]
   | Structure.Reference (_, r) ->
-    let name = r.Reference.name in
-    [ Var (name, []); Descriptor name ]
+    let name = CoqName.ocaml_name r.Reference.name in
+    let state_name = CoqName.ocaml_name r.Reference.state_name in
+    [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
