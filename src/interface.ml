@@ -59,11 +59,12 @@ let rec pp (interface : t) : SmartPrint.t =
 let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   match typ_def with
   | TypeDefinition.Inductive (name, _, constructors) ->
-    Typ name :: List.map (fun (x, _) -> Constructor x) constructors
+    Typ (CoqName.ocaml_name name) ::
+      List.map (fun (x, _) -> Constructor x) constructors
   | TypeDefinition.Record (name, fields) ->
-    Typ name :: List.map (fun (x, _) -> Field x) fields
+    Typ (CoqName.ocaml_name name) :: List.map (fun (x, _) -> Field x) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
-    [Typ name]
+    [Typ (CoqName.ocaml_name name)]
 
 let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
   List.flatten (List.map of_structure defs)

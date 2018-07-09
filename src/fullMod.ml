@@ -52,9 +52,22 @@ let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
       (PathName.of_name path assoc_base) v m :: env
   | [] -> failwith "The environment must be a non-empty list."
 
+let assoc_typ (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (v : 'a) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Typs.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
 let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
   match env with
   | m :: env -> Mod.Vars.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_typ (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+  match env with
+  | m :: env -> Mod.Typs.resolve (PathName.of_name path base) m
   | [] -> failwith "The environment must be a non-empty list."
 
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
