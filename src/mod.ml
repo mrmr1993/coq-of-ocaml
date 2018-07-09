@@ -94,10 +94,10 @@ let pp (m : 'a t) : SmartPrint.t =
     !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
       PathName.Map.bindings m.modules))
 
-let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
+let open_module (module_name : Name.t list) (m : 'a t) : 'a t =
   { m with opens = module_name :: m.opens }
 
-let open_external_module (m : 'a t) (module_name : Name.t list) : 'a t =
+let open_external_module (module_name : Name.t list) (m : 'a t) : 'a t =
   { m with external_opens = module_name :: m.external_opens }
 
 let find_free_name (base_name : string) (env : 'a t) : Name.t =
