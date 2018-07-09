@@ -184,7 +184,25 @@ let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
       PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
+module Carrier (M : Mod.Carrier) = struct
+  let mod_resolve (x : PathName.t) (m : 'a Mod.t) : PathName.t =
+    match M.resolve_opt x m with
+    | Some path -> path
+    | None -> Mod.find_free_path x m
+
+  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+    FullMod.hd_map (fun m _ -> mod_resolve (PathName.of_name path base) m)
+      env.active_module
+
+  let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+    bound_name_opt M.resolve_opt x env
+
+  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name M.resolve_opt loc x env
+end
+
 module ValueCarrier (M : Mod.ValueCarrier) = struct
+  include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
     { env with active_module = env.active_module |> FullMod.hd_mod_map
         (M.add (PathName.of_name path base) v) }
@@ -195,13 +213,6 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
         (M.assoc (PathName.of_name path base)
           (PathName.of_name path assoc_base) v) }
 
-  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-    FullMod.hd_map (fun m _ -> M.resolve (PathName.of_name path base) m)
-      env.active_module
-
-  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-    bound_name M.resolve_opt loc x env
-
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
 end
@@ -210,6 +221,7 @@ module Var = ValueCarrier(Mod.Vars)
 module Typ = ValueCarrier(Mod.Typs)
 
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
+  include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
     { env with active_module = env.active_module |> FullMod.hd_mod_map
         (M.add (PathName.of_name path base)) }
@@ -219,16 +231,6 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
     { env with active_module = env.active_module |> FullMod.hd_mod_map
         (M.assoc (PathName.of_name path base)
           (PathName.of_name path assoc_base)) }
-
-  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-    FullMod.hd_map (fun m _ -> M.resolve (PathName.of_name path base) m)
-      env.active_module
-
-  let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-    bound_name_opt Mod.Descriptors.resolve_opt x env
-
-  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-    bound_name M.resolve_opt loc x env
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)
