@@ -1,28 +1,31 @@
 open Utils
 open SmartPrint
 
-type 'a value =
-  | Variable of 'a
-  | Type of 'a
-  | Descriptor
-  | Constructor
-  | Field
+module Value = struct
+  type 'a t =
+    | Variable of 'a
+    | Type of 'a
+    | Descriptor
+    | Constructor
+    | Field
 
-let value_map (f : 'a -> 'b) (v : 'a value) : 'b value =
-  match v with
-  | Variable a -> Variable (f a)
-  | Type a -> Type (f a)
-  | Descriptor -> Descriptor
-  | Constructor -> Constructor
-  | Field -> Field
+  let map (f : 'a -> 'b) (v : 'a t) : 'b t =
+    match v with
+    | Variable a -> Variable (f a)
+    | Type a -> Type (f a)
+    | Descriptor -> Descriptor
+    | Constructor -> Constructor
+    | Field -> Field
 
-let string_of_value (v : 'a value) : string =
-  match v with
-  | Variable _ -> "variable"
-  | Type _ -> "type"
-  | Descriptor -> "descriptor"
-  | Constructor -> "constructor"
-  | Field -> "field"
+  let to_string (v : 'a t) : string =
+    match v with
+    | Variable _ -> "variable"
+    | Type _ -> "type"
+    | Descriptor -> "descriptor"
+    | Constructor -> "constructor"
+    | Field -> "field"
+end
+open Value
 
 module Locator = struct
   type t = {
@@ -52,7 +55,7 @@ type 'a t = {
   opens : Name.t list list;
   external_opens : Name.t list list;
   locator : Locator.t;
-  values : 'a value PathName.Map.t;
+  values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
 let empty : 'a t = {
@@ -115,7 +118,7 @@ let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
 
 let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
   { m with
-    values = m.values |> PathName.Map.map (value_map f);
+    values = m.values |> PathName.Map.map (Value.map f);
     modules = PathName.Map.map (map f) m.modules }
 
 module Vars = struct
@@ -263,7 +266,7 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
       (PathName.Map.map_union add_to_path (fun _ v -> v))
       m1.locator m2.locator;
     values = PathName.Map.map_union add_to_path
-      (fun _ v -> value_map (prefix module_name) v)
+      (fun _ v -> Value.map (prefix module_name) v)
       m1.values m2.values;
     modules = PathName.Map.map_union add_to_path (fun _ v -> v)
       m1.modules m2.modules } in
@@ -275,7 +278,7 @@ let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
   { opens = m.opens;
     external_opens = m.external_opens;
     values = PathName.Map.union (fun key v1 v2 ->
-      raise (NameConflict (string_of_value v1, string_of_value v2, key)))
+      raise (NameConflict (Value.to_string v1, Value.to_string v2, key)))
      m_incl.values m.values;
     locator = Locator.join (fun v1 v2 -> v1 (* will fail in values *))
       m_incl.locator m.locator;
