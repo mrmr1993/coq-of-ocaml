@@ -149,10 +149,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
     (name, m :: env)
   | [] -> failwith "The environment must be a non-empty list."
 
-let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
-  match env with
-  | m :: env -> Mod.map f m :: map f env
-  | [] -> []
+let rec map (f : 'a -> 'b) (env : 'a t) : 'b t = List.map (Mod.map f) env
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
   match env with
