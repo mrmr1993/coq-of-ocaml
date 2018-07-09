@@ -4,7 +4,7 @@ open SmartPrint
 
 type t =
   | Inductive of CoqName.t * Name.t list * (CoqName.t * Type.t list) list
-  | Record of CoqName.t * (Name.t * Type.t) list
+  | Record of CoqName.t * (CoqName.t * Type.t) list
   | Synonym of CoqName.t * Name.t list * Type.t
   | Abstract of CoqName.t * Name.t list
 
@@ -19,7 +19,7 @@ let pp (def : t) : SmartPrint.t =
   | Record (name, fields) ->
     nest (!^ "Record" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
       indent (fields |> OCaml.list (fun (x, typ) ->
-        OCaml.tuple [Name.pp x; Type.pp typ])))
+        OCaml.tuple [CoqName.pp x; Type.pp typ])))
   | Synonym (name, typ_args, value) ->
     nest (!^ "Synonym" ^^ OCaml.tuple [
       CoqName.pp name; OCaml.list Name.pp typ_args; Type.pp value])
@@ -55,7 +55,10 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
     | Type_record (fields, _) ->
       let fields =
         fields |> List.map (fun { Types.ld_id = x; ld_type = typ } ->
-          (Name.of_ident x, Type.of_type_expr env loc typ)) in
+          let field = Name.of_ident x in
+          let coq_field = (FullEnvi.resolve_field [] field env).base in
+          let field_name = CoqName.of_names field coq_field in
+          (field_name, Type.of_type_expr env loc typ)) in
       Record (x, fields)
     | Type_abstract ->
       (match typ.type_manifest with
@@ -76,7 +79,9 @@ let update_env (def : t) (v : 'a) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   | Record (name, fields) ->
     let (name, coq_name) = CoqName.assoc_names name in
     let env = FullEnvi.assoc_typ [] name coq_name v env in
-    List.fold_left (fun env (x, _) -> FullEnvi.add_field [] x env)
+    List.fold_left (fun env (x, _) ->
+      let (name, coq_name) = CoqName.assoc_names x in
+      FullEnvi.assoc_field [] name coq_name env)
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     let (name, coq_name) = CoqName.assoc_names name in
@@ -110,7 +115,7 @@ let to_coq (def : t) : SmartPrint.t =
     nest (
       !^ "Record" ^^ CoqName.to_coq name ^^ !^ ":=" ^^ !^ "{" ^^ newline ^^
       indent (separate (!^ ";" ^^ newline) (fields |> List.map (fun (x, typ) ->
-        nest (Name.to_coq x ^^ !^ ":" ^^ Type.to_coq false typ)))) ^^
+        nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false typ)))) ^^
       !^ "}.")
   | Synonym (name, typ_args, value) ->
     nest (

@@ -62,7 +62,8 @@ let of_typ_definition (typ_def : TypeDefinition.t) : t list =
     Typ (CoqName.ocaml_name name) ::
       List.map (fun (x, _) -> Constructor (CoqName.ocaml_name x)) constructors
   | TypeDefinition.Record (name, fields) ->
-    Typ (CoqName.ocaml_name name) :: List.map (fun (x, _) -> Field x) fields
+    Typ (CoqName.ocaml_name name) ::
+      List.map (fun (x, _) -> Field (CoqName.ocaml_name x)) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
     [Typ (CoqName.ocaml_name name)]
 

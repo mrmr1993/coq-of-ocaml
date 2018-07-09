@@ -243,14 +243,22 @@ module Fields = struct
     option_map (fun name -> { x with base = name }) @@
       PathName.Map.find_opt x m.locator.fields
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
+  let resolve (x : PathName.t) (m : 'a t) : PathName.t =
+    match resolve_opt x m with
+    | Some path -> path
+    | None -> find_free_path x m
+
+  let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y Field m.values;
       locator = { m.locator with
         fields = PathName.Map.add x y.base m.locator.fields } }
+
+  let add (x : PathName.t) (m : 'a t) : 'a t =
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    assoc x y m
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
