@@ -82,7 +82,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     values |> List.map (fun (name, typ) -> Var (name, typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
-    [Var (prim.PrimitiveDeclaration.name, [])]
+    [Var (CoqName.ocaml_name prim.PrimitiveDeclaration.name, [])]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
     let name = CoqName.ocaml_name exn.Exception.name in
