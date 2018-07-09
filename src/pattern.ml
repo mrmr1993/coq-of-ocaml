@@ -33,20 +33,20 @@ let rec of_pattern (env : 'a FullEnvi.t) (p : pattern) : t =
   | Tpat_any -> Any
   | Tpat_var (x, _) ->
       let x = Name.of_ident x in
-      let x = CoqName.of_names x (FullEnvi.resolve_var [] x env).base in
+      let x = CoqName.of_names x (FullEnvi.Var.resolve [] x env).base in
       Variable x
   | Tpat_tuple ps -> Tuple (List.map (of_pattern env) ps)
   | Tpat_construct (x, _, ps) ->
-    let x = FullEnvi.bound_constructor l (PathName.of_loc x) env in
+    let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
     Constructor (x, List.map (of_pattern env) ps)
   | Tpat_alias (p, x, _) ->
     let x = Name.of_ident x in
-    let x = CoqName.of_names x (FullEnvi.resolve_var [] x env).base in
+    let x = CoqName.of_names x (FullEnvi.Var.resolve [] x env).base in
     Alias (of_pattern env p, x)
   | Tpat_constant c -> Constant (Constant.of_constant l c)
   | Tpat_record (fields, _) ->
     Record (fields |> List.map (fun (x, _, p) ->
-      let x = FullEnvi.bound_field l (PathName.of_loc x) env in
+      let x = FullEnvi.Field.bound l (PathName.of_loc x) env in
       (x, of_pattern env p)))
   | Tpat_or (p1, p2, _) -> Or (of_pattern env p1, of_pattern env p2)
   | _ -> Error.raise l "Unhandled pattern."
@@ -67,7 +67,7 @@ let rec free_variables (p : t) : Name.Set.t =
   | Or (p1, p2) -> Name.Set.inter (free_variables p1) (free_variables p2)
 
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  Name.Set.fold (fun x env -> FullEnvi.add_var [] x () env)
+  Name.Set.fold (fun x env -> FullEnvi.Var.add [] x () env)
     (free_variables p) env
 
 (** Pretty-print a pattern to Coq (inside parenthesis if the [paren] flag is set). *)

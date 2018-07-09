@@ -19,7 +19,7 @@ module Shape = struct
     let descriptor ds : Effect.Descriptor.t =
       let ds = ds |> List.map (fun d ->
         Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether d)
-          (FullEnvi.bound_descriptor Loc.Unknown d env)) in
+          (FullEnvi.Descriptor.bound Loc.Unknown d env)) in
       Effect.Descriptor.union ds in
     List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
       shape Effect.Type.Pure
@@ -99,11 +99,11 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
   match interface with
-  | Var (x, shape) -> FullEnvi.add_var [] x (Shape.to_effect_typ shape env) env
-  | Typ x -> FullEnvi.add_typ [] x Effect.Type.Pure env
-  | Descriptor x -> FullEnvi.add_descriptor [] x env
-  | Constructor x -> FullEnvi.add_constructor [] x env
-  | Field x -> FullEnvi.add_field [] x env
+  | Var (x, shape) -> FullEnvi.Var.add [] x (Shape.to_effect_typ shape env) env
+  | Typ x -> FullEnvi.Typ.add [] x Effect.Type.Pure env
+  | Descriptor x -> FullEnvi.Descriptor.add [] x env
+  | Constructor x -> FullEnvi.Constructor.add [] x env
+  | Field x -> FullEnvi.Field.add [] x env
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module env in

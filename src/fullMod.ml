@@ -16,72 +16,9 @@ let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
 let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
   hd_map (fun m env -> f m :: env)
 
-let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Vars.add (PathName.of_name path base) v) env
-
-let add_typ (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Typs.add (PathName.of_name path base) v) env
-
-let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Descriptors.add (PathName.of_name path base)) env
-
-let add_constructor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Constructors.add (PathName.of_name path base)) env
-
-let add_field (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  hd_mod_map (Mod.Fields.add (PathName.of_name path base)) env
-
 let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   : 'a t =
   hd_mod_map (Mod.Modules.add (PathName.of_name path base) v) env
-
-let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (v : 'a) (env : 'a t) : 'a t =
-   hd_mod_map (Mod.Vars.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base) v) env
-
-let assoc_typ (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (v : 'a) (env : 'a t) : 'a t =
-   hd_mod_map (Mod.Typs.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base) v) env
-
-let assoc_descriptor (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (env : 'a t) : 'a t =
-   hd_mod_map (Mod.Descriptors.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base)) env
-
-let assoc_constructor (path : Name.t list) (base : Name.t)
-  (assoc_base : Name.t) (env : 'a t) : 'a t =
-   hd_mod_map (Mod.Constructors.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base)) env
-
-let assoc_field (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (env : 'a t) : 'a t =
-   hd_mod_map (Mod.Fields.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base)) env
-
-let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  hd_map (fun m _ -> Mod.Vars.resolve (PathName.of_name path base) m) env
-
-let resolve_typ (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  hd_map (fun m _ -> Mod.Typs.resolve (PathName.of_name path base) m) env
-
-let resolve_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : PathName.t =
-  hd_map (fun m _ -> Mod.Descriptors.resolve (PathName.of_name path base) m) env
-
-let resolve_constructor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : PathName.t =
-  hd_map (fun m _ -> Mod.Constructors.resolve (PathName.of_name path base) m) env
-
-let resolve_field (path : Name.t list) (base : Name.t) (env : 'a t)
-  : PathName.t =
-  hd_map (fun m _ -> Mod.Fields.resolve (PathName.of_name path base) m) env
 
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
 

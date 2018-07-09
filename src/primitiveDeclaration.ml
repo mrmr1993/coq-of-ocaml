@@ -29,17 +29,17 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (desc : value_description)
     let (typ, _, new_typ_vars) =
       Type.of_type_expr_new_typ_vars env loc Name.Map.empty type_expr in
     let name = Name.of_ident desc.val_id in
-    let coq_name = (FullEnvi.resolve_var [] name env).base in
+    let coq_name = (FullEnvi.Var.resolve [] name env).base in
     { name = CoqName.of_names name coq_name;
       typ_args = Name.Set.elements new_typ_vars;
       typ }
 
 let update_env (prim : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   let (name, coq_name) = CoqName.assoc_names prim.name in
-  FullEnvi.assoc_var [] name coq_name () env
+  FullEnvi.Var.assoc [] name coq_name () env
 
 (* TODO: Update to reflect that primitives are not usually pure. *)
 let update_env_with_effects (prim : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
   let (name, coq_name) = CoqName.assoc_names prim.name in
-  FullEnvi.assoc_var [] name coq_name Effect.Type.Pure env
+  FullEnvi.Var.assoc [] name coq_name Effect.Type.Pure env

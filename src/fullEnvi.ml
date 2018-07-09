@@ -48,64 +48,9 @@ let find_wrapped_mod (module_name : Name.t) (env : 'a t)
   | Some wmod -> wmod
   | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
 
-let add_var (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
-  : 'a t =
-  {env with active_module = FullMod.add_var path base v env.active_module}
-
-let add_typ (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t)
-  : 'a t =
-  {env with active_module = FullMod.add_typ path base v env.active_module}
-
-let add_descriptor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  {env with active_module = FullMod.add_descriptor path base env.active_module}
-
-let add_constructor (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  {env with active_module = FullMod.add_constructor path base env.active_module}
-
-let add_field (path : Name.t list) (base : Name.t) (env : 'a t)
-  : 'a t =
-  {env with active_module = FullMod.add_field path base env.active_module}
-
 let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_module path base v env.active_module}
-
-let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (v : 'a) (env : 'a t) : 'a t =
-  {env with active_module = FullMod.assoc_var path base assoc_base v env.active_module}
-
-let assoc_typ (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (v : 'a) (env : 'a t) : 'a t =
-  {env with active_module = FullMod.assoc_typ path base assoc_base v env.active_module}
-
-let assoc_descriptor (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (env : 'a t) : 'a t =
-  {env with active_module = FullMod.assoc_descriptor path base assoc_base env.active_module}
-
-let assoc_constructor (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (env : 'a t) : 'a t =
-  {env with active_module = FullMod.assoc_constructor path base assoc_base env.active_module}
-
-let assoc_field (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-  (env : 'a t) : 'a t =
-  {env with active_module = FullMod.assoc_field path base assoc_base env.active_module}
-
-let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  FullMod.resolve_var path base env.active_module
-
-let resolve_typ (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  FullMod.resolve_typ path base env.active_module
-
-let resolve_descriptor (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  FullMod.resolve_descriptor path base env.active_module
-
-let resolve_constructor (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  FullMod.resolve_constructor path base env.active_module
-
-let resolve_field (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-  FullMod.resolve_field path base env.active_module
 
 let enter_module (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module env.active_module}
@@ -157,24 +102,6 @@ let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
     let message = PathName.pp x ^^ !^ "not found." in
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
-let bound_var (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Vars.resolve_opt loc x env
-
-let bound_typ (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Typs.resolve_opt loc x env
-
-let bound_descriptor_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Descriptors.resolve_opt x env
-
-let bound_descriptor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Descriptors.resolve_opt loc x env
-
-let bound_constructor (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Constructors.resolve_opt loc x env
-
-let bound_field (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  bound_name Mod.Fields.resolve_opt loc x env
-
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   match x.path, find_wrapped_mod_opt x.base env with
   | [], Some {coq_name} -> (* This is a toplevel module *)
@@ -225,23 +152,6 @@ let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
 let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   open_module loc (PathName.of_name_list module_name) env
 
-let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
-  env
-  |> add_descriptor path base
-  |> add_var path ("raise_" ^ base) ()
-
-let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (id : Effect.Descriptor.Id.t) (env : Effect.Type.t t)
-  : Effect.Type.t t =
-  let env = add_descriptor path base env in
-  let effect_typ =
-    Effect.Type.Arrow (
-      Effect.Descriptor.singleton
-        id
-        (bound_descriptor Loc.Unknown (PathName.of_name path base) env),
-      Effect.Type.Pure) in
-  add_var path ("raise_" ^ base) effect_typ env
-
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
@@ -249,12 +159,6 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
     find x external_module.m
   else
     FullMod.find_bound_name find x env.active_module open_lift
-
-let find_var (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
-  find_bound_name Mod.Vars.find x env open_lift
-
-let find_typ (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
-  find_bound_name Mod.Typs.find x env open_lift
 
 let find_module (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
@@ -279,3 +183,71 @@ let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
     let message = !^ "Could not include module: the" ^^ !^ typ1 ^^
       PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
     Error.raise loc (SmartPrint.to_string 80 2 message)
+
+module ValueCarrier (M : Mod.ValueCarrier) = struct
+  let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
+    { env with active_module = env.active_module |> FullMod.hd_mod_map
+        (M.add (PathName.of_name path base) v) }
+
+  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
+    (env : 'a t) : 'a t =
+    { env with active_module = env.active_module |> FullMod.hd_mod_map
+        (M.assoc (PathName.of_name path base)
+          (PathName.of_name path assoc_base) v) }
+
+  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+    FullMod.hd_map (fun m _ -> M.resolve (PathName.of_name path base) m)
+      env.active_module
+
+  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name M.resolve_opt loc x env
+
+  let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
+    find_bound_name M.find x env open_lift
+end
+
+module Var = ValueCarrier(Mod.Vars)
+module Typ = ValueCarrier(Mod.Typs)
+
+module EmptyCarrier (M : Mod.EmptyCarrier) = struct
+  let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
+    { env with active_module = env.active_module |> FullMod.hd_mod_map
+        (M.add (PathName.of_name path base)) }
+
+  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+    (env : 'a t) : 'a t =
+    { env with active_module = env.active_module |> FullMod.hd_mod_map
+        (M.assoc (PathName.of_name path base)
+          (PathName.of_name path assoc_base)) }
+
+  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+    FullMod.hd_map (fun m _ -> M.resolve (PathName.of_name path base) m)
+      env.active_module
+
+  let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+    bound_name_opt Mod.Descriptors.resolve_opt x env
+
+  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    bound_name M.resolve_opt loc x env
+end
+
+module Descriptor = EmptyCarrier(Mod.Descriptors)
+module Constructor = EmptyCarrier(Mod.Constructors)
+module Field = EmptyCarrier(Mod.Fields)
+
+let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
+  env
+  |> Descriptor.add path base
+  |> Var.add path ("raise_" ^ base) ()
+
+let add_exception_with_effects (path : Name.t list) (base : Name.t)
+  (id : Effect.Descriptor.Id.t) (env : Effect.Type.t t)
+  : Effect.Type.t t =
+  let env = Descriptor.add path base env in
+  let effect_typ =
+    Effect.Type.Arrow (
+      Effect.Descriptor.singleton
+        id
+        (Descriptor.bound Loc.Unknown (PathName.of_name path base) env),
+      Effect.Type.Pure) in
+  Var.add path ("raise_" ^ base) effect_typ env
