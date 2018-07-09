@@ -72,6 +72,13 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   : 'a t =
   {env with active_module = FullMod.add_module path base v env.active_module}
 
+let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (v : 'a) (env : 'a t) : 'a t =
+  {env with active_module = FullMod.assoc_var path base assoc_base v env.active_module}
+
+let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+  FullMod.resolve_var path base env.active_module
+
 let enter_module (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module env.active_module}
 

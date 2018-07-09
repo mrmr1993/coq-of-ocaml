@@ -97,21 +97,21 @@ let open_module (m : 'a t) (module_name : Name.t list) : 'a t =
 let open_external_module (m : 'a t) (module_name : Name.t list) : 'a t =
   { m with external_opens = module_name :: m.external_opens }
 
-let find_free_name (base_name : string) (env : 'a PathName.Map.t) : Name.t =
+let find_free_name (base_name : string) (env : 'a t) : Name.t =
   let prefix_n s n =
     if n = 0 then
       Name.of_string s
     else
       Name.of_string @@ Printf.sprintf "%s_%d" s n in
   let rec first_n (n : int) : int =
-    if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env then
+    if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env.values then
       first_n (n + 1)
     else
       n in
   prefix_n base_name (first_n 0)
 
 let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
-  { x with base = find_free_name x.base env.values }
+  { x with base = find_free_name x.base env }
 
 let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
   { m with
@@ -123,14 +123,22 @@ module Vars = struct
     option_map (fun name -> { x with base = name }) @@
       PathName.Map.find_opt x m.locator.vars
 
-  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
+  let resolve (x : PathName.t) (m : 'a t) : PathName.t =
+    match resolve_opt x m with
+    | Some path -> path
+    | None -> find_free_path x m
+
+  let assoc (x : PathName.t) (y : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y (Variable v) m.values;
       locator = { m.locator with
         vars = PathName.Map.add x y.base m.locator.vars } }
+
+  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
+    let y = match resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    assoc x y v m
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -145,7 +153,7 @@ module Vars = struct
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-    let name = find_free_name prefix env.values in
+    let name = find_free_name prefix env in
     (name, add (PathName.of_name [] name) v env)
 end
 module Typs = struct

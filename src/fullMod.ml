@@ -44,6 +44,19 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   | m :: env -> Mod.Modules.add (PathName.of_name path base) v m :: env
   | [] -> failwith "The environment must be a non-empty list."
 
+let assoc_var (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+  (v : 'a) (env : 'a t) : 'a t =
+  match env with
+  | m :: env ->
+    Mod.Vars.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v m :: env
+  | [] -> failwith "The environment must be a non-empty list."
+
+let resolve_var (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+  match env with
+  | m :: env -> Mod.Vars.resolve (PathName.of_name path base) m
+  | [] -> failwith "The environment must be a non-empty list."
+
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
 
 let open_module (module_name : Name.t list) (env : 'a t) : 'a t =

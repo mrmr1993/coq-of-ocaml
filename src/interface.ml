@@ -73,7 +73,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Require names -> []
   | Structure.Value (_, value) ->
     let values = value.Exp.Definition.cases |> List.map (fun (header, e) ->
-      let name = header.Exp.Header.name in
+      let name = CoqName.ocaml_name header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
       (name, Shape.of_effect_typ @@ Effect.Type.compress typ)) in

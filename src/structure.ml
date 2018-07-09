@@ -22,7 +22,7 @@ module Value = struct
             !^ "Definition"
         ) else
           !^ "with") ^^
-        Name.to_coq header.Exp.Header.name ^^
+        CoqName.to_coq header.Exp.Header.name ^^
         (match header.Exp.Header.typ_vars with
         | [] -> empty
         | _ :: _ ->
