@@ -1,11 +1,11 @@
 open SmartPrint
 open Utils
 
-type 'a t = 'a FullEnvi.WrappedMod.t Name.Map.t
+type 'a t = 'a Mod.t Name.Map.t
 
 let pp (loader : 'a t) : SmartPrint.t =
   !^ "LazyLoader" ^^ OCaml.list (fun (x, wmod) ->
-    OCaml.tuple [Name.pp x; FullEnvi.WrappedMod.pp wmod])
+    OCaml.tuple [Name.pp x; Mod.pp wmod])
     (Name.Map.bindings loader)
 
 let empty = Name.Map.empty
@@ -14,23 +14,24 @@ let empty = Name.Map.empty
    - |ocaml_name| is a top-level name (ie. contains no '.' characters)
    - no two modules share the same |ocaml_name|
    - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
-let add_wrapped_mod (wmod : 'a FullEnvi.WrappedMod.t) (loader : 'a t) : 'a t =
+let add_mod (wmod : 'a Mod.t) (loader : 'a t) : 'a t =
+  let (ocaml_name, coq_name) = CoqName.assoc_names wmod.name in
   loader
-  |> Name.Map.add wmod.ocaml_name wmod
-  |> Name.Map.add wmod.coq_name wmod
+  |> Name.Map.add ocaml_name wmod
+  |> Name.Map.add coq_name wmod
 
 let add_interface (env : Effect.Type.t FullEnvi.t) (coq_prefix : Name.t)
   (loader : Effect.Type.t t) (file_name : string)
-  : Effect.Type.t FullEnvi.WrappedMod.t * Effect.Type.t t =
+  : Effect.Type.t Mod.t * Effect.Type.t t =
   let interface = Interface.of_file file_name in
-  let wmod = Interface.to_wrapped_mod coq_prefix interface env in
-  (wmod, add_wrapped_mod wmod loader)
+  let wmod = Interface.to_mod coq_prefix interface env in
+  (wmod, add_mod wmod loader)
 
 (* Mutable list of Coq name, interface directory pairs. *)
 let interfaces : (Name.t * string) list ref = ref []
 
-let find_wrapped_mod_opt (env : Effect.Type.t FullEnvi.t) (loader : 'a t)
-  (module_name : Name.t) : 'a FullEnvi.WrappedMod.t option * 'a t =
+let find_mod_opt (env : Effect.Type.t FullEnvi.t) (loader : 'a t)
+  (module_name : Name.t) : 'a Mod.t option * 'a t =
   match Name.Map.find_opt module_name loader with
   | Some wmod -> (Some wmod, loader)
   | None ->

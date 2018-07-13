@@ -1,24 +1,9 @@
 open SmartPrint
 open Utils
 
-module WrappedMod = struct
-  type 'a t = {
-    m : 'a Mod.t;
-    ocaml_name : Name.t;
-    coq_name : Name.t
-  }
-
-  let pp (wmod : 'a t) : SmartPrint.t =
-    OCaml.tuple [Name.pp wmod.ocaml_name; Name.pp wmod.coq_name; Mod.pp wmod.m]
-
-  let map (f : 'a -> 'b) (wmod : 'a t) : 'b t =
-    {wmod with m = Mod.map f wmod.m}
-end
-
-
 type 'a t = {
   active_module : 'a FullMod.t;
-  get_module : Name.t -> 'a WrappedMod.t option;
+  get_module : Name.t -> 'a Mod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref
@@ -26,8 +11,8 @@ type 'a t = {
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty (module_name : CoqName.t)
-  (get_module : Name.t -> 'a WrappedMod.t option) : 'a t = {
+let empty (module_name : CoqName.t) (get_module : Name.t -> 'a Mod.t option)
+  : 'a t = {
   active_module = FullMod.empty module_name;
   get_module;
   required_modules = ref Name.Set.empty
@@ -39,13 +24,11 @@ let module_required (module_name : Name.t) (env : 'a t) : unit =
 let requires (env : 'a t) : Name.t list =
   Name.Set.elements !(env.required_modules)
 
-let find_wrapped_mod_opt (module_name : Name.t) (env : 'a t)
-  : 'a WrappedMod.t option =
+let find_mod_opt (module_name : Name.t) (env : 'a t) : 'a Mod.t option =
   env.get_module module_name
 
-let find_wrapped_mod (module_name : Name.t) (env : 'a t)
-  : 'a WrappedMod.t =
-  match find_wrapped_mod_opt module_name env with
+let find_mod (module_name : Name.t) (env : 'a t) : 'a Mod.t =
+  match find_mod_opt module_name env with
   | Some wmod -> wmod
   | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
 
@@ -63,17 +46,17 @@ let leave_module (prefix : Name.t -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module prefix env.active_module}
 
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
-  : ('a WrappedMod.t * PathName.t) option =
+  : ('a Mod.t * PathName.t) option =
   match x.PathName.path with
   | [] -> None
   | module_name :: module_path ->
-    find_wrapped_mod_opt module_name env |>
+    find_mod_opt module_name env |>
       option_map (fun external_module ->
         let x = { x with PathName.path = module_path } in
         (external_module, x))
 
 let find_external_module_path (x : PathName.t) (env : 'a t)
-  : 'a WrappedMod.t * PathName.t =
+  : 'a Mod.t * PathName.t =
   match find_external_module_path_opt x env with
   | Some ret -> ret
   | None ->
@@ -86,9 +69,10 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     let x = { x with PathName.path = open_name @ x.PathName.path } in
     match find_external_module_path_opt x env with
     | Some (external_module, x) ->
-      find x external_module.m |> option_map (fun (x : PathName.t) ->
-        let x = { x with path = external_module.coq_name :: x.path } in
-        module_required external_module.coq_name env;
+      find x external_module |> option_map (fun (x : PathName.t) ->
+        let (_, coq_name) = CoqName.assoc_names external_module.name in
+        let x = { x with path = coq_name :: x.path } in
+        module_required coq_name env;
         { BoundName.path_name = x; BoundName.depth = -1 })
     | None -> None) (FullMod.external_opens env.active_module)
 
@@ -107,8 +91,9 @@ let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
     Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  match x.path, find_wrapped_mod_opt x.base env with
-  | [], Some {coq_name} -> (* This is a toplevel module *)
+  match x.path, find_mod_opt x.base env with
+  | [], Some {name} -> (* This is a toplevel module *)
+    let (_, coq_name) = CoqName.assoc_names name in
     module_required coq_name env;
     Some { BoundName.path_name = {PathName.path = []; PathName.base = coq_name};
       BoundName.depth = -1 }
@@ -157,7 +142,7 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
     let (external_module, x) = find_external_module_path x.path_name env in
-    find x external_module.m
+    find x external_module
   else
     FullMod.find_bound_name find x env.active_module open_lift
 
@@ -166,7 +151,7 @@ let find_module (x : BoundName.t) (env : 'a t)
   match x.path_name.path with
   | [] when x.BoundName.depth == -1 ->
     (* This is a reference to a top-level external module *)
-    (find_wrapped_mod x.path_name.base env).m
+    find_mod x.path_name.base env
   | _ -> find_bound_name Mod.Modules.find x env open_lift
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
@@ -175,7 +160,7 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {active_module = FullMod.map f env.active_module;
-   get_module = (fun x -> option_map (WrappedMod.map f) (env.get_module x));
+   get_module = (fun x -> option_map (Mod.map f) (env.get_module x));
    required_modules = env.required_modules}
 
 let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =

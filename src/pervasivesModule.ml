@@ -159,7 +159,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> fun env ->
        let lazy_loader = ref LazyLoader.empty in
        let get_module mod_name =
-         let (wmod, loader) = LazyLoader.find_wrapped_mod_opt env !lazy_loader mod_name in
+         let (wmod, loader) = LazyLoader.find_mod_opt env !lazy_loader mod_name in
          lazy_loader := loader;
          wmod in
        {env with get_module}
