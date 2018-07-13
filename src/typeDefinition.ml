@@ -33,21 +33,21 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   | [] -> Error.raise loc "Unexpected type definition with no case."
   | [{typ_id = name; typ_type = typ}] ->
     let name = Name.of_ident name in
-    let coq_name = (FullEnvi.resolve_typ [] name env).base in
+    let coq_name = (FullEnvi.Typ.resolve [] name env).base in
     let x = CoqName.of_names name coq_name in
     let typ_args =
       List.map (Type.of_type_expr_variable loc) typ.type_params in
     (match typ.type_kind with
     | Type_variant cases ->
       let constructors =
-        let env = FullEnvi.assoc_typ [] name coq_name () env in
+        let env = FullEnvi.Typ.assoc [] name coq_name () env in
         cases |> List.map (fun { Types.cd_id = constr; cd_args = args } ->
           let typs =
             match args with
             | Cstr_tuple typs -> typs
             | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
           let constr = Name.of_ident constr in
-          let coq_constr = (FullEnvi.resolve_constructor [] constr env).base in
+          let coq_constr = (FullEnvi.Constructor.resolve [] constr env).base in
           let constr_name = CoqName.of_names constr coq_constr in
           (constr_name, typs |> List.map (fun typ ->
             Type.of_type_expr env loc typ))) in
@@ -56,7 +56,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
       let fields =
         fields |> List.map (fun { Types.ld_id = x; ld_type = typ } ->
           let field = Name.of_ident x in
-          let coq_field = (FullEnvi.resolve_field [] field env).base in
+          let coq_field = (FullEnvi.Field.resolve [] field env).base in
           let field_name = CoqName.of_names field coq_field in
           (field_name, Type.of_type_expr env loc typ)) in
       Record (x, fields)
@@ -71,21 +71,21 @@ let update_env (def : t) (v : 'a) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   match def with
   | Inductive (name, _, constructors) ->
     let (name, coq_name) = CoqName.assoc_names name in
-    let env = FullEnvi.assoc_typ [] name coq_name v env in
+    let env = FullEnvi.Typ.assoc [] name coq_name v env in
     List.fold_left (fun env (x, _) ->
       let (name, coq_name) = CoqName.assoc_names x in
-      FullEnvi.assoc_constructor [] name coq_name env)
+      FullEnvi.Constructor.assoc [] name coq_name env)
       env constructors
   | Record (name, fields) ->
     let (name, coq_name) = CoqName.assoc_names name in
-    let env = FullEnvi.assoc_typ [] name coq_name v env in
+    let env = FullEnvi.Typ.assoc [] name coq_name v env in
     List.fold_left (fun env (x, _) ->
       let (name, coq_name) = CoqName.assoc_names x in
-      FullEnvi.assoc_field [] name coq_name env)
+      FullEnvi.Field.assoc [] name coq_name env)
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     let (name, coq_name) = CoqName.assoc_names name in
-    FullEnvi.assoc_typ [] name coq_name v env
+    FullEnvi.Typ.assoc [] name coq_name v env
 
 let to_coq (def : t) : SmartPrint.t =
   match def with

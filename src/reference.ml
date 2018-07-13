@@ -27,9 +27,9 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
     vb_expr = { exp_type = {Types.desc = Types.Tconstr (_, [typ], _) };
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     let name = Name.of_ident x in
-    let coq_name = (FullEnvi.resolve_var [] name env).base in
+    let coq_name = (FullEnvi.Var.resolve [] name env).base in
     let state_name = name ^ "_state" in
-    let coq_state_name = (FullEnvi.resolve_descriptor [] state_name env).base in
+    let coq_state_name = (FullEnvi.Descriptor.resolve [] state_name env).base in
     { name = CoqName.of_names name coq_name;
       state_name = CoqName.of_names state_name coq_state_name;
       typ = Type.of_type_expr env loc typ;
@@ -41,8 +41,8 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   let (name, coq_name) = CoqName.assoc_names r.name in
   let (state_name, coq_state_name) = CoqName.assoc_names r.state_name in
   let env = env
-  |> FullEnvi.assoc_var [] name coq_name ()
-  |> FullEnvi.assoc_descriptor [] state_name coq_state_name in
+  |> FullEnvi.Var.assoc [] name coq_name ()
+  |> FullEnvi.Descriptor.assoc [] state_name coq_state_name in
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
@@ -51,8 +51,8 @@ let update_env_with_effects (r : (Loc.t * Type.t) t)
   let (name, coq_name) = CoqName.assoc_names r.name in
   let (state_name, coq_state_name) = CoqName.assoc_names r.state_name in
   let env = env
-  |> FullEnvi.assoc_var [] name coq_name Effect.Type.Pure
-  |> FullEnvi.assoc_descriptor [] state_name coq_state_name in
+  |> FullEnvi.Var.assoc [] name coq_name Effect.Type.Pure
+  |> FullEnvi.Descriptor.assoc [] state_name coq_state_name in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =

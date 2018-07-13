@@ -13,9 +13,9 @@ let pp (exn : t) : SmartPrint.t =
 let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   (exn : extension_constructor) : t =
   let name = Name.of_ident exn.ext_id in
-  let coq_name = (FullEnvi.resolve_descriptor [] name env).base in
+  let coq_name = (FullEnvi.Descriptor.resolve [] name env).base in
   let raise_name = "raise_" ^ name in
-  let coq_raise_name = (FullEnvi.resolve_var [] raise_name env).base in
+  let coq_raise_name = (FullEnvi.Var.resolve [] raise_name env).base in
   let typs =
     match exn.ext_type.Types.ext_args with
     | Types.Cstr_tuple typs -> typs
@@ -29,21 +29,21 @@ let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   let (name, coq_name) = CoqName.assoc_names exn.name in
   let (raise_name, coq_raise_name) = CoqName.assoc_names exn.raise_name in
   env
-  |> FullEnvi.assoc_descriptor [] name coq_name
-  |> FullEnvi.assoc_var [] raise_name coq_raise_name ()
+  |> FullEnvi.Descriptor.assoc [] name coq_name
+  |> FullEnvi.Var.assoc [] raise_name coq_raise_name ()
 
 let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
   (id : Effect.Descriptor.Id.t) : Effect.Type.t FullEnvi.t =
   let (name, coq_name) = CoqName.assoc_names exn.name in
   let (raise_name, coq_raise_name) = CoqName.assoc_names exn.raise_name in
-  let env = FullEnvi.assoc_descriptor [] name coq_name env in
+  let env = FullEnvi.Descriptor.assoc [] name coq_name env in
   let effect_typ =
     Effect.Type.Arrow (
       Effect.Descriptor.singleton
         id
-        (FullEnvi.bound_descriptor Loc.Unknown (PathName.of_name [] name) env),
+        (FullEnvi.Descriptor.bound Loc.Unknown (PathName.of_name [] name) env),
       Effect.Type.Pure) in
-  FullEnvi.assoc_var [] raise_name coq_raise_name effect_typ env
+  FullEnvi.Var.assoc [] raise_name coq_raise_name effect_typ env
 
 let to_coq (exn : t) : SmartPrint.t =
   !^ "Definition" ^^ CoqName.to_coq exn.name ^^ !^ ":=" ^^

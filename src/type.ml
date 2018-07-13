@@ -50,7 +50,7 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
     (Tuple typs, typ_vars, new_typ_vars)
   | Tconstr (path, typs, _) ->
     let (typs, typ_vars, new_typ_vars) = of_typs_exprs_new_free_vars env loc typ_vars typs in
-    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
+    let x = FullEnvi.Typ.bound loc (PathName.of_type_path loc path) env in
     (Apply (x, typs), typ_vars, new_typ_vars)
   | Tlink typ -> of_type_expr_new_typ_vars env loc typ_vars typ
   | Tpoly (typ, []) -> of_type_expr_new_typ_vars env loc typ_vars typ
@@ -78,7 +78,7 @@ let rec of_type_expr ?allow_anon:(anon_var=false) (env : 'a FullEnvi.t)
   | Ttuple typs ->
     Tuple (List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
   | Tconstr (path, typs, _) ->
-    let x = FullEnvi.bound_typ loc (PathName.of_type_path loc path) env in
+    let x = FullEnvi.Typ.bound loc (PathName.of_type_path loc path) env in
     Apply (x, List.map (of_type_expr ~allow_anon:anon_var env loc) typs)
   | Tlink typ -> of_type_expr ~allow_anon:anon_var env loc typ
   | Tpoly (typ, []) -> of_type_expr ~allow_anon:anon_var env loc typ
@@ -102,7 +102,7 @@ let rec type_effects (env : Effect.Type.t FullEnvi.t) (typ : t)
     Effect.Type.union (List.map (type_effects env) [typ1; typ2])
   | Tuple typs -> Effect.Type.union (List.map (type_effects env) typs)
   | Apply (x, typs) ->
-    Effect.Type.union (FullEnvi.find_typ x env Effect.Type.depth_lift ::
+    Effect.Type.union (FullEnvi.Typ.find x env Effect.Type.depth_lift ::
       List.map (type_effects env) typs)
   | Monad (x, typ) -> type_effects env typ
 
