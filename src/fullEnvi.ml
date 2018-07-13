@@ -134,20 +134,17 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
 
 let open_module_nocheck (module_name : PathName.t) (env : 'a t) : 'a t =
   let module_name_list = PathName.to_name_list module_name in
-  {env with active_module = FullMod.open_module module_name_list env.active_module}
+  update_active (Mod.open_module module_name_list) env
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
-  let (path_name, active_module) = match
-      FullMod.bound_module_opt module_name env.active_module with
-    | Some {BoundName.path_name} ->
-      let module_name_list = PathName.to_name_list path_name in
-      (path_name, FullMod.open_module module_name_list env.active_module)
-    | None ->
-      let {BoundName.path_name} = bound_external_module loc module_name env in
-      let module_name_list = PathName.to_name_list path_name in
-      (path_name, FullMod.open_external_module module_name_list env.active_module) in
-  (path_name, {env with active_module})
+  match FullMod.bound_module_opt module_name env.active_module with
+  | Some {BoundName.path_name} ->
+    (path_name, open_module_nocheck path_name env)
+  | None ->
+    let {BoundName.path_name} = bound_external_module loc module_name env in
+    let module_name_list = PathName.to_name_list path_name in
+    (path_name, update_active (Mod.open_external_module module_name_list) env)
 
 let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
   snd (open_module_struct loc module_name env)

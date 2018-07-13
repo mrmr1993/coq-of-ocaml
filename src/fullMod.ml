@@ -18,12 +18,6 @@ let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
 
 let enter_module (env : 'a t) : 'a t = Mod.empty :: env
 
-let open_module (module_name : Name.t list) (env : 'a t) : 'a t =
-  hd_mod_map (Mod.open_module module_name) env
-
-let open_external_module (module_name : Name.t list) (env : 'a t) : 'a t =
-  hd_mod_map (Mod.open_external_module module_name) env
-
 let rec external_opens (env : 'a t) : Name.t list list =
   match env with
   | m :: env -> m.external_opens @ external_opens env
