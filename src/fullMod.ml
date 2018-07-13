@@ -73,6 +73,3 @@ let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
     (name, m :: env)) env
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t = List.map (Mod.map f) env
-
-let include_module (x : 'a Mod.t) (env : 'a t) : 'a t =
-  hd_mod_map (Mod.include_module x) env
