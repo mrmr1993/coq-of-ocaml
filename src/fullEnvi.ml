@@ -59,9 +59,8 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module module_name env.active_module}
 
-let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
-  (env : 'a t) : 'a t =
-  {env with active_module = FullMod.leave_module module_name prefix env.active_module}
+let leave_module (prefix : Name.t -> 'a -> 'a) (env : 'a t) : 'a t =
+  {env with active_module = FullMod.leave_module prefix env.active_module}
 
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   : ('a WrappedMod.t * PathName.t) option =

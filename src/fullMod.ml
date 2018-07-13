@@ -24,11 +24,10 @@ let rec external_opens (env : 'a t) : Name.t list list =
   | m :: env -> m.external_opens @ external_opens env
   | [] -> []
 
-let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
-  (env : 'a t) : 'a t =
+let leave_module (prefix : Name.t -> 'a -> 'a) (env : 'a t) : 'a t =
   match env with
   | m1 :: m2 :: env ->
-    let m = Mod.finish_module module_name prefix m1 m2 in
+    let m = Mod.finish_module prefix m1 m2 in
     m :: env
   | _ -> failwith "You should have entered in at least one module."
 

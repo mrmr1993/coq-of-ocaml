@@ -282,8 +282,9 @@ module Modules = struct
     PathName.Map.find x m.modules
 end
 
-let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
-  (m1 : 'a t) (m2 : 'a t) : 'a t =
+let finish_module (prefix : Name.t -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
+  : 'a t =
+  let module_name = CoqName.ocaml_name m1.name in
   let add_to_path x =
     { x with PathName.path = module_name :: x.PathName.path } in
   let m =
