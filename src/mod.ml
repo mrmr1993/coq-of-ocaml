@@ -52,13 +52,15 @@ module Locator = struct
 end
 
 type 'a t = {
+  name : CoqName.t;
   opens : Name.t list list;
   external_opens : Name.t list list;
   locator : Locator.t;
   values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
-let empty : 'a t = {
+let empty (module_name : CoqName.t) : 'a t = {
+  name = module_name;
   opens = [[]]; (** By default we open the empty path. *)
   external_opens = [[]];
   locator = Locator.empty;
@@ -285,7 +287,8 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   let add_to_path x =
     { x with PathName.path = module_name :: x.PathName.path } in
   let m =
-  { opens = m2.opens;
+  { name = m2.name;
+    opens = m2.opens;
     external_opens = m2.external_opens;
     locator = Locator.join
       (PathName.Map.map_union add_to_path (fun _ v -> v))
@@ -300,7 +303,8 @@ let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
 exception NameConflict of string * string * PathName.t
 
 let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
-  { opens = m.opens;
+  { name = m.name;
+    opens = m.opens;
     external_opens = m.external_opens;
     values = PathName.Map.union (fun key v1 v2 ->
       raise (NameConflict (Value.to_string v1, Value.to_string v2, key)))

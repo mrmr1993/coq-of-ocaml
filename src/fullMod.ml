@@ -6,7 +6,7 @@ type 'a t = 'a Mod.t list
 let pp (env : 'a t) : SmartPrint.t =
   OCaml.list Mod.pp env
 
-let empty : 'a t = [Mod.empty]
+let empty (module_name : CoqName.t) : 'a t = [Mod.empty module_name]
 
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
   match env with
@@ -16,7 +16,8 @@ let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
 let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
   hd_map (fun m env -> f m :: env)
 
-let enter_module (env : 'a t) : 'a t = Mod.empty :: env
+let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
+  Mod.empty module_name :: env
 
 let rec external_opens (env : 'a t) : Name.t list list =
   match env with

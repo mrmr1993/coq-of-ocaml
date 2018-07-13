@@ -105,7 +105,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       mb_expr = { mod_desc =
         Tmod_constraint ({ mod_desc = Tmod_structure structure }, _, _, _) }} ->
       let name = Name.of_ident name in
-      let env = FullEnvi.enter_module env in
+      let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, structures) = of_structure env structure in
       let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
@@ -162,7 +162,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
       let env = FullEnvi.include_module loc mod_body env in
       (env, [def])
     | Module (loc, name, defs) ->
-      let env = FullEnvi.enter_module env in
+      let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = monadise_let_rec env defs in
       let env = FullEnvi.leave_module name (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
@@ -202,7 +202,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Include (loc, name) ->
       (Include.update_env loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
-      let env = FullEnvi.enter_module env in
+      let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = effects env defs in
       let env = FullEnvi.leave_module name Effect.Type.leave_prefix env in
       (env, Module (loc, name, defs)) in
@@ -245,7 +245,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
-      let (env, defs) = monadise (FullEnvi.enter_module env) defs in
+      let (env, defs) = monadise (FullEnvi.enter_module (CoqName.Name name) env) defs in
       (FullEnvi.leave_module name (fun _ _ -> ()) env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->

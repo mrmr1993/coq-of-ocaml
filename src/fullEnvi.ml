@@ -26,8 +26,9 @@ type 'a t = {
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty (get_module : Name.t -> 'a WrappedMod.t option) : 'a t = {
-  active_module = FullMod.empty;
+let empty (module_name : CoqName.t)
+  (get_module : Name.t -> 'a WrappedMod.t option) : 'a t = {
+  active_module = FullMod.empty module_name;
   get_module;
   required_modules = ref Name.Set.empty
 }
@@ -55,8 +56,8 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
   : 'a t =
   update_active (Mod.Modules.add (PathName.of_name path base) v) env
 
-let enter_module (env : 'a t) : 'a t =
-  {env with active_module = FullMod.enter_module env.active_module}
+let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
+  {env with active_module = FullMod.enter_module module_name env.active_module}
 
 let leave_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
   (env : 'a t) : 'a t =
