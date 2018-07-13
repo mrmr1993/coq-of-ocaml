@@ -77,7 +77,8 @@ let find_external_module_path (x : PathName.t) (env : 'a t)
   match find_external_module_path_opt x env with
   | Some ret -> ret
   | None ->
-    failwith ("Could not find include for " ^ to_string 80 2 (PathName.pp x) ^ ".")
+    failwith @@ to_string 80 2 @@
+      !^ "Could not find include for" ^^ PathName.pp x ^-^ !^ "."
 
 let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
