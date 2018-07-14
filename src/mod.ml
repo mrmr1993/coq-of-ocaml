@@ -52,14 +52,14 @@ module Locator = struct
 end
 
 type 'a t = {
-  name : CoqName.t;
+  name : CoqName.t option;
   opens : Name.t list list;
   external_opens : Name.t list list;
   locator : Locator.t;
   values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
-let empty (module_name : CoqName.t) : 'a t = {
+let empty (module_name : CoqName.t option) : 'a t = {
   name = module_name;
   opens = [[]]; (** By default we open the empty path. *)
   external_opens = [[]];
@@ -95,6 +95,11 @@ let pp (m : 'a t) : SmartPrint.t =
     !^ "fields:" ^^ nest (pp_map !fields) ^^ newline ^^
     !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
       PathName.Map.bindings m.modules))
+
+let name (m : 'a t) : CoqName.t =
+  match m.name with
+  | Some name -> name
+  | None -> failwith "No name associated with this module."
 
 let open_module (module_name : Name.t list) (m : 'a t) : 'a t =
   { m with opens = module_name :: m.opens }
@@ -282,24 +287,36 @@ module Modules = struct
     PathName.Map.find x m.modules
 end
 
-let finish_module (prefix : Name.t -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
+let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
   : 'a t =
-  let module_name = CoqName.ocaml_name m1.name in
-  let add_to_path x =
-    { x with PathName.path = module_name :: x.PathName.path } in
-  let m =
-  { name = m2.name;
-    opens = m2.opens;
-    external_opens = m2.external_opens;
-    locator = Locator.join
-      (PathName.Map.map_union add_to_path (fun _ v -> v))
-      m1.locator m2.locator;
-    values = PathName.Map.map_union add_to_path
-      (fun _ v -> Value.map (prefix module_name) v)
-      m1.values m2.values;
-    modules = PathName.Map.map_union add_to_path (fun _ v -> v)
-      m1.modules m2.modules } in
-  Modules.add (PathName.of_name [] module_name) m1 m
+  match option_map CoqName.ocaml_name m1.name with
+  | Some module_name ->
+    let add_to_path x =
+      { x with PathName.path = module_name :: x.PathName.path } in
+    let m =
+    { name = m2.name;
+      opens = m2.opens;
+      external_opens = m2.external_opens;
+      locator = Locator.join
+        (PathName.Map.map_union add_to_path (fun _ v -> v))
+        m1.locator m2.locator;
+      values = PathName.Map.map_union add_to_path
+        (fun _ v -> Value.map (prefix (Some module_name)) v)
+        m1.values m2.values;
+      modules = PathName.Map.map_union add_to_path (fun _ v -> v)
+        m1.modules m2.modules } in
+    Modules.add (PathName.of_name [] module_name) m1 m
+  | None -> (* This is a partial module, do not add name information. *)
+    { name = m2.name;
+      opens = m2.opens;
+      external_opens = m2.external_opens;
+      locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
+        m1.locator m2.locator;
+      values = PathName.Map.map_union (fun x -> x)
+        (fun _ v -> Value.map (prefix None) v)
+        m1.values m2.values;
+      modules = PathName.Map.union (fun _ v _ -> Some v)
+        m1.modules m2.modules }
 
 exception NameConflict of string * string * PathName.t
 

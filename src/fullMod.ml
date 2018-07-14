@@ -6,7 +6,7 @@ type 'a t = 'a Mod.t list
 let pp (env : 'a t) : SmartPrint.t =
   OCaml.list Mod.pp env
 
-let empty (module_name : CoqName.t) : 'a t = [Mod.empty module_name]
+let empty (module_name : CoqName.t option) : 'a t = [Mod.empty module_name]
 
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
   match env with
@@ -17,18 +17,25 @@ let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
   hd_map (fun m env -> f m :: env)
 
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
-  Mod.empty module_name :: env
+  Mod.empty (Some module_name) :: env
+
+let enter_section (env : 'a t) : 'a t =
+  Mod.empty None :: env
 
 let rec external_opens (env : 'a t) : Name.t list list =
   match env with
   | m :: env -> m.external_opens @ external_opens env
   | [] -> []
 
-let leave_module (prefix : Name.t -> 'a -> 'a) (env : 'a t) : 'a t =
+let rec leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   match env with
   | m1 :: m2 :: env ->
     let m = Mod.finish_module prefix m1 m2 in
-    m :: env
+    begin match m1.name with
+    | Some _ -> m :: env
+    | None -> (* This is a partial module, continue to the rest of it. *)
+      leave_module prefix (m :: env)
+    end
   | _ -> failwith "You should have entered in at least one module."
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)

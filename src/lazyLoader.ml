@@ -15,7 +15,7 @@ let empty = Name.Map.empty
    - no two modules share the same |ocaml_name|
    - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
 let add_mod (wmod : 'a Mod.t) (loader : 'a t) : 'a t =
-  let (ocaml_name, coq_name) = CoqName.assoc_names wmod.name in
+  let (ocaml_name, coq_name) = CoqName.assoc_names @@ Mod.name wmod in
   loader
   |> Name.Map.add ocaml_name wmod
   |> Name.Map.add coq_name wmod

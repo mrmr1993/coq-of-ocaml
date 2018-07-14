@@ -113,7 +113,7 @@ module Descriptor = struct
   let depth_lift (d : t) : t =
     Map.map BoundName.depth_lift d
 
-  let leave_prefix (name : Name.t) (d : t) : t =
+  let leave_prefix (name : Name.t option) (d : t) : t =
     Map.map (fun x -> BoundName.leave_prefix name x) d
 end
 
@@ -191,7 +191,7 @@ module Type = struct
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.depth_lift d, depth_lift typ)
 
-  let rec leave_prefix (x : Name.t) (typ : t) : t =
+  let rec leave_prefix (x : Name.t option) (typ : t) : t =
     match typ with
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.leave_prefix x d, leave_prefix x typ)

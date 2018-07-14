@@ -10,10 +10,13 @@ let pp (x : t) : SmartPrint.t =
 let depth_lift (x : t) : t =
   { x with depth = x.depth + 1 }
 
-let leave_prefix (name : Name.t) (x : t) : t =
+let leave_prefix (name : Name.t option) (x : t) : t =
   if x.depth = 0 then
-    { x with path_name = { x.path_name with
-      PathName.path = name :: x.path_name.PathName.path } }
+    match name with
+    | Some name ->
+      { x with path_name = { x.path_name with
+        PathName.path = name :: x.path_name.PathName.path } }
+    | None -> x
   else
     { x with depth = x.depth - 1 }
 

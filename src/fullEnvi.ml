@@ -11,8 +11,8 @@ type 'a t = {
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty (module_name : CoqName.t) (get_module : Name.t -> 'a Mod.t option)
-  : 'a t = {
+let empty (module_name : CoqName.t option)
+  (get_module : Name.t -> 'a Mod.t option) : 'a t = {
   active_module = FullMod.empty module_name;
   get_module;
   required_modules = ref Name.Set.empty
@@ -42,7 +42,10 @@ let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module module_name env.active_module}
 
-let leave_module (prefix : Name.t -> 'a -> 'a) (env : 'a t) : 'a t =
+let enter_section (env : 'a t) : 'a t =
+  {env with active_module = FullMod.enter_section env.active_module}
+
+let leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module prefix env.active_module}
 
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
@@ -70,7 +73,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     match find_external_module_path_opt x env with
     | Some (external_module, x) ->
       find x external_module |> option_map (fun (x : PathName.t) ->
-        let (_, coq_name) = CoqName.assoc_names external_module.name in
+        let (_, coq_name) = CoqName.assoc_names @@ Mod.name external_module in
         let x = { x with path = coq_name :: x.path } in
         module_required coq_name env;
         { BoundName.path_name = x; BoundName.depth = -1 })
@@ -92,8 +95,8 @@ let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
 
 let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   match x.path, find_mod_opt x.base env with
-  | [], Some {name} -> (* This is a toplevel module *)
-    let (_, coq_name) = CoqName.assoc_names name in
+  | [], Some wmod -> (* This is a toplevel module *)
+    let (_, coq_name) = CoqName.assoc_names @@ Mod.name wmod in
     module_required coq_name env;
     Some { BoundName.path_name = {PathName.path = []; PathName.base = coq_name};
       BoundName.depth = -1 }

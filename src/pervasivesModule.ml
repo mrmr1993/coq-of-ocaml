@@ -19,7 +19,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
-  FullEnvi.empty (CoqName.Name "") (fun _ -> failwith "No modules loaded")
+  FullEnvi.empty None (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat" Pure
   |> Constructor.add [] "O"
@@ -163,7 +163,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
          lazy_loader := loader;
          wmod in
        {env with get_module}
-  |> enter_module (CoqName.Name "")
+  |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]
 
 let show out_channel : unit =
