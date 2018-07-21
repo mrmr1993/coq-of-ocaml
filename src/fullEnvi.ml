@@ -68,8 +68,11 @@ let find_external_module_path (x : PathName.t) (env : 'a t)
 
 let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
+  let opens = FullMod.external_opens env.active_module
+    |> List.map PathName.to_name_list in
   find_first (fun open_name ->
-    let x = { x with PathName.path = open_name @ x.PathName.path } in
+    let x = { x with
+      PathName.path = open_name @ x.PathName.path } in
     match find_external_module_path_opt x env with
     | Some (external_module, x) ->
       find x external_module |> option_map (fun (x : PathName.t) ->
@@ -77,7 +80,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
         let x = { x with path = coq_name :: x.path } in
         module_required coq_name env;
         { BoundName.path_name = x; BoundName.depth = -1 })
-    | None -> None) (FullMod.external_opens env.active_module)
+    | None -> None) (opens @ [[]])
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
@@ -122,8 +125,7 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let open_module_nocheck (module_name : PathName.t) (env : 'a t) : 'a t =
-  let module_name_list = PathName.to_name_list module_name in
-  update_active (Mod.open_module module_name_list) env
+  update_active (Mod.open_module module_name) env
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
@@ -132,8 +134,7 @@ let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
     (path_name, open_module_nocheck path_name env)
   | None ->
     let {BoundName.path_name} = bound_external_module loc module_name env in
-    let module_name_list = PathName.to_name_list path_name in
-    (path_name, update_active (Mod.open_external_module module_name_list) env)
+    (path_name, update_active (Mod.open_external_module path_name) env)
 
 let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
   snd (open_module_struct loc module_name env)

@@ -53,16 +53,16 @@ end
 
 type 'a t = {
   name : CoqName.t option;
-  opens : Name.t list list;
-  external_opens : Name.t list list;
+  opens : PathName.t list;
+  external_opens : PathName.t list;
   locator : Locator.t;
   values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
 let empty (module_name : CoqName.t option) : 'a t = {
   name = module_name;
-  opens = [[]]; (** By default we open the empty path. *)
-  external_opens = [[]];
+  opens = []; (** By default we open the empty path. *)
+  external_opens = [];
   locator = Locator.empty;
   values = PathName.Map.empty;
   modules = PathName.Map.empty }
@@ -83,10 +83,10 @@ let pp (m : 'a t) : SmartPrint.t =
     | Field -> fields := x :: !fields);
   group (
     nest (!^ "open" ^^ OCaml.list (fun path ->
-      double_quotes (separate (!^ ".") (List.map Name.pp path)))
+      double_quotes @@ PathName.pp path)
       m.opens) ^^ newline ^^
     nest (!^ "open (external)" ^^ OCaml.list (fun path ->
-      double_quotes (separate (!^ ".") (List.map Name.pp path)))
+      double_quotes @@ PathName.pp path)
       m.external_opens) ^^ newline ^^
     !^ "vars:" ^^ nest (pp_map !vars) ^^ newline ^^
     !^ "typs:" ^^ nest (pp_map !typs) ^^ newline ^^
@@ -101,10 +101,10 @@ let name (m : 'a t) : CoqName.t =
   | Some name -> name
   | None -> failwith "No name associated with this module."
 
-let open_module (module_name : Name.t list) (m : 'a t) : 'a t =
+let open_module (module_name : PathName.t) (m : 'a t) : 'a t =
   { m with opens = module_name :: m.opens }
 
-let open_external_module (module_name : Name.t list) (m : 'a t) : 'a t =
+let open_external_module (module_name : PathName.t) (m : 'a t) : 'a t =
   { m with external_opens = module_name :: m.external_opens }
 
 let find_free_name (base_name : string) (env : 'a t) : Name.t =

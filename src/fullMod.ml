@@ -22,7 +22,7 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   Mod.empty None :: env
 
-let rec external_opens (env : 'a t) : Name.t list list =
+let rec external_opens (env : 'a t) : PathName.t list =
   match env with
   | m :: env -> m.external_opens @ external_opens env
   | [] -> []
@@ -45,7 +45,10 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     begin match find x m with
     | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
     | None ->
-      m.Mod.opens |> find_first (fun path ->
+      m.Mod.opens
+        |> List.map PathName.to_name_list
+        |> fun l -> l @ [[]]
+        |> find_first (fun path ->
         let x = { x with PathName.path = path @ x.PathName.path } in
         bound_name_opt find x env |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 }))
