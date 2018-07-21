@@ -22,6 +22,14 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   Mod.empty None :: env
 
+let open_module (module_name : PathName.t) (env : 'a t) : 'a t =
+  Mod.empty None ::
+    Mod.open_module module_name (Mod.empty None) :: env
+
+let open_external_module (module_name : PathName.t) (env : 'a t) : 'a t =
+  Mod.empty None ::
+    Mod.open_external_module module_name (Mod.empty None) :: env
+
 let rec external_opens (env : 'a t) : PathName.t list =
   match env with
   | m :: env -> m.external_opens @ external_opens env

@@ -125,7 +125,7 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let open_module_nocheck (module_name : PathName.t) (env : 'a t) : 'a t =
-  update_active (Mod.open_module module_name) env
+  { env with active_module = FullMod.open_module module_name env.active_module }
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
@@ -134,7 +134,9 @@ let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
     (path_name, open_module_nocheck path_name env)
   | None ->
     let {BoundName.path_name} = bound_external_module loc module_name env in
-    (path_name, update_active (Mod.open_external_module path_name) env)
+    (path_name,
+    { env with active_module =
+      FullMod.open_external_module module_name env.active_module })
 
 let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
   snd (open_module_struct loc module_name env)
