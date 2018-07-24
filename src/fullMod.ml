@@ -39,12 +39,6 @@ let open_module (module_name : PathName.t) (env : 'a t) : 'a t =
 let open_external_module (module_name : PathName.t) (env : 'a t) : 'a t =
   Module (Mod.empty None) :: ExternalAlias module_name :: env
 
-let rec external_opens (env : 'a t) : PathName.t list =
-  match env with
-  | ExternalAlias path :: env -> path :: external_opens env
-  | _ :: env -> external_opens env
-  | [] -> []
-
 let rec leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   match env with
   | Module m1 :: Module m2 :: env ->

@@ -84,19 +84,14 @@ let find_external_module_path (x : PathName.t) (env : 'a t)
 
 let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
-  let opens = FullMod.external_opens env.active_module
-    |> List.map PathName.to_name_list in
-  find_first (fun open_name ->
-    let x = { x with
-      PathName.path = open_name @ x.PathName.path } in
-    match find_external_module_path_opt x env with
-    | Some (external_module, x) ->
-      find x external_module |> option_map (fun (x : PathName.t) ->
-        let (_, coq_name) = CoqName.assoc_names @@ Mod.name external_module in
-        let x = { x with path = coq_name :: x.path } in
-        module_required coq_name env;
-        { BoundName.path_name = x; BoundName.depth = -1 })
-    | None -> None) (opens @ [[]])
+  match find_external_module_path_opt x env with
+  | Some (external_module, x) ->
+    find x external_module |> option_map (fun (x : PathName.t) ->
+      let (_, coq_name) = CoqName.assoc_names @@ Mod.name external_module in
+      let x = { x with path = coq_name :: x.path } in
+      module_required coq_name env;
+      { BoundName.path_name = x; BoundName.depth = -1 })
+  | None -> None
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
