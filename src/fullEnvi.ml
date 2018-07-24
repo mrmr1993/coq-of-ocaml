@@ -48,6 +48,22 @@ let enter_section (env : 'a t) : 'a t =
 let leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module = FullMod.leave_module prefix env.active_module}
 
+let find_external_module_names_opt (x : Name.t list) (env : 'a t)
+  : ('a Mod.t * Name.t list) option =
+  match x with
+  | [] -> None
+  | module_name :: module_path ->
+    find_mod_opt module_name env |>
+      option_map (fun external_module -> (external_module, module_path))
+
+let find_external_module_names (env : 'a t) (x : Name.t list)
+  : 'a Mod.t * Name.t list =
+  match find_external_module_names_opt x env with
+  | Some ret -> ret
+  | None ->
+    failwith @@ to_string 80 2 @@
+      !^ "Could not find include for" ^^ OCaml.list Name.pp x ^-^ !^ "."
+
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   : ('a Mod.t * PathName.t) option =
   match x.PathName.path with
@@ -84,7 +100,8 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
-  match FullMod.bound_name_opt find x env.active_module with
+  match FullMod.bound_name_opt find (find_external_module_names env) x
+    env.active_module with
   | Some name -> Some name
   | None -> bound_name_external_opt find x env
 
@@ -129,7 +146,8 @@ let open_module_nocheck (module_name : PathName.t) (env : 'a t) : 'a t =
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
-  match FullMod.bound_module_opt module_name env.active_module with
+  match FullMod.bound_module_opt (find_external_module_names env) module_name
+    env.active_module with
   | Some {BoundName.path_name} ->
     (path_name, open_module_nocheck path_name env)
   | None ->

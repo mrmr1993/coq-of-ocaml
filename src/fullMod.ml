@@ -59,7 +59,8 @@ let rec leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   | _ -> failwith "You should have entered in at least one module."
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (x : PathName.t) (env : 'a t) : BoundName.t option =
+  (external_module : Name.t list -> 'a Mod.t * Name.t list) (x : PathName.t)
+  (env : 'a t) : BoundName.t option =
   match env with
   | Module m :: env ->
     begin match find x m with
@@ -69,15 +70,27 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
         |> List.map PathName.to_name_list
         |> fun l -> l @ [[]]
         |> find_first (fun path ->
-        let x = { x with PathName.path = path @ x.PathName.path } in
-        bound_name_opt find x env |> option_map (fun name ->
-          { name with BoundName.depth = name.BoundName.depth + 1 }))
+          let x = { x with PathName.path = path @ x.PathName.path } in
+          bound_name_opt find external_module x env
+          |> option_map (fun name ->
+            { name with BoundName.depth = name.BoundName.depth + 1 }))
     end
-  | ExternalAlias path :: env -> bound_name_opt find x env
+  | ExternalAlias module_path :: env ->
+    let module_path = PathName.to_name_list module_path in
+    let (m, module_path) = external_module module_path in
+    let x = { x with PathName.path = module_path @ x.path } in
+    begin match find x m with
+    | Some x ->
+      let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
+      let x = { x with path = coq_name :: x.path } in
+      Some { BoundName.path_name = x; BoundName.depth = -1 }
+    | None -> bound_name_opt find external_module x env
+    end
   | [] -> None
 
-let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Modules.resolve_opt x env
+let bound_module_opt (external_module : Name.t list -> 'a Mod.t * Name.t list)
+  (x : PathName.t) (env : 'a t) : BoundName.t option =
+  bound_name_opt Mod.Modules.resolve_opt external_module x env
 
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
