@@ -1,55 +1,67 @@
 open SmartPrint
 open Utils
 
-type 'a t = 'a Mod.t list
+type 'a t' =
+  | Module of 'a Mod.t
+  | ExternalAlias of PathName.t
+
+type 'a t = 'a t' list
 
 let pp (env : 'a t) : SmartPrint.t =
-  OCaml.list Mod.pp env
+  env |> OCaml.list (fun m ->
+    match m with
+    | Module m -> Mod.pp m
+    | ExternalAlias name -> !^ "open (external)" ^^ PathName.pp name)
 
-let empty (module_name : CoqName.t option) : 'a t = [Mod.empty module_name]
+let empty (module_name : CoqName.t option) : 'a t =
+  [Module (Mod.empty module_name)]
 
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
   match env with
-  | m :: env -> f m env
+  | Module m :: env -> f m env
+  | ExternalAlias path :: env ->
+    failwith "The head of the environment must be a module."
   | [] -> failwith "The environment must be a non-empty list."
 
 let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
-  hd_map (fun m env -> f m :: env)
+  hd_map (fun m env -> Module (f m) :: env)
 
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
-  Mod.empty (Some module_name) :: env
+  Module (Mod.empty (Some module_name)) :: env
 
 let enter_section (env : 'a t) : 'a t =
-  Mod.empty None :: env
+  Module (Mod.empty None) :: env
 
 let open_module (module_name : PathName.t) (env : 'a t) : 'a t =
-  Mod.empty None ::
-    Mod.open_module module_name (Mod.empty None) :: env
+  Module (Mod.empty None) ::
+    Module (Mod.open_module module_name (Mod.empty None)) :: env
 
 let open_external_module (module_name : PathName.t) (env : 'a t) : 'a t =
-  Mod.empty None ::
-    Mod.open_external_module module_name (Mod.empty None) :: env
+  Module (Mod.empty None) :: ExternalAlias module_name :: env
 
 let rec external_opens (env : 'a t) : PathName.t list =
   match env with
-  | m :: env -> m.external_opens @ external_opens env
+  | ExternalAlias path :: env -> path :: external_opens env
+  | _ :: env -> external_opens env
   | [] -> []
 
 let rec leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
   match env with
-  | m1 :: m2 :: env ->
+  | Module m1 :: Module m2 :: env ->
     let m = Mod.finish_module prefix m1 m2 in
     begin match m1.name with
-    | Some _ -> m :: env
+    | Some _ -> Module m :: env
     | None -> (* This is a partial module, continue to the rest of it. *)
-      leave_module prefix (m :: env)
+      leave_module prefix (Module m :: env)
     end
+  | Module m :: ExternalAlias path :: env ->
+    Module (Mod.map (prefix None) m) :: env
   | _ -> failwith "You should have entered in at least one module."
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with
-  | m :: env ->
+  | Module m :: env ->
     begin match find x m with
     | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
     | None ->
@@ -61,6 +73,7 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
         bound_name_opt find x env |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 }))
     end
+  | ExternalAlias path :: env -> bound_name_opt find x env
   | [] -> None
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
@@ -71,6 +84,9 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   let m =
     try List.nth env x.BoundName.depth with
     | Failure _ -> raise Not_found in
+  let m = match m with
+    | Module m -> m
+    | _ -> failwith "Invalid bound name." in
   let rec iterate_open_lift v n =
     if n = 0 then
       v
@@ -82,6 +98,10 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   hd_map (fun m env ->
     let (name, m) = Mod.Vars.fresh prefix v m in
-    (name, m :: env)) env
+    (name, Module m :: env)) env
 
-let rec map (f : 'a -> 'b) (env : 'a t) : 'b t = List.map (Mod.map f) env
+let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
+  List.map (fun m ->
+    match m with
+    | Module m -> Module (Mod.map f m)
+    | ExternalAlias path -> ExternalAlias path) env
