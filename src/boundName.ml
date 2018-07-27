@@ -17,8 +17,10 @@ let leave_prefix (name : Name.t option) (x : t) : t =
       { x with path_name = { x.path_name with
         PathName.path = name :: x.path_name.PathName.path } }
     | None -> x
-  else
+  else if x.depth > 0 then
     { x with depth = x.depth - 1 }
+  else
+    x
 
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.path_name
