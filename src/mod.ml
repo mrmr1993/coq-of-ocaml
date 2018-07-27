@@ -297,16 +297,3 @@ let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
         m1.values m2.values;
       modules = PathName.Map.union (fun _ v _ -> Some v)
         m1.modules m2.modules }
-
-exception NameConflict of string * string * PathName.t
-
-let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
-  { name = m.name;
-    values = PathName.Map.union (fun key v1 v2 ->
-      raise (NameConflict (Value.to_string v1, Value.to_string v2, key)))
-     m_incl.values m.values;
-    locator = Locator.join (fun v1 v2 -> v1 (* will fail in values *))
-      m_incl.locator m.locator;
-    modules = PathName.Map.union (fun key _ _ ->
-        raise (NameConflict ("module", "module", key)))
-      m_incl.modules m.modules }

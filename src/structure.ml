@@ -157,10 +157,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
       (env, [Reference (loc, r)])
     | Open (loc, o) -> (Open.update_env loc o env, [def])
     | Include (loc, name) ->
-      let bound_mod = FullEnvi.bound_module loc name env in
-      let mod_body = FullEnvi.find_module bound_mod env (fun x -> x) in
-      let env = FullEnvi.include_module loc mod_body env in
-      (env, [def])
+      (Include.update_env loc name env, [def])
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = monadise_let_rec env defs in

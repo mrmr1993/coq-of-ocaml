@@ -182,12 +182,8 @@ let map (f : 'a -> 'b) (env : 'a t) : 'b t =
    get_module = (fun x -> option_map (Mod.map f) (env.get_module x));
    required_modules = env.required_modules}
 
-let include_module (loc : Loc.t) (x : 'a Mod.t) (env : 'a t) : 'a t =
-  try update_active (Mod.include_module x) env
-  with Mod.NameConflict (typ1, typ2, name) ->
-    let message = !^ "Could not include module: the" ^^ !^ typ1 ^^
-      PathName.pp name ^^ !^ "is already declared as a" ^^ !^ (typ2 ^ ".") in
-    Error.raise loc (SmartPrint.to_string 80 2 message)
+let include_module (x : 'a Mod.t) (env : 'a t) : 'a t =
+  { env with active_module = FullMod.include_module x env.active_module }
 
 module Carrier (M : Mod.Carrier) = struct
   let mod_resolve (x : PathName.t) (m : 'a Mod.t) : PathName.t =
