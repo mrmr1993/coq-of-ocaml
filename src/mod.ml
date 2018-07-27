@@ -53,14 +53,12 @@ end
 
 type 'a t = {
   name : CoqName.t option;
-  opens : PathName.t list;
   locator : Locator.t;
   values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
 let empty (module_name : CoqName.t option) : 'a t = {
   name = module_name;
-  opens = []; (** By default we open the empty path. *)
   locator = Locator.empty;
   values = PathName.Map.empty;
   modules = PathName.Map.empty }
@@ -80,9 +78,6 @@ let pp (m : 'a t) : SmartPrint.t =
     | Constructor -> constructors := x :: !constructors
     | Field -> fields := x :: !fields);
   group (
-    nest (!^ "open" ^^ OCaml.list (fun path ->
-      double_quotes @@ PathName.pp path)
-      m.opens) ^^ newline ^^
     !^ "vars:" ^^ nest (pp_map !vars) ^^ newline ^^
     !^ "typs:" ^^ nest (pp_map !typs) ^^ newline ^^
     !^ "descriptors:" ^^ nest (pp_map !descriptors) ^^ newline ^^
@@ -95,9 +90,6 @@ let name (m : 'a t) : CoqName.t =
   match m.name with
   | Some name -> name
   | None -> failwith "No name associated with this module."
-
-let open_module (module_name : PathName.t) (m : 'a t) : 'a t =
-  { m with opens = module_name :: m.opens }
 
 let find_free_name (base_name : string) (env : 'a t) : Name.t =
   let prefix_n s n =
@@ -287,7 +279,6 @@ let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
       { x with PathName.path = module_name :: x.PathName.path } in
     let m =
     { name = m2.name;
-      opens = m2.opens;
       locator = Locator.join
         (PathName.Map.map_union add_to_path (fun _ v -> v))
         m1.locator m2.locator;
@@ -299,7 +290,6 @@ let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
     Modules.add (PathName.of_name [] module_name) m1 m
   | None -> (* This is a partial module, do not add name information. *)
     { name = m2.name;
-      opens = m2.opens;
       locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
         m1.locator m2.locator;
       values = PathName.Map.map_union (fun x -> x)
@@ -312,7 +302,6 @@ exception NameConflict of string * string * PathName.t
 
 let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
   { name = m.name;
-    opens = m.opens;
     values = PathName.Map.union (fun key v1 v2 ->
       raise (NameConflict (Value.to_string v1, Value.to_string v2, key)))
      m_incl.values m.values;
