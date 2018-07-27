@@ -155,7 +155,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
 
   (* List *)
   |> enter_module (CoqName.Name "OCaml")
-  |> leave_module Effect.Type.leave_prefix
+  |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
   |> fun env ->
        let lazy_loader = ref LazyLoader.empty in
        let get_module mod_name =

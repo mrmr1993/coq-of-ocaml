@@ -22,5 +22,15 @@ let leave_prefix (name : Name.t option) (x : t) : t =
   else
     x
 
+let resolve_open (name : PathName.t) (x : t) : t =
+  if x.depth = 1 then
+    { path_name = { x.path_name with
+        PathName.path = PathName.to_name_list name @ x.path_name.path };
+      depth = 0 }
+  else if x.depth > 1 then
+    { x with depth = x.depth - 1 }
+  else
+    x
+
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.path_name

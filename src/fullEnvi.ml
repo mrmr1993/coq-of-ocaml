@@ -45,8 +45,10 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
-let leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
-  {env with active_module = FullMod.leave_module prefix env.active_module}
+let leave_module (prefix : Name.t option -> 'a -> 'a)
+  (resolve_open : PathName.t -> 'a -> 'a) (env : 'a t) : 'a t =
+  {env with active_module =
+    FullMod.leave_module prefix resolve_open env.active_module}
 
 let find_external_module_names_opt (x : Name.t list) (env : 'a t)
   : ('a Mod.t * Name.t list) option =

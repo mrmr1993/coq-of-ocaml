@@ -46,22 +46,21 @@ let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   let m = { m with name = None } in
   Module (Mod.empty None) :: Include m :: env
 
-let rec leave_module (prefix : Name.t option -> 'a -> 'a) (env : 'a t) : 'a t =
-  match env with
-  | Module m1 :: Module m2 :: env ->
-    let m = Mod.finish_module prefix m1 m2 in
-    begin match m1.name with
-    | Some _ -> Module m :: env
-    | None -> (* This is a partial module, continue to the rest of it. *)
-      leave_module prefix (Module m :: env)
-    end
-  | Module m :: Include mi :: env ->
-    leave_module prefix @@ Module (Mod.finish_module prefix m mi) :: env
-  | Module m :: Alias path :: env ->
-    leave_module prefix @@ Module (Mod.map (prefix None) m) :: env
-  | Module m :: ExternalAlias path :: env ->
-    leave_module prefix @@ Module (Mod.map (prefix None) m) :: env
-  | _ -> failwith "You should have entered in at least one module."
+let leave_module (prefix : Name.t option -> 'a -> 'a)
+  (resolve_open : PathName.t -> 'a -> 'a) (env : 'a t) : 'a t =
+  let rec leave_module_rec (env : 'a t) =
+    match env with
+    | Module m1 :: (Module m2 | Include m2) :: env ->
+      let m = Mod.finish_module prefix m1 m2 in
+      begin match m1.name with
+      | Some _ -> Module m :: env
+      | None -> (* This is a partial module, continue to the rest of it. *)
+        leave_module_rec (Module m :: env)
+      end
+    | Module m :: (Alias path | ExternalAlias path) :: env ->
+      leave_module_rec @@ Module (Mod.map (resolve_open path) m) :: env
+    | _ -> failwith "You should have entered in at least one module." in
+  leave_module_rec env
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (external_module : Name.t list -> 'a Mod.t * Name.t list) (x : PathName.t)
