@@ -45,3 +45,56 @@ Definition b' : unit :=
   | inl x => x
   | inr (_) => tt
   end.
+
+Definition x : Z := 15.
+
+Module A.
+  Definition x {A B : Type} (x : A) : M [ OCaml.Assert_failure ] B :=
+    match x with
+    | _ => OCaml.assert false
+    end.
+End A.
+
+Module B.
+  Definition a : Z := x.
+  
+  Import A.
+  
+  Definition b {A B : Type} : A -> M [ OCaml.Assert_failure ] B := A.x.
+  
+  Definition x {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+    match x with
+    | _ => OCaml.Pervasives.failwith "failure" % string
+    end.
+  
+  Definition c {A B : Type} : A -> M [ OCaml.Failure ] B := x.
+End B.
+
+Module C.
+  Definition a : Z := x.
+  
+  Definition x {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+    match x with
+    | _ => OCaml.Pervasives.failwith "failure" % string
+    end.
+  
+  Definition b {A B : Type} : A -> M [ OCaml.Failure ] B := x.
+  
+  Import A.
+  
+  Definition c {A B : Type} : A -> M [ OCaml.Assert_failure ] B := A.x.
+End C.
+
+Module D.
+  Module A.
+    Definition a : Z := 2.
+  End A.
+  
+  Definition b : Z := x.
+  
+  Import A.
+  
+  Definition c : Z := A.a.
+  
+  Definition d : Z := x.
+End D.

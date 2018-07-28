@@ -1,7 +1,7 @@
 3 Module SizedString:
   4
   Record t:
-    [ (name, Type (string/2)); (size, Type (Z/2)) ]
+    [ (name, Type (string/4)); (size, Type (Z/4)) ]
 
 9
 Value
@@ -46,9 +46,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s, [ ], [ ], Type (Z/1)),
+      ((s, [ ], [ ], Type (Z/3)),
         Apply
-          ((13, Effect ([ ], .)), Variable ((13, Effect ([ ], .)), Z.add/1),
+          ((13, Effect ([ ], .)), Variable ((13, Effect ([ ], .)), Z.add/3),
             [
               Field
                 ((13, Effect ([ ], .)),
@@ -77,15 +77,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ (x, Type (SizedString.t/0)) ], Type (bool/1)),
+      ((f, [ ], [ (x, Type (SizedString.t/0)) ], Type (bool/3)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
               (Record ((SizedString.size/0, Int(3))),
                 Constructor
                   ((16, Effect ([ ], .)),
-                    true/1));
-              (Any, Constructor ((17, Effect ([ ], .)), false/1))
+                    true/3));
+              (Any, Constructor ((17, Effect ([ ], .)), false/3))
             ]))
     ])
 
@@ -93,7 +93,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (bool/1)),
+      ((b, [ ], [ ], Type (bool/3)),
         Apply
           ((19, Effect ([ ], .)),
             Variable ((19, Effect ([ ], . -> .)), f/0),
@@ -104,7 +104,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b', [ ], [ ], Type (bool/1)),
+      ((b', [ ], [ ], Type (bool/3)),
         Apply
           ((20, Effect ([ ], .)),
             Variable ((20, Effect ([ ], . -> .)), f/0),
@@ -115,7 +115,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b'', [ ], [ ], Type (bool/1)),
+      ((b'', [ ], [ ], Type (bool/3)),
         Apply
           ((21, Effect ([ ], .)),
             Variable ((21, Effect ([ ], . -> .)), f/0),
@@ -125,7 +125,7 @@ Value
 23 Module Point:
   24
   Record t:
-    [ (x, Type (Z/2)); (y, Type (Z/2)); (z, Type (Z/2)) ]
+    [ (x, Type (Z/4)); (y, Type (Z/4)); (z, Type (Z/4)) ]
   
   29
   Value
@@ -143,7 +143,7 @@ Value
   Value
     (non_rec, @.,
       [
-        ((b, [ ], [ ], Type (bool/2)),
+        ((b, [ ], [ ], Type (bool/4)),
           Match
             ((31, Effect ([ ], .)),
               Variable ((31, Effect ([ ], .)), p/0),
@@ -155,7 +155,7 @@ Value
                         ([
                         ],
                           .)),
-                      true/2));
+                      true/4));
                 (Any,
                   Constructor
                     ((33,
@@ -163,7 +163,7 @@ Value
                         ([
                         ],
                           .)),
-                      false/2))
+                      false/4))
               ]))
       ])
   
@@ -181,7 +181,7 @@ Value
                     ((35, Effect ([ ], .)),
                       Variable
                         ((35, Effect ([ ], .)),
-                          Z.add/2),
+                          Z.add/4),
                       [
                         Field
                           ((35,

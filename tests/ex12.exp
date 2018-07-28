@@ -1,28 +1,28 @@
 3
 Inductive tree:
-  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree/0); Type (Z/1); Type (tree/0) ]) ])
+  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree/0); Type (Z/3); Type (tree/0) ]) ])
 
 7
 Value
   (rec, @.,
     [
       ((find_rec, [ ],
-        [ (counter, Type (nat/1)); (x, Type (Z/1)); (t, Type (tree/0)) ],
-        Type (bool/1)),
+        [ (counter, Type (nat/3)); (x, Type (Z/3)); (t, Type (tree/0)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (8, Variable (8, t/0),
                     [
@@ -30,7 +30,7 @@ Value
                         (Leaf/0),
                         Constructor
                           (9,
-                            false/1));
+                            false/3));
                       (Constructor
                         (Node/0,
                           t1,
@@ -42,7 +42,7 @@ Value
                               (11,
                                 Variable
                                   (11,
-                                    OCaml.Pervasives.lt/1),
+                                    OCaml.Pervasives.lt/3),
                                 [
                                   Variable
                                     (11,
@@ -77,7 +77,7 @@ Value
                                   (13,
                                     Variable
                                       (13,
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         (13,
@@ -108,7 +108,7 @@ Value
                                     ]),
                                 Constructor
                                   (16,
-                                    true/1))))
+                                    true/3))))
                     ]))
             ]))
     ])
@@ -117,11 +117,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((find, [ ], [ (x, Type (Z/1)); (t, Type (tree/0)) ], Type (bool/1)),
+      ((find, [ ], [ (x, Type (Z/3)); (t, Type (tree/0)) ], Type (bool/3)),
         Apply
           (?, Variable (?, find_rec/0),
             [
-              Apply (?, Variable (?, read_counter/1), [ Tuple (?) ]);
+              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
               Variable (?, x/0);
               Variable (?, t/0)
             ]))

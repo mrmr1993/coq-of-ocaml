@@ -2,32 +2,32 @@
   4
   Value
     (non_rec, @.,
-      [ ((a, [ ], [ ], Type (Z/2)), Constant ((4, Effect ([ ], .)), Int(5))) ])
+      [ ((a, [ ], [ ], Type (Z/4)), Constant ((4, Effect ([ ], .)), Int(5))) ])
   
   6
   Value
     (non_rec, @.,
       [
-        ((c, [ A ], [ (x, Type (string/2)) ], A),
+        ((c, [ A ], [ (x, Type (string/4)) ], A),
           Apply
-            ((6, Effect ([ OCaml.Failure/2 ], .)),
+            ((6, Effect ([ OCaml.Failure/4 ], .)),
               Variable
-                ((6, Effect ([ ], . -[ OCaml.Failure/2 ]-> .)),
-                  OCaml.Pervasives.failwith/2),
+                ((6, Effect ([ ], . -[ OCaml.Failure/4 ]-> .)),
+                  OCaml.Pervasives.failwith/4),
               [ Variable ((6, Effect ([ ], .)), x/0) ]))
       ])
 
-9 Include A
+9 Include A/0
 
 11
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (Z/1)),
+      ((b, [ ], [ ], Type (Z/5)),
         Apply
-          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], .)), Z.add/1),
+          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], .)), Z.add/5),
             [
-              Variable ((11, Effect ([ ], .)), a/0);
+              Variable ((11, Effect ([ ], .)), a/1);
               Constant ((11, Effect ([ ], .)), Int(2))
             ]))
     ])
@@ -36,20 +36,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((d, [ A ], [ (b, Type (bool/1)) ], A),
+      ((d, [ A ], [ (b, Type (bool/5)) ], A),
         IfThenElse
-          ((13, Effect ([ OCaml.Failure/2 ], .)),
+          ((13, Effect ([ OCaml.Failure/5 ], .)),
             Variable ((13, Effect ([ ], .)), b/0),
             Apply
-              ((13, Effect ([ OCaml.Failure/2 ], .)),
+              ((13, Effect ([ OCaml.Failure/5 ], .)),
                 Variable
-                  ((13, Effect ([ ], . -[ OCaml.Failure/2 ]-> .)),
-                    c/0),
+                  ((13, Effect ([ ], . -[ OCaml.Failure/5 ]-> .)),
+                    c/1),
                 [ Constant ((13, Effect ([ ], .)), String("true")) ]),
             Apply
-              ((13, Effect ([ OCaml.Failure/2 ], .)),
+              ((13, Effect ([ OCaml.Failure/5 ], .)),
                 Variable
-                  ((13, Effect ([ ], . -[ OCaml.Failure/2 ]-> .)),
-                    c/0),
+                  ((13, Effect ([ ], . -[ OCaml.Failure/5 ]-> .)),
+                    c/1),
                 [ Constant ((13, Effect ([ ], .)), String("false")) ])))
     ])

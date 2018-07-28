@@ -18,20 +18,20 @@ let b' = try N.f () with Assert_failure _ -> ()
 let x = 15
 
 module A = struct
-  let x = assert false
+  let x _ = assert false
 end
 
 module B = struct
   let a = x (* Toplevel x *)
   open A
   let b = x (* A.x *)
-  let x = failwith "failure"
+  let x _ = failwith "failure"
   let c = x (* B.x *)
 end
 
 module C = struct
   let a = x (* Toplevel x *)
-  let x = failwith "failure"
+  let x _ = failwith "failure"
   let b = x (* C.x *)
   open A
   let c = x (* A.x *)

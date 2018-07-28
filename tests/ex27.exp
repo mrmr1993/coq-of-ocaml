@@ -2,13 +2,13 @@
 Value
   (rec, @coq_rec,
     [
-      ((length_aux, [ A ], [ (len, Type (Z/1)); (x, Type (list/1, A)) ],
-        Type (Z/1)),
+      ((length_aux, [ A ], [ (len, Type (Z/3)); (x, Type (list/3, A)) ],
+        Type (Z/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Variable (17, len/0));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Variable (17, len/0));
+              (Constructor (cons/3, a, l),
                 Apply
                   (18,
                     Variable
@@ -19,7 +19,7 @@ Value
                         (18,
                           Variable
                             (18,
-                              Z.add/1),
+                              Z.add/3),
                           [
                             Variable
                               (18,
@@ -39,7 +39,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((length, [ A ], [ (l, Type (list/1, A)) ], Type (Z/1)),
+      ((length, [ A ], [ (l, Type (list/3, A)) ], Type (Z/3)),
         Apply
           (21, Variable (21, length_aux/0),
             [ Constant (21, Int(0)); Variable (21, l/0) ]))
@@ -49,22 +49,22 @@ Value
 Value
   (non_rec, @.,
     [
-      ((hd, [ A ], [ (x, Type (list/1, A)) ], A),
+      ((hd, [ A ], [ (x, Type (list/3, A)) ], A),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1),
+              (Constructor ([]/3),
                 Apply
                   (24,
                     Variable
                       (24,
-                        OCaml.Pervasives.failwith/1),
+                        OCaml.Pervasives.failwith/3),
                     [
                       Constant
                         (24,
                           String("hd"))
                     ]));
-              (Constructor (cons/1, a, l), Variable (25, a/0))
+              (Constructor (cons/3, a, l), Variable (25, a/0))
             ]))
     ])
 
@@ -72,22 +72,22 @@ Value
 Value
   (non_rec, @.,
     [
-      ((tl, [ A ], [ (x, Type (list/1, A)) ], Type (list/1, A)),
+      ((tl, [ A ], [ (x, Type (list/3, A)) ], Type (list/3, A)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1),
+              (Constructor ([]/3),
                 Apply
                   (28,
                     Variable
                       (28,
-                        OCaml.Pervasives.failwith/1),
+                        OCaml.Pervasives.failwith/3),
                     [
                       Constant
                         (28,
                           String("tl"))
                     ]));
-              (Constructor (cons/1, a, l), Variable (29, l/0))
+              (Constructor (cons/3, a, l), Variable (29, l/0))
             ]))
     ])
 
@@ -95,14 +95,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((nth, [ A ], [ (l, Type (list/1, A)); (n, Type (Z/1)) ], A),
+      ((nth, [ A ], [ (l, Type (list/3, A)); (n, Type (Z/3)) ], A),
         IfThenElse
           (32,
             Apply
-              (32, Variable (32, OCaml.Pervasives.lt/1),
+              (32, Variable (32, OCaml.Pervasives.lt/3),
                 [ Variable (32, n/0); Constant (32, Int(0)) ]),
             Apply
-              (32, Variable (32, OCaml.Pervasives.invalid_arg/1),
+              (32, Variable (32, OCaml.Pervasives.invalid_arg/3),
                 [ Constant (32, String("List.nth")) ]),
             LetFun 33
               (rec, @coq_rec,
@@ -111,11 +111,11 @@ Value
                     [
                       (l,
                         Type
-                          (list/1,
+                          (list/3,
                             B));
                       (n,
                         Type
-                          (Z/1))
+                          (Z/3))
                     ], B),
                     Match
                       (34,
@@ -124,19 +124,19 @@ Value
                             l/0),
                         [
                           (Constructor
-                            ([]/1),
+                            ([]/3),
                             Apply
                               (35,
                                 Variable
                                   (35,
-                                    OCaml.Pervasives.failwith/1),
+                                    OCaml.Pervasives.failwith/3),
                                 [
                                   Constant
                                     (35,
                                       String("nth"))
                                 ]));
                           (Constructor
-                            (cons/1,
+                            (cons/3,
                               a,
                               l),
                             IfThenElse
@@ -145,7 +145,7 @@ Value
                                   (36,
                                     Variable
                                       (36,
-                                        equiv_decb/1),
+                                        equiv_decb/3),
                                     [
                                       Variable
                                         (36,
@@ -170,7 +170,7 @@ Value
                                         (36,
                                           Variable
                                             (36,
-                                              Z.sub/1),
+                                              Z.sub/3),
                                           [
                                             Variable
                                               (36,
@@ -192,21 +192,21 @@ Value
   (non_rec, @.,
     [
       ((append, [ A ], [ ],
-        (Type (list/1, A) -> (Type (list/1, A) -> Type (list/1, A)))),
-        Variable (39, OCaml.Pervasives.app/1))
+        (Type (list/3, A) -> (Type (list/3, A) -> Type (list/3, A)))),
+        Variable (39, OCaml.Pervasives.app/3))
     ])
 
 41
 Value
   (rec, @coq_rec,
     [
-      ((rev_append, [ A ], [ (l1, Type (list/1, A)); (l2, Type (list/1, A)) ],
-        Type (list/1, A)),
+      ((rev_append, [ A ], [ (l1, Type (list/3, A)); (l2, Type (list/3, A)) ],
+        Type (list/3, A)),
         Match
           (42, Variable (42, l1/0),
             [
-              (Constructor ([]/1), Variable (43, l2/0));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Variable (43, l2/0));
+              (Constructor (cons/3, a, l),
                 Apply
                   (44,
                     Variable
@@ -218,7 +218,7 @@ Value
                           l/0);
                       Constructor
                         (44,
-                          cons/1,
+                          cons/3,
                           Variable
                             (44,
                               a/0),
@@ -233,28 +233,28 @@ Value
 Value
   (non_rec, @.,
     [
-      ((rev, [ A ], [ (l, Type (list/1, A)) ], Type (list/1, A)),
+      ((rev, [ A ], [ (l, Type (list/3, A)) ], Type (list/3, A)),
         Apply
           (47, Variable (47, rev_append/0),
-            [ Variable (47, l/0); Constructor (47, []/1) ]))
+            [ Variable (47, l/0); Constructor (47, []/3) ]))
     ])
 
 49
 Value
   (rec, @coq_rec,
     [
-      ((flatten, [ A ], [ (x, Type (list/1, Type (list/1, A))) ],
-        Type (list/1, A)),
+      ((flatten, [ A ], [ (x, Type (list/3, Type (list/3, A))) ],
+        Type (list/3, A)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (50, []/1));
-              (Constructor (cons/1, l, r),
+              (Constructor ([]/3), Constructor (50, []/3));
+              (Constructor (cons/3, l, r),
                 Apply
                   (51,
                     Variable
                       (51,
-                        OCaml.Pervasives.app/1),
+                        OCaml.Pervasives.app/3),
                     [
                       Variable
                         (51,
@@ -278,7 +278,7 @@ Value
   (non_rec, @.,
     [
       ((concat, [ A ], [ ],
-        (Type (list/1, Type (list/1, A)) -> Type (list/1, A))),
+        (Type (list/3, Type (list/3, A)) -> Type (list/3, A))),
         Variable (54, flatten/0))
     ])
 
@@ -286,13 +286,13 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (list/1, A)) ],
-        Type (list/1, B)),
+      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (list/3, A)) ],
+        Type (list/3, B)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (57, []/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (57, []/3));
+              (Constructor (cons/3, a, l),
                 LetVar 58 r =
                   Apply
                     (58,
@@ -306,7 +306,7 @@ Value
                       ])
                   in
                 Constructor
-                  (58, cons/1,
+                  (58, cons/3,
                     Variable
                       (58,
                         r/0),
@@ -332,15 +332,15 @@ Value
     [
       ((mapi_aux, [ A; B ],
         [
-          (i, Type (Z/1));
-          (f, (Type (Z/1) -> (A -> B)));
-          (x, Type (list/1, A))
-        ], Type (list/1, B)),
+          (i, Type (Z/3));
+          (f, (Type (Z/3) -> (A -> B)));
+          (x, Type (list/3, A))
+        ], Type (list/3, B)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (62, []/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (62, []/3));
+              (Constructor (cons/3, a, l),
                 LetVar 63 r =
                   Apply
                     (63,
@@ -357,7 +357,7 @@ Value
                       ])
                   in
                 Constructor
-                  (63, cons/1,
+                  (63, cons/3,
                     Variable
                       (63,
                         r/0),
@@ -371,7 +371,7 @@ Value
                             (63,
                               Variable
                                 (63,
-                                  Z.add/1),
+                                  Z.add/3),
                               [
                                 Variable
                                   (63,
@@ -395,8 +395,8 @@ Value
   (non_rec, @.,
     [
       ((mapi, [ A; B ],
-        [ (f, (Type (Z/1) -> (A -> B))); (l, Type (list/1, A)) ],
-        Type (list/1, B)),
+        [ (f, (Type (Z/3) -> (A -> B))); (l, Type (list/3, A)) ],
+        Type (list/3, B)),
         Apply
           (66, Variable (66, mapi_aux/0),
             [
@@ -410,8 +410,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((rev_map, [ A; B ], [ (f, (A -> B)); (l, Type (list/1, A)) ],
-        Type (list/1, B)),
+      ((rev_map, [ A; B ], [ (f, (A -> B)); (l, Type (list/3, A)) ],
+        Type (list/3, B)),
         LetFun 69
           (rec, @coq_rec,
             [
@@ -419,20 +419,20 @@ Value
                 [
                   (accu,
                     Type
-                      (list/1,
+                      (list/3,
                         B));
-                  (x, Type (list/1, A))
-                ], Type (list/1, B)),
+                  (x, Type (list/3, A))
+                ], Type (list/3, B)),
                 Match
                   (?, Variable (?, x/0),
                     [
                       (Constructor
-                        ([]/1),
+                        ([]/3),
                         Variable
                           (70,
                             accu/0));
                       (Constructor
-                        (cons/1,
+                        (cons/3,
                           a,
                           l),
                         Apply
@@ -443,7 +443,7 @@ Value
                             [
                               Constructor
                                 (71,
-                                  cons/1,
+                                  cons/3,
                                   Apply
                                     (71,
                                       Variable
@@ -465,19 +465,19 @@ Value
             ]) in
         Apply
           (72, Variable (72, rmap_f_coq_rec/0),
-            [ Constructor (72, []/1); Variable (72, l/0) ]))
+            [ Constructor (72, []/3); Variable (72, l/0) ]))
     ])
 
 74
 Value
   (rec, @coq_rec,
     [
-      ((iter, [ A; B ], [ (f, (A -> B)); (x, Type (list/1, A)) ], Type (unit/1)),
+      ((iter, [ A; B ], [ (f, (A -> B)); (x, Type (list/3, A)) ], Type (unit/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (75, tt/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (75, tt/3));
+              (Constructor (cons/3, a, l),
                 Sequence
                   (76,
                     Apply
@@ -512,15 +512,15 @@ Value
     [
       ((iteri_aux, [ A; B ],
         [
-          (i, Type (Z/1));
-          (f, (Type (Z/1) -> (A -> B)));
-          (x, Type (list/1, A))
-        ], Type (unit/1)),
+          (i, Type (Z/3));
+          (f, (Type (Z/3) -> (A -> B)));
+          (x, Type (list/3, A))
+        ], Type (unit/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (80, tt/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (80, tt/3));
+              (Constructor (cons/3, a, l),
                 Sequence
                   (81,
                     Apply
@@ -546,7 +546,7 @@ Value
                             (81,
                               Variable
                                 (81,
-                                  Z.add/1),
+                                  Z.add/3),
                               [
                                 Variable
                                   (81,
@@ -570,8 +570,8 @@ Value
   (non_rec, @.,
     [
       ((iteri, [ A; B ],
-        [ (f, (Type (Z/1) -> (A -> B))); (l, Type (list/1, A)) ],
-        Type (unit/1)),
+        [ (f, (Type (Z/3) -> (A -> B))); (l, Type (list/3, A)) ],
+        Type (unit/3)),
         Apply
           (84, Variable (84, iteri_aux/0),
             [
@@ -586,12 +586,12 @@ Value
   (rec, @coq_rec,
     [
       ((fold_left, [ A; B ],
-        [ (f, (A -> (B -> A))); (accu, A); (l, Type (list/1, B)) ], A),
+        [ (f, (A -> (B -> A))); (accu, A); (l, Type (list/3, B)) ], A),
         Match
           (87, Variable (87, l/0),
             [
-              (Constructor ([]/1), Variable (88, accu/0));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Variable (88, accu/0));
+              (Constructor (cons/3, a, l),
                 Apply
                   (89,
                     Variable
@@ -626,12 +626,12 @@ Value
   (rec, @coq_rec,
     [
       ((fold_right, [ A; B ],
-        [ (f, (A -> (B -> B))); (l, Type (list/1, A)); (accu, B) ], B),
+        [ (f, (A -> (B -> B))); (l, Type (list/3, A)); (accu, B) ], B),
         Match
           (93, Variable (93, l/0),
             [
-              (Constructor ([]/1), Variable (94, accu/0));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Variable (94, accu/0));
+              (Constructor (cons/3, a, l),
                 Apply
                   (95,
                     Variable
@@ -668,18 +668,18 @@ Value
       ((map2, [ A; B; C ],
         [
           (f, (A -> (B -> C)));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B))
-        ], Type (list/1, C)),
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B))
+        ], Type (list/3, C)),
         Match
           (99, Tuple (99, Variable (99, l1/0), Variable (99, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
-                Constructor (100, []/1));
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
+                Constructor (100, []/3));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 LetVar 101 r =
@@ -698,7 +698,7 @@ Value
                       ])
                   in
                 Constructor
-                  (101, cons/1,
+                  (101, cons/3,
                     Variable
                       (101,
                         r/0),
@@ -723,7 +723,7 @@ Value
                   (102,
                     Variable
                       (102,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (102,
@@ -739,9 +739,9 @@ Value
       ((rev_map2, [ A; B; C ],
         [
           (f, (A -> (B -> C)));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B))
-        ], Type (list/1, C)),
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B))
+        ], Type (list/3, C)),
         LetFun 106
           (rec, @coq_rec,
             [
@@ -749,11 +749,11 @@ Value
                 [
                   (accu,
                     Type
-                      (list/1,
+                      (list/3,
                         C));
-                  (l1, Type (list/1, A));
-                  (l2, Type (list/1, B))
-                ], Type (list/1, C)),
+                  (l1, Type (list/3, A));
+                  (l2, Type (list/3, B))
+                ], Type (list/3, C)),
                 Match
                   (107,
                     Tuple
@@ -767,19 +767,19 @@ Value
                     [
                       (Tuple
                         (Constructor
-                          ([]/1),
+                          ([]/3),
                           Constructor
-                            ([]/1)),
+                            ([]/3)),
                         Variable
                           (108,
                             accu/0));
                       (Tuple
                         (Constructor
-                          (cons/1,
+                          (cons/3,
                             a1,
                             l1),
                           Constructor
-                            (cons/1,
+                            (cons/3,
                               a2,
                               l2)),
                         Apply
@@ -790,7 +790,7 @@ Value
                             [
                               Constructor
                                 (109,
-                                  cons/1,
+                                  cons/3,
                                   Apply
                                     (109,
                                       Variable
@@ -821,7 +821,7 @@ Value
                           (110,
                             Variable
                               (110,
-                                OCaml.Pervasives.invalid_arg/1),
+                                OCaml.Pervasives.invalid_arg/3),
                             [
                               Constant
                                 (110,
@@ -832,7 +832,7 @@ Value
         Apply
           (111, Variable (111, rmap2_f_coq_rec/0),
             [
-              Constructor (111, []/1);
+              Constructor (111, []/3);
               Variable (111, l1/0);
               Variable (111, l2/0)
             ]))
@@ -845,18 +845,18 @@ Value
       ((iter2, [ A; B; C ],
         [
           (f, (A -> (B -> C)));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B))
-        ], Type (unit/1)),
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B))
+        ], Type (unit/3)),
         Match
           (114, Tuple (114, Variable (114, l1/0), Variable (114, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
-                Constructor (115, tt/1));
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
+                Constructor (115, tt/3));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Sequence
@@ -895,7 +895,7 @@ Value
                   (117,
                     Variable
                       (117,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (117,
@@ -912,18 +912,18 @@ Value
         [
           (f, (A -> (B -> (C -> A))));
           (accu, A);
-          (l1, Type (list/1, B));
-          (l2, Type (list/1, C))
+          (l1, Type (list/3, B));
+          (l2, Type (list/3, C))
         ], A),
         Match
           (121, Tuple (121, Variable (121, l1/0), Variable (121, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
                 Variable (122, accu/0));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Apply
@@ -963,7 +963,7 @@ Value
                   (124,
                     Variable
                       (124,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (124,
@@ -979,19 +979,19 @@ Value
       ((fold_right2, [ A; B; C ],
         [
           (f, (A -> (B -> (C -> C))));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B));
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B));
           (accu, C)
         ], C),
         Match
           (128, Tuple (128, Variable (128, l1/0), Variable (128, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
                 Variable (129, accu/0));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Apply
@@ -1031,7 +1031,7 @@ Value
                   (131,
                     Variable
                       (131,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (131,
@@ -1044,18 +1044,18 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((for_all, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ],
-        Type (bool/1)),
+      ((for_all, [ A ], [ (p, (A -> Type (bool/3))); (x, Type (list/3, A)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (135, true/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (135, true/3));
+              (Constructor (cons/3, a, l),
                 Apply
                   (136,
                     Variable
                       (136,
-                        andb/1),
+                        andb/3),
                     [
                       Apply
                         (136,
@@ -1088,18 +1088,18 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((_exists, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ],
-        Type (bool/1)),
+      ((_exists, [ A ], [ (p, (A -> Type (bool/3))); (x, Type (list/3, A)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1), Constructor (140, false/1));
-              (Constructor (cons/1, a, l),
+              (Constructor ([]/3), Constructor (140, false/3));
+              (Constructor (cons/3, a, l),
                 Apply
                   (141,
                     Variable
                       (141,
-                        orb/1),
+                        orb/3),
                     [
                       Apply
                         (141,
@@ -1134,26 +1134,26 @@ Value
     [
       ((for_all2, [ A; B ],
         [
-          (p, (A -> (B -> Type (bool/1))));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B))
-        ], Type (bool/1)),
+          (p, (A -> (B -> Type (bool/3))));
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B))
+        ], Type (bool/3)),
         Match
           (145, Tuple (145, Variable (145, l1/0), Variable (145, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
-                Constructor (146, true/1));
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
+                Constructor (146, true/3));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Apply
                   (147,
                     Variable
                       (147,
-                        andb/1),
+                        andb/3),
                     [
                       Apply
                         (147,
@@ -1190,7 +1190,7 @@ Value
                   (148,
                     Variable
                       (148,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (148,
@@ -1205,26 +1205,26 @@ Value
     [
       ((_exists2, [ A; B ],
         [
-          (p, (A -> (B -> Type (bool/1))));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, B))
-        ], Type (bool/1)),
+          (p, (A -> (B -> Type (bool/3))));
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, B))
+        ], Type (bool/3)),
         Match
           (152, Tuple (152, Variable (152, l1/0), Variable (152, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
-                Constructor (153, false/1));
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
+                Constructor (153, false/3));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Apply
                   (154,
                     Variable
                       (154,
-                        orb/1),
+                        orb/3),
                     [
                       Apply
                         (154,
@@ -1261,7 +1261,7 @@ Value
                   (155,
                     Variable
                       (155,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (155,
@@ -1274,21 +1274,21 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ A ], [ (p, (A -> Type (bool/1))); (x, Type (list/1, A)) ], A),
+      ((find, [ A ], [ (p, (A -> Type (bool/3))); (x, Type (list/3, A)) ], A),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1),
+              (Constructor ([]/3),
                 Apply
                   (192,
                     Variable
                       (192,
-                        OCaml.raise_Not_found/1),
+                        OCaml.raise_Not_found/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (cons/1, x, l),
+              (Constructor (cons/3, x, l),
                 IfThenElse
                   (193,
                     Apply
@@ -1324,8 +1324,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((find_all, [ A ], [ (p, (A -> Type (bool/1))) ],
-        (Type (list/1, A) -> Type (list/1, A))),
+      ((find_all, [ A ], [ (p, (A -> Type (bool/3))) ],
+        (Type (list/3, A) -> Type (list/3, A))),
         LetFun 197
           (rec, @coq_rec,
             [
@@ -1333,15 +1333,15 @@ Value
                 [
                   (accu,
                     Type
-                      (list/1,
+                      (list/3,
                         A));
-                  (x, Type (list/1, A))
-                ], Type (list/1, A)),
+                  (x, Type (list/3, A))
+                ], Type (list/3, A)),
                 Match
                   (?, Variable (?, x/0),
                     [
                       (Constructor
-                        ([]/1),
+                        ([]/3),
                         Apply
                           (198,
                             Variable
@@ -1353,7 +1353,7 @@ Value
                                   accu/0)
                             ]));
                       (Constructor
-                        (cons/1,
+                        (cons/3,
                           x,
                           l),
                         IfThenElse
@@ -1376,7 +1376,7 @@ Value
                                 [
                                   Constructor
                                     (199,
-                                      cons/1,
+                                      cons/3,
                                       Variable
                                         (199,
                                           x/0),
@@ -1403,7 +1403,7 @@ Value
                     ]))
             ]) in
         Apply
-          (200, Variable (200, find_coq_rec/0), [ Constructor (200, []/1) ]))
+          (200, Variable (200, find_coq_rec/0), [ Constructor (200, []/3) ]))
     ])
 
 202
@@ -1411,7 +1411,7 @@ Value
   (non_rec, @.,
     [
       ((filter, [ A ], [ ],
-        ((A -> Type (bool/1)) -> (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> Type (bool/3)) -> (Type (list/3, A) -> Type (list/3, A)))),
         Variable (202, find_all/0))
     ])
 
@@ -1419,22 +1419,22 @@ Value
 Value
   (non_rec, @.,
     [
-      ((partition, [ A ], [ (p, (A -> Type (bool/1))); (l, Type (list/1, A)) ],
-        (Type (list/1, A) * Type (list/1, A))),
+      ((partition, [ A ], [ (p, (A -> Type (bool/3))); (l, Type (list/3, A)) ],
+        (Type (list/3, A) * Type (list/3, A))),
         LetFun 205
           (rec, @coq_rec,
             [
               ((part_coq_rec, [ ],
                 [
-                  (yes, Type (list/1, A));
-                  (no, Type (list/1, A));
-                  (x, Type (list/1, A))
-                ], (Type (list/1, A) * Type (list/1, A))),
+                  (yes, Type (list/3, A));
+                  (no, Type (list/3, A));
+                  (x, Type (list/3, A))
+                ], (Type (list/3, A) * Type (list/3, A))),
                 Match
                   (?, Variable (?, x/0),
                     [
                       (Constructor
-                        ([]/1),
+                        ([]/3),
                         Tuple
                           (206,
                             Apply
@@ -1458,7 +1458,7 @@ Value
                                       no/0)
                                 ])));
                       (Constructor
-                        (cons/1,
+                        (cons/3,
                           x,
                           l),
                         IfThenElse
@@ -1481,7 +1481,7 @@ Value
                                 [
                                   Constructor
                                     (209,
-                                      cons/1,
+                                      cons/3,
                                       Variable
                                         (209,
                                           x/0),
@@ -1506,7 +1506,7 @@ Value
                                       yes/0);
                                   Constructor
                                     (211,
-                                      cons/1,
+                                      cons/3,
                                       Variable
                                         (211,
                                           x/0),
@@ -1522,8 +1522,8 @@ Value
         Apply
           (212, Variable (212, part_coq_rec/0),
             [
-              Constructor (212, []/1);
-              Constructor (212, []/1);
+              Constructor (212, []/3);
+              Constructor (212, []/3);
               Variable (212, l/0)
             ]))
     ])
@@ -1532,21 +1532,21 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((split, [ A; B ], [ (x, Type (list/1, (A * B))) ],
-        (Type (list/1, A) * Type (list/1, B))),
+      ((split, [ A; B ], [ (x, Type (list/3, (A * B))) ],
+        (Type (list/3, A) * Type (list/3, B))),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor ([]/1),
+              (Constructor ([]/3),
                 Tuple
                   (215,
                     Constructor
                       (215,
-                        []/1),
+                        []/3),
                     Constructor
                       (215,
-                        []/1)));
-              (Constructor (cons/1, Tuple (x, y), l),
+                        []/3)));
+              (Constructor (cons/3, Tuple (x, y), l),
                 Match
                   (217,
                     Apply
@@ -1567,7 +1567,7 @@ Value
                           (217,
                             Constructor
                               (217,
-                                cons/1,
+                                cons/3,
                                 Variable
                                   (217,
                                     x/0),
@@ -1576,7 +1576,7 @@ Value
                                     rx/0)),
                             Constructor
                               (217,
-                                cons/1,
+                                cons/3,
                                 Variable
                                   (217,
                                     y/0),
@@ -1591,21 +1591,21 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((combine, [ A; B ], [ (l1, Type (list/1, A)); (l2, Type (list/1, B)) ],
-        Type (list/1, (A * B))),
+      ((combine, [ A; B ], [ (l1, Type (list/3, A)); (l2, Type (list/3, B)) ],
+        Type (list/3, (A * B))),
         Match
           (221, Tuple (221, Variable (221, l1/0), Variable (221, l2/0)),
             [
-              (Tuple (Constructor ([]/1), Constructor ([]/1)),
-                Constructor (222, []/1));
+              (Tuple (Constructor ([]/3), Constructor ([]/3)),
+                Constructor (222, []/3));
               (Tuple
-                (Constructor (cons/1, a1, l1),
+                (Constructor (cons/3, a1, l1),
                   Constructor
-                    (cons/1,
+                    (cons/3,
                       a2,
                       l2)),
                 Constructor
-                  (223, cons/1,
+                  (223, cons/3,
                     Tuple
                       (223,
                         Variable
@@ -1632,7 +1632,7 @@ Value
                   (224,
                     Variable
                       (224,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (224,
@@ -1647,15 +1647,15 @@ Value
     [
       ((merge, [ A ],
         [
-          (cmp, (A -> (A -> Type (Z/1))));
-          (l1, Type (list/1, A));
-          (l2, Type (list/1, A))
-        ], Type (list/1, A)),
+          (cmp, (A -> (A -> Type (Z/3))));
+          (l1, Type (list/3, A));
+          (l2, Type (list/3, A))
+        ], Type (list/3, A)),
         LetFun 229
           (rec, @coq_rec,
             [
-              ((rev_merge_aux_coq_rec, [ ], [ (l2, Type (list/1, A)) ],
-                Type (list/1, A)),
+              ((rev_merge_aux_coq_rec, [ ], [ (l2, Type (list/3, A)) ],
+                Type (list/3, A)),
                 Match
                   (230,
                     Tuple
@@ -1669,7 +1669,7 @@ Value
                     [
                       (Tuple
                         (Constructor
-                          ([]/1),
+                          ([]/3),
                           l2),
                         Variable
                           (231,
@@ -1677,17 +1677,17 @@ Value
                       (Tuple
                         (l1,
                           Constructor
-                            ([]/1)),
+                            ([]/3)),
                         Variable
                           (232,
                             l1/0));
                       (Tuple
                         (Constructor
-                          (cons/1,
+                          (cons/3,
                             h1,
                             t1),
                           Constructor
-                            (cons/1,
+                            (cons/3,
                               h2,
                               t2)),
                         IfThenElse
@@ -1696,7 +1696,7 @@ Value
                               (234,
                                 Variable
                                   (234,
-                                    OCaml.Pervasives.le/1),
+                                    OCaml.Pervasives.le/3),
                                 [
                                   Apply
                                     (234,
@@ -1717,7 +1717,7 @@ Value
                                 ]),
                             Constructor
                               (235,
-                                cons/1,
+                                cons/3,
                                 Variable
                                   (235,
                                     h1/0),
@@ -1739,7 +1739,7 @@ Value
                                     ])),
                             Constructor
                               (236,
-                                cons/1,
+                                cons/3,
                                 Variable
                                   (236,
                                     h2/0),
@@ -1764,18 +1764,18 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((chop, [ A ], [ (k, Type (Z/1)); (l, Type (list/1, A)) ],
-        Type (list/1, A)),
+      ((chop, [ A ], [ (k, Type (Z/3)); (l, Type (list/3, A)) ],
+        Type (list/3, A)),
         IfThenElse
           (241,
             Apply
-              (241, Variable (241, equiv_decb/1),
+              (241, Variable (241, equiv_decb/3),
                 [ Variable (241, k/0); Constant (241, Int(0)) ]),
             Variable (241, l/0),
             Match
               (241, Variable (242, l/0),
                 [
-                  (Constructor (cons/1, x, t),
+                  (Constructor (cons/3, x, t),
                     Apply
                       (243,
                         Variable
@@ -1786,7 +1786,7 @@ Value
                             (243,
                               Variable
                                 (243,
-                                  Z.sub/1),
+                                  Z.sub/3),
                               [
                                 Variable
                                   (243,
@@ -1804,11 +1804,11 @@ Value
                       (244,
                         Variable
                           (244,
-                            OCaml.assert/1),
+                            OCaml.assert/3),
                         [
                           Constructor
                             (244,
-                              false/1)
+                              false/3)
                         ]))
                 ])))
     ])
@@ -1820,11 +1820,11 @@ Value
       [
         ((rev_merge, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (l1, Type (list/2, A));
-            (l2, Type (list/2, A));
-            (accu, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (l1, Type (list/4, A));
+            (l2, Type (list/4, A));
+            (accu, Type (list/4, A))
+          ], Type (list/4, A)),
           LetFun 250
             (rec, @coq_rec,
               [
@@ -1832,13 +1832,13 @@ Value
                   [
                     (l2,
                       Type
-                        (list/2,
+                        (list/4,
                           A));
                     (accu,
                       Type
-                        (list/2,
+                        (list/4,
                           A))
-                  ], Type (list/2, A)),
+                  ], Type (list/4, A)),
                   Match
                     (251,
                       Tuple
@@ -1852,7 +1852,7 @@ Value
                       [
                         (Tuple
                           (Constructor
-                            ([]/2),
+                            ([]/4),
                             l2),
                           Apply
                             (252,
@@ -1870,7 +1870,7 @@ Value
                         (Tuple
                           (l1,
                             Constructor
-                              ([]/2)),
+                              ([]/4)),
                           Apply
                             (253,
                               Variable
@@ -1886,11 +1886,11 @@ Value
                               ]));
                         (Tuple
                           (Constructor
-                            (cons/2,
+                            (cons/4,
                               h1,
                               t1),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 h2,
                                 t2)),
                           IfThenElse
@@ -1899,7 +1899,7 @@ Value
                                 (255,
                                   Variable
                                     (255,
-                                      OCaml.Pervasives.le/2),
+                                      OCaml.Pervasives.le/4),
                                   [
                                     Apply
                                       (255,
@@ -1935,7 +1935,7 @@ Value
                                         l2/0);
                                     Constructor
                                       (256,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (256,
                                             h1/0),
@@ -1954,7 +1954,7 @@ Value
                                         t2/0);
                                     Constructor
                                       (257,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (257,
                                             h2/0),
@@ -1975,11 +1975,11 @@ Value
       [
         ((rev_merge_rev, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (l1, Type (list/2, A));
-            (l2, Type (list/2, A));
-            (accu, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (l1, Type (list/4, A));
+            (l2, Type (list/4, A));
+            (accu, Type (list/4, A))
+          ], Type (list/4, A)),
           LetFun 262
             (rec, @coq_rec,
               [
@@ -1987,13 +1987,13 @@ Value
                   [
                     (l2,
                       Type
-                        (list/2,
+                        (list/4,
                           A));
                     (accu,
                       Type
-                        (list/2,
+                        (list/4,
                           A))
-                  ], Type (list/2, A)),
+                  ], Type (list/4, A)),
                   Match
                     (263,
                       Tuple
@@ -2007,7 +2007,7 @@ Value
                       [
                         (Tuple
                           (Constructor
-                            ([]/2),
+                            ([]/4),
                             l2),
                           Apply
                             (264,
@@ -2025,7 +2025,7 @@ Value
                         (Tuple
                           (l1,
                             Constructor
-                              ([]/2)),
+                              ([]/4)),
                           Apply
                             (265,
                               Variable
@@ -2041,11 +2041,11 @@ Value
                               ]));
                         (Tuple
                           (Constructor
-                            (cons/2,
+                            (cons/4,
                               h1,
                               t1),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 h2,
                                 t2)),
                           IfThenElse
@@ -2054,7 +2054,7 @@ Value
                                 (267,
                                   Variable
                                     (267,
-                                      OCaml.Pervasives.gt/2),
+                                      OCaml.Pervasives.gt/4),
                                   [
                                     Apply
                                       (267,
@@ -2090,7 +2090,7 @@ Value
                                         l2/0);
                                     Constructor
                                       (268,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (268,
                                             h1/0),
@@ -2109,7 +2109,7 @@ Value
                                         t2/0);
                                     Constructor
                                       (269,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (269,
                                             h2/0),
@@ -2130,25 +2130,25 @@ Value
       [
         ((sort_rec, [ A ],
           [
-            (counter, Type (nat/2));
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (counter, Type (nat/4));
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (274,
                       Tuple
@@ -2163,10 +2163,10 @@ Value
                         (Tuple
                           (Int(2),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Any))),
                           IfThenElse
@@ -2175,7 +2175,7 @@ Value
                                 (276,
                                   Variable
                                     (276,
-                                      OCaml.Pervasives.le/2),
+                                      OCaml.Pervasives.le/4),
                                   [
                                     Apply
                                       (276,
@@ -2196,44 +2196,44 @@ Value
                                   ]),
                               Constructor
                                 (276,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (276,
                                       x1/0),
                                   Constructor
                                     (276,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (276,
                                           x2/0),
                                       Constructor
                                         (276,
-                                          []/2))),
+                                          []/4))),
                               Constructor
                                 (276,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (276,
                                       x2/0),
                                   Constructor
                                     (276,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (276,
                                           x1/0),
                                       Constructor
                                         (276,
-                                          []/2)))));
+                                          []/4)))));
                         (Tuple
                           (Int(3),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Constructor
-                                      (cons/2,
+                                      (cons/4,
                                         x3,
                                         Any)))),
                           IfThenElse
@@ -2242,7 +2242,7 @@ Value
                                 (278,
                                   Variable
                                     (278,
-                                      OCaml.Pervasives.le/2),
+                                      OCaml.Pervasives.le/4),
                                   [
                                     Apply
                                       (278,
@@ -2267,7 +2267,7 @@ Value
                                     (279,
                                       Variable
                                         (279,
-                                          OCaml.Pervasives.le/2),
+                                          OCaml.Pervasives.le/4),
                                       [
                                         Apply
                                           (279,
@@ -2288,32 +2288,32 @@ Value
                                       ]),
                                   Constructor
                                     (279,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (279,
                                           x1/0),
                                       Constructor
                                         (279,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (279,
                                               x2/0),
                                           Constructor
                                             (279,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (279,
                                                   x3/0),
                                               Constructor
                                                 (279,
-                                                  []/2)))),
+                                                  []/4)))),
                                   IfThenElse
                                     (280,
                                       Apply
                                         (280,
                                           Variable
                                             (280,
-                                              OCaml.Pervasives.le/2),
+                                              OCaml.Pervasives.le/4),
                                           [
                                             Apply
                                               (280,
@@ -2334,53 +2334,53 @@ Value
                                           ]),
                                       Constructor
                                         (280,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (280,
                                               x1/0),
                                           Constructor
                                             (280,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (280,
                                                   x3/0),
                                               Constructor
                                                 (280,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (280,
                                                       x2/0),
                                                   Constructor
                                                     (280,
-                                                      []/2)))),
+                                                      []/4)))),
                                       Constructor
                                         (281,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (281,
                                               x3/0),
                                           Constructor
                                             (281,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (281,
                                                   x1/0),
                                               Constructor
                                                 (281,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (281,
                                                       x2/0),
                                                   Constructor
                                                     (281,
-                                                      []/2)))))),
+                                                      []/4)))))),
                               IfThenElse
                                 (282,
                                   Apply
                                     (283,
                                       Variable
                                         (283,
-                                          OCaml.Pervasives.le/2),
+                                          OCaml.Pervasives.le/4),
                                       [
                                         Apply
                                           (283,
@@ -2401,32 +2401,32 @@ Value
                                       ]),
                                   Constructor
                                     (283,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (283,
                                           x2/0),
                                       Constructor
                                         (283,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (283,
                                               x1/0),
                                           Constructor
                                             (283,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (283,
                                                   x3/0),
                                               Constructor
                                                 (283,
-                                                  []/2)))),
+                                                  []/4)))),
                                   IfThenElse
                                     (284,
                                       Apply
                                         (284,
                                           Variable
                                             (284,
-                                              OCaml.Pervasives.le/2),
+                                              OCaml.Pervasives.le/4),
                                           [
                                             Apply
                                               (284,
@@ -2447,46 +2447,46 @@ Value
                                           ]),
                                       Constructor
                                         (284,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (284,
                                               x2/0),
                                           Constructor
                                             (284,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (284,
                                                   x3/0),
                                               Constructor
                                                 (284,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (284,
                                                       x1/0),
                                                   Constructor
                                                     (284,
-                                                      []/2)))),
+                                                      []/4)))),
                                       Constructor
                                         (285,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (285,
                                               x3/0),
                                           Constructor
                                             (285,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (285,
                                                   x2/0),
                                               Constructor
                                                 (285,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (285,
                                                       x1/0),
                                                   Constructor
                                                     (285,
-                                                      []/2))))))));
+                                                      []/4))))))));
                         (Tuple
                           (n,
                             l),
@@ -2498,7 +2498,7 @@ Value
                               (288,
                                 Variable
                                   (288,
-                                    Z.div/2),
+                                    Z.div/4),
                                 [
                                   Variable
                                     (288,
@@ -2516,7 +2516,7 @@ Value
                               (289,
                                 Variable
                                   (289,
-                                    Z.sub/2),
+                                    Z.sub/4),
                                 [
                                   Variable
                                     (289,
@@ -2617,31 +2617,31 @@ Value
                                     s2/0);
                                 Constructor
                                   (293,
-                                    []/2)
+                                    []/4)
                               ]))
                       ]))
               ]));
         ((rev_sort_rec, [ A ],
           [
-            (counter, Type (nat/2));
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (counter, Type (nat/4));
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (296,
                       Tuple
@@ -2656,10 +2656,10 @@ Value
                         (Tuple
                           (Int(2),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Any))),
                           IfThenElse
@@ -2668,7 +2668,7 @@ Value
                                 (298,
                                   Variable
                                     (298,
-                                      OCaml.Pervasives.gt/2),
+                                      OCaml.Pervasives.gt/4),
                                   [
                                     Apply
                                       (298,
@@ -2689,44 +2689,44 @@ Value
                                   ]),
                               Constructor
                                 (298,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (298,
                                       x1/0),
                                   Constructor
                                     (298,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (298,
                                           x2/0),
                                       Constructor
                                         (298,
-                                          []/2))),
+                                          []/4))),
                               Constructor
                                 (298,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (298,
                                       x2/0),
                                   Constructor
                                     (298,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (298,
                                           x1/0),
                                       Constructor
                                         (298,
-                                          []/2)))));
+                                          []/4)))));
                         (Tuple
                           (Int(3),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Constructor
-                                      (cons/2,
+                                      (cons/4,
                                         x3,
                                         Any)))),
                           IfThenElse
@@ -2735,7 +2735,7 @@ Value
                                 (300,
                                   Variable
                                     (300,
-                                      OCaml.Pervasives.gt/2),
+                                      OCaml.Pervasives.gt/4),
                                   [
                                     Apply
                                       (300,
@@ -2760,7 +2760,7 @@ Value
                                     (301,
                                       Variable
                                         (301,
-                                          OCaml.Pervasives.gt/2),
+                                          OCaml.Pervasives.gt/4),
                                       [
                                         Apply
                                           (301,
@@ -2781,32 +2781,32 @@ Value
                                       ]),
                                   Constructor
                                     (301,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (301,
                                           x1/0),
                                       Constructor
                                         (301,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (301,
                                               x2/0),
                                           Constructor
                                             (301,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (301,
                                                   x3/0),
                                               Constructor
                                                 (301,
-                                                  []/2)))),
+                                                  []/4)))),
                                   IfThenElse
                                     (302,
                                       Apply
                                         (302,
                                           Variable
                                             (302,
-                                              OCaml.Pervasives.gt/2),
+                                              OCaml.Pervasives.gt/4),
                                           [
                                             Apply
                                               (302,
@@ -2827,53 +2827,53 @@ Value
                                           ]),
                                       Constructor
                                         (302,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (302,
                                               x1/0),
                                           Constructor
                                             (302,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (302,
                                                   x3/0),
                                               Constructor
                                                 (302,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (302,
                                                       x2/0),
                                                   Constructor
                                                     (302,
-                                                      []/2)))),
+                                                      []/4)))),
                                       Constructor
                                         (303,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (303,
                                               x3/0),
                                           Constructor
                                             (303,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (303,
                                                   x1/0),
                                               Constructor
                                                 (303,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (303,
                                                       x2/0),
                                                   Constructor
                                                     (303,
-                                                      []/2)))))),
+                                                      []/4)))))),
                               IfThenElse
                                 (304,
                                   Apply
                                     (305,
                                       Variable
                                         (305,
-                                          OCaml.Pervasives.gt/2),
+                                          OCaml.Pervasives.gt/4),
                                       [
                                         Apply
                                           (305,
@@ -2894,32 +2894,32 @@ Value
                                       ]),
                                   Constructor
                                     (305,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (305,
                                           x2/0),
                                       Constructor
                                         (305,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (305,
                                               x1/0),
                                           Constructor
                                             (305,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (305,
                                                   x3/0),
                                               Constructor
                                                 (305,
-                                                  []/2)))),
+                                                  []/4)))),
                                   IfThenElse
                                     (306,
                                       Apply
                                         (306,
                                           Variable
                                             (306,
-                                              OCaml.Pervasives.gt/2),
+                                              OCaml.Pervasives.gt/4),
                                           [
                                             Apply
                                               (306,
@@ -2940,46 +2940,46 @@ Value
                                           ]),
                                       Constructor
                                         (306,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (306,
                                               x2/0),
                                           Constructor
                                             (306,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (306,
                                                   x3/0),
                                               Constructor
                                                 (306,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (306,
                                                       x1/0),
                                                   Constructor
                                                     (306,
-                                                      []/2)))),
+                                                      []/4)))),
                                       Constructor
                                         (307,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (307,
                                               x3/0),
                                           Constructor
                                             (307,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (307,
                                                   x2/0),
                                               Constructor
                                                 (307,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (307,
                                                       x1/0),
                                                   Constructor
                                                     (307,
-                                                      []/2))))))));
+                                                      []/4))))))));
                         (Tuple
                           (n,
                             l),
@@ -2991,7 +2991,7 @@ Value
                               (310,
                                 Variable
                                   (310,
-                                    Z.div/2),
+                                    Z.div/4),
                                 [
                                   Variable
                                     (310,
@@ -3009,7 +3009,7 @@ Value
                               (311,
                                 Variable
                                   (311,
-                                    Z.sub/2),
+                                    Z.sub/4),
                                 [
                                   Variable
                                     (311,
@@ -3110,7 +3110,7 @@ Value
                                     s2/0);
                                 Constructor
                                   (315,
-                                    []/2)
+                                    []/4)
                               ]))
                       ]))
               ]))
@@ -3122,10 +3122,10 @@ Value
       [
         ((sort, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Apply
             (?, Variable (?, sort_rec/0),
               [
@@ -3133,7 +3133,7 @@ Value
                   (?,
                     Variable
                       (?,
-                        read_counter/2),
+                        read_counter/4),
                     [
                       Tuple
                         (?)
@@ -3150,10 +3150,10 @@ Value
       [
         ((rev_sort, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Apply
             (?, Variable (?, rev_sort_rec/0),
               [
@@ -3161,7 +3161,7 @@ Value
                   (?,
                     Variable
                       (?,
-                        read_counter/2),
+                        read_counter/4),
                     [
                       Tuple
                         (?)
@@ -3177,14 +3177,14 @@ Value
   (non_rec, @.,
     [
       ((stable_sort, [ A ],
-        [ (cmp, (A -> (A -> Type (Z/1)))); (l, Type (list/1, A)) ],
-        Type (list/1, A)),
+        [ (cmp, (A -> (A -> Type (Z/3)))); (l, Type (list/3, A)) ],
+        Type (list/3, A)),
         LetVar 319 len =
           Apply (319, Variable (319, length/0), [ Variable (319, l/0) ]) in
         IfThenElse
           (320,
             Apply
-              (320, Variable (320, OCaml.Pervasives.lt/1),
+              (320, Variable (320, OCaml.Pervasives.lt/3),
                 [ Variable (320, len/0); Constant (320, Int(2)) ]),
             Variable (320, l/0),
             Apply
@@ -3201,7 +3201,7 @@ Value
   (non_rec, @.,
     [
       ((sort, [ A ], [ ],
-        ((A -> (A -> Type (Z/1))) -> (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> (A -> Type (Z/3))) -> (Type (list/3, A) -> Type (list/3, A)))),
         Variable (322, stable_sort/0))
     ])
 
@@ -3210,7 +3210,7 @@ Value
   (non_rec, @.,
     [
       ((fast_sort, [ A ], [ ],
-        ((A -> (A -> Type (Z/1))) -> (Type (list/1, A) -> Type (list/1, A)))),
+        ((A -> (A -> Type (Z/3))) -> (Type (list/3, A) -> Type (list/3, A)))),
         Variable (323, stable_sort/0))
     ])
 
@@ -3221,11 +3221,11 @@ Value
       [
         ((rev_merge, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (l1, Type (list/2, A));
-            (l2, Type (list/2, A));
-            (accu, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (l1, Type (list/4, A));
+            (l2, Type (list/4, A));
+            (accu, Type (list/4, A))
+          ], Type (list/4, A)),
           LetFun 328
             (rec, @coq_rec,
               [
@@ -3233,13 +3233,13 @@ Value
                   [
                     (l2,
                       Type
-                        (list/2,
+                        (list/4,
                           A));
                     (accu,
                       Type
-                        (list/2,
+                        (list/4,
                           A))
-                  ], Type (list/2, A)),
+                  ], Type (list/4, A)),
                   Match
                     (329,
                       Tuple
@@ -3253,7 +3253,7 @@ Value
                       [
                         (Tuple
                           (Constructor
-                            ([]/2),
+                            ([]/4),
                             l2),
                           Apply
                             (330,
@@ -3271,7 +3271,7 @@ Value
                         (Tuple
                           (l1,
                             Constructor
-                              ([]/2)),
+                              ([]/4)),
                           Apply
                             (331,
                               Variable
@@ -3287,11 +3287,11 @@ Value
                               ]));
                         (Tuple
                           (Constructor
-                            (cons/2,
+                            (cons/4,
                               h1,
                               t1),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 h2,
                                 t2)),
                           LetVar
@@ -3318,7 +3318,7 @@ Value
                                 (334,
                                   Variable
                                     (334,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (334,
@@ -3344,7 +3344,7 @@ Value
                                         t2/0);
                                     Constructor
                                       (334,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (334,
                                             h1/0),
@@ -3358,7 +3358,7 @@ Value
                                     (335,
                                       Variable
                                         (335,
-                                          OCaml.Pervasives.lt/2),
+                                          OCaml.Pervasives.lt/4),
                                       [
                                         Variable
                                           (335,
@@ -3384,7 +3384,7 @@ Value
                                             l2/0);
                                         Constructor
                                           (336,
-                                            cons/2,
+                                            cons/4,
                                             Variable
                                               (336,
                                                 h1/0),
@@ -3403,7 +3403,7 @@ Value
                                             t2/0);
                                         Constructor
                                           (337,
-                                            cons/2,
+                                            cons/4,
                                             Variable
                                               (337,
                                                 h2/0),
@@ -3424,11 +3424,11 @@ Value
       [
         ((rev_merge_rev, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (l1, Type (list/2, A));
-            (l2, Type (list/2, A));
-            (accu, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (l1, Type (list/4, A));
+            (l2, Type (list/4, A));
+            (accu, Type (list/4, A))
+          ], Type (list/4, A)),
           LetFun 342
             (rec, @coq_rec,
               [
@@ -3436,13 +3436,13 @@ Value
                   [
                     (l2,
                       Type
-                        (list/2,
+                        (list/4,
                           A));
                     (accu,
                       Type
-                        (list/2,
+                        (list/4,
                           A))
-                  ], Type (list/2, A)),
+                  ], Type (list/4, A)),
                   Match
                     (343,
                       Tuple
@@ -3456,7 +3456,7 @@ Value
                       [
                         (Tuple
                           (Constructor
-                            ([]/2),
+                            ([]/4),
                             l2),
                           Apply
                             (344,
@@ -3474,7 +3474,7 @@ Value
                         (Tuple
                           (l1,
                             Constructor
-                              ([]/2)),
+                              ([]/4)),
                           Apply
                             (345,
                               Variable
@@ -3490,11 +3490,11 @@ Value
                               ]));
                         (Tuple
                           (Constructor
-                            (cons/2,
+                            (cons/4,
                               h1,
                               t1),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 h2,
                                 t2)),
                           LetVar
@@ -3521,7 +3521,7 @@ Value
                                 (348,
                                   Variable
                                     (348,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (348,
@@ -3547,7 +3547,7 @@ Value
                                         t2/0);
                                     Constructor
                                       (348,
-                                        cons/2,
+                                        cons/4,
                                         Variable
                                           (348,
                                             h1/0),
@@ -3561,7 +3561,7 @@ Value
                                     (349,
                                       Variable
                                         (349,
-                                          OCaml.Pervasives.gt/2),
+                                          OCaml.Pervasives.gt/4),
                                       [
                                         Variable
                                           (349,
@@ -3587,7 +3587,7 @@ Value
                                             l2/0);
                                         Constructor
                                           (350,
-                                            cons/2,
+                                            cons/4,
                                             Variable
                                               (350,
                                                 h1/0),
@@ -3606,7 +3606,7 @@ Value
                                             t2/0);
                                         Constructor
                                           (351,
-                                            cons/2,
+                                            cons/4,
                                             Variable
                                               (351,
                                                 h2/0),
@@ -3627,25 +3627,25 @@ Value
       [
         ((sort_rec, [ A ],
           [
-            (counter, Type (nat/2));
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (counter, Type (nat/4));
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (356,
                       Tuple
@@ -3660,10 +3660,10 @@ Value
                         (Tuple
                           (Int(2),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Any))),
                           LetVar
@@ -3690,7 +3690,7 @@ Value
                                 (359,
                                   Variable
                                     (359,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (359,
@@ -3701,20 +3701,20 @@ Value
                                   ]),
                               Constructor
                                 (359,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (359,
                                       x1/0),
                                   Constructor
                                     (359,
-                                      []/2)),
+                                      []/4)),
                               IfThenElse
                                 (360,
                                   Apply
                                     (360,
                                       Variable
                                         (360,
-                                          OCaml.Pervasives.lt/2),
+                                          OCaml.Pervasives.lt/4),
                                       [
                                         Variable
                                           (360,
@@ -3725,44 +3725,44 @@ Value
                                       ]),
                                   Constructor
                                     (360,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (360,
                                           x1/0),
                                       Constructor
                                         (360,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (360,
                                               x2/0),
                                           Constructor
                                             (360,
-                                              []/2))),
+                                              []/4))),
                                   Constructor
                                     (360,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (360,
                                           x2/0),
                                       Constructor
                                         (360,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (360,
                                               x1/0),
                                           Constructor
                                             (360,
-                                              []/2))))));
+                                              []/4))))));
                         (Tuple
                           (Int(3),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Constructor
-                                      (cons/2,
+                                      (cons/4,
                                         x3,
                                         Any)))),
                           LetVar
@@ -3789,7 +3789,7 @@ Value
                                 (363,
                                   Variable
                                     (363,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (363,
@@ -3822,7 +3822,7 @@ Value
                                     (365,
                                       Variable
                                         (365,
-                                          equiv_decb/2),
+                                          equiv_decb/4),
                                       [
                                         Variable
                                           (365,
@@ -3833,20 +3833,20 @@ Value
                                       ]),
                                   Constructor
                                     (365,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (365,
                                           x2/0),
                                       Constructor
                                         (365,
-                                          []/2)),
+                                          []/4)),
                                   IfThenElse
                                     (366,
                                       Apply
                                         (366,
                                           Variable
                                             (366,
-                                              OCaml.Pervasives.lt/2),
+                                              OCaml.Pervasives.lt/4),
                                           [
                                             Variable
                                               (366,
@@ -3857,41 +3857,41 @@ Value
                                           ]),
                                       Constructor
                                         (366,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (366,
                                               x2/0),
                                           Constructor
                                             (366,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (366,
                                                   x3/0),
                                               Constructor
                                                 (366,
-                                                  []/2))),
+                                                  []/4))),
                                       Constructor
                                         (366,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (366,
                                               x3/0),
                                           Constructor
                                             (366,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (366,
                                                   x2/0),
                                               Constructor
                                                 (366,
-                                                  []/2))))),
+                                                  []/4))))),
                               IfThenElse
                                 (367,
                                   Apply
                                     (367,
                                       Variable
                                         (367,
-                                          OCaml.Pervasives.lt/2),
+                                          OCaml.Pervasives.lt/4),
                                       [
                                         Variable
                                           (367,
@@ -3924,7 +3924,7 @@ Value
                                         (369,
                                           Variable
                                             (369,
-                                              equiv_decb/2),
+                                              equiv_decb/4),
                                           [
                                             Variable
                                               (369,
@@ -3935,26 +3935,26 @@ Value
                                           ]),
                                       Constructor
                                         (369,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (369,
                                               x1/0),
                                           Constructor
                                             (369,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (369,
                                                   x2/0),
                                               Constructor
                                                 (369,
-                                                  []/2))),
+                                                  []/4))),
                                       IfThenElse
                                         (370,
                                           Apply
                                             (370,
                                               Variable
                                                 (370,
-                                                  OCaml.Pervasives.lt/2),
+                                                  OCaml.Pervasives.lt/4),
                                               [
                                                 Variable
                                                   (370,
@@ -3965,25 +3965,25 @@ Value
                                               ]),
                                           Constructor
                                             (370,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (370,
                                                   x1/0),
                                               Constructor
                                                 (370,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (370,
                                                       x2/0),
                                                   Constructor
                                                     (370,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (370,
                                                           x3/0),
                                                       Constructor
                                                         (370,
-                                                          []/2)))),
+                                                          []/4)))),
                                           LetVar
                                             371
                                             c
@@ -4008,7 +4008,7 @@ Value
                                                 (372,
                                                   Variable
                                                     (372,
-                                                      equiv_decb/2),
+                                                      equiv_decb/4),
                                                   [
                                                     Variable
                                                       (372,
@@ -4019,26 +4019,26 @@ Value
                                                   ]),
                                               Constructor
                                                 (372,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (372,
                                                       x1/0),
                                                   Constructor
                                                     (372,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (372,
                                                           x2/0),
                                                       Constructor
                                                         (372,
-                                                          []/2))),
+                                                          []/4))),
                                               IfThenElse
                                                 (373,
                                                   Apply
                                                     (373,
                                                       Variable
                                                         (373,
-                                                          OCaml.Pervasives.lt/2),
+                                                          OCaml.Pervasives.lt/4),
                                                       [
                                                         Variable
                                                           (373,
@@ -4049,46 +4049,46 @@ Value
                                                       ]),
                                                   Constructor
                                                     (373,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (373,
                                                           x1/0),
                                                       Constructor
                                                         (373,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (373,
                                                               x3/0),
                                                           Constructor
                                                             (373,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (373,
                                                                   x2/0),
                                                               Constructor
                                                                 (373,
-                                                                  []/2)))),
+                                                                  []/4)))),
                                                   Constructor
                                                     (374,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (374,
                                                           x3/0),
                                                       Constructor
                                                         (374,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (374,
                                                               x1/0),
                                                           Constructor
                                                             (374,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (374,
                                                                   x2/0),
                                                               Constructor
                                                                 (374,
-                                                                  []/2)))))))),
+                                                                  []/4)))))))),
                                   LetVar
                                     375
                                     c
@@ -4113,7 +4113,7 @@ Value
                                         (377,
                                           Variable
                                             (377,
-                                              equiv_decb/2),
+                                              equiv_decb/4),
                                           [
                                             Variable
                                               (377,
@@ -4124,26 +4124,26 @@ Value
                                           ]),
                                       Constructor
                                         (377,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (377,
                                               x2/0),
                                           Constructor
                                             (377,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (377,
                                                   x1/0),
                                               Constructor
                                                 (377,
-                                                  []/2))),
+                                                  []/4))),
                                       IfThenElse
                                         (378,
                                           Apply
                                             (378,
                                               Variable
                                                 (378,
-                                                  OCaml.Pervasives.lt/2),
+                                                  OCaml.Pervasives.lt/4),
                                               [
                                                 Variable
                                                   (378,
@@ -4154,25 +4154,25 @@ Value
                                               ]),
                                           Constructor
                                             (378,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (378,
                                                   x2/0),
                                               Constructor
                                                 (378,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (378,
                                                       x1/0),
                                                   Constructor
                                                     (378,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (378,
                                                           x3/0),
                                                       Constructor
                                                         (378,
-                                                          []/2)))),
+                                                          []/4)))),
                                           LetVar
                                             379
                                             c
@@ -4197,7 +4197,7 @@ Value
                                                 (380,
                                                   Variable
                                                     (380,
-                                                      equiv_decb/2),
+                                                      equiv_decb/4),
                                                   [
                                                     Variable
                                                       (380,
@@ -4208,26 +4208,26 @@ Value
                                                   ]),
                                               Constructor
                                                 (380,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (380,
                                                       x2/0),
                                                   Constructor
                                                     (380,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (380,
                                                           x1/0),
                                                       Constructor
                                                         (380,
-                                                          []/2))),
+                                                          []/4))),
                                               IfThenElse
                                                 (381,
                                                   Apply
                                                     (381,
                                                       Variable
                                                         (381,
-                                                          OCaml.Pervasives.lt/2),
+                                                          OCaml.Pervasives.lt/4),
                                                       [
                                                         Variable
                                                           (381,
@@ -4238,46 +4238,46 @@ Value
                                                       ]),
                                                   Constructor
                                                     (381,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (381,
                                                           x2/0),
                                                       Constructor
                                                         (381,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (381,
                                                               x3/0),
                                                           Constructor
                                                             (381,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (381,
                                                                   x1/0),
                                                               Constructor
                                                                 (381,
-                                                                  []/2)))),
+                                                                  []/4)))),
                                                   Constructor
                                                     (382,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (382,
                                                           x3/0),
                                                       Constructor
                                                         (382,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (382,
                                                               x2/0),
                                                           Constructor
                                                             (382,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (382,
                                                                   x1/0),
                                                               Constructor
                                                                 (382,
-                                                                  []/2)))))))))));
+                                                                  []/4)))))))))));
                         (Tuple
                           (n,
                             l),
@@ -4289,7 +4289,7 @@ Value
                               (385,
                                 Variable
                                   (385,
-                                    Z.div/2),
+                                    Z.div/4),
                                 [
                                   Variable
                                     (385,
@@ -4307,7 +4307,7 @@ Value
                               (386,
                                 Variable
                                   (386,
-                                    Z.sub/2),
+                                    Z.sub/4),
                                 [
                                   Variable
                                     (386,
@@ -4408,31 +4408,31 @@ Value
                                     s2/0);
                                 Constructor
                                   (390,
-                                    []/2)
+                                    []/4)
                               ]))
                       ]))
               ]));
         ((rev_sort_rec, [ A ],
           [
-            (counter, Type (nat/2));
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (counter, Type (nat/4));
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (393,
                       Tuple
@@ -4447,10 +4447,10 @@ Value
                         (Tuple
                           (Int(2),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Any))),
                           LetVar
@@ -4477,7 +4477,7 @@ Value
                                 (396,
                                   Variable
                                     (396,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (396,
@@ -4488,20 +4488,20 @@ Value
                                   ]),
                               Constructor
                                 (396,
-                                  cons/2,
+                                  cons/4,
                                   Variable
                                     (396,
                                       x1/0),
                                   Constructor
                                     (396,
-                                      []/2)),
+                                      []/4)),
                               IfThenElse
                                 (397,
                                   Apply
                                     (397,
                                       Variable
                                         (397,
-                                          OCaml.Pervasives.gt/2),
+                                          OCaml.Pervasives.gt/4),
                                       [
                                         Variable
                                           (397,
@@ -4512,44 +4512,44 @@ Value
                                       ]),
                                   Constructor
                                     (397,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (397,
                                           x1/0),
                                       Constructor
                                         (397,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (397,
                                               x2/0),
                                           Constructor
                                             (397,
-                                              []/2))),
+                                              []/4))),
                                   Constructor
                                     (397,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (397,
                                           x2/0),
                                       Constructor
                                         (397,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (397,
                                               x1/0),
                                           Constructor
                                             (397,
-                                              []/2))))));
+                                              []/4))))));
                         (Tuple
                           (Int(3),
                             Constructor
-                              (cons/2,
+                              (cons/4,
                                 x1,
                                 Constructor
-                                  (cons/2,
+                                  (cons/4,
                                     x2,
                                     Constructor
-                                      (cons/2,
+                                      (cons/4,
                                         x3,
                                         Any)))),
                           LetVar
@@ -4576,7 +4576,7 @@ Value
                                 (400,
                                   Variable
                                     (400,
-                                      equiv_decb/2),
+                                      equiv_decb/4),
                                   [
                                     Variable
                                       (400,
@@ -4609,7 +4609,7 @@ Value
                                     (402,
                                       Variable
                                         (402,
-                                          equiv_decb/2),
+                                          equiv_decb/4),
                                       [
                                         Variable
                                           (402,
@@ -4620,20 +4620,20 @@ Value
                                       ]),
                                   Constructor
                                     (402,
-                                      cons/2,
+                                      cons/4,
                                       Variable
                                         (402,
                                           x2/0),
                                       Constructor
                                         (402,
-                                          []/2)),
+                                          []/4)),
                                   IfThenElse
                                     (403,
                                       Apply
                                         (403,
                                           Variable
                                             (403,
-                                              OCaml.Pervasives.gt/2),
+                                              OCaml.Pervasives.gt/4),
                                           [
                                             Variable
                                               (403,
@@ -4644,41 +4644,41 @@ Value
                                           ]),
                                       Constructor
                                         (403,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (403,
                                               x2/0),
                                           Constructor
                                             (403,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (403,
                                                   x3/0),
                                               Constructor
                                                 (403,
-                                                  []/2))),
+                                                  []/4))),
                                       Constructor
                                         (403,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (403,
                                               x3/0),
                                           Constructor
                                             (403,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (403,
                                                   x2/0),
                                               Constructor
                                                 (403,
-                                                  []/2))))),
+                                                  []/4))))),
                               IfThenElse
                                 (404,
                                   Apply
                                     (404,
                                       Variable
                                         (404,
-                                          OCaml.Pervasives.gt/2),
+                                          OCaml.Pervasives.gt/4),
                                       [
                                         Variable
                                           (404,
@@ -4711,7 +4711,7 @@ Value
                                         (406,
                                           Variable
                                             (406,
-                                              equiv_decb/2),
+                                              equiv_decb/4),
                                           [
                                             Variable
                                               (406,
@@ -4722,26 +4722,26 @@ Value
                                           ]),
                                       Constructor
                                         (406,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (406,
                                               x1/0),
                                           Constructor
                                             (406,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (406,
                                                   x2/0),
                                               Constructor
                                                 (406,
-                                                  []/2))),
+                                                  []/4))),
                                       IfThenElse
                                         (407,
                                           Apply
                                             (407,
                                               Variable
                                                 (407,
-                                                  OCaml.Pervasives.gt/2),
+                                                  OCaml.Pervasives.gt/4),
                                               [
                                                 Variable
                                                   (407,
@@ -4752,25 +4752,25 @@ Value
                                               ]),
                                           Constructor
                                             (407,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (407,
                                                   x1/0),
                                               Constructor
                                                 (407,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (407,
                                                       x2/0),
                                                   Constructor
                                                     (407,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (407,
                                                           x3/0),
                                                       Constructor
                                                         (407,
-                                                          []/2)))),
+                                                          []/4)))),
                                           LetVar
                                             408
                                             c
@@ -4795,7 +4795,7 @@ Value
                                                 (409,
                                                   Variable
                                                     (409,
-                                                      equiv_decb/2),
+                                                      equiv_decb/4),
                                                   [
                                                     Variable
                                                       (409,
@@ -4806,26 +4806,26 @@ Value
                                                   ]),
                                               Constructor
                                                 (409,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (409,
                                                       x1/0),
                                                   Constructor
                                                     (409,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (409,
                                                           x2/0),
                                                       Constructor
                                                         (409,
-                                                          []/2))),
+                                                          []/4))),
                                               IfThenElse
                                                 (410,
                                                   Apply
                                                     (410,
                                                       Variable
                                                         (410,
-                                                          OCaml.Pervasives.gt/2),
+                                                          OCaml.Pervasives.gt/4),
                                                       [
                                                         Variable
                                                           (410,
@@ -4836,46 +4836,46 @@ Value
                                                       ]),
                                                   Constructor
                                                     (410,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (410,
                                                           x1/0),
                                                       Constructor
                                                         (410,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (410,
                                                               x3/0),
                                                           Constructor
                                                             (410,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (410,
                                                                   x2/0),
                                                               Constructor
                                                                 (410,
-                                                                  []/2)))),
+                                                                  []/4)))),
                                                   Constructor
                                                     (411,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (411,
                                                           x3/0),
                                                       Constructor
                                                         (411,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (411,
                                                               x1/0),
                                                           Constructor
                                                             (411,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (411,
                                                                   x2/0),
                                                               Constructor
                                                                 (411,
-                                                                  []/2)))))))),
+                                                                  []/4)))))))),
                                   LetVar
                                     412
                                     c
@@ -4900,7 +4900,7 @@ Value
                                         (414,
                                           Variable
                                             (414,
-                                              equiv_decb/2),
+                                              equiv_decb/4),
                                           [
                                             Variable
                                               (414,
@@ -4911,26 +4911,26 @@ Value
                                           ]),
                                       Constructor
                                         (414,
-                                          cons/2,
+                                          cons/4,
                                           Variable
                                             (414,
                                               x2/0),
                                           Constructor
                                             (414,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (414,
                                                   x1/0),
                                               Constructor
                                                 (414,
-                                                  []/2))),
+                                                  []/4))),
                                       IfThenElse
                                         (415,
                                           Apply
                                             (415,
                                               Variable
                                                 (415,
-                                                  OCaml.Pervasives.gt/2),
+                                                  OCaml.Pervasives.gt/4),
                                               [
                                                 Variable
                                                   (415,
@@ -4941,25 +4941,25 @@ Value
                                               ]),
                                           Constructor
                                             (415,
-                                              cons/2,
+                                              cons/4,
                                               Variable
                                                 (415,
                                                   x2/0),
                                               Constructor
                                                 (415,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (415,
                                                       x1/0),
                                                   Constructor
                                                     (415,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (415,
                                                           x3/0),
                                                       Constructor
                                                         (415,
-                                                          []/2)))),
+                                                          []/4)))),
                                           LetVar
                                             416
                                             c
@@ -4984,7 +4984,7 @@ Value
                                                 (417,
                                                   Variable
                                                     (417,
-                                                      equiv_decb/2),
+                                                      equiv_decb/4),
                                                   [
                                                     Variable
                                                       (417,
@@ -4995,26 +4995,26 @@ Value
                                                   ]),
                                               Constructor
                                                 (417,
-                                                  cons/2,
+                                                  cons/4,
                                                   Variable
                                                     (417,
                                                       x2/0),
                                                   Constructor
                                                     (417,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (417,
                                                           x1/0),
                                                       Constructor
                                                         (417,
-                                                          []/2))),
+                                                          []/4))),
                                               IfThenElse
                                                 (418,
                                                   Apply
                                                     (418,
                                                       Variable
                                                         (418,
-                                                          OCaml.Pervasives.gt/2),
+                                                          OCaml.Pervasives.gt/4),
                                                       [
                                                         Variable
                                                           (418,
@@ -5025,46 +5025,46 @@ Value
                                                       ]),
                                                   Constructor
                                                     (418,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (418,
                                                           x2/0),
                                                       Constructor
                                                         (418,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (418,
                                                               x3/0),
                                                           Constructor
                                                             (418,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (418,
                                                                   x1/0),
                                                               Constructor
                                                                 (418,
-                                                                  []/2)))),
+                                                                  []/4)))),
                                                   Constructor
                                                     (419,
-                                                      cons/2,
+                                                      cons/4,
                                                       Variable
                                                         (419,
                                                           x3/0),
                                                       Constructor
                                                         (419,
-                                                          cons/2,
+                                                          cons/4,
                                                           Variable
                                                             (419,
                                                               x2/0),
                                                           Constructor
                                                             (419,
-                                                              cons/2,
+                                                              cons/4,
                                                               Variable
                                                                 (419,
                                                                   x1/0),
                                                               Constructor
                                                                 (419,
-                                                                  []/2)))))))))));
+                                                                  []/4)))))))))));
                         (Tuple
                           (n,
                             l),
@@ -5076,7 +5076,7 @@ Value
                               (422,
                                 Variable
                                   (422,
-                                    Z.div/2),
+                                    Z.div/4),
                                 [
                                   Variable
                                     (422,
@@ -5094,7 +5094,7 @@ Value
                               (423,
                                 Variable
                                   (423,
-                                    Z.sub/2),
+                                    Z.sub/4),
                                 [
                                   Variable
                                     (423,
@@ -5195,7 +5195,7 @@ Value
                                     s2/0);
                                 Constructor
                                   (427,
-                                    []/2)
+                                    []/4)
                               ]))
                       ]))
               ]))
@@ -5207,10 +5207,10 @@ Value
       [
         ((sort, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Apply
             (?, Variable (?, sort_rec/0),
               [
@@ -5218,7 +5218,7 @@ Value
                   (?,
                     Variable
                       (?,
-                        read_counter/2),
+                        read_counter/4),
                     [
                       Tuple
                         (?)
@@ -5235,10 +5235,10 @@ Value
       [
         ((rev_sort, [ A ],
           [
-            (cmp, (A -> (A -> Type (Z/2))));
-            (n, Type (Z/2));
-            (l, Type (list/2, A))
-          ], Type (list/2, A)),
+            (cmp, (A -> (A -> Type (Z/4))));
+            (n, Type (Z/4));
+            (l, Type (list/4, A))
+          ], Type (list/4, A)),
           Apply
             (?, Variable (?, rev_sort_rec/0),
               [
@@ -5246,7 +5246,7 @@ Value
                   (?,
                     Variable
                       (?,
-                        read_counter/2),
+                        read_counter/4),
                     [
                       Tuple
                         (?)
@@ -5262,14 +5262,14 @@ Value
   (non_rec, @.,
     [
       ((sort_uniq, [ A ],
-        [ (cmp, (A -> (A -> Type (Z/1)))); (l, Type (list/1, A)) ],
-        Type (list/1, A)),
+        [ (cmp, (A -> (A -> Type (Z/3)))); (l, Type (list/3, A)) ],
+        Type (list/3, A)),
         LetVar 431 len =
           Apply (431, Variable (431, length/0), [ Variable (431, l/0) ]) in
         IfThenElse
           (432,
             Apply
-              (432, Variable (432, OCaml.Pervasives.lt/1),
+              (432, Variable (432, OCaml.Pervasives.lt/3),
                 [ Variable (432, len/0); Constant (432, Int(2)) ]),
             Variable (432, l/0),
             Apply

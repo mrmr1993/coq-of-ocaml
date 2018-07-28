@@ -1,6 +1,6 @@
 3
 Inductive set:
-  ([ ], [ (Empty, [ ]); (Node, [ Type (set/0); Type (Z/1); Type (set/0) ]) ])
+  ([ ], [ (Empty, [ ]); (Node, [ Type (set/0); Type (Z/3); Type (set/0) ]) ])
 
 7
 Value
@@ -11,22 +11,22 @@ Value
   (rec, @.,
     [
       ((member_rec, [ ],
-        [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Type (bool/1)),
+        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (10,
                     Variable
@@ -37,7 +37,7 @@ Value
                         (Empty/0),
                         Constructor
                           (11,
-                            false/1));
+                            false/3));
                       (Constructor
                         (Node/0,
                           s1,
@@ -49,7 +49,7 @@ Value
                               (13,
                                 Variable
                                   (13,
-                                    OCaml.Pervasives.lt/1),
+                                    OCaml.Pervasives.lt/3),
                                 [
                                   Variable
                                     (13,
@@ -84,7 +84,7 @@ Value
                                   (15,
                                     Variable
                                       (15,
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         (15,
@@ -115,7 +115,7 @@ Value
                                     ]),
                                 Constructor
                                   (18,
-                                    true/1))))
+                                    true/3))))
                     ]))
             ]))
     ])
@@ -124,11 +124,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (bool/1)),
+      ((member, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (bool/3)),
         Apply
           (?, Variable (?, member_rec/0),
             [
-              Apply (?, Variable (?, read_counter/1), [ Tuple (?) ]);
+              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
               Variable (?, x/0);
               Variable (?, s/0)
             ]))
@@ -139,22 +139,22 @@ Value
   (rec, @.,
     [
       ((insert_rec, [ ],
-        [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
+        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
         Type (set/0)),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (21,
                     Variable
@@ -186,7 +186,7 @@ Value
                               (24,
                                 Variable
                                   (24,
-                                    OCaml.Pervasives.lt/1),
+                                    OCaml.Pervasives.lt/3),
                                 [
                                   Variable
                                     (24,
@@ -230,7 +230,7 @@ Value
                                   (26,
                                     Variable
                                       (26,
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         (26,
@@ -279,11 +279,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (set/0)),
+      ((insert, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (set/0)),
         Apply
           (?, Variable (?, insert_rec/0),
             [
-              Apply (?, Variable (?, read_counter/1), [ Tuple (?) ]);
+              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
               Variable (?, x/0);
               Variable (?, s/0)
             ]))

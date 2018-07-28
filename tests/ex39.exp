@@ -4,31 +4,31 @@ Require [ OCaml.List ]
 Value
   (non_rec, @.,
     [
-      ((get_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+      ((get_local_ref, [ ], [ (tt, Type (unit/3)) ], Type (Z/3)),
         LetVar 4 x =
           Apply
-            (4, Variable (4, OCaml.Pervasives.ref/1),
+            (4, Variable (4, OCaml.Pervasives.ref/3),
               [ Constant (4, Int(12)) ]) in
         Apply
-          (5, Variable (5, OCaml.Effect.State.read/1), [ Variable (5, x/0) ]))
+          (5, Variable (5, OCaml.Effect.State.read/3), [ Variable (5, x/0) ]))
     ])
 
 7
 Value
   (non_rec, @.,
     [
-      ((set_local_ref, [ ], [ (tt, Type (unit/1)) ], Type (Z/1)),
+      ((set_local_ref, [ ], [ (tt, Type (unit/3)) ], Type (Z/3)),
         LetVar 8 x =
           Apply
-            (8, Variable (8, OCaml.Pervasives.ref/1),
+            (8, Variable (8, OCaml.Pervasives.ref/3),
               [ Constant (8, Int(12)) ]) in
         Sequence
           (9,
             Apply
-              (9, Variable (9, OCaml.Effect.State.write/1),
+              (9, Variable (9, OCaml.Effect.State.write/3),
                 [ Variable (9, x/0); Constant (9, Int(15)) ]),
             Apply
-              (10, Variable (10, OCaml.Effect.State.read/1),
+              (10, Variable (10, OCaml.Effect.State.read/3),
                 [ Variable (10, x/0) ])))
     ])
 
@@ -37,29 +37,29 @@ Value
   (non_rec, @.,
     [
       ((add_multiple_by_refs, [ ],
-        [ (a, Type (Z/1)); (b, Type (Z/1)); (c, Type (Z/1)); (d, Type (Z/1)) ],
-        Type (Z/1)),
+        [ (a, Type (Z/3)); (b, Type (Z/3)); (c, Type (Z/3)); (d, Type (Z/3)) ],
+        Type (Z/3)),
         LetVar 13 x =
           Apply
-            (13, Variable (13, OCaml.Pervasives.ref/1),
+            (13, Variable (13, OCaml.Pervasives.ref/3),
               [ Variable (13, a/0) ]) in
         Sequence
           (14,
             Apply
-              (14, Variable (14, OCaml.Effect.State.write/1),
+              (14, Variable (14, OCaml.Effect.State.write/3),
                 [
                   Variable (14, x/0);
                   Apply
                     (14,
                       Variable
                         (14,
-                          Z.add/1),
+                          Z.add/3),
                       [
                         Apply
                           (14,
                             Variable
                               (14,
-                                OCaml.Effect.State.read/1),
+                                OCaml.Effect.State.read/3),
                             [
                               Variable
                                 (14,
@@ -72,25 +72,25 @@ Value
                 ]),
             LetVar 15 y =
               Apply
-                (15, Variable (15, OCaml.Pervasives.ref/1),
+                (15, Variable (15, OCaml.Pervasives.ref/3),
                   [ Variable (15, c/0) ]) in
             Sequence
               (16,
                 Apply
-                  (16, Variable (16, OCaml.Effect.State.write/1),
+                  (16, Variable (16, OCaml.Effect.State.write/3),
                     [
                       Variable (16, y/0);
                       Apply
                         (16,
                           Variable
                             (16,
-                              Z.add/1),
+                              Z.add/3),
                           [
                             Apply
                               (16,
                                 Variable
                                   (16,
-                                    OCaml.Effect.State.read/1),
+                                    OCaml.Effect.State.read/3),
                                 [
                                   Variable
                                     (16,
@@ -103,19 +103,19 @@ Value
                     ]),
                 LetVar 17 z =
                   Apply
-                    (17, Variable (17, OCaml.Pervasives.ref/1),
+                    (17, Variable (17, OCaml.Pervasives.ref/3),
                       [
                         Apply
                           (17,
                             Variable
                               (17,
-                                Z.add/1),
+                                Z.add/3),
                             [
                               Apply
                                 (17,
                                   Variable
                                     (17,
-                                      OCaml.Effect.State.read/1),
+                                      OCaml.Effect.State.read/3),
                                   [
                                     Variable
                                       (17,
@@ -125,7 +125,7 @@ Value
                                 (17,
                                   Variable
                                     (17,
-                                      OCaml.Effect.State.read/1),
+                                      OCaml.Effect.State.read/3),
                                   [
                                     Variable
                                       (17,
@@ -134,7 +134,7 @@ Value
                             ])
                       ]) in
                 Apply
-                  (18, Variable (18, OCaml.Effect.State.read/1),
+                  (18, Variable (18, OCaml.Effect.State.read/3),
                     [ Variable (18, z/0) ]))))
     ])
 
@@ -142,10 +142,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
-        Type (unit/1)),
+      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
+        Type (unit/3)),
         Apply
-          (21, Variable (21, OCaml.Effect.State.write/1),
+          (21, Variable (21, OCaml.Effect.State.write/3),
             [ Variable (21, x/0); Constant (21, Int(15)) ]))
     ])
 
@@ -153,10 +153,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
-        Type (Z/1)),
+      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
+        Type (Z/3)),
         Apply
-          (24, Variable (24, OCaml.Effect.State.read/1),
+          (24, Variable (24, OCaml.Effect.State.read/3),
             [ Variable (24, x/0) ]))
     ])
 
@@ -164,20 +164,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/1, Type (Z/1))) ],
-        Type (unit/1)),
+      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
+        Type (unit/3)),
         Apply
-          (27, Variable (27, OCaml.Effect.State.write/1),
+          (27, Variable (27, OCaml.Effect.State.write/3),
             [
               Variable (27, x/0);
               Apply
-                (27, Variable (27, Z.add/1),
+                (27, Variable (27, Z.add/3),
                   [
                     Apply
                       (27,
                         Variable
                           (27,
-                            OCaml.Effect.State.read/1),
+                            OCaml.Effect.State.read/3),
                         [
                           Variable
                             (27,
@@ -194,20 +194,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((new_ref, [ ], [ (x, Type (unit/1)) ],
-        Type (OCaml.Effect.State.t/1, Type (Z/1))),
+      ((new_ref, [ ], [ (x, Type (unit/3)) ],
+        Type (OCaml.Effect.State.t/3, Type (Z/3))),
         Apply
-          (30, Variable (30, OCaml.Pervasives.ref/1),
+          (30, Variable (30, OCaml.Pervasives.ref/3),
             [ Constant (30, Int(15)) ]))
     ])
 
-32 Reference (r, r_state, Type (Z/1), Constant (32, Int(18)))
+32 Reference (r, r_state, Type (Z/3), Constant (32, Int(18)))
 
 34
 Value
   (non_rec, @.,
     [
-      ((set_r, [ ], [ (x, Type (unit/1)) ], Type (unit/1)),
+      ((set_r, [ ], [ (x, Type (unit/3)) ], Type (unit/3)),
         Apply (34, Variable (34, set_ref/0), [ Variable (34, r/0) ]))
     ])
 
@@ -215,7 +215,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((get_r, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+      ((get_r, [ ], [ (x, Type (unit/3)) ], Type (Z/3)),
         Apply (36, Variable (36, get_ref/0), [ Variable (36, r/0) ]))
     ])
 
@@ -223,27 +223,27 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_add_15, [ ], [ (x, Type (unit/1)) ], Type (Z/1)),
+      ((r_add_15, [ ], [ (x, Type (unit/3)) ], Type (Z/3)),
         LetVar 39 i =
-          Apply (39, Variable (39, get_r/0), [ Constructor (39, tt/1) ]) in
+          Apply (39, Variable (39, get_r/0), [ Constructor (39, tt/3) ]) in
         Sequence
           (40,
-            Apply (40, Variable (40, set_r/0), [ Constructor (40, tt/1) ]),
+            Apply (40, Variable (40, set_r/0), [ Constructor (40, tt/3) ]),
             LetVar 41 j =
               Apply
                 (41, Variable (41, get_r/0),
-                  [ Constructor (41, tt/1) ]) in
+                  [ Constructor (41, tt/3) ]) in
             Sequence
               (42,
                 Apply
-                  (42, Variable (42, OCaml.Effect.State.write/1),
+                  (42, Variable (42, OCaml.Effect.State.write/3),
                     [
                       Variable (42, r/0);
                       Apply
                         (42,
                           Variable
                             (42,
-                              Z.add/1),
+                              Z.add/3),
                           [
                             Variable
                               (42,
@@ -254,7 +254,7 @@ Value
                           ])
                     ]),
                 Apply
-                  (43, Variable (43, OCaml.Effect.State.read/1),
+                  (43, Variable (43, OCaml.Effect.State.read/3),
                     [ Variable (43, r/0) ]))))
     ])
 
@@ -262,20 +262,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((mixed_type, [ ], [ (x, Type (unit/1)) ],
-        (Type (bool/1) * Type (string/1) * Type (Z/1))),
+      ((mixed_type, [ ], [ (x, Type (unit/3)) ],
+        (Type (bool/3) * Type (string/3) * Type (Z/3))),
         LetVar 46 b =
           Apply
-            (46, Variable (46, OCaml.Pervasives.ref/1),
-              [ Constructor (46, true/1) ]) in
+            (46, Variable (46, OCaml.Pervasives.ref/3),
+              [ Constructor (46, true/3) ]) in
         LetVar 47 str =
           Apply
-            (47, Variable (47, OCaml.Pervasives.ref/1),
+            (47, Variable (47, OCaml.Pervasives.ref/3),
               [ Constant (47, String("")) ]) in
         LetFun 48
           (non_rec, @.,
             [
-              ((update, [ ], [ (x_1, Type (unit/1)) ], Type (unit/1)),
+              ((update, [ ], [ (x_1, Type (unit/3)) ], Type (unit/3)),
                 Match
                   (?,
                     Variable
@@ -283,14 +283,14 @@ Value
                         x_1/0),
                     [
                       (Constructor
-                        (tt/1),
+                        (tt/3),
                         Sequence
                           (49,
                             Apply
                               (49,
                                 Variable
                                   (49,
-                                    OCaml.Effect.State.write/1),
+                                    OCaml.Effect.State.write/3),
                                 [
                                   Variable
                                     (49,
@@ -299,7 +299,7 @@ Value
                                     (49,
                                       Variable
                                         (49,
-                                          OCaml.Effect.State.read/1),
+                                          OCaml.Effect.State.read/3),
                                       [
                                         Variable
                                           (49,
@@ -310,7 +310,7 @@ Value
                               (50,
                                 Variable
                                   (50,
-                                    OCaml.Effect.State.write/1),
+                                    OCaml.Effect.State.write/3),
                                 [
                                   Variable
                                     (50,
@@ -319,7 +319,7 @@ Value
                                     (50,
                                       Variable
                                         (50,
-                                          String.append/1),
+                                          String.append/3),
                                       [
                                         Constant
                                           (50,
@@ -328,7 +328,7 @@ Value
                                           (50,
                                             Variable
                                               (50,
-                                                OCaml.Effect.State.read/1),
+                                                OCaml.Effect.State.read/3),
                                             [
                                               Variable
                                                 (50,
@@ -341,36 +341,36 @@ Value
         Sequence
           (51,
             Apply
-              (51, Variable (51, update/0), [ Constructor (51, tt/1) ]),
+              (51, Variable (51, update/0), [ Constructor (51, tt/3) ]),
             Sequence
               (52,
                 Apply
                   (52, Variable (52, update/0),
-                    [ Constructor (52, tt/1) ]),
+                    [ Constructor (52, tt/3) ]),
                 Sequence
                   (53,
                     Apply
                       (53, Variable (53, update/0),
-                        [ Constructor (53, tt/1) ]),
+                        [ Constructor (53, tt/3) ]),
                     Tuple
                       (54,
                         Apply
                           (54,
                             Variable
                               (54,
-                                OCaml.Effect.State.read/1),
+                                OCaml.Effect.State.read/3),
                             [ Variable (54, b/0) ]),
                         Apply
                           (54,
                             Variable
                               (54,
-                                OCaml.Effect.State.read/1),
+                                OCaml.Effect.State.read/3),
                             [ Variable (54, str/0) ]),
                         Apply
                           (54,
                             Variable
                               (54,
-                                OCaml.Effect.State.read/1),
+                                OCaml.Effect.State.read/3),
                             [ Variable (54, r/0) ]))))))
     ])
 
@@ -378,12 +378,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((partials_test, [ ], [ (x, Type (unit/1)) ],
-        Type (OCaml.Effect.State.t/1, Type (Z/1))),
+      ((partials_test, [ ], [ (x, Type (unit/3)) ],
+        Type (OCaml.Effect.State.t/3, Type (Z/3))),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (tt/1),
+              (Constructor (tt/3),
                 LetFun 57
                   (non_rec, @.,
                     [
@@ -393,24 +393,24 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t/1,
+                              (OCaml.Effect.State.t/3,
                                 Type
-                                  (Z/1)));
+                                  (Z/3)));
                           (y,
                             Type
-                              (Z/1))
+                              (Z/3))
                         ],
                         Type
-                          (OCaml.Effect.State.t/1,
+                          (OCaml.Effect.State.t/3,
                             Type
-                              (Z/1))),
+                              (Z/3))),
                         Sequence
                           (58,
                             Apply
                               (58,
                                 Variable
                                   (58,
-                                    OCaml.Effect.State.write/1),
+                                    OCaml.Effect.State.write/3),
                                 [
                                   Variable
                                     (58,
@@ -457,32 +457,32 @@ Value
                         [
                           (l1,
                             Type
-                              (OCaml.Effect.State.t/1,
+                              (OCaml.Effect.State.t/3,
                                 Type
-                                  (list/1,
+                                  (list/3,
                                     Type
-                                      (Z/1))));
+                                      (Z/3))));
                           (l2,
                             Type
-                              (list/1,
+                              (list/3,
                                 Type
-                                  (string/1)))
+                                  (string/3)))
                         ],
                         Type
-                          (OCaml.Effect.State.t/1,
+                          (OCaml.Effect.State.t/3,
                             Type
-                              (Z/1))),
+                              (Z/3))),
                         Apply
                           (63,
                             Variable
                               (63,
-                                OCaml.Pervasives.ref/1),
+                                OCaml.Pervasives.ref/3),
                             [
                               Apply
                                 (63,
                                   Variable
                                     (63,
-                                      Z.add/1),
+                                      Z.add/3),
                                   [
                                     Apply
                                       (63,
@@ -494,7 +494,7 @@ Value
                                             (63,
                                               Variable
                                                 (63,
-                                                  OCaml.Effect.State.read/1),
+                                                  OCaml.Effect.State.read/3),
                                               [
                                                 Variable
                                                   (63,
@@ -526,29 +526,29 @@ Value
                           (64,
                             Variable
                               (64,
-                                OCaml.Pervasives.ref/1),
+                                OCaml.Pervasives.ref/3),
                             [
                               Constructor
                                 (64,
-                                  cons/1,
+                                  cons/3,
                                   Constant
                                     (64,
                                       Int(1)),
                                   Constructor
                                     (64,
-                                      cons/1,
+                                      cons/3,
                                       Constant
                                         (64,
                                           Int(2)),
                                       Constructor
                                         (64,
-                                          cons/1,
+                                          cons/3,
                                           Constant
                                             (64,
                                               Int(3)),
                                           Constructor
                                             (64,
-                                              []/1))))
+                                              []/3))))
                             ])
                       ])
                   in
@@ -561,19 +561,19 @@ Value
                       [
                         Constructor
                           (65,
-                            cons/1,
+                            cons/3,
                             Constant
                               (65,
                                 String("hi")),
                             Constructor
                               (65,
-                                cons/1,
+                                cons/3,
                                 Constant
                                   (65,
                                     String("hey")),
                                 Constructor
                                   (65,
-                                    []/1)))
+                                    []/3)))
                       ])
                   in
                 Apply
@@ -589,7 +589,7 @@ Value
                         (66,
                           Variable
                             (66,
-                              OCaml.Effect.State.read/1),
+                              OCaml.Effect.State.read/3),
                           [
                             Variable
                               (66,
@@ -603,12 +603,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((multiple_returns_test, [ ], [ (x, Type (unit/1)) ],
-        (Type (Z/1) * Type (OCaml.Effect.State.t/1, Type (Z/1)))),
+      ((multiple_returns_test, [ ], [ (x, Type (unit/3)) ],
+        (Type (Z/3) * Type (OCaml.Effect.State.t/3, Type (Z/3)))),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (tt/1),
+              (Constructor (tt/3),
                 LetFun 69
                   (non_rec, @.,
                     [
@@ -618,32 +618,32 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t/1,
+                              (OCaml.Effect.State.t/3,
                                 Type
-                                  (Z/1)));
+                                  (Z/3)));
                           (y,
                             Type
-                              (Z/1))
+                              (Z/3))
                         ],
                         (Type
-                          (Z/1)
+                          (Z/3)
                           ->
                           (Type
-                            (OCaml.Effect.State.t/1,
+                            (OCaml.Effect.State.t/3,
                               Type
-                                (Z/1))
+                                (Z/3))
                             ->
                             Type
-                              (OCaml.Effect.State.t/1,
+                              (OCaml.Effect.State.t/3,
                                 Type
-                                  (Z/1))))),
+                                  (Z/3))))),
                         Sequence
                           (70,
                             Apply
                               (70,
                                 Variable
                                   (70,
-                                    OCaml.Effect.State.write/1),
+                                    OCaml.Effect.State.write/3),
                                 [
                                   Variable
                                     (70,
@@ -661,7 +661,7 @@ Value
                                       (72,
                                         Variable
                                           (72,
-                                            OCaml.Effect.State.write/1),
+                                            OCaml.Effect.State.write/3),
                                         [
                                           Variable
                                             (72,
@@ -670,13 +670,13 @@ Value
                                             (72,
                                               Variable
                                                 (72,
-                                                  Z.add/1),
+                                                  Z.add/3),
                                               [
                                                 Apply
                                                   (72,
                                                     Variable
                                                       (72,
-                                                        OCaml.Effect.State.read/1),
+                                                        OCaml.Effect.State.read/3),
                                                     [
                                                       Variable
                                                         (72,
@@ -698,7 +698,7 @@ Value
                                             (74,
                                               Variable
                                                 (74,
-                                                  OCaml.Effect.State.read/1),
+                                                  OCaml.Effect.State.read/3),
                                               [
                                                 Variable
                                                   (74,
@@ -711,7 +711,7 @@ Value
                                               (75,
                                                 Variable
                                                   (75,
-                                                    OCaml.Effect.State.write/1),
+                                                    OCaml.Effect.State.write/3),
                                                 [
                                                   Variable
                                                     (75,
@@ -720,7 +720,7 @@ Value
                                                     (75,
                                                       Variable
                                                         (75,
-                                                          Z.mul/1),
+                                                          Z.mul/3),
                                                       [
                                                         Constant
                                                           (75,
@@ -729,7 +729,7 @@ Value
                                                           (75,
                                                             Variable
                                                               (75,
-                                                                OCaml.Effect.State.read/1),
+                                                                OCaml.Effect.State.read/3),
                                                             [
                                                               Variable
                                                                 (75,
@@ -743,7 +743,7 @@ Value
                                                   (76,
                                                     Variable
                                                       (76,
-                                                        OCaml.Effect.State.write/1),
+                                                        OCaml.Effect.State.write/3),
                                                     [
                                                       Variable
                                                         (76,
@@ -762,7 +762,7 @@ Value
                     (80,
                       Variable
                         (80,
-                          OCaml.Pervasives.ref/1),
+                          OCaml.Pervasives.ref/3),
                       [
                         Constant
                           (80,
@@ -780,7 +780,7 @@ Value
                           (81,
                             Variable
                               (81,
-                                OCaml.Pervasives.ref/1),
+                                OCaml.Pervasives.ref/3),
                             [
                               Constant
                                 (81,
@@ -830,7 +830,7 @@ Value
                       (85,
                         Variable
                           (85,
-                            OCaml.Effect.State.read/1),
+                            OCaml.Effect.State.read/3),
                         [
                           Variable
                             (85,
