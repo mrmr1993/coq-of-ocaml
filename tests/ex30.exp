@@ -12,7 +12,7 @@
                     (4,
                       Variable
                         (4,
-                          OCaml.Pervasives.failwith/2),
+                          OCaml.Pervasives.failwith/4),
                       [
                         Constant
                           (4,
@@ -35,11 +35,11 @@
                     (8,
                       Variable
                         (8,
-                          OCaml.assert/2),
+                          OCaml.assert/4),
                       [
                         Constructor
                           (8,
-                            false/2)
+                            false/4)
                       ]))
               ]))
       ])
@@ -48,39 +48,39 @@
   Value
     (non_rec, @.,
       [
-        ((x, [ ], [ ], Type (unit/2)),
+        ((x, [ ], [ ], Type (unit/4)),
           Match
             (9,
               Run
-                (?, OCaml.Assert_failure/2, [ ],
+                (?, OCaml.Assert_failure/4, [ ],
                   Apply
                     (9, Variable (9, f/0),
-                      [ Constructor (9, tt/2) ])),
+                      [ Constructor (9, tt/4) ])),
               [
-                (Constructor (inl/2, x), Variable (?, x/0));
-                (Constructor (inr/2, Tuple (Any)),
-                  Constructor (9, tt/2))
+                (Constructor (inl/4, x), Variable (?, x/0));
+                (Constructor (inr/4, Tuple (Any)),
+                  Constructor (9, tt/4))
               ]))
       ])
   
-  10 Open M
+  10 Open M/1
   
   11
   Value
     (non_rec, @.,
       [
-        ((y, [ ], [ ], Type (unit/2)),
+        ((y, [ ], [ ], Type (unit/6)),
           Match
             (11,
               Run
-                (?, OCaml.Failure/2, [ ],
+                (?, OCaml.Failure/6, [ ],
                   Apply
-                    (11, Variable (11, M.f/1),
-                      [ Constructor (11, tt/2) ])),
+                    (11, Variable (11, M.f/3),
+                      [ Constructor (11, tt/6) ])),
               [
-                (Constructor (inl/2, x), Variable (?, x/0));
-                (Constructor (inr/2, Tuple (Any)),
-                  Constructor (11, tt/2))
+                (Constructor (inl/6, x), Variable (?, x/0));
+                (Constructor (inr/6, Tuple (Any)),
+                  Constructor (11, tt/6))
               ]))
       ])
 
@@ -88,36 +88,138 @@
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (unit/1)),
+      ((b, [ ], [ ], Type (unit/3)),
         Match
           (14,
             Run
-              (?, OCaml.Assert_failure/1, [ ],
+              (?, OCaml.Assert_failure/3, [ ],
                 Apply
                   (14, Variable (14, N.f/0),
-                    [ Constructor (14, tt/1) ])),
+                    [ Constructor (14, tt/3) ])),
             [
-              (Constructor (inl/1, x), Variable (?, x/0));
-              (Constructor (inr/1, Tuple (Any)), Constructor (14, tt/1))
+              (Constructor (inl/3, x), Variable (?, x/0));
+              (Constructor (inr/3, Tuple (Any)), Constructor (14, tt/3))
             ]))
     ])
 
-15 Open N
+15 Open N/0
 
 16
 Value
   (non_rec, @.,
     [
-      ((b', [ ], [ ], Type (unit/1)),
+      ((b', [ ], [ ], Type (unit/5)),
         Match
           (16,
             Run
-              (?, OCaml.Assert_failure/1, [ ],
+              (?, OCaml.Assert_failure/5, [ ],
                 Apply
-                  (16, Variable (16, N.f/0),
-                    [ Constructor (16, tt/1) ])),
+                  (16, Variable (16, N.f/2),
+                    [ Constructor (16, tt/5) ])),
             [
-              (Constructor (inl/1, x), Variable (?, x/0));
-              (Constructor (inr/1, Tuple (Any)), Constructor (16, tt/1))
+              (Constructor (inl/5, x), Variable (?, x/0));
+              (Constructor (inr/5, Tuple (Any)), Constructor (16, tt/5))
             ]))
     ])
+
+18 Value (non_rec, @., [ ((x, [ ], [ ], Type (Z/5)), Constant (18, Int(15))) ])
+
+20 Module A:
+  21
+  Value
+    (non_rec, @.,
+      [
+        ((x, [ A; B ], [ (x, A) ], B),
+          Match
+            (?, Variable (?, x/0),
+              [
+                (Any,
+                  Apply
+                    (21,
+                      Variable
+                        (21,
+                          OCaml.assert/6),
+                      [
+                        Constructor
+                          (21,
+                            false/6)
+                      ]))
+              ]))
+      ])
+
+24 Module B:
+  25 Value (non_rec, @., [ ((a, [ ], [ ], Type (Z/6)), Variable (25, x/1)) ])
+  
+  26 Open A/1
+  
+  27
+  Value (non_rec, @., [ ((b, [ A; B ], [ ], (A -> B)), Variable (27, A.x/3)) ])
+  
+  28
+  Value
+    (non_rec, @.,
+      [
+        ((x, [ A; B ], [ (x, A) ], B),
+          Match
+            (?, Variable (?, x/0),
+              [
+                (Any,
+                  Apply
+                    (28,
+                      Variable
+                        (28,
+                          OCaml.Pervasives.failwith/8),
+                      [
+                        Constant
+                          (28,
+                            String("failure"))
+                      ]))
+              ]))
+      ])
+  
+  29 Value (non_rec, @., [ ((c, [ A; B ], [ ], (A -> B)), Variable (29, x/0)) ])
+
+32 Module C:
+  33 Value (non_rec, @., [ ((a, [ ], [ ], Type (Z/6)), Variable (33, x/1)) ])
+  
+  34
+  Value
+    (non_rec, @.,
+      [
+        ((x, [ A; B ], [ (x, A) ], B),
+          Match
+            (?, Variable (?, x/0),
+              [
+                (Any,
+                  Apply
+                    (34,
+                      Variable
+                        (34,
+                          OCaml.Pervasives.failwith/6),
+                      [
+                        Constant
+                          (34,
+                            String("failure"))
+                      ]))
+              ]))
+      ])
+  
+  35 Value (non_rec, @., [ ((b, [ A; B ], [ ], (A -> B)), Variable (35, x/0)) ])
+  
+  36 Open A/1
+  
+  37
+  Value (non_rec, @., [ ((c, [ A; B ], [ ], (A -> B)), Variable (37, A.x/3)) ])
+
+40 Module D:
+  41 Module A:
+    42
+    Value (non_rec, @., [ ((a, [ ], [ ], Type (Z/7)), Constant (42, Int(2))) ])
+  
+  44 Value (non_rec, @., [ ((b, [ ], [ ], Type (Z/6)), Variable (44, x/1)) ])
+  
+  45 Open A/0
+  
+  46 Value (non_rec, @., [ ((c, [ ], [ ], Type (Z/8)), Variable (46, A.a/2)) ])
+  
+  47 Value (non_rec, @., [ ((d, [ ], [ ], Type (Z/8)), Variable (47, x/3)) ])

@@ -113,8 +113,11 @@ module Descriptor = struct
   let depth_lift (d : t) : t =
     Map.map BoundName.depth_lift d
 
-  let leave_prefix (name : Name.t) (d : t) : t =
+  let leave_prefix (name : Name.t option) (d : t) : t =
     Map.map (fun x -> BoundName.leave_prefix name x) d
+
+  let resolve_open (name_list : Name.t list) (d : t) : t =
+    Map.map (fun x -> BoundName.resolve_open name_list x) d
 end
 
 module Type = struct
@@ -191,10 +194,15 @@ module Type = struct
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.depth_lift d, depth_lift typ)
 
-  let rec leave_prefix (x : Name.t) (typ : t) : t =
+  let rec leave_prefix (x : Name.t option) (typ : t) : t =
     match typ with
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.leave_prefix x d, leave_prefix x typ)
+
+  let rec resolve_open (x : Name.t list) (typ : t) : t =
+    match typ with
+    | Pure -> Pure
+    | Arrow (d, typ) -> Arrow (Descriptor.resolve_open x d, resolve_open x typ)
 end
 
 type t = { descriptor : Descriptor.t; typ : Type.t }

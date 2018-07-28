@@ -4,22 +4,22 @@ open Effect.Type
 open SmartPrint
 
 let env_with_effects : Effect.Type.t FullEnvi.t =
-  let descriptor (path, base) =
+  let descriptor depth (path, base) =
     let x = PathName.of_name path base in
     Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x)
-      { BoundName.path_name = x; depth = 0 } in
-  let d xs : Effect.Descriptor.t =
-    Effect.Descriptor.union (List.map descriptor xs) in
+      { BoundName.path_name = x; depth } in
+  let d depth xs : Effect.Descriptor.t =
+    Effect.Descriptor.union (List.map (descriptor depth) xs) in
   let typ_d (x : int) : Effect.Descriptor.t =
     let i = string_of_int x in
     Effect.Descriptor.singleton
       (Effect.Descriptor.Id.Type (Effect.PureType.Variable i))
       { BoundName.depth = 0; BoundName.path_name =
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") } in
+        (PathName.of_name ["Effect"; "State"] "state") } in
   let add_exn path base =
     add_exception_with_effects path base
       (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
-  FullEnvi.empty (fun _ -> failwith "No modules loaded")
+  FullEnvi.empty None (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat" Pure
   |> Constructor.add [] "O"
@@ -29,10 +29,9 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Constructor.add [] "inr"
   |> Descriptor.add [] "IO"
   |> Descriptor.add [] "Counter"
-  |> Var.add [] "read_counter" (Arrow (d [[], "Counter"], Pure))
+  |> Var.add [] "read_counter" (Arrow (d 0 [[], "Counter"], Pure))
   |> Descriptor.add [] "NonTermination"
-  |> Var.add [] "not_terminated" (Arrow (d [[], "NonTermination"], Pure))
-  |> Var.add ["OCaml"] "assert" (Arrow (d [["OCaml"], "Assert_failure"], Pure))
+  |> Var.add [] "not_terminated" (Arrow (d 0 [[], "NonTermination"], Pure))
 
   (* The core library *)
   (* Built-in types *)
@@ -50,49 +49,14 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Typ.add [] "option" Pure
   |> Constructor.add [] "None"
   |> Constructor.add [] "Some"
-  (* Predefined exceptions *)
-  |> Typ.add ["OCaml"] "exn" Pure
-  |> add_exn ["OCaml"] "Match_failure"
-  |> add_exn ["OCaml"] "Assert_failure"
-  |> add_exn ["OCaml"] "Invalid_argument"
-  |> add_exn ["OCaml"] "Failure"
-  |> add_exn ["OCaml"] "Not_found"
-  |> add_exn ["OCaml"] "Out_of_memory"
-  |> add_exn ["OCaml"] "Stack_overflow"
-  |> add_exn ["OCaml"] "Sys_error"
-  |> add_exn ["OCaml"] "End_of_file"
-  |> add_exn ["OCaml"] "Division_by_zero"
-  |> add_exn ["OCaml"] "Sys_blocked_io"
-  |> add_exn ["OCaml"] "Undefined_recursive_module"
-  (* State *)
-  |> Descriptor.add ["OCaml"; "Effect"; "State"] "state"
-  |> Typ.add ["OCaml"; "Effect"; "State"] "t" (Arrow (d [["OCaml"; "Effect"; "State"], "state"], Pure))
-  |> Var.add ["OCaml"; "Effect"; "State"] "peekstate" Pure
-  |> Var.add ["OCaml"; "Effect"; "State"] "global" Pure
-  |> Var.add ["OCaml"; "Effect"; "State"] "read" (Arrow (typ_d 0, Pure))
-  |> Var.add ["OCaml"; "Effect"; "State"] "write" (Arrow (d [], Arrow (typ_d 0, Pure)))
-
-  (* Pervasives *)
-  (* Exceptions *)
-  |> Var.add ["OCaml"; "Pervasives"] "invalid_arg" (Arrow (d [["OCaml"], "Invalid_argument"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "failwith" (Arrow (d [["OCaml"], "Failure"], Pure))
-  |> add_exn ["OCaml"; "Pervasives"] "Exit"
   (* Comparisons *)
   |> Var.add [] "equiv_decb" Pure
   |> Var.add [] "nequiv_decb" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "lt" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "gt" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "le" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "ge" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "compare" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "min" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "max" Pure
   (* Boolean operations *)
   |> Var.add [] "negb" Pure
   |> Var.add [] "andb" Pure
   |> Var.add [] "orb" Pure
   (* Composition operators *)
-  |> Var.add ["OCaml"; "Pervasives"] "reverse_apply" Pure
   |> Var.add [] "apply" Pure
   (* Integer arithmetic *)
   |> Var.add ["Z"] "opp" Pure
@@ -111,59 +75,99 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Var.add ["Z"] "lxor" Pure
   |> Var.add ["Z"] "shiftl" Pure
   |> Var.add ["Z"] "shiftr" Pure
-  (* Floating-point arithmetic *)
   (* String operations *)
   |> Var.add ["String"] "append" Pure
-  (* Character operations *)
-  |> Var.add ["OCaml"; "Pervasives"] "int_of_char" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "char_of_int" (Arrow (d [["OCaml"], "Invalid_argument"], Pure))
-  (* Unit operations *)
-  |> Var.add ["OCaml"; "Pervasives"] "ignore" Pure
-  (* String conversion functions *)
-  |> Var.add ["OCaml"; "Pervasives"] "string_of_bool" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "bool_of_string" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "string_of_int" Pure
-  |> Var.add ["OCaml"; "Pervasives"] "int_of_string" Pure
   (* Pair operations *)
   |> Var.add [] "fst" Pure
   |> Var.add [] "snd" Pure
+
+  |> enter_module (CoqName.Name "OCaml")
+  (* Values specific to the translation to Coq *)
+  |> Var.add [] "assert" (Arrow (d 0 [[], "Assert_failure"], Pure))
+  (* Predefined exceptions *)
+  |> Typ.add [] "exn" Pure
+  |> add_exn [] "Match_failure"
+  |> add_exn [] "Assert_failure"
+  |> add_exn [] "Invalid_argument"
+  |> add_exn [] "Failure"
+  |> add_exn [] "Not_found"
+  |> add_exn [] "Out_of_memory"
+  |> add_exn [] "Stack_overflow"
+  |> add_exn [] "Sys_error"
+  |> add_exn [] "End_of_file"
+  |> add_exn [] "Division_by_zero"
+  |> add_exn [] "Sys_blocked_io"
+  |> add_exn [] "Undefined_recursive_module"
+  (* State *)
+  |> Descriptor.add ["Effect"; "State"] "state"
+  |> Typ.add ["Effect"; "State"] "t" (Arrow (d 0 [["Effect"; "State"], "state"], Pure))
+  |> Var.add ["Effect"; "State"] "peekstate" Pure
+  |> Var.add ["Effect"; "State"] "global" Pure
+  |> Var.add ["Effect"; "State"] "read" (Arrow (typ_d 0, Pure))
+  |> Var.add ["Effect"; "State"] "write" (Arrow (d 0 [], Arrow (typ_d 0, Pure)))
+
+  (* Pervasives *)
+  (* Exceptions *)
+  |> Var.add ["Pervasives"] "invalid_arg" (Arrow (d 0 [[], "Invalid_argument"], Pure))
+  |> Var.add ["Pervasives"] "failwith" (Arrow (d 0 [[], "Failure"], Pure))
+  |> add_exn ["Pervasives"] "Exit"
+  (* Comparisons *)
+  |> Var.add ["Pervasives"] "lt" Pure
+  |> Var.add ["Pervasives"] "gt" Pure
+  |> Var.add ["Pervasives"] "le" Pure
+  |> Var.add ["Pervasives"] "ge" Pure
+  |> Var.add ["Pervasives"] "compare" Pure
+  |> Var.add ["Pervasives"] "min" Pure
+  |> Var.add ["Pervasives"] "max" Pure
+  (* Composition operators *)
+  |> Var.add ["Pervasives"] "reverse_apply" Pure
+  (* Floating-point arithmetic *)
+  (* Character operations *)
+  |> Var.add ["Pervasives"] "int_of_char" Pure
+  |> Var.add ["Pervasives"] "char_of_int" (Arrow (d 0 [[], "Invalid_argument"], Pure))
+  (* Unit operations *)
+  |> Var.add ["Pervasives"] "ignore" Pure
+  (* String conversion functions *)
+  |> Var.add ["Pervasives"] "string_of_bool" Pure
+  |> Var.add ["Pervasives"] "bool_of_string" Pure
+  |> Var.add ["Pervasives"] "string_of_int" Pure
+  |> Var.add ["Pervasives"] "int_of_string" Pure
   (* List operations *)
-  |> Var.add ["OCaml"; "Pervasives"] "app" Pure
+  |> Var.add ["Pervasives"] "app" Pure
   (* Input/output *)
   (* Output functions on standard output *)
-  |> Var.add ["OCaml"; "Pervasives"] "print_char" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "print_string" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "print_int" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "print_endline" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "print_newline" (Arrow (d [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "print_char" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "print_string" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "print_int" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "print_endline" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "print_newline" (Arrow (d 1 [[], "IO"], Pure))
   (* Output functions on standard error *)
-  |> Var.add ["OCaml"; "Pervasives"] "prerr_char" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "prerr_string" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "prerr_int" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "prerr_endline" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "prerr_newline" (Arrow (d [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "prerr_char" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "prerr_string" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "prerr_int" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "prerr_endline" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "prerr_newline" (Arrow (d 1 [[], "IO"], Pure))
   (* Input functions on standard input *)
-  |> Var.add ["OCaml"; "Pervasives"] "read_line" (Arrow (d [[], "IO"], Pure))
-  |> Var.add ["OCaml"; "Pervasives"] "read_int" (Arrow (d [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "read_line" (Arrow (d 1 [[], "IO"], Pure))
+  |> Var.add ["Pervasives"] "read_int" (Arrow (d 1 [[], "IO"], Pure))
   (* General output functions *)
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
-  |> Var.add ["OCaml"; "Pervasives"] "ref" Pure
+  |> Var.add ["Pervasives"] "ref" Pure
   (* Operations on format strings *)
   (* Program termination *)
+  |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
 
   (* List *)
-  |> enter_module
-  |> leave_module "OCaml" Effect.Type.leave_prefix
   |> fun env ->
        let lazy_loader = ref LazyLoader.empty in
        let get_module mod_name =
-         let (wmod, loader) = LazyLoader.find_wrapped_mod_opt env !lazy_loader mod_name in
+         let (wmod, loader) = LazyLoader.find_mod_opt env !lazy_loader mod_name in
          lazy_loader := loader;
          wmod in
        {env with get_module}
-  |> enter_module
+  |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]
 
 let show out_channel : unit =

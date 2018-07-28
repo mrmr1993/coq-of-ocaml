@@ -10,12 +10,27 @@ let pp (x : t) : SmartPrint.t =
 let depth_lift (x : t) : t =
   { x with depth = x.depth + 1 }
 
-let leave_prefix (name : Name.t) (x : t) : t =
+let leave_prefix (name : Name.t option) (x : t) : t =
   if x.depth = 0 then
-    { x with path_name = { x.path_name with
-      PathName.path = name :: x.path_name.PathName.path } }
-  else
+    match name with
+    | Some name ->
+      { x with path_name = { x.path_name with
+        PathName.path = name :: x.path_name.PathName.path } }
+    | None -> x
+  else if x.depth > 0 then
     { x with depth = x.depth - 1 }
+  else
+    x
+
+let resolve_open (name_list : Name.t list) (x : t) : t =
+  if x.depth = 1 then
+    { path_name = { x.path_name with
+        PathName.path = name_list @ x.path_name.path };
+      depth = 0 }
+  else if x.depth > 1 then
+    { x with depth = x.depth - 1 }
+  else
+    x
 
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.path_name

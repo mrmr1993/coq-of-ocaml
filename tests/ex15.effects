@@ -1,6 +1,6 @@
 3
 Inductive set:
-  ([ ], [ (Empty, [ ]); (Node, [ Type (set/0); Type (Z/1); Type (set/0) ]) ])
+  ([ ], [ (Empty, [ ]); (Node, [ Type (set/0); Type (Z/3); Type (set/0) ]) ])
 
 7
 Value
@@ -15,18 +15,18 @@ Value
   (rec, @.,
     [
       ((member_rec, [ ],
-        [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
-        Type (bool/1)),
+        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
+        Type (bool/3)),
         Match
-          ((?, Effect ([ NonTermination/1 ], .)),
+          ((?, Effect ([ NonTermination/3 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination/1
+                        NonTermination/3
                       ],
                         .)),
                     Variable
@@ -36,10 +36,10 @@ Value
                           ],
                             .
                               -[
-                                NonTermination/1
+                                NonTermination/3
                               ]->
                               .)),
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         ((?,
@@ -48,12 +48,12 @@ Value
                             ],
                               .)))
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   ((10,
                     Effect
                       ([
-                        NonTermination/1
+                        NonTermination/3
                       ],
                         .)),
                     Variable
@@ -72,7 +72,7 @@ Value
                               ([
                               ],
                                 .)),
-                            false/1));
+                            false/3));
                       (Constructor
                         (Node/0,
                           s1,
@@ -82,7 +82,7 @@ Value
                           ((13,
                             Effect
                               ([
-                                NonTermination/1
+                                NonTermination/3
                               ],
                                 .)),
                             Apply
@@ -97,7 +97,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    OCaml.Pervasives.lt/1),
+                                    OCaml.Pervasives.lt/3),
                                 [
                                   Variable
                                     ((13,
@@ -118,7 +118,7 @@ Value
                               ((14,
                                 Effect
                                   ([
-                                    NonTermination/1
+                                    NonTermination/3
                                   ],
                                     .)),
                                 Apply
@@ -130,7 +130,7 @@ Value
                                           ->
                                           .
                                             -[
-                                              NonTermination/1
+                                              NonTermination/3
                                             ]->
                                             .)),
                                     Variable
@@ -144,7 +144,7 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination/1
+                                                    NonTermination/3
                                                   ]->
                                                   .)),
                                         member_rec/0),
@@ -177,7 +177,7 @@ Value
                               ((15,
                                 Effect
                                   ([
-                                    NonTermination/1
+                                    NonTermination/3
                                   ],
                                     .)),
                                 Apply
@@ -192,7 +192,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         ((15,
@@ -213,7 +213,7 @@ Value
                                   ((16,
                                     Effect
                                       ([
-                                        NonTermination/1
+                                        NonTermination/3
                                       ],
                                         .)),
                                     Apply
@@ -225,7 +225,7 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination/1
+                                                  NonTermination/3
                                                 ]->
                                                 .)),
                                         Variable
@@ -239,7 +239,7 @@ Value
                                                     ->
                                                     .
                                                       -[
-                                                        NonTermination/1
+                                                        NonTermination/3
                                                       ]->
                                                       .)),
                                             member_rec/0),
@@ -274,7 +274,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    true/1))))
+                                    true/3))))
                     ]))
             ]))
     ])
@@ -283,15 +283,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (bool/1)),
+      ((member, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (bool/3)),
         Apply
-          ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
+          ((?, Effect ([ Counter/3; NonTermination/3 ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -> . -[ NonTermination/1 ]-> .)),
+              ((?, Effect ([ ], . -> . -> . -[ NonTermination/3 ]-> .)),
                 member_rec/0),
             [
               Apply
-                ((?, Effect ([ Counter/1 ], .)),
+                ((?, Effect ([ Counter/3 ], .)),
                   Variable
                     ((?,
                       Effect
@@ -299,10 +299,10 @@ Value
                         ],
                           .
                             -[
-                              Counter/1
+                              Counter/3
                             ]->
                             .)),
-                      read_counter/1),
+                      read_counter/3),
                   [
                     Tuple
                       ((?,
@@ -321,18 +321,18 @@ Value
   (rec, @.,
     [
       ((insert_rec, [ ],
-        [ (counter, Type (nat/1)); (x, Type (Z/1)); (s, Type (set/0)) ],
+        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
         Type (set/0)),
         Match
-          ((?, Effect ([ NonTermination/1 ], .)),
+          ((?, Effect ([ NonTermination/3 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination/1
+                        NonTermination/3
                       ],
                         .)),
                     Variable
@@ -342,10 +342,10 @@ Value
                           ],
                             .
                               -[
-                                NonTermination/1
+                                NonTermination/3
                               ]->
                               .)),
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         ((?,
@@ -354,12 +354,12 @@ Value
                             ],
                               .)))
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   ((21,
                     Effect
                       ([
-                        NonTermination/1
+                        NonTermination/3
                       ],
                         .)),
                     Variable
@@ -409,7 +409,7 @@ Value
                           ((24,
                             Effect
                               ([
-                                NonTermination/1
+                                NonTermination/3
                               ],
                                 .)),
                             Apply
@@ -424,7 +424,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    OCaml.Pervasives.lt/1),
+                                    OCaml.Pervasives.lt/3),
                                 [
                                   Variable
                                     ((24,
@@ -445,7 +445,7 @@ Value
                               ((25,
                                 Effect
                                   ([
-                                    NonTermination/1
+                                    NonTermination/3
                                   ],
                                     .)),
                                 Node/0,
@@ -453,7 +453,7 @@ Value
                                   ((25,
                                     Effect
                                       ([
-                                        NonTermination/1
+                                        NonTermination/3
                                       ],
                                         .)),
                                     Apply
@@ -465,7 +465,7 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination/1
+                                                  NonTermination/3
                                                 ]->
                                                 .)),
                                         Variable
@@ -479,7 +479,7 @@ Value
                                                     ->
                                                     .
                                                       -[
-                                                        NonTermination/1
+                                                        NonTermination/3
                                                       ]->
                                                       .)),
                                             insert_rec/0),
@@ -526,7 +526,7 @@ Value
                               ((26,
                                 Effect
                                   ([
-                                    NonTermination/1
+                                    NonTermination/3
                                   ],
                                     .)),
                                 Apply
@@ -541,7 +541,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         ((26,
@@ -562,7 +562,7 @@ Value
                                   ((27,
                                     Effect
                                       ([
-                                        NonTermination/1
+                                        NonTermination/3
                                       ],
                                         .)),
                                     Node/0,
@@ -584,7 +584,7 @@ Value
                                       ((27,
                                         Effect
                                           ([
-                                            NonTermination/1
+                                            NonTermination/3
                                           ],
                                             .)),
                                         Apply
@@ -596,7 +596,7 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination/1
+                                                      NonTermination/3
                                                     ]->
                                                     .)),
                                             Variable
@@ -610,7 +610,7 @@ Value
                                                         ->
                                                         .
                                                           -[
-                                                            NonTermination/1
+                                                            NonTermination/3
                                                           ]->
                                                           .)),
                                                 insert_rec/0),
@@ -654,15 +654,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z/1)); (s, Type (set/0)) ], Type (set/0)),
+      ((insert, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (set/0)),
         Apply
-          ((?, Effect ([ Counter/1; NonTermination/1 ], .)),
+          ((?, Effect ([ Counter/3; NonTermination/3 ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -> . -[ NonTermination/1 ]-> .)),
+              ((?, Effect ([ ], . -> . -> . -[ NonTermination/3 ]-> .)),
                 insert_rec/0),
             [
               Apply
-                ((?, Effect ([ Counter/1 ], .)),
+                ((?, Effect ([ Counter/3 ], .)),
                   Variable
                     ((?,
                       Effect
@@ -670,10 +670,10 @@ Value
                         ],
                           .
                             -[
-                              Counter/1
+                              Counter/3
                             ]->
                             .)),
-                      read_counter/1),
+                      read_counter/3),
                   [
                     Tuple
                       ((?,

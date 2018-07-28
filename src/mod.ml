@@ -52,15 +52,13 @@ module Locator = struct
 end
 
 type 'a t = {
-  opens : Name.t list list;
-  external_opens : Name.t list list;
+  name : CoqName.t option;
   locator : Locator.t;
   values : 'a Value.t PathName.Map.t;
   modules : 'a t PathName.Map.t }
 
-let empty : 'a t = {
-  opens = [[]]; (** By default we open the empty path. *)
-  external_opens = [[]];
+let empty (module_name : CoqName.t option) : 'a t = {
+  name = module_name;
   locator = Locator.empty;
   values = PathName.Map.empty;
   modules = PathName.Map.empty }
@@ -80,12 +78,6 @@ let pp (m : 'a t) : SmartPrint.t =
     | Constructor -> constructors := x :: !constructors
     | Field -> fields := x :: !fields);
   group (
-    nest (!^ "open" ^^ OCaml.list (fun path ->
-      double_quotes (separate (!^ ".") (List.map Name.pp path)))
-      m.opens) ^^ newline ^^
-    nest (!^ "open (external)" ^^ OCaml.list (fun path ->
-      double_quotes (separate (!^ ".") (List.map Name.pp path)))
-      m.external_opens) ^^ newline ^^
     !^ "vars:" ^^ nest (pp_map !vars) ^^ newline ^^
     !^ "typs:" ^^ nest (pp_map !typs) ^^ newline ^^
     !^ "descriptors:" ^^ nest (pp_map !descriptors) ^^ newline ^^
@@ -94,11 +86,10 @@ let pp (m : 'a t) : SmartPrint.t =
     !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
       PathName.Map.bindings m.modules))
 
-let open_module (module_name : Name.t list) (m : 'a t) : 'a t =
-  { m with opens = module_name :: m.opens }
-
-let open_external_module (module_name : Name.t list) (m : 'a t) : 'a t =
-  { m with external_opens = module_name :: m.external_opens }
+let name (m : 'a t) : CoqName.t =
+  match m.name with
+  | Some name -> name
+  | None -> failwith "No name associated with this module."
 
 let find_free_name (base_name : string) (env : 'a t) : Name.t =
   let prefix_n s n =
@@ -276,37 +267,36 @@ module Modules = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
     if mem x m then Some x else None
 
+  let find_opt (x : PathName.t) (m : 'a t) : 'a t option =
+    PathName.Map.find_opt x m.modules
+
   let find (x : PathName.t) (m : 'a t) : 'a t =
     PathName.Map.find x m.modules
 end
 
-let finish_module (module_name : Name.t) (prefix : Name.t -> 'a -> 'a)
-  (m1 : 'a t) (m2 : 'a t) : 'a t =
-  let add_to_path x =
-    { x with PathName.path = module_name :: x.PathName.path } in
-  let m =
-  { opens = m2.opens;
-    external_opens = m2.external_opens;
-    locator = Locator.join
-      (PathName.Map.map_union add_to_path (fun _ v -> v))
-      m1.locator m2.locator;
-    values = PathName.Map.map_union add_to_path
-      (fun _ v -> Value.map (prefix module_name) v)
-      m1.values m2.values;
-    modules = PathName.Map.map_union add_to_path (fun _ v -> v)
-      m1.modules m2.modules } in
-  Modules.add (PathName.of_name [] module_name) m1 m
-
-exception NameConflict of string * string * PathName.t
-
-let include_module (m_incl : 'a t) (m : 'a t) : 'a t =
-  { opens = m.opens;
-    external_opens = m.external_opens;
-    values = PathName.Map.union (fun key v1 v2 ->
-      raise (NameConflict (Value.to_string v1, Value.to_string v2, key)))
-     m_incl.values m.values;
-    locator = Locator.join (fun v1 v2 -> v1 (* will fail in values *))
-      m_incl.locator m.locator;
-    modules = PathName.Map.union (fun key _ _ ->
-        raise (NameConflict ("module", "module", key)))
-      m_incl.modules m.modules }
+let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
+  : 'a t =
+  match option_map CoqName.ocaml_name m1.name with
+  | Some module_name ->
+    let add_to_path x =
+      { x with PathName.path = module_name :: x.PathName.path } in
+    let m =
+    { name = m2.name;
+      locator = Locator.join
+        (PathName.Map.map_union add_to_path (fun _ v -> v))
+        m1.locator m2.locator;
+      values = PathName.Map.map_union add_to_path
+        (fun _ v -> Value.map (prefix (Some module_name)) v)
+        m1.values m2.values;
+      modules = PathName.Map.map_union add_to_path (fun _ v -> v)
+        m1.modules m2.modules } in
+    Modules.add (PathName.of_name [] module_name) m1 m
+  | None -> (* This is a partial module, do not add name information. *)
+    { name = m2.name;
+      locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
+        m1.locator m2.locator;
+      values = PathName.Map.map_union (fun x -> x)
+        (fun _ v -> Value.map (prefix None) v)
+        m1.values m2.values;
+      modules = PathName.Map.union (fun _ v _ -> Some v)
+        m1.modules m2.modules }

@@ -93,7 +93,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let state_name = CoqName.ocaml_name r.Reference.state_name in
     [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
-  | Structure.Include (_, name) -> [Include name]
+  | Structure.Include (_, name) -> [Include name.path_name]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
 
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
@@ -106,21 +106,21 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Field x -> FullEnvi.Field.add [] x env
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
-    let env = FullEnvi.enter_module env in
+    let env = FullEnvi.enter_module (CoqName.Name x) env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module x Effect.Type.leave_prefix env
+    FullEnvi.leave_module Effect.Type.leave_prefix Effect.Type.resolve_open env
 
-let to_wrapped_mod (coq_prefix : Name.t) (interface : t)
-  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t FullEnvi.WrappedMod.t =
-  let env = FullEnvi.enter_module env in
-  let (name, env) = match interface with
-  | Interface (name, defs) ->
-    (name, List.fold_left (fun env def -> to_full_envi def env) env defs)
-  | _ -> ("", to_full_envi interface env) in
-  let list_mod = List.hd env.FullEnvi.active_module in
+let to_mod (coq_prefix : Name.t) (interface : t)
+  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t Mod.t =
+  let name = match interface with | Interface (name, _) -> name | _ -> "" in
   let coq_name = if coq_prefix == "" || name == "" then coq_prefix ^ name
     else coq_prefix ^ "." ^ name in
-  ({ m = list_mod; ocaml_name = name; coq_name } : 'a FullEnvi.WrappedMod.t)
+  let env = FullEnvi.enter_module (CoqName.of_names name coq_name) env in
+  let env = match interface with
+  | Interface (_, defs) ->
+    List.fold_left (fun env def -> to_full_envi def env) env defs
+  | _ -> to_full_envi interface env in
+  FullMod.hd_map (fun m _ -> m) env.FullEnvi.active_module
 
 let rec to_json (interface : t) : json =
   match interface with

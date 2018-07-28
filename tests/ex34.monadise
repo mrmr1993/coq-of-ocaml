@@ -7,7 +7,7 @@ Require [ OCaml.List ]
   Value
     (non_rec, @.,
       [
-        ((compare, [ ], [ (x, Type (t/0)) ], (Type (t/0) -> Type (Z/2))),
+        ((compare, [ ], [ (x, Type (t/0)) ], (Type (t/0) -> Type (Z/4))),
           Match
             (?, Variable (?, x/0),
               [
@@ -36,14 +36,14 @@ Inductive t:
   ([ ],
     [
       (Empty, [ ]);
-      (Node, [ Type (t/0); Type (elt/0); Type (t/0); Type (Z/1) ])
+      (Node, [ Type (t/0); Type (elt/0); Type (t/0); Type (Z/3) ])
     ])
 
 14
 Value
   (non_rec, @.,
     [
-      ((height, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
+      ((height, [ ], [ (x, Type (t/0)) ], Type (Z/3)),
         Match
           (?, Variable (?, x/0),
             [
@@ -81,13 +81,13 @@ Value
             IfThenElse
               (26,
                 Apply
-                  (26, Variable (26, OCaml.Pervasives.ge/1),
+                  (26, Variable (26, OCaml.Pervasives.ge/3),
                     [ Variable (26, hl/0); Variable (26, hr/0) ]),
                 Apply
-                  (26, Variable (26, Z.add/1),
+                  (26, Variable (26, Z.add/3),
                     [ Variable (26, hl/0); Constant (26, Int(1)) ]),
                 Apply
-                  (26, Variable (26, Z.add/1),
+                  (26, Variable (26, Z.add/3),
                     [ Variable (26, hr/0); Constant (26, Int(1)) ]))))
     ])
 
@@ -96,7 +96,7 @@ Value
   (non_rec, @.,
     [
       ((bal, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3 ], Type (t/0))),
         LetVar ? hl =
           Match
             (34, Variable (34, l/0),
@@ -116,14 +116,14 @@ Value
         IfThenElse
           (36,
             Apply
-              (36, Variable (36, OCaml.Pervasives.gt/1),
+              (36, Variable (36, OCaml.Pervasives.gt/3),
                 [
                   Variable (36, hl/0);
                   Apply
                     (36,
                       Variable
                         (36,
-                          Z.add/1),
+                          Z.add/3),
                       [
                         Variable
                           (36,
@@ -141,7 +141,7 @@ Value
                       (38,
                         Variable
                           (38,
-                            OCaml.Pervasives.invalid_arg/1),
+                            OCaml.Pervasives.invalid_arg/3),
                         [
                           Constant
                             (38,
@@ -154,7 +154,7 @@ Value
                           (40,
                             Variable
                               (40,
-                                OCaml.Pervasives.ge/1),
+                                OCaml.Pervasives.ge/3),
                             [
                               Apply
                                 (40,
@@ -220,7 +220,7 @@ Value
                                   (44,
                                     Variable
                                       (44,
-                                        OCaml.Pervasives.invalid_arg/1),
+                                        OCaml.Pervasives.invalid_arg/3),
                                     [
                                       Constant
                                         (44,
@@ -281,14 +281,14 @@ Value
             IfThenElse
               (48,
                 Apply
-                  (48, Variable (48, OCaml.Pervasives.gt/1),
+                  (48, Variable (48, OCaml.Pervasives.gt/3),
                     [
                       Variable (48, hr/0);
                       Apply
                         (48,
                           Variable
                             (48,
-                              Z.add/1),
+                              Z.add/3),
                           [
                             Variable
                               (48,
@@ -306,7 +306,7 @@ Value
                           (50,
                             Variable
                               (50,
-                                OCaml.Pervasives.invalid_arg/1),
+                                OCaml.Pervasives.invalid_arg/3),
                             [
                               Constant
                                 (50,
@@ -319,7 +319,7 @@ Value
                               (52,
                                 Variable
                                   (52,
-                                    OCaml.Pervasives.ge/1),
+                                    OCaml.Pervasives.ge/3),
                                 [
                                   Apply
                                     (52,
@@ -385,7 +385,7 @@ Value
                                       (56,
                                         Variable
                                           (56,
-                                            OCaml.Pervasives.invalid_arg/1),
+                                            OCaml.Pervasives.invalid_arg/3),
                                         [
                                           Constant
                                             (56,
@@ -455,7 +455,7 @@ Value
                               (61,
                                 Variable
                                   (61,
-                                    OCaml.Pervasives.ge/1),
+                                    OCaml.Pervasives.ge/3),
                                 [
                                   Variable
                                     (61,
@@ -466,7 +466,7 @@ Value
                                 ]),
                             Apply
                               (61,
-                                Variable (61, Z.add/1),
+                                Variable (61, Z.add/3),
                                 [
                                   Variable
                                     (61,
@@ -477,7 +477,7 @@ Value
                                 ]),
                             Apply
                               (61,
-                                Variable (61, Z.add/1),
+                                Variable (61, Z.add/3),
                                 [
                                   Variable
                                     (61,
@@ -493,7 +493,7 @@ Value
   (rec, @coq_rec,
     [
       ((add, [ ], [ (x, Type (elt/0)); (x_1, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3 ], Type (t/0))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -537,7 +537,7 @@ Value
                       (69,
                         Variable
                           (69,
-                            equiv_decb/1),
+                            equiv_decb/3),
                         [
                           Variable
                             (69,
@@ -557,7 +557,7 @@ Value
                           (70,
                             Variable
                               (70,
-                                OCaml.Pervasives.lt/1),
+                                OCaml.Pervasives.lt/3),
                             [
                               Variable
                                 (70,
@@ -650,7 +650,7 @@ Value
   (rec, @coq_rec,
     [
       ((add_min_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3 ], Type (t/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -709,7 +709,7 @@ Value
   (rec, @coq_rec,
     [
       ((add_max_element, [ ], [ (v, Type (elt/0)); (x, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3 ], Type (t/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -769,34 +769,34 @@ Value
     [
       ((join_rec, [ ],
         [
-          (counter, Type (nat/1));
+          (counter, Type (nat/3));
           (l, Type (t/0));
           (v, Type (elt/0));
           (r, Type (t/0))
-        ], Monad ([ NonTermination/1; OCaml.Invalid_argument/1 ], Type (t/0))),
+        ], Monad ([ OCaml.Invalid_argument/3; NonTermination/3 ], Type (t/0))),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Lift
                   (?,
                     [
-                      NonTermination/1
+                      NonTermination/3
                     ],
                     [
-                      NonTermination/1;
-                      OCaml.Invalid_argument/1
+                      OCaml.Invalid_argument/3;
+                      NonTermination/3
                     ],
                     Apply
                       (?,
                         Variable
                           (?,
-                            not_terminated/1),
+                            not_terminated/3),
                         [
                           Tuple
                             (?)
                         ])));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (98,
                     Tuple
@@ -815,11 +815,11 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3
                             ],
                             [
-                              NonTermination/1;
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3;
+                              NonTermination/3
                             ],
                             Apply
                               (99,
@@ -841,11 +841,11 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3
                             ],
                             [
-                              NonTermination/1;
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3;
+                              NonTermination/3
                             ],
                             Apply
                               (100,
@@ -879,7 +879,7 @@ Value
                               (102,
                                 Variable
                                   (102,
-                                    OCaml.Pervasives.gt/1),
+                                    OCaml.Pervasives.gt/3),
                                 [
                                   Variable
                                     (102,
@@ -888,7 +888,7 @@ Value
                                     (102,
                                       Variable
                                         (102,
-                                          Z.add/1),
+                                          Z.add/3),
                                       [
                                         Variable
                                           (102,
@@ -928,11 +928,11 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument/1
+                                      OCaml.Invalid_argument/3
                                     ],
                                     [
-                                      NonTermination/1;
-                                      OCaml.Invalid_argument/1
+                                      OCaml.Invalid_argument/3;
+                                      NonTermination/3
                                     ],
                                     Apply
                                       (102,
@@ -956,7 +956,7 @@ Value
                                   (103,
                                     Variable
                                       (103,
-                                        OCaml.Pervasives.gt/1),
+                                        OCaml.Pervasives.gt/3),
                                     [
                                       Variable
                                         (103,
@@ -965,7 +965,7 @@ Value
                                         (103,
                                           Variable
                                             (103,
-                                              Z.add/1),
+                                              Z.add/3),
                                           [
                                             Variable
                                               (103,
@@ -1005,11 +1005,11 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          OCaml.Invalid_argument/1
+                                          OCaml.Invalid_argument/3
                                         ],
                                         [
-                                          NonTermination/1;
-                                          OCaml.Invalid_argument/1
+                                          OCaml.Invalid_argument/3;
+                                          NonTermination/3
                                         ],
                                         Apply
                                           (103,
@@ -1055,25 +1055,25 @@ Value
     [
       ((join, [ ], [ (l, Type (t/0)); (v, Type (elt/0)); (r, Type (t/0)) ],
         Monad
-          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
+          ([ Counter/3; OCaml.Invalid_argument/3; NonTermination/3 ],
             Type (t/0))),
         Bind
           (?,
             Lift
-              (?, [ Counter/1 ],
+              (?, [ Counter/3 ],
                 [
-                  Counter/1;
-                  NonTermination/1;
-                  OCaml.Invalid_argument/1
+                  Counter/3;
+                  OCaml.Invalid_argument/3;
+                  NonTermination/3
                 ],
-                Apply (?, Variable (?, read_counter/1), [ Tuple (?) ])),
+                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination/1; OCaml.Invalid_argument/1 ],
+              (?, [ OCaml.Invalid_argument/3; NonTermination/3 ],
                 [
-                  Counter/1;
-                  NonTermination/1;
-                  OCaml.Invalid_argument/1
+                  Counter/3;
+                  OCaml.Invalid_argument/3;
+                  NonTermination/3
                 ],
                 Apply
                   (?, Variable (?, join_rec/0),
@@ -1090,7 +1090,7 @@ Value
   (rec, @coq_rec,
     [
       ((min_elt, [ ], [ (x, Type (t/0)) ],
-        Monad ([ OCaml.Not_found/1 ], Type (elt/0))),
+        Monad ([ OCaml.Not_found/3 ], Type (elt/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1099,7 +1099,7 @@ Value
                   (109,
                     Variable
                       (109,
-                        OCaml.raise_Not_found/1),
+                        OCaml.raise_Not_found/3),
                     [
                       Tuple
                         (?)
@@ -1125,7 +1125,7 @@ Value
   (rec, @coq_rec,
     [
       ((max_elt, [ ], [ (x, Type (t/0)) ],
-        Monad ([ OCaml.Not_found/1 ], Type (elt/0))),
+        Monad ([ OCaml.Not_found/3 ], Type (elt/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1134,7 +1134,7 @@ Value
                   (115,
                     Variable
                       (115,
-                        OCaml.raise_Not_found/1),
+                        OCaml.raise_Not_found/3),
                     [
                       Tuple
                         (?)
@@ -1160,7 +1160,7 @@ Value
   (rec, @coq_rec,
     [
       ((remove_min_elt, [ ], [ (x, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3 ], Type (t/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -1169,7 +1169,7 @@ Value
                   (123,
                     Variable
                       (123,
-                        OCaml.Pervasives.invalid_arg/1),
+                        OCaml.Pervasives.invalid_arg/3),
                     [
                       Constant
                         (123,
@@ -1216,7 +1216,7 @@ Value
   (non_rec, @.,
     [
       ((merge, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3; OCaml.Not_found/3 ], Type (t/0))),
         Match
           (133, Tuple (133, Variable (133, t1/0), Variable (133, t2/0)),
             [
@@ -1230,11 +1230,11 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Not_found/1
+                          OCaml.Not_found/3
                         ],
                         [
-                          OCaml.Invalid_argument/1;
-                          OCaml.Not_found/1
+                          OCaml.Invalid_argument/3;
+                          OCaml.Not_found/3
                         ],
                         Apply
                           (136,
@@ -1253,11 +1253,11 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3
                             ],
                             [
-                              OCaml.Invalid_argument/1;
-                              OCaml.Not_found/1
+                              OCaml.Invalid_argument/3;
+                              OCaml.Not_found/3
                             ],
                             Apply
                               (136,
@@ -1274,11 +1274,11 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3
                             ],
                             [
-                              OCaml.Invalid_argument/1;
-                              OCaml.Not_found/1
+                              OCaml.Invalid_argument/3;
+                              OCaml.Not_found/3
                             ],
                             Apply
                               (136,
@@ -1306,10 +1306,10 @@ Value
       ((concat, [ ], [ (t1, Type (t/0)); (t2, Type (t/0)) ],
         Monad
           ([
-            Counter/1;
-            NonTermination/1;
-            OCaml.Invalid_argument/1;
-            OCaml.Not_found/1
+            Counter/3;
+            OCaml.Invalid_argument/3;
+            NonTermination/3;
+            OCaml.Not_found/3
           ], Type (t/0))),
         Match
           (143, Tuple (143, Variable (143, t1/0), Variable (143, t2/0)),
@@ -1324,13 +1324,13 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Not_found/1
+                          OCaml.Not_found/3
                         ],
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Invalid_argument/1;
-                          OCaml.Not_found/1
+                          Counter/3;
+                          OCaml.Invalid_argument/3;
+                          NonTermination/3;
+                          OCaml.Not_found/3
                         ],
                         Apply
                           (146,
@@ -1349,13 +1349,13 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument/1
+                              OCaml.Invalid_argument/3
                             ],
                             [
-                              Counter/1;
-                              NonTermination/1;
-                              OCaml.Invalid_argument/1;
-                              OCaml.Not_found/1
+                              Counter/3;
+                              OCaml.Invalid_argument/3;
+                              NonTermination/3;
+                              OCaml.Not_found/3
                             ],
                             Apply
                               (146,
@@ -1372,15 +1372,15 @@ Value
                         Lift
                           (?,
                             [
-                              Counter/1;
-                              NonTermination/1;
-                              OCaml.Invalid_argument/1
+                              Counter/3;
+                              OCaml.Invalid_argument/3;
+                              NonTermination/3
                             ],
                             [
-                              Counter/1;
-                              NonTermination/1;
-                              OCaml.Invalid_argument/1;
-                              OCaml.Not_found/1
+                              Counter/3;
+                              OCaml.Invalid_argument/3;
+                              NonTermination/3;
+                              OCaml.Not_found/3
                             ],
                             Apply
                               (146,
@@ -1407,8 +1407,8 @@ Value
     [
       ((split, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ],
         Monad
-          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
-            (Type (t/0) * Type (bool/1) * Type (t/0)))),
+          ([ Counter/3; OCaml.Invalid_argument/3; NonTermination/3 ],
+            (Type (t/0) * Type (bool/3) * Type (t/0)))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1422,7 +1422,7 @@ Value
                             Empty/0),
                         Constructor
                           (156,
-                            false/1),
+                            false/3),
                         Constructor
                           (156,
                             Empty/0))));
@@ -1448,7 +1448,7 @@ Value
                       (159,
                         Variable
                           (159,
-                            equiv_decb/1),
+                            equiv_decb/3),
                         [
                           Variable
                             (159,
@@ -1466,7 +1466,7 @@ Value
                                 l/0),
                             Constructor
                               (159,
-                                true/1),
+                                true/3),
                             Variable
                               (159,
                                 r/0))),
@@ -1476,7 +1476,7 @@ Value
                           (160,
                             Variable
                               (160,
-                                OCaml.Pervasives.lt/1),
+                                OCaml.Pervasives.lt/3),
                             [
                               Variable
                                 (160,
@@ -1618,12 +1618,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((is_empty, [ ], [ (x, Type (t/0)) ], Type (bool/1)),
+      ((is_empty, [ ], [ (x, Type (t/0)) ], Type (bool/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (Empty/0), Constructor (170, true/1));
-              (Any, Constructor (170, false/1))
+              (Constructor (Empty/0), Constructor (170, true/3));
+              (Any, Constructor (170, false/3))
             ]))
     ])
 
@@ -1631,11 +1631,11 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (bool/1)),
+      ((mem, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ], Type (bool/3)),
         Match
           (?, Variable (?, x_1/0),
             [
-              (Constructor (Empty/0), Constructor (173, false/1));
+              (Constructor (Empty/0), Constructor (173, false/3));
               (Constructor (Node/0, l, v, r, Any),
                 LetVar ? c =
                   Apply
@@ -1656,13 +1656,13 @@ Value
                   (176,
                     Variable
                       (176,
-                        orb/1),
+                        orb/3),
                     [
                       Apply
                         (176,
                           Variable
                             (176,
-                              equiv_decb/1),
+                              equiv_decb/3),
                           [
                             Variable
                               (176,
@@ -1686,7 +1686,7 @@ Value
                                   (176,
                                     Variable
                                       (176,
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         (176,
@@ -1711,7 +1711,7 @@ Value
   (rec, @coq_rec,
     [
       ((remove, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ],
-        Monad ([ OCaml.Invalid_argument/1; OCaml.Not_found/1 ], Type (t/0))),
+        Monad ([ OCaml.Invalid_argument/3; OCaml.Not_found/3 ], Type (t/0))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -1739,7 +1739,7 @@ Value
                       (183,
                         Variable
                           (183,
-                            equiv_decb/1),
+                            equiv_decb/3),
                         [
                           Variable
                             (183,
@@ -1767,7 +1767,7 @@ Value
                           (184,
                             Variable
                               (184,
-                                OCaml.Pervasives.lt/1),
+                                OCaml.Pervasives.lt/3),
                             [
                               Variable
                                 (184,
@@ -1796,11 +1796,11 @@ Value
                             Lift
                               (?,
                                 [
-                                  OCaml.Invalid_argument/1
+                                  OCaml.Invalid_argument/3
                                 ],
                                 [
-                                  OCaml.Invalid_argument/1;
-                                  OCaml.Not_found/1
+                                  OCaml.Invalid_argument/3;
+                                  OCaml.Not_found/3
                                 ],
                                 Apply
                                   (184,
@@ -1838,11 +1838,11 @@ Value
                             Lift
                               (?,
                                 [
-                                  OCaml.Invalid_argument/1
+                                  OCaml.Invalid_argument/3
                                 ],
                                 [
-                                  OCaml.Invalid_argument/1;
-                                  OCaml.Not_found/1
+                                  OCaml.Invalid_argument/3;
+                                  OCaml.Not_found/3
                                 ],
                                 Apply
                                   (184,
@@ -1868,34 +1868,34 @@ Value
   (rec, @.,
     [
       ((union_rec, [ ],
-        [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
+        [ (counter, Type (nat/3)); (s1, Type (t/0)); (s2, Type (t/0)) ],
         Monad
-          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
+          ([ Counter/3; OCaml.Invalid_argument/3; NonTermination/3 ],
             Type (t/0))),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Lift
                   (?,
                     [
-                      NonTermination/1
+                      NonTermination/3
                     ],
                     [
-                      Counter/1;
-                      NonTermination/1;
-                      OCaml.Invalid_argument/1
+                      Counter/3;
+                      OCaml.Invalid_argument/3;
+                      NonTermination/3
                     ],
                     Apply
                       (?,
                         Variable
                           (?,
-                            not_terminated/1),
+                            not_terminated/3),
                         [
                           Tuple
                             (?)
                         ])));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (188,
                     Tuple
@@ -1944,7 +1944,7 @@ Value
                               (192,
                                 Variable
                                   (192,
-                                    OCaml.Pervasives.ge/1),
+                                    OCaml.Pervasives.ge/3),
                                 [
                                   Variable
                                     (192,
@@ -1959,7 +1959,7 @@ Value
                                   (193,
                                     Variable
                                       (193,
-                                        equiv_decb/1),
+                                        equiv_decb/3),
                                     [
                                       Variable
                                         (193,
@@ -1971,12 +1971,12 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument/1
+                                      OCaml.Invalid_argument/3
                                     ],
                                     [
-                                      Counter/1;
-                                      NonTermination/1;
-                                      OCaml.Invalid_argument/1
+                                      Counter/3;
+                                      OCaml.Invalid_argument/3;
+                                      NonTermination/3
                                     ],
                                     Apply
                                       (193,
@@ -2089,7 +2089,7 @@ Value
                                   (198,
                                     Variable
                                       (198,
-                                        equiv_decb/1),
+                                        equiv_decb/3),
                                     [
                                       Variable
                                         (198,
@@ -2101,12 +2101,12 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument/1
+                                      OCaml.Invalid_argument/3
                                     ],
                                     [
-                                      Counter/1;
-                                      NonTermination/1;
-                                      OCaml.Invalid_argument/1
+                                      Counter/3;
+                                      OCaml.Invalid_argument/3;
+                                      NonTermination/3
                                     ],
                                     Apply
                                       (198,
@@ -2223,18 +2223,18 @@ Value
     [
       ((union, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
         Monad
-          ([ Counter/1; NonTermination/1; OCaml.Invalid_argument/1 ],
+          ([ Counter/3; OCaml.Invalid_argument/3; NonTermination/3 ],
             Type (t/0))),
         Bind
           (?,
             Lift
-              (?, [ Counter/1 ],
+              (?, [ Counter/3 ],
                 [
-                  Counter/1;
-                  NonTermination/1;
-                  OCaml.Invalid_argument/1
+                  Counter/3;
+                  OCaml.Invalid_argument/3;
+                  NonTermination/3
                 ],
-                Apply (?, Variable (?, read_counter/1), [ Tuple (?) ])),
+                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
             Some x,
             Apply
               (?, Variable (?, union_rec/0),
@@ -2252,10 +2252,10 @@ Value
       ((inter, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
         Monad
           ([
-            Counter/1;
-            NonTermination/1;
-            OCaml.Invalid_argument/1;
-            OCaml.Not_found/1
+            Counter/3;
+            OCaml.Invalid_argument/3;
+            NonTermination/3;
+            OCaml.Not_found/3
           ], Type (t/0))),
         Match
           (204, Tuple (204, Variable (204, s1/0), Variable (204, s2/0)),
@@ -2270,15 +2270,15 @@ Value
                     Lift
                       (?,
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Invalid_argument/1
+                          Counter/3;
+                          OCaml.Invalid_argument/3;
+                          NonTermination/3
                         ],
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Invalid_argument/1;
-                          OCaml.Not_found/1
+                          Counter/3;
+                          OCaml.Invalid_argument/3;
+                          NonTermination/3;
+                          OCaml.Not_found/3
                         ],
                         Apply
                           (208,
@@ -2304,7 +2304,7 @@ Value
                           (Tuple
                             (l2,
                               Constructor
-                                (false/1),
+                                (false/3),
                               r2),
                             Bind
                               (?,
@@ -2356,7 +2356,7 @@ Value
                           (Tuple
                             (l2,
                               Constructor
-                                (true/1),
+                                (true/3),
                               r2),
                             Bind
                               (?,
@@ -2395,15 +2395,15 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          Counter/1;
-                                          NonTermination/1;
-                                          OCaml.Invalid_argument/1
+                                          Counter/3;
+                                          OCaml.Invalid_argument/3;
+                                          NonTermination/3
                                         ],
                                         [
-                                          Counter/1;
-                                          NonTermination/1;
-                                          OCaml.Invalid_argument/1;
-                                          OCaml.Not_found/1
+                                          Counter/3;
+                                          OCaml.Invalid_argument/3;
+                                          NonTermination/3;
+                                          OCaml.Not_found/3
                                         ],
                                         Apply
                                           (212,
@@ -2432,10 +2432,10 @@ Value
       ((diff, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
         Monad
           ([
-            Counter/1;
-            NonTermination/1;
-            OCaml.Invalid_argument/1;
-            OCaml.Not_found/1
+            Counter/3;
+            OCaml.Invalid_argument/3;
+            NonTermination/3;
+            OCaml.Not_found/3
           ], Type (t/0))),
         Match
           (216, Tuple (216, Variable (216, s1/0), Variable (216, s2/0)),
@@ -2450,15 +2450,15 @@ Value
                     Lift
                       (?,
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Invalid_argument/1
+                          Counter/3;
+                          OCaml.Invalid_argument/3;
+                          NonTermination/3
                         ],
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Invalid_argument/1;
-                          OCaml.Not_found/1
+                          Counter/3;
+                          OCaml.Invalid_argument/3;
+                          NonTermination/3;
+                          OCaml.Not_found/3
                         ],
                         Apply
                           (220,
@@ -2484,7 +2484,7 @@ Value
                           (Tuple
                             (l2,
                               Constructor
-                                (false/1),
+                                (false/3),
                               r2),
                             Bind
                               (?,
@@ -2523,15 +2523,15 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          Counter/1;
-                                          NonTermination/1;
-                                          OCaml.Invalid_argument/1
+                                          Counter/3;
+                                          OCaml.Invalid_argument/3;
+                                          NonTermination/3
                                         ],
                                         [
-                                          Counter/1;
-                                          NonTermination/1;
-                                          OCaml.Invalid_argument/1;
-                                          OCaml.Not_found/1
+                                          Counter/3;
+                                          OCaml.Invalid_argument/3;
+                                          NonTermination/3;
+                                          OCaml.Not_found/3
                                         ],
                                         Apply
                                           (222,
@@ -2552,7 +2552,7 @@ Value
                           (Tuple
                             (l2,
                               Constructor
-                                (true/1),
+                                (true/3),
                               r2),
                             Bind
                               (?,
@@ -2652,24 +2652,24 @@ Value
     [
       ((compare_aux_rec, [ ],
         [
-          (counter, Type (nat/1));
+          (counter, Type (nat/3));
           (e1, Type (enumeration/0));
           (e2, Type (enumeration/0))
-        ], Monad ([ NonTermination/1 ], Type (Z/1))),
+        ], Monad ([ NonTermination/3 ], Type (Z/3))),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (236,
                     Tuple
@@ -2744,7 +2744,7 @@ Value
                               (242,
                                 Variable
                                   (242,
-                                    nequiv_decb/1),
+                                    nequiv_decb/3),
                                 [
                                   Variable
                                     (242,
@@ -2808,15 +2808,15 @@ Value
     [
       ((compare_aux, [ ],
         [ (e1, Type (enumeration/0)); (e2, Type (enumeration/0)) ],
-        Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        Monad ([ Counter/3; NonTermination/3 ], Type (Z/3))),
         Bind
           (?,
             Lift
-              (?, [ Counter/1 ], [ Counter/1; NonTermination/1 ],
-                Apply (?, Variable (?, read_counter/1), [ Tuple (?) ])),
+              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
+                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination/1 ], [ Counter/1; NonTermination/1 ],
+              (?, [ NonTermination/3 ], [ Counter/3; NonTermination/3 ],
                 Apply
                   (?, Variable (?, compare_aux_rec/0),
                     [
@@ -2831,7 +2831,7 @@ Value
   (non_rec, @.,
     [
       ((compare, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        Monad ([ Counter/3; NonTermination/3 ], Type (Z/3))),
         Apply
           (247, Variable (247, compare_aux/0),
             [
@@ -2863,7 +2863,7 @@ Value
   (non_rec, @.,
     [
       ((equal, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        Monad ([ Counter/3; NonTermination/3 ], Type (bool/3))),
         Bind
           (?,
             Apply
@@ -2873,7 +2873,7 @@ Value
             Return
               (?,
                 Apply
-                  (250, Variable (250, equiv_decb/1),
+                  (250, Variable (250, equiv_decb/3),
                     [ Variable (?, x/0); Constant (250, Int(0)) ]))))
     ])
 
@@ -2882,22 +2882,22 @@ Value
   (rec, @.,
     [
       ((subset_rec, [ ],
-        [ (counter, Type (nat/1)); (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Monad ([ NonTermination/1 ], Type (bool/1))),
+        [ (counter, Type (nat/3)); (s1, Type (t/0)); (s2, Type (t/0)) ],
+        Monad ([ NonTermination/3 ], Type (bool/3))),
         Match
           (?, Variable (?, counter/0),
             [
-              (Constructor (O/1),
+              (Constructor (O/3),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/1),
+                        not_terminated/3),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/1, counter),
+              (Constructor (S/3, counter),
                 Match
                   (253,
                     Tuple
@@ -2917,7 +2917,7 @@ Value
                           (?,
                             Constructor
                               (255,
-                                true/1)));
+                                true/3)));
                       (Tuple
                         (Any,
                           Constructor
@@ -2926,7 +2926,7 @@ Value
                           (?,
                             Constructor
                               (257,
-                                false/1)));
+                                false/3)));
                       (Tuple
                         (Constructor
                           (Node/0,
@@ -2966,7 +2966,7 @@ Value
                               (260,
                                 Variable
                                   (260,
-                                    equiv_decb/1),
+                                    equiv_decb/3),
                                 [
                                   Variable
                                     (260,
@@ -3029,7 +3029,7 @@ Value
                                           (261,
                                             Variable
                                               (261,
-                                                andb/1),
+                                                andb/3),
                                             [
                                               Variable
                                                 (?,
@@ -3044,7 +3044,7 @@ Value
                                   (262,
                                     Variable
                                       (262,
-                                        OCaml.Pervasives.lt/1),
+                                        OCaml.Pervasives.lt/3),
                                     [
                                       Variable
                                         (262,
@@ -3119,7 +3119,7 @@ Value
                                               (263,
                                                 Variable
                                                   (263,
-                                                    andb/1),
+                                                    andb/3),
                                                 [
                                                   Variable
                                                     (?,
@@ -3194,7 +3194,7 @@ Value
                                               (265,
                                                 Variable
                                                   (265,
-                                                    andb/1),
+                                                    andb/3),
                                                 [
                                                   Variable
                                                     (?,
@@ -3212,15 +3212,15 @@ Value
   (non_rec, @.,
     [
       ((subset, [ ], [ (s1, Type (t/0)); (s2, Type (t/0)) ],
-        Monad ([ Counter/1; NonTermination/1 ], Type (bool/1))),
+        Monad ([ Counter/3; NonTermination/3 ], Type (bool/3))),
         Bind
           (?,
             Lift
-              (?, [ Counter/1 ], [ Counter/1; NonTermination/1 ],
-                Apply (?, Variable (?, read_counter/1), [ Tuple (?) ])),
+              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
+                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination/1 ], [ Counter/1; NonTermination/1 ],
+              (?, [ NonTermination/3 ], [ Counter/3; NonTermination/3 ],
                 Apply
                   (?, Variable (?, subset_rec/0),
                     [
@@ -3235,11 +3235,11 @@ Value
   (rec, @coq_rec,
     [
       ((iter, [ A ], [ (f, (Type (elt/0) -> A)); (x, Type (t/0)) ],
-        Type (unit/1)),
+        Type (unit/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (Empty/0), Constructor (268, tt/1));
+              (Constructor (Empty/0), Constructor (268, tt/3));
               (Constructor (Node/0, l, v, r, Any),
                 Apply
                   (269,
@@ -3314,18 +3314,18 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((for_all, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Type (bool/1)),
+      ((for_all, [ ], [ (p, (Type (elt/0) -> Type (bool/3))); (x, Type (t/0)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (Empty/0), Constructor (279, true/1));
+              (Constructor (Empty/0), Constructor (279, true/3));
               (Constructor (Node/0, l, v, r, Any),
                 Apply
                   (280,
                     Variable
                       (280,
-                        andb/1),
+                        andb/3),
                     [
                       Apply
                         (280,
@@ -3341,7 +3341,7 @@ Value
                         (280,
                           Variable
                             (280,
-                              andb/1),
+                              andb/3),
                           [
                             Apply
                               (280,
@@ -3378,18 +3378,18 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((exists_, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
-        Type (bool/1)),
+      ((exists_, [ ], [ (p, (Type (elt/0) -> Type (bool/3))); (x, Type (t/0)) ],
+        Type (bool/3)),
         Match
           (?, Variable (?, x/0),
             [
-              (Constructor (Empty/0), Constructor (284, false/1));
+              (Constructor (Empty/0), Constructor (284, false/3));
               (Constructor (Node/0, l, v, r, Any),
                 Apply
                   (285,
                     Variable
                       (285,
-                        orb/1),
+                        orb/3),
                     [
                       Apply
                         (285,
@@ -3405,7 +3405,7 @@ Value
                         (285,
                           Variable
                             (285,
-                              orb/1),
+                              orb/3),
                           [
                             Apply
                               (285,
@@ -3442,13 +3442,13 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((filter, [ ], [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
+      ((filter, [ ], [ (p, (Type (elt/0) -> Type (bool/3))); (x, Type (t/0)) ],
         Monad
           ([
-            Counter/1;
-            NonTermination/1;
-            OCaml.Invalid_argument/1;
-            OCaml.Not_found/1
+            Counter/3;
+            OCaml.Invalid_argument/3;
+            NonTermination/3;
+            OCaml.Not_found/3
           ], Type (t/0))),
         Match
           (?, Variable (?, x/0),
@@ -3513,15 +3513,15 @@ Value
                             Lift
                               (?,
                                 [
-                                  Counter/1;
-                                  NonTermination/1;
-                                  OCaml.Invalid_argument/1
+                                  Counter/3;
+                                  OCaml.Invalid_argument/3;
+                                  NonTermination/3
                                 ],
                                 [
-                                  Counter/1;
-                                  NonTermination/1;
-                                  OCaml.Invalid_argument/1;
-                                  OCaml.Not_found/1
+                                  Counter/3;
+                                  OCaml.Invalid_argument/3;
+                                  NonTermination/3;
+                                  OCaml.Not_found/3
                                 ],
                                 Apply
                                   (295,
@@ -3560,13 +3560,13 @@ Value
   (rec, @coq_rec,
     [
       ((partition, [ ],
-        [ (p, (Type (elt/0) -> Type (bool/1))); (x, Type (t/0)) ],
+        [ (p, (Type (elt/0) -> Type (bool/3))); (x, Type (t/0)) ],
         Monad
           ([
-            Counter/1;
-            NonTermination/1;
-            OCaml.Invalid_argument/1;
-            OCaml.Not_found/1
+            Counter/3;
+            OCaml.Invalid_argument/3;
+            NonTermination/3;
+            OCaml.Not_found/3
           ], (Type (t/0) * Type (t/0)))),
         Match
           (?, Variable (?, x/0),
@@ -3660,15 +3660,15 @@ Value
                                                 Lift
                                                   (?,
                                                     [
-                                                      Counter/1;
-                                                      NonTermination/1;
-                                                      OCaml.Invalid_argument/1
+                                                      Counter/3;
+                                                      OCaml.Invalid_argument/3;
+                                                      NonTermination/3
                                                     ],
                                                     [
-                                                      Counter/1;
-                                                      NonTermination/1;
-                                                      OCaml.Invalid_argument/1;
-                                                      OCaml.Not_found/1
+                                                      Counter/3;
+                                                      OCaml.Invalid_argument/3;
+                                                      NonTermination/3;
+                                                      OCaml.Not_found/3
                                                     ],
                                                     Apply
                                                       (306,
@@ -3737,15 +3737,15 @@ Value
                                                     Lift
                                                       (?,
                                                         [
-                                                          Counter/1;
-                                                          NonTermination/1;
-                                                          OCaml.Invalid_argument/1
+                                                          Counter/3;
+                                                          OCaml.Invalid_argument/3;
+                                                          NonTermination/3
                                                         ],
                                                         [
-                                                          Counter/1;
-                                                          NonTermination/1;
-                                                          OCaml.Invalid_argument/1;
-                                                          OCaml.Not_found/1
+                                                          Counter/3;
+                                                          OCaml.Invalid_argument/3;
+                                                          NonTermination/3;
+                                                          OCaml.Not_found/3
                                                         ],
                                                         Apply
                                                           (307,
@@ -3784,7 +3784,7 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((cardinal, [ ], [ (x, Type (t/0)) ], Type (Z/1)),
+      ((cardinal, [ ], [ (x, Type (t/0)) ], Type (Z/3)),
         Match
           (?, Variable (?, x/0),
             [
@@ -3794,13 +3794,13 @@ Value
                   (312,
                     Variable
                       (312,
-                        Z.add/1),
+                        Z.add/3),
                     [
                       Apply
                         (312,
                           Variable
                             (312,
-                              Z.add/1),
+                              Z.add/3),
                           [
                             Apply
                               (312,
@@ -3835,8 +3835,8 @@ Value
   (rec, @coq_rec,
     [
       ((elements_aux, [ ],
-        [ (accu, Type (list/1, Type (elt/0))); (x, Type (t/0)) ],
-        Type (list/1, Type (elt/0))),
+        [ (accu, Type (list/3, Type (elt/0))); (x, Type (t/0)) ],
+        Type (list/3, Type (elt/0))),
         Match
           (?, Variable (?, x/0),
             [
@@ -3850,7 +3850,7 @@ Value
                     [
                       Constructor
                         (317,
-                          cons/1,
+                          cons/3,
                           Variable
                             (317,
                               v/0),
@@ -3878,10 +3878,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((elements, [ ], [ (s, Type (t/0)) ], Type (list/1, Type (elt/0))),
+      ((elements, [ ], [ (s, Type (t/0)) ], Type (list/3, Type (elt/0))),
         Apply
           (321, Variable (321, elements_aux/0),
-            [ Constructor (321, []/1); Variable (321, s/0) ]))
+            [ Constructor (321, []/3); Variable (321, s/0) ]))
     ])
 
 323
@@ -3889,7 +3889,7 @@ Value
   (non_rec, @.,
     [
       ((choose, [ ], [ ],
-        (Type (t/0) -> Monad ([ OCaml.Not_found/1 ], Type (elt/0)))),
+        (Type (t/0) -> Monad ([ OCaml.Not_found/3 ], Type (elt/0)))),
         Variable (323, min_elt/0))
     ])
 
@@ -3898,7 +3898,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ ], [ (x, Type (Ord.t/0)); (x_1, Type (t/0)) ],
-        Monad ([ OCaml.Not_found/1 ], Type (elt/0))),
+        Monad ([ OCaml.Not_found/3 ], Type (elt/0))),
         Match
           (?, Variable (?, x_1/0),
             [
@@ -3907,7 +3907,7 @@ Value
                   (326,
                     Variable
                       (326,
-                        OCaml.raise_Not_found/1),
+                        OCaml.raise_Not_found/3),
                     [
                       Tuple
                         (?)
@@ -3934,7 +3934,7 @@ Value
                       (329,
                         Variable
                           (329,
-                            equiv_decb/1),
+                            equiv_decb/3),
                         [
                           Variable
                             (329,
@@ -3963,7 +3963,7 @@ Value
                                 (330,
                                   Variable
                                     (330,
-                                      OCaml.Pervasives.lt/1),
+                                      OCaml.Pervasives.lt/3),
                                   [
                                     Variable
                                       (330,
@@ -3986,33 +3986,33 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_sorted_list, [ ], [ (l, Type (list/1, Type (elt/0))) ],
+      ((of_sorted_list, [ ], [ (l, Type (list/3, Type (elt/0))) ],
         Monad
-          ([ Counter/1; NonTermination/1; OCaml.Assert_failure/1 ],
+          ([ OCaml.Assert_failure/3; Counter/3; NonTermination/3 ],
             Type (t/0))),
         LetFun 334
           (rec, @.,
             [
               ((sub_rec, [ ],
                 [
-                  (counter, Type (nat/1));
-                  (n, Type (Z/1));
+                  (counter, Type (nat/3));
+                  (n, Type (Z/3));
                   (l,
                     Type
-                      (list/1,
+                      (list/3,
                         Type
                           (elt/0)))
                 ],
                 Monad
                   ([
-                    NonTermination/1;
-                    OCaml.Assert_failure/1
+                    OCaml.Assert_failure/3;
+                    NonTermination/3
                   ],
                     (Type
                       (t/0)
                       *
                       Type
-                        (list/1,
+                        (list/3,
                           Type
                             (elt/0))))),
                 Match
@@ -4022,27 +4022,27 @@ Value
                         counter/0),
                     [
                       (Constructor
-                        (O/1),
+                        (O/3),
                         Lift
                           (?,
                             [
-                              NonTermination/1
+                              NonTermination/3
                             ],
                             [
-                              NonTermination/1;
-                              OCaml.Assert_failure/1
+                              OCaml.Assert_failure/3;
+                              NonTermination/3
                             ],
                             Apply
                               (?,
                                 Variable
                                   (?,
-                                    not_terminated/1),
+                                    not_terminated/3),
                                 [
                                   Tuple
                                     (?)
                                 ])));
                       (Constructor
-                        (S/1,
+                        (S/3,
                           counter),
                         Match
                           (335,
@@ -4071,7 +4071,7 @@ Value
                               (Tuple
                                 (Int(1),
                                   Constructor
-                                    (cons/1,
+                                    (cons/3,
                                       x0,
                                       l)),
                                 Return
@@ -4099,10 +4099,10 @@ Value
                               (Tuple
                                 (Int(2),
                                   Constructor
-                                    (cons/1,
+                                    (cons/3,
                                       x0,
                                       Constructor
-                                        (cons/1,
+                                        (cons/3,
                                           x1,
                                           l))),
                                 Return
@@ -4142,13 +4142,13 @@ Value
                               (Tuple
                                 (Int(3),
                                   Constructor
-                                    (cons/1,
+                                    (cons/3,
                                       x0,
                                       Constructor
-                                        (cons/1,
+                                        (cons/3,
                                           x1,
                                           Constructor
-                                            (cons/1,
+                                            (cons/3,
                                               x2,
                                               l)))),
                                 Return
@@ -4208,7 +4208,7 @@ Value
                                     (341,
                                       Variable
                                         (341,
-                                          Z.div/1),
+                                          Z.div/3),
                                       [
                                         Variable
                                           (341,
@@ -4258,28 +4258,28 @@ Value
                                                     l/0),
                                                 [
                                                   (Constructor
-                                                    ([]/1),
+                                                    ([]/3),
                                                     Lift
                                                       (?,
                                                         [
-                                                          OCaml.Assert_failure/1
+                                                          OCaml.Assert_failure/3
                                                         ],
                                                         [
-                                                          NonTermination/1;
-                                                          OCaml.Assert_failure/1
+                                                          OCaml.Assert_failure/3;
+                                                          NonTermination/3
                                                         ],
                                                         Apply
                                                           (344,
                                                             Variable
                                                               (344,
-                                                                OCaml.assert/1),
+                                                                OCaml.assert/3),
                                                             [
                                                               Constructor
                                                                 (344,
-                                                                  false/1)
+                                                                  false/3)
                                                             ])));
                                                   (Constructor
-                                                    (cons/1,
+                                                    (cons/3,
                                                       mid,
                                                       l),
                                                     Bind
@@ -4301,13 +4301,13 @@ Value
                                                                 (346,
                                                                   Variable
                                                                     (346,
-                                                                      Z.sub/1),
+                                                                      Z.sub/3),
                                                                   [
                                                                     Apply
                                                                       (346,
                                                                         Variable
                                                                           (346,
-                                                                            Z.sub/1),
+                                                                            Z.sub/3),
                                                                         [
                                                                           Variable
                                                                             (346,
@@ -4369,24 +4369,24 @@ Value
             [
               ((sub, [ ],
                 [
-                  (n, Type (Z/1));
+                  (n, Type (Z/3));
                   (l,
                     Type
-                      (list/1,
+                      (list/3,
                         Type
                           (elt/0)))
                 ],
                 Monad
                   ([
-                    Counter/1;
-                    NonTermination/1;
-                    OCaml.Assert_failure/1
+                    OCaml.Assert_failure/3;
+                    Counter/3;
+                    NonTermination/3
                   ],
                     (Type
                       (t/0)
                       *
                       Type
-                        (list/1,
+                        (list/3,
                           Type
                             (elt/0))))),
                 Bind
@@ -4394,18 +4394,18 @@ Value
                     Lift
                       (?,
                         [
-                          Counter/1
+                          Counter/3
                         ],
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Assert_failure/1
+                          OCaml.Assert_failure/3;
+                          Counter/3;
+                          NonTermination/3
                         ],
                         Apply
                           (?,
                             Variable
                               (?,
-                                read_counter/1),
+                                read_counter/3),
                             [
                               Tuple
                                 (?)
@@ -4415,13 +4415,13 @@ Value
                     Lift
                       (?,
                         [
-                          NonTermination/1;
-                          OCaml.Assert_failure/1
+                          OCaml.Assert_failure/3;
+                          NonTermination/3
                         ],
                         [
-                          Counter/1;
-                          NonTermination/1;
-                          OCaml.Assert_failure/1
+                          OCaml.Assert_failure/3;
+                          Counter/3;
+                          NonTermination/3
                         ],
                         Apply
                           (?,
@@ -4460,5 +4460,5 @@ Value
             Return
               (?,
                 Apply
-                  (349, Variable (349, fst/1), [ Variable (?, x/0) ]))))
+                  (349, Variable (349, fst/3), [ Variable (?, x/0) ]))))
     ])

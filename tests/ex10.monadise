@@ -8,22 +8,22 @@
     (rec, @.,
       [
         ((sum_rec, [ ],
-          [ (counter, Type (nat/2)); (l, Type (t/0, Type (Z/2))) ],
-          Monad ([ NonTermination/2 ], Type (Z/2))),
+          [ (counter, Type (nat/4)); (l, Type (t/0, Type (Z/4))) ],
+          Monad ([ NonTermination/4 ], Type (Z/4))),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (9,
                       Variable
@@ -68,7 +68,7 @@
                                     (11,
                                       Variable
                                         (11,
-                                          Z.add/2),
+                                          Z.add/4),
                                       [
                                         Variable
                                           (11,
@@ -85,19 +85,19 @@
   Value
     (non_rec, @.,
       [
-        ((sum, [ ], [ (l, Type (t/0, Type (Z/2))) ],
-          Monad ([ Counter/2; NonTermination/2 ], Type (Z/2))),
+        ((sum, [ ], [ (l, Type (t/0, Type (Z/4))) ],
+          Monad ([ Counter/4; NonTermination/4 ], Type (Z/4))),
           Bind
             (?,
               Lift
-                (?, [ Counter/2 ],
-                  [ Counter/2; NonTermination/2 ],
+                (?, [ Counter/4 ],
+                  [ Counter/4; NonTermination/4 ],
                   Apply
-                    (?, Variable (?, read_counter/2),
+                    (?, Variable (?, read_counter/4),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination/2 ],
-                  [ Counter/2; NonTermination/2 ],
+                (?, [ NonTermination/4 ],
+                  [ Counter/4; NonTermination/4 ],
                   Apply
                     (?, Variable (?, sum_rec/0),
                       [
@@ -111,22 +111,22 @@
     (rec, @.,
       [
         ((of_list_rec, [ A ],
-          [ (counter, Type (nat/2)); (x, Type (list/2, A)) ],
-          Monad ([ NonTermination/2 ], Type (t/0, A))),
+          [ (counter, Type (nat/4)); (x, Type (list/4, A)) ],
+          Monad ([ NonTermination/4 ], Type (t/0, A))),
           Match
             (?, Variable (?, counter/0),
               [
-                (Constructor (O/2),
+                (Constructor (O/4),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/2),
+                          not_terminated/4),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/2, counter),
+                (Constructor (S/4, counter),
                   Match
                     (?,
                       Variable
@@ -134,14 +134,14 @@
                           x/0),
                       [
                         (Constructor
-                          ([]/2),
+                          ([]/4),
                           Return
                             (?,
                               Constructor
                                 (14,
                                   Nil/0)));
                         (Constructor
-                          (cons/2,
+                          (cons/4,
                             x,
                             xs),
                           Bind
@@ -184,19 +184,19 @@
   Value
     (non_rec, @.,
       [
-        ((of_list, [ A ], [ (x, Type (list/2, A)) ],
-          Monad ([ Counter/2; NonTermination/2 ], Type (t/0, A))),
+        ((of_list, [ A ], [ (x, Type (list/4, A)) ],
+          Monad ([ Counter/4; NonTermination/4 ], Type (t/0, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter/2 ],
-                  [ Counter/2; NonTermination/2 ],
+                (?, [ Counter/4 ],
+                  [ Counter/4; NonTermination/4 ],
                   Apply
-                    (?, Variable (?, read_counter/2),
+                    (?, Variable (?, read_counter/4),
                       [ Tuple (?) ])), Some x_1,
               Lift
-                (?, [ NonTermination/2 ],
-                  [ Counter/2; NonTermination/2 ],
+                (?, [ NonTermination/4 ],
+                  [ Counter/4; NonTermination/4 ],
                   Apply
                     (?, Variable (?, of_list_rec/0),
                       [
@@ -207,14 +207,14 @@
   
   17 Module Inside:
     18
-    Value (non_rec, @., [ ((x, [ ], [ ], Type (Z/3)), Constant (18, Int(12))) ])
+    Value (non_rec, @., [ ((x, [ ], [ ], Type (Z/5)), Constant (18, Int(12))) ])
 
 22
 Value
   (non_rec, @.,
     [
       ((n, [ A ], [ (x, A) ],
-        Monad ([ Counter/1; NonTermination/1 ], Type (Z/1))),
+        Monad ([ Counter/3; NonTermination/3 ], Type (Z/3))),
         Match
           (?, Variable (?, x/0),
             [
@@ -229,31 +229,31 @@ Value
                         [
                           Constructor
                             (22,
-                              cons/1,
+                              cons/3,
                               Constant
                                 (22,
                                   Int(5)),
                               Constructor
                                 (22,
-                                  cons/1,
+                                  cons/3,
                                   Constant
                                     (22,
                                       Int(7)),
                                   Constructor
                                     (22,
-                                      cons/1,
+                                      cons/3,
                                       Constant
                                         (22,
                                           Int(6)),
                                       Constructor
                                         (22,
-                                          cons/1,
+                                          cons/3,
                                           Variable
                                             (22,
                                               List2.Inside.x/0),
                                           Constructor
                                             (22,
-                                              []/1)))))
+                                              []/3)))))
                         ]),
                     Some
                       x_1,
