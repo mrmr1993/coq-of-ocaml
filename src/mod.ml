@@ -267,6 +267,9 @@ module Modules = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
     if mem x m then Some x else None
 
+  let find_opt (x : PathName.t) (m : 'a t) : 'a t option =
+    PathName.Map.find_opt x m.modules
+
   let find (x : PathName.t) (m : 'a t) : 'a t =
     PathName.Map.find x m.modules
 end

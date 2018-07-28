@@ -62,6 +62,22 @@ let leave_module (prefix : Name.t option -> 'a -> 'a)
     | _ -> failwith "You should have entered in at least one module." in
   leave_module_rec env
 
+let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
+  (env : 'a t) (open_lift : 'b -> 'b) : 'b =
+  let m =
+    try List.nth env x.BoundName.depth with
+    | Failure _ -> raise Not_found in
+  let m = match m with
+    | Module m | Include m -> m
+    | _ -> failwith "Invalid bound name." in
+  let rec iterate_open_lift v n =
+    if n = 0 then
+      v
+    else
+      iterate_open_lift (open_lift v) (n - 1) in
+  let v = find x.BoundName.path_name m in
+  iterate_open_lift v x.BoundName.depth
+
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (external_module : Name.t list -> 'a Mod.t * Name.t list) (x : PathName.t)
   (env : 'a t) : BoundName.t option =
@@ -75,12 +91,28 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
   | Alias module_path :: env ->
-    [{ x with PathName.path =
-        PathName.to_name_list module_path.path_name @ x.path };
-      x]
-      |> find_first (fun x -> bound_name_opt find external_module x env)
+    let m = find_bound_name Mod.Modules.find_opt module_path env (fun x -> x) in
+    let path = PathName.to_name_list module_path.path_name in
+    let res = match m with
+      | None ->
+        let x = { x with PathName.path = path @ x.PathName.path } in
+        bound_name_opt find external_module x env
+        |> option_map (fun name ->
+          { name with BoundName.depth = name.BoundName.depth + 1 })
+      | Some m ->
+        match find x m with
+        | Some x ->
+          let x = { x with PathName.path = path @ x.PathName.path } in
+          Some { BoundName.path_name = x;
+            BoundName.depth = module_path.depth + 1 }
+        | None -> None in
+    begin match res with
+    | Some name -> res
+    | None ->
+      bound_name_opt find external_module x env
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
+    end
   | ExternalAlias module_path :: env ->
     let module_path = PathName.to_name_list module_path.path_name in
     let (m, module_path) = external_module module_path in
@@ -97,22 +129,6 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_module_opt (external_module : Name.t list -> 'a Mod.t * Name.t list)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt external_module x env
-
-let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
-  (env : 'a t) (open_lift : 'b -> 'b) : 'b =
-  let m =
-    try List.nth env x.BoundName.depth with
-    | Failure _ -> raise Not_found in
-  let m = match m with
-    | Module m | Include m -> m
-    | _ -> failwith "Invalid bound name." in
-  let rec iterate_open_lift v n =
-    if n = 0 then
-      v
-    else
-      iterate_open_lift (open_lift v) (n - 1) in
-  let v = find x.BoundName.path_name m in
-  iterate_open_lift v x.BoundName.depth
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   hd_map (fun m env ->
