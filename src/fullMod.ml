@@ -86,15 +86,18 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
   | Open module_path :: env ->
-    let (m, x, path) = if module_path.depth == -1 then
+    let (m, path) = if module_path.depth == -1 then
         let module_path = PathName.to_name_list module_path.path_name in
         let (m, module_path) = external_module module_path in
-        let x = { x with PathName.path = module_path @ x.path } in
         let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
-        (Some m, x, [coq_name])
+        let submodule = match module_path with
+          | [] -> Some m
+          | _ ->
+            let submodule_path = PathName.of_name_list module_path in
+            PathName.Map.find_opt submodule_path m.modules in
+        (submodule, coq_name :: module_path)
       else
         (find_bound_name Mod.Modules.find_opt module_path env (fun x -> x),
-         x,
          PathName.to_name_list module_path.path_name) in
     let res = match m with
       | None ->
