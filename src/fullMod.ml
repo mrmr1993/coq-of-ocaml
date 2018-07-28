@@ -100,22 +100,17 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
       | None ->
         let x = { x with PathName.path = path @ x.PathName.path } in
         bound_name_opt find external_module x env
-        |> option_map (fun name ->
-          { name with BoundName.depth = name.BoundName.depth + 1 })
       | Some m ->
         match find x m with
         | Some x ->
           let x = { x with PathName.path = path @ x.PathName.path } in
-          Some { BoundName.path_name = x;
-            BoundName.depth = module_path.depth + 1 }
+          Some { module_path with BoundName.path_name = x }
         | None -> None in
-    begin match res with
+    (match res with
     | Some name -> res
-    | None ->
-      bound_name_opt find external_module x env
+    | None -> bound_name_opt find external_module x env)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
-    end
   | [] -> None
 
 let bound_module_opt (external_module : Name.t list -> 'a Mod.t * Name.t list)
