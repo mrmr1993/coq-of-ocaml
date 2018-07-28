@@ -4,8 +4,7 @@ open Utils
 type 'a t' =
   | Module of 'a Mod.t
   | Include of 'a Mod.t
-  | Alias of BoundName.t
-  | ExternalAlias of BoundName.t
+  | Open of BoundName.t
 
 type 'a t = 'a t' list
 
@@ -14,8 +13,7 @@ let pp (env : 'a t) : SmartPrint.t =
     match m with
     | Module m -> Mod.pp m
     | Include m -> !^ "include" ^^ braces (Mod.pp m)
-    | Alias name -> !^ "open" ^^ BoundName.pp name
-    | ExternalAlias name -> !^ "open (external)" ^^ BoundName.pp name)
+    | Open name -> !^ "open" ^^ BoundName.pp name)
 
 let empty (module_name : CoqName.t option) : 'a t =
   [Module (Mod.empty module_name)]
@@ -23,7 +21,7 @@ let empty (module_name : CoqName.t option) : 'a t =
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
   match env with
   | Module m :: env -> f m env
-  | (Include _ | Alias _ | ExternalAlias _) :: env ->
+  | (Include _ | Open _) :: env ->
     failwith "The head of the environment must be a module."
   | [] -> failwith "The environment must be a non-empty list."
 
@@ -37,10 +35,10 @@ let enter_section (env : 'a t) : 'a t =
   Module (Mod.empty None) :: env
 
 let open_module (module_name : BoundName.t) (env : 'a t) : 'a t =
-  Module (Mod.empty None) :: Alias module_name :: env
+  Module (Mod.empty None) :: Open module_name :: env
 
 let open_external_module (module_name : BoundName.t) (env : 'a t) : 'a t =
-  Module (Mod.empty None) :: Alias module_name :: env
+  Module (Mod.empty None) :: Open module_name :: env
 
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   let m = { m with name = None } in
@@ -57,7 +55,7 @@ let leave_module (prefix : Name.t option -> 'a -> 'a)
       | None -> (* This is a partial module, continue to the rest of it. *)
         leave_module_rec (Module m :: env)
       end
-    | Module m :: (Alias path | ExternalAlias path) :: env ->
+    | Module m :: Open path :: env ->
       leave_module_rec @@ Module (Mod.map (resolve_open path) m) :: env
     | _ -> failwith "You should have entered in at least one module." in
   leave_module_rec env
@@ -90,7 +88,7 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
         |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
-  | Alias module_path :: env ->
+  | Open module_path :: env ->
     let (m, x, path) = if module_path.depth == -1 then
         let module_path = PathName.to_name_list module_path.path_name in
         let (m, module_path) = external_module module_path in
@@ -121,17 +119,6 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
     end
-  | ExternalAlias module_path :: env ->
-    let module_path = PathName.to_name_list module_path.path_name in
-    let (m, module_path) = external_module module_path in
-    let x = { x with PathName.path = module_path @ x.path } in
-    begin match find x m with
-    | Some x ->
-      let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
-      let x = { x with path = coq_name :: x.path } in
-      Some { BoundName.path_name = x; BoundName.depth = -1 }
-    | None -> bound_name_opt find external_module x env
-    end
   | [] -> None
 
 let bound_module_opt (external_module : Name.t list -> 'a Mod.t * Name.t list)
@@ -148,5 +135,4 @@ let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
     match m with
     | Module m -> Module (Mod.map f m)
     | Include m -> Include (Mod.map f m)
-    | Alias path -> Alias path
-    | ExternalAlias path -> ExternalAlias path) env
+    | Open path -> Open path) env
