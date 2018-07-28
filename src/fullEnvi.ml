@@ -46,7 +46,7 @@ let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
 let leave_module (prefix : Name.t option -> 'a -> 'a)
-  (resolve_open : BoundName.t -> 'a -> 'a) (env : 'a t) : 'a t =
+  (resolve_open : Name.t list -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module =
     FullMod.leave_module prefix resolve_open env.active_module}
 
@@ -139,7 +139,25 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
 let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
-  { env with active_module = FullMod.open_module module_name env.active_module }
+  let (m, path) = if module_name.depth == -1 then
+      let module_path = PathName.to_name_list module_name.path_name in
+      let (m, module_path) = find_external_module_names env module_path in
+      let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
+      let submodule = match module_path with
+        | [] -> Some m
+        | _ ->
+          let submodule_path = PathName.of_name_list module_path in
+          PathName.Map.find_opt submodule_path m.modules in
+      (submodule, coq_name :: module_path)
+    else
+      (FullMod.find_bound_name Mod.Modules.find_opt module_name
+        env.active_module (fun x -> x),
+      PathName.to_name_list module_name.path_name) in
+  match m with
+  | Some m ->
+    { env with active_module =
+        FullMod.open_module m path module_name.depth env.active_module }
+  | None -> env
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =

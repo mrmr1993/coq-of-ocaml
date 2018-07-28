@@ -22,9 +22,8 @@ let leave_prefix (name : Name.t option) (x : t) : t =
   else
     x
 
-let resolve_open (name : t) (x : t) : t =
+let resolve_open (name_list : Name.t list) (x : t) : t =
   if x.depth = 1 then
-    let name_list = PathName.to_name_list name.path_name in
     { path_name = { x.path_name with
         PathName.path = name_list @ x.path_name.path };
       depth = 0 }
