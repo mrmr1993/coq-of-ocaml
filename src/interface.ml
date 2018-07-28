@@ -93,7 +93,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let state_name = CoqName.ocaml_name r.Reference.state_name in
     [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
-  | Structure.Include (_, name) -> [Include name]
+  | Structure.Include (_, name) -> [Include name.path_name]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
 
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)

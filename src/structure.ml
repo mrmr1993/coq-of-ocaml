@@ -95,7 +95,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let (o, env) = Open.update_env_struct loc o env in
       (env, Open (loc, o))
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
-      let incl = Include.of_ocaml loc path in
+      let incl = Include.of_ocaml env loc path in
       let env = Include.update_env loc incl env in
       (env, Include (loc, incl))
     | Tstr_include _ -> Error.raise loc "This kind of include is not handled"
