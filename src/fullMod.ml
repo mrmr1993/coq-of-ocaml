@@ -76,14 +76,13 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   iterate_open_lift v x.BoundName.depth
 
 let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (external_module : Name.t list -> 'a Mod.t * Name.t list) (x : PathName.t)
-  (env : 'a t) : BoundName.t option =
+  (x : PathName.t) (env : 'a t) : BoundName.t option =
   match env with
   | Module m :: env | Include m :: env ->
     begin match find x m with
     | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
     | None ->
-      bound_name_opt find external_module x env
+      bound_name_opt find x env
         |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
@@ -92,14 +91,13 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     | Some x ->
       let x = { x with PathName.path = path @ x.PathName.path } in
       Some { BoundName.path_name = x; depth }
-    | None -> bound_name_opt find external_module x env)
+    | None -> bound_name_opt find x env)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
   | [] -> None
 
-let bound_module_opt (external_module : Name.t list -> 'a Mod.t * Name.t list)
-  (x : PathName.t) (env : 'a t) : BoundName.t option =
-  bound_name_opt Mod.Modules.resolve_opt external_module x env
+let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+  bound_name_opt Mod.Modules.resolve_opt x env
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   hd_map (fun m env ->
