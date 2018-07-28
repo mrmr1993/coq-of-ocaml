@@ -16,7 +16,8 @@ let update_env (loc : Loc.t) (o : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   FullEnvi.open_module loc o env
 
 let update_env_nocheck (o : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
-  FullEnvi.open_module_nocheck o env
+  let bound_name = { BoundName.path_name = o; depth = 0 } in
+  FullEnvi.open_module_nocheck bound_name env
 
 (** Pretty-print an open construct to Coq. *)
 let to_coq (o : t): SmartPrint.t =

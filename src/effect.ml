@@ -116,7 +116,7 @@ module Descriptor = struct
   let leave_prefix (name : Name.t option) (d : t) : t =
     Map.map (fun x -> BoundName.leave_prefix name x) d
 
-  let resolve_open (name : PathName.t) (d : t) : t =
+  let resolve_open (name : BoundName.t) (d : t) : t =
     Map.map (fun x -> BoundName.resolve_open name x) d
 end
 
@@ -199,7 +199,7 @@ module Type = struct
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.leave_prefix x d, leave_prefix x typ)
 
-  let rec resolve_open (x : PathName.t) (typ : t) : t =
+  let rec resolve_open (x : BoundName.t) (typ : t) : t =
     match typ with
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.resolve_open x d, resolve_open x typ)

@@ -46,7 +46,7 @@ let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
 let leave_module (prefix : Name.t option -> 'a -> 'a)
-  (resolve_open : PathName.t -> 'a -> 'a) (env : 'a t) : 'a t =
+  (resolve_open : BoundName.t -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module =
     FullMod.leave_module prefix resolve_open env.active_module}
 
@@ -138,20 +138,20 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       let message = PathName.pp x ^^ !^ "not found." in
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
-let open_module_nocheck (module_name : PathName.t) (env : 'a t) : 'a t =
+let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
   { env with active_module = FullMod.open_module module_name env.active_module }
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
   match FullMod.bound_module_opt (find_external_module_names env) module_name
     env.active_module with
-  | Some {BoundName.path_name} ->
-    (path_name, open_module_nocheck path_name env)
+  | Some bound_name ->
+    (bound_name.path_name, open_module_nocheck bound_name env)
   | None ->
-    let {BoundName.path_name} = bound_external_module loc module_name env in
-    (path_name,
+    let bound_name = bound_external_module loc module_name env in
+    (bound_name.path_name,
     { env with active_module =
-      FullMod.open_external_module module_name env.active_module })
+      FullMod.open_external_module bound_name env.active_module })
 
 let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
   snd (open_module_struct loc module_name env)
