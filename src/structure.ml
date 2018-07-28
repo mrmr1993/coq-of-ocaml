@@ -91,7 +91,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let env = Exception.update_env exn env in
       (env, Exception (loc, exn))
     | Tstr_open { open_path = path } ->
-      let o = Open.of_ocaml loc path in
+      let o = Open.of_ocaml env loc path in
       let (o, env) = Open.update_env_struct loc o env in
       (env, Open (loc, o))
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
