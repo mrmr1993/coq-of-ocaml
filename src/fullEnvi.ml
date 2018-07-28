@@ -143,15 +143,12 @@ let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
 
 let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
   : PathName.t * 'a t =
-  match FullMod.bound_module_opt (find_external_module_names env) module_name
-    env.active_module with
-  | Some bound_name ->
-    (bound_name.path_name, open_module_nocheck bound_name env)
-  | None ->
-    let bound_name = bound_external_module loc module_name env in
-    (bound_name.path_name,
-    { env with active_module =
-      FullMod.open_external_module bound_name env.active_module })
+  let bound_name =
+    match FullMod.bound_module_opt (find_external_module_names env) module_name
+      env.active_module with
+    | Some bound_name -> bound_name
+    | None -> bound_external_module loc module_name env in
+  (bound_name.path_name, open_module_nocheck bound_name env)
 
 let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
   snd (open_module_struct loc module_name env)

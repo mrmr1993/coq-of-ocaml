@@ -37,9 +37,6 @@ let enter_section (env : 'a t) : 'a t =
 let open_module (module_name : BoundName.t) (env : 'a t) : 'a t =
   Module (Mod.empty None) :: Open module_name :: env
 
-let open_external_module (module_name : BoundName.t) (env : 'a t) : 'a t =
-  Module (Mod.empty None) :: Open module_name :: env
-
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   let m = { m with name = None } in
   Module (Mod.empty None) :: Include m :: env
