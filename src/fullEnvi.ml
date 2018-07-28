@@ -154,26 +154,15 @@ let find_module (x : BoundName.t) (env : 'a t)
     find_mod x.path_name.base env
   | _ -> find_bound_name Mod.Modules.find x env open_lift
 
-let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
+let open_module (module_name : BoundName.t) (env : 'a t) : 'a t =
   let m = find_module module_name env (fun x -> x) in
   let path = PathName.to_name_list module_name.path_name in
   { env with active_module =
       FullMod.open_module m path module_name.depth env.active_module }
 
-let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
-  : PathName.t * 'a t =
-  let bound_name =
-    match FullMod.bound_module_opt (find_external_module_names env) module_name
-      env.active_module with
-    | Some bound_name -> bound_name
-    | None -> bound_external_module loc module_name env in
-  (bound_name.path_name, open_module_nocheck bound_name env)
-
-let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
-  snd (open_module_struct loc module_name env)
-
 let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
-  open_module loc (PathName.of_name_list module_name) env
+  let path = PathName.of_name_list module_name in
+  open_module (bound_module loc path env) env
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in
