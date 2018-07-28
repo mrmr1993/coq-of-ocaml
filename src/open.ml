@@ -10,7 +10,7 @@ let of_ocaml (env : 'a FullEnvi.t) (loc : Loc.t) (path : Path.t) : t =
   FullEnvi.bound_module loc path env
 
 let update_env (loc : Loc.t) (o : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
-  FullEnvi.open_module o env
+  FullEnvi.open_module loc o env
 
 (** Pretty-print an open construct to Coq. *)
 let to_coq (o : t): SmartPrint.t =

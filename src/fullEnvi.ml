@@ -27,10 +27,10 @@ let requires (env : 'a t) : Name.t list =
 let find_mod_opt (module_name : Name.t) (env : 'a t) : 'a Mod.t option =
   env.get_module module_name
 
-let find_mod (module_name : Name.t) (env : 'a t) : 'a Mod.t =
+let find_mod (loc : Loc.t) (module_name : Name.t) (env : 'a t) : 'a Mod.t =
   match find_mod_opt module_name env with
   | Some wmod -> wmod
-  | None -> failwith ("Could not find include " ^ Name.to_string module_name ^ ".")
+  | None -> Error.raise loc ("Could not find include " ^ Name.to_string module_name ^ ".")
 
 let update_active (f : 'a Mod.t -> 'a Mod.t) (env : 'a t) : 'a t =
   { env with active_module = FullMod.hd_mod_map f env.active_module }
@@ -122,23 +122,23 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   else
     FullMod.find_bound_name find x env.active_module open_lift
 
-let find_module (x : BoundName.t) (env : 'a t)
+let find_module (loc : Loc.t) (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
   match x.path_name.path with
   | [] when x.BoundName.depth == -1 ->
     (* This is a reference to a top-level external module *)
-    find_mod x.path_name.base env
+    find_mod loc x.path_name.base env
   | _ -> find_bound_name Mod.Modules.find x env open_lift
 
-let open_module (module_name : BoundName.t) (env : 'a t) : 'a t =
-  let m = find_module module_name env (fun x -> x) in
+let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
+  let m = find_module loc module_name env (fun x -> x) in
   let path = PathName.to_name_list module_name.path_name in
   { env with active_module =
       FullMod.open_module m path module_name.depth env.active_module }
 
 let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
-  open_module (bound_module loc path env) env
+  open_module loc (bound_module loc path env) env
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in
