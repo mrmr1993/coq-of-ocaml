@@ -138,42 +138,6 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       let message = PathName.pp x ^^ !^ "not found." in
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
-let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
-  let (m, path) = if module_name.depth == -1 then
-      let module_path = PathName.to_name_list module_name.path_name in
-      let (m, module_path) = find_external_module_names env module_path in
-      let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
-      let submodule = match module_path with
-        | [] -> Some m
-        | _ ->
-          let submodule_path = PathName.of_name_list module_path in
-          PathName.Map.find_opt submodule_path m.modules in
-      (submodule, coq_name :: module_path)
-    else
-      (FullMod.find_bound_name Mod.Modules.find_opt module_name
-        env.active_module (fun x -> x),
-      PathName.to_name_list module_name.path_name) in
-  match m with
-  | Some m ->
-    { env with active_module =
-        FullMod.open_module m path module_name.depth env.active_module }
-  | None -> env
-
-let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
-  : PathName.t * 'a t =
-  let bound_name =
-    match FullMod.bound_module_opt (find_external_module_names env) module_name
-      env.active_module with
-    | Some bound_name -> bound_name
-    | None -> bound_external_module loc module_name env in
-  (bound_name.path_name, open_module_nocheck bound_name env)
-
-let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
-  snd (open_module_struct loc module_name env)
-
-let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
-  open_module loc (PathName.of_name_list module_name) env
-
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
@@ -189,6 +153,27 @@ let find_module (x : BoundName.t) (env : 'a t)
     (* This is a reference to a top-level external module *)
     find_mod x.path_name.base env
   | _ -> find_bound_name Mod.Modules.find x env open_lift
+
+let open_module_nocheck (module_name : BoundName.t) (env : 'a t) : 'a t =
+  let m = find_module module_name env (fun x -> x) in
+  let path = PathName.to_name_list module_name.path_name in
+  { env with active_module =
+      FullMod.open_module m path module_name.depth env.active_module }
+
+let open_module_struct (loc : Loc.t) (module_name : PathName.t) (env : 'a t)
+  : PathName.t * 'a t =
+  let bound_name =
+    match FullMod.bound_module_opt (find_external_module_names env) module_name
+      env.active_module with
+    | Some bound_name -> bound_name
+    | None -> bound_external_module loc module_name env in
+  (bound_name.path_name, open_module_nocheck bound_name env)
+
+let open_module (loc : Loc.t) (module_name : PathName.t) (env : 'a t) : 'a t =
+  snd (open_module_struct loc module_name env)
+
+let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
+  open_module loc (PathName.of_name_list module_name) env
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in

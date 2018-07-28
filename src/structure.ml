@@ -92,7 +92,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       (env, Exception (loc, exn))
     | Tstr_open { open_path = path } ->
       let o = Open.of_ocaml env loc path in
-      let (o, env) = Open.update_env_struct loc o env in
+      let env = Open.update_env loc o env in
       (env, Open (loc, o))
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
       let incl = Include.of_ocaml env loc path in
@@ -239,7 +239,8 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Reference (loc, r) ->
       let (env, r) = Reference.update_env Exp.monadise r env in
       (env, Reference (loc, r))
-    | Open (loc, o) -> (Open.update_env_nocheck o env, Open (loc, o))
+    | Open (loc, o) -> (* Don't update the environment; it likely doesn't contain our module *)
+      (env, Open (loc, o))
     | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
