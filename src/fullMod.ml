@@ -40,7 +40,7 @@ let open_module (module_name : BoundName.t) (env : 'a t) : 'a t =
   Module (Mod.empty None) :: Alias module_name :: env
 
 let open_external_module (module_name : BoundName.t) (env : 'a t) : 'a t =
-  Module (Mod.empty None) :: ExternalAlias module_name :: env
+  Module (Mod.empty None) :: Alias module_name :: env
 
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   let m = { m with name = None } in
@@ -91,8 +91,16 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
   | Alias module_path :: env ->
-    let m = find_bound_name Mod.Modules.find_opt module_path env (fun x -> x) in
-    let path = PathName.to_name_list module_path.path_name in
+    let (m, x, path) = if module_path.depth == -1 then
+        let module_path = PathName.to_name_list module_path.path_name in
+        let (m, module_path) = external_module module_path in
+        let x = { x with PathName.path = module_path @ x.path } in
+        let (_, coq_name) = CoqName.assoc_names @@ Mod.name m in
+        (Some m, x, [coq_name])
+      else
+        (find_bound_name Mod.Modules.find_opt module_path env (fun x -> x),
+         x,
+         PathName.to_name_list module_path.path_name) in
     let res = match m with
       | None ->
         let x = { x with PathName.path = path @ x.PathName.path } in
