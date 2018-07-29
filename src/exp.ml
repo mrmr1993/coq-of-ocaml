@@ -264,12 +264,56 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       Apply (a, e_f, e_xs))
   | Texp_match (e, cases, _, _) ->
     let e = of_expression env typ_vars e in
-    let cases = cases |> List.map (fun {c_lhs = p; c_guard = g; c_rhs = e} ->
-      if g <> None then Error.warn l "Guard on pattern ignored.";
-      let p = Pattern.of_pattern env p in
-      let env = Pattern.add_to_env p env in
-      (p, of_expression env typ_vars e)) in
-    Match (a, e, cases)
+    let (index, rev_cases) = cases |>
+      List.fold_left (fun (index, l) {c_lhs = p; c_guard = g; c_rhs = e} ->
+        let p = Pattern.of_pattern env p in
+        let env = Pattern.add_to_env p env in
+        match g with
+        | Some g ->
+          let index = match index with
+            | Some i -> i + 1
+            | None -> 1 in
+          let g = of_expression env typ_vars g in
+          let e = of_expression env typ_vars e in
+          (Some index, (p, Some (index, g), e) :: l)
+        | None ->
+          (index, (p, None, of_expression env typ_vars e) :: l)) (None, []) in
+    begin match index with
+    | Some _ ->
+      let int_t = Type.Apply
+        (FullEnvi.Typ.bound Loc.Unknown (PathName.of_name [] "Z") env, []) in
+      let (index_pattern, pattern) = rev_cases
+        |> List.fold_left (fun (index_pattern, pattern) (p, g, e) ->
+          match g with
+          | Some (index, g) ->
+            let index_pattern = (p,
+              IfThenElse ((Loc.Unknown, int_t), g,
+                Constant ((Loc.Unknown, int_t), Constant.Int index),
+                Constant ((Loc.Unknown, int_t), Constant.Int 0)))
+              :: index_pattern in
+            let pattern =
+              (Pattern.Tuple [p; Pattern.Constant (Constant.Int index)],
+              e) :: pattern in
+            (index_pattern, pattern)
+          | None ->
+            let index_pattern =
+              (p, Constant ((Loc.Unknown, int_t), Constant.Int 0))
+              :: index_pattern in
+            let pattern = (Pattern.Tuple [p; Pattern.Any], e) :: pattern in
+            (index_pattern, pattern)) ([], []) in
+      let (i, env) = FullEnvi.fresh_var "i" () env in
+      let x = FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] i) env in
+      let tup_t = Type.Tuple [snd (annotation e); int_t] in
+      LetVar ((Loc.Unknown, snd a), CoqName.Name i,
+        Match ((Loc.Unknown, int_t), e, index_pattern),
+        Match (a,
+          Tuple ((Loc.Unknown, tup_t), [e; Variable ((Loc.Unknown, int_t), x)]),
+          pattern))
+    | None ->
+      let cases = rev_cases
+        |> List.fold_left (fun l (p, _, e) -> (p, e) :: l) [] in
+      Match (a, e, cases)
+    end
   | Texp_tuple es -> Tuple (a, List.map (of_expression env typ_vars) es)
   | Texp_construct (x, _, es) ->
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
