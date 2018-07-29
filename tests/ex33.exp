@@ -2264,34 +2264,114 @@ Value
                         (?)
                     ]));
               (Constructor (S/3, counter),
+                LetVar ? i =
+                  Match
+                    (?,
+                      Tuple
+                        (233,
+                          Variable
+                            (233,
+                              s1/0),
+                          Variable
+                            (233,
+                              s2/0)),
+                      [
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Constant
+                            (?,
+                              Int(0)));
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          IfThenElse
+                            (?,
+                              Apply
+                                (235,
+                                  Variable
+                                    (235,
+                                      OCaml.Pervasives.ge/3),
+                                  [
+                                    Variable
+                                      (235,
+                                        h1/0);
+                                    Apply
+                                      (235,
+                                        Variable
+                                          (235,
+                                            height/0),
+                                        [
+                                          Variable
+                                            (235,
+                                              s2/0)
+                                        ])
+                                  ]),
+                              Constant
+                                (?,
+                                  Int(1)),
+                              Constant
+                                (?,
+                                  Int(0))));
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Constant
+                            (?,
+                              Int(0)))
+                      ])
+                  in
                 Match
                   (233,
                     Tuple
-                      (233,
-                        Variable
+                      (?,
+                        Tuple
                           (233,
-                            s1/0),
+                            Variable
+                              (233,
+                                s1/0),
+                            Variable
+                              (233,
+                                s2/0)),
                         Variable
-                          (233,
-                            s2/0)),
+                          (?,
+                            i/0)),
                     [
                       (Tuple
-                        (Constructor
-                          (Empty/0),
-                          Constructor
-                            (Empty/0)),
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Any),
                         Constructor
                           (234,
                             Empty/0));
                       (Tuple
-                        (Constructor
-                          (Node/0,
-                            l1,
-                            v1,
-                            d1,
-                            r1,
-                            h1),
-                          Any),
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          Int(1)),
                         Match
                           (236,
                             Apply
@@ -2389,14 +2469,16 @@ Value
                                     ]))
                             ]));
                       (Tuple
-                        (Any,
-                          Constructor
-                            (Node/0,
-                              l2,
-                              v2,
-                              d2,
-                              r2,
-                              h2)),
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Any),
                         Match
                           (239,
                             Apply
@@ -2492,6 +2574,25 @@ Value
                                                 r2/0)
                                           ])
                                     ]))
+                            ]));
+                      (Any,
+                        Apply
+                          (?,
+                            Variable
+                              (?,
+                                OCaml.raise_Match_failure/3),
+                            [
+                              Tuple
+                                (?,
+                                  Constant
+                                    (?,
+                                      String("tests/ex33.ml")),
+                                  Constant
+                                    (?,
+                                      Int(233)),
+                                  Constant
+                                    (?,
+                                      Int(2)))
                             ]))
                     ]))
             ]))

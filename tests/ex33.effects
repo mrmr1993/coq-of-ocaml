@@ -5185,6 +5185,7 @@ Value
               ([
                 Counter/3;
                 OCaml.Invalid_argument/3;
+                OCaml.Match_failure/3;
                 NonTermination/3;
                 OCaml.Not_found/3
               ], .)), Variable ((?, Effect ([ ], .)), counter/0),
@@ -5217,42 +5218,202 @@ Value
                               .)))
                     ]));
               (Constructor (S/3, counter),
+                LetVar
+                  (?,
+                    Effect
+                      ([
+                        Counter/3;
+                        OCaml.Invalid_argument/3;
+                        OCaml.Match_failure/3;
+                        NonTermination/3;
+                        OCaml.Not_found/3
+                      ],
+                        .))
+                  i =
+                  Match
+                    ((?,
+                      Effect
+                        ([
+                        ],
+                          .)),
+                      Tuple
+                        ((233,
+                          Effect
+                            ([
+                            ],
+                              .)),
+                          Variable
+                            ((233,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              s1/0),
+                          Variable
+                            ((233,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              s2/0)),
+                      [
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Constant
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              Int(0)));
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          IfThenElse
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              Apply
+                                ((235,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  Variable
+                                    ((235,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      OCaml.Pervasives.ge/3),
+                                  [
+                                    Variable
+                                      ((235,
+                                        Effect
+                                          ([
+                                          ],
+                                            .)),
+                                        h1/0);
+                                    Apply
+                                      ((235,
+                                        Effect
+                                          ([
+                                          ],
+                                            .)),
+                                        Variable
+                                          ((235,
+                                            Effect
+                                              ([
+                                              ],
+                                                .
+                                                  ->
+                                                  .)),
+                                            height/0),
+                                        [
+                                          Variable
+                                            ((235,
+                                              Effect
+                                                ([
+                                                ],
+                                                  .)),
+                                              s2/0)
+                                        ])
+                                  ]),
+                              Constant
+                                ((?,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  Int(1)),
+                              Constant
+                                ((?,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  Int(0))));
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Constant
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              Int(0)))
+                      ])
+                  in
                 Match
                   ((233,
                     Effect
                       ([
                         Counter/3;
                         OCaml.Invalid_argument/3;
+                        OCaml.Match_failure/3;
                         NonTermination/3;
                         OCaml.Not_found/3
                       ],
                         .)),
                     Tuple
-                      ((233,
+                      ((?,
                         Effect
                           ([
                           ],
                             .)),
-                        Variable
+                        Tuple
                           ((233,
                             Effect
                               ([
                               ],
                                 .)),
-                            s1/0),
+                            Variable
+                              ((233,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                s1/0),
+                            Variable
+                              ((233,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                s2/0)),
                         Variable
-                          ((233,
+                          ((?,
                             Effect
                               ([
                               ],
                                 .)),
-                            s2/0)),
+                            i/0)),
                     [
                       (Tuple
-                        (Constructor
-                          (Empty/0),
-                          Constructor
-                            (Empty/0)),
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Any),
                         Constructor
                           ((234,
                             Effect
@@ -5261,20 +5422,23 @@ Value
                                 .)),
                             Empty/0));
                       (Tuple
-                        (Constructor
-                          (Node/0,
-                            l1,
-                            v1,
-                            d1,
-                            r1,
-                            h1),
-                          Any),
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          Int(1)),
                         Match
                           ((236,
                             Effect
                               ([
                                 Counter/3;
                                 OCaml.Invalid_argument/3;
+                                OCaml.Match_failure/3;
                                 NonTermination/3;
                                 OCaml.Not_found/3
                               ],
@@ -5330,6 +5494,7 @@ Value
                                       ([
                                         Counter/3;
                                         OCaml.Invalid_argument/3;
+                                        OCaml.Match_failure/3;
                                         NonTermination/3;
                                         OCaml.Not_found/3
                                       ],
@@ -5361,6 +5526,7 @@ Value
                                             ([
                                               Counter/3;
                                               OCaml.Invalid_argument/3;
+                                              OCaml.Match_failure/3;
                                               NonTermination/3;
                                               OCaml.Not_found/3
                                             ],
@@ -5378,6 +5544,7 @@ Value
                                                         -[
                                                           Counter/3;
                                                           OCaml.Invalid_argument/3;
+                                                          OCaml.Match_failure/3;
                                                           NonTermination/3;
                                                           OCaml.Not_found/3
                                                         ]->
@@ -5397,6 +5564,7 @@ Value
                                                               -[
                                                                 Counter/3;
                                                                 OCaml.Invalid_argument/3;
+                                                                OCaml.Match_failure/3;
                                                                 NonTermination/3;
                                                                 OCaml.Not_found/3
                                                               ]->
@@ -5490,6 +5658,7 @@ Value
                                             ([
                                               Counter/3;
                                               OCaml.Invalid_argument/3;
+                                              OCaml.Match_failure/3;
                                               NonTermination/3;
                                               OCaml.Not_found/3
                                             ],
@@ -5507,6 +5676,7 @@ Value
                                                         -[
                                                           Counter/3;
                                                           OCaml.Invalid_argument/3;
+                                                          OCaml.Match_failure/3;
                                                           NonTermination/3;
                                                           OCaml.Not_found/3
                                                         ]->
@@ -5526,6 +5696,7 @@ Value
                                                               -[
                                                                 Counter/3;
                                                                 OCaml.Invalid_argument/3;
+                                                                OCaml.Match_failure/3;
                                                                 NonTermination/3;
                                                                 OCaml.Not_found/3
                                                               ]->
@@ -5566,20 +5737,23 @@ Value
                                     ]))
                             ]));
                       (Tuple
-                        (Any,
-                          Constructor
-                            (Node/0,
-                              l2,
-                              v2,
-                              d2,
-                              r2,
-                              h2)),
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Any),
                         Match
                           ((239,
                             Effect
                               ([
                                 Counter/3;
                                 OCaml.Invalid_argument/3;
+                                OCaml.Match_failure/3;
                                 NonTermination/3;
                                 OCaml.Not_found/3
                               ],
@@ -5635,6 +5809,7 @@ Value
                                       ([
                                         Counter/3;
                                         OCaml.Invalid_argument/3;
+                                        OCaml.Match_failure/3;
                                         NonTermination/3;
                                         OCaml.Not_found/3
                                       ],
@@ -5666,6 +5841,7 @@ Value
                                             ([
                                               Counter/3;
                                               OCaml.Invalid_argument/3;
+                                              OCaml.Match_failure/3;
                                               NonTermination/3;
                                               OCaml.Not_found/3
                                             ],
@@ -5683,6 +5859,7 @@ Value
                                                         -[
                                                           Counter/3;
                                                           OCaml.Invalid_argument/3;
+                                                          OCaml.Match_failure/3;
                                                           NonTermination/3;
                                                           OCaml.Not_found/3
                                                         ]->
@@ -5702,6 +5879,7 @@ Value
                                                               -[
                                                                 Counter/3;
                                                                 OCaml.Invalid_argument/3;
+                                                                OCaml.Match_failure/3;
                                                                 NonTermination/3;
                                                                 OCaml.Not_found/3
                                                               ]->
@@ -5795,6 +5973,7 @@ Value
                                             ([
                                               Counter/3;
                                               OCaml.Invalid_argument/3;
+                                              OCaml.Match_failure/3;
                                               NonTermination/3;
                                               OCaml.Not_found/3
                                             ],
@@ -5812,6 +5991,7 @@ Value
                                                         -[
                                                           Counter/3;
                                                           OCaml.Invalid_argument/3;
+                                                          OCaml.Match_failure/3;
                                                           NonTermination/3;
                                                           OCaml.Not_found/3
                                                         ]->
@@ -5831,6 +6011,7 @@ Value
                                                               -[
                                                                 Counter/3;
                                                                 OCaml.Invalid_argument/3;
+                                                                OCaml.Match_failure/3;
                                                                 NonTermination/3;
                                                                 OCaml.Not_found/3
                                                               ]->
@@ -5869,6 +6050,54 @@ Value
                                                 r2/0)
                                           ])
                                     ]))
+                            ]));
+                      (Any,
+                        Apply
+                          ((?,
+                            Effect
+                              ([
+                                OCaml.Match_failure/3
+                              ],
+                                .)),
+                            Variable
+                              ((?,
+                                Effect
+                                  ([
+                                  ],
+                                    .
+                                      -[
+                                        OCaml.Match_failure/3
+                                      ]->
+                                      .)),
+                                OCaml.raise_Match_failure/3),
+                            [
+                              Tuple
+                                ((?,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  Constant
+                                    ((?,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      String("tests/ex33.ml")),
+                                  Constant
+                                    ((?,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(233)),
+                                  Constant
+                                    ((?,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(2)))
                             ]))
                     ]))
             ]))
@@ -5894,6 +6123,7 @@ Value
               ([
                 Counter/3;
                 OCaml.Invalid_argument/3;
+                OCaml.Match_failure/3;
                 NonTermination/3;
                 OCaml.Not_found/3
               ], .)),
@@ -5908,6 +6138,7 @@ Value
                             -[
                               Counter/3;
                               OCaml.Invalid_argument/3;
+                              OCaml.Match_failure/3;
                               NonTermination/3;
                               OCaml.Not_found/3
                             ]-> .)), merge_rec/0),
