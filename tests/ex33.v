@@ -340,35 +340,62 @@ Fixpoint split {A : Type} (x : Ord.t) (x_1 : t A)
 Fixpoint merge_rec {A B C : Type}
   (counter : nat) (f : key -> (option A) -> (option B) -> option C) (s1 : t A)
   (s2 : t B)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] (t C) :=
+  : M
+    [
+      Counter;
+      OCaml.Invalid_argument;
+      OCaml.Match_failure;
+      NonTermination;
+      OCaml.Not_found
+    ] (t C) :=
   match counter with
-  | O => lift [_;_;_;_] "0010" (not_terminated tt)
+  | O => lift [_;_;_;_;_] "00010" (not_terminated tt)
   | S counter =>
-    match (s1, s2) with
-    | (Empty, Empty) => ret Empty
-    | (Node l1 v1 d1 r1 h1, _) =>
-      let! x := lift [_;_;_;_] "1110" (split v1 s2) in
+    let i :=
+      match (s1, s2) with
+      | (Empty, Empty) => 0
+      | (Node l1 v1 d1 r1 h1, _) =>
+        if OCaml.Pervasives.ge h1 (height s2) then
+          1
+        else
+          0
+      | (_, Node l2 v2 d2 r2 h2) => 0
+      end in
+    match ((s1, s2), i) with
+    | ((Empty, Empty), _) => ret Empty
+    | ((Node l1 v1 d1 r1 h1, _), 1) =>
+      let! x := lift [_;_;_;_;_] "11010" (split v1 s2) in
       match x with
       | (l2, d2, r2) =>
         let! x := (merge_rec counter) f l1 l2 in
         let! x_1 := (merge_rec counter) f r1 r2 in
-        concat_or_join x v1 (f v1 (Some d1) d2) x_1
+        lift [_;_;_;_;_] "11011" (concat_or_join x v1 (f v1 (Some d1) d2) x_1)
       end
-    | (_, Node l2 v2 d2 r2 h2) =>
-      let! x := lift [_;_;_;_] "1110" (split v2 s1) in
+    | ((_, Node l2 v2 d2 r2 h2), _) =>
+      let! x := lift [_;_;_;_;_] "11010" (split v2 s1) in
       match x with
       | (l1, d1, r1) =>
         let! x := (merge_rec counter) f l1 l2 in
         let! x_1 := (merge_rec counter) f r1 r2 in
-        concat_or_join x v2 (f v2 d1 (Some d2)) x_1
+        lift [_;_;_;_;_] "11011" (concat_or_join x v2 (f v2 d1 (Some d2)) x_1)
       end
+    | _ =>
+      lift [_;_;_;_;_] "00100"
+        (OCaml.raise_Match_failure ("tests/ex33.ml" % string, 233, 2))
     end
   end.
 
 Definition merge {A B C : Type}
   (f : key -> (option A) -> (option B) -> option C) (s1 : t A) (s2 : t B)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] (t C) :=
-  let! x := lift [_;_;_;_] "1000" (read_counter tt) in
+  : M
+    [
+      Counter;
+      OCaml.Invalid_argument;
+      OCaml.Match_failure;
+      NonTermination;
+      OCaml.Not_found
+    ] (t C) :=
+  let! x := lift [_;_;_;_;_] "10000" (read_counter tt) in
   merge_rec x f s1 s2.
 
 Fixpoint filter {A : Type} (p : key -> A -> bool) (x : t A)

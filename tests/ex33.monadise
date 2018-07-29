@@ -2565,6 +2565,7 @@ Value
           ([
             Counter/3;
             OCaml.Invalid_argument/3;
+            OCaml.Match_failure/3;
             NonTermination/3;
             OCaml.Not_found/3
           ], Type (t/0, C))),
@@ -2580,6 +2581,7 @@ Value
                     [
                       Counter/3;
                       OCaml.Invalid_argument/3;
+                      OCaml.Match_failure/3;
                       NonTermination/3;
                       OCaml.Not_found/3
                     ],
@@ -2593,36 +2595,116 @@ Value
                             (?)
                         ])));
               (Constructor (S/3, counter),
+                LetVar ? i =
+                  Match
+                    (?,
+                      Tuple
+                        (233,
+                          Variable
+                            (233,
+                              s1/0),
+                          Variable
+                            (233,
+                              s2/0)),
+                      [
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Constant
+                            (?,
+                              Int(0)));
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          IfThenElse
+                            (?,
+                              Apply
+                                (235,
+                                  Variable
+                                    (235,
+                                      OCaml.Pervasives.ge/3),
+                                  [
+                                    Variable
+                                      (235,
+                                        h1/0);
+                                    Apply
+                                      (235,
+                                        Variable
+                                          (235,
+                                            height/0),
+                                        [
+                                          Variable
+                                            (235,
+                                              s2/0)
+                                        ])
+                                  ]),
+                              Constant
+                                (?,
+                                  Int(1)),
+                              Constant
+                                (?,
+                                  Int(0))));
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Constant
+                            (?,
+                              Int(0)))
+                      ])
+                  in
                 Match
                   (233,
                     Tuple
-                      (233,
-                        Variable
+                      (?,
+                        Tuple
                           (233,
-                            s1/0),
+                            Variable
+                              (233,
+                                s1/0),
+                            Variable
+                              (233,
+                                s2/0)),
                         Variable
-                          (233,
-                            s2/0)),
+                          (?,
+                            i/0)),
                     [
                       (Tuple
-                        (Constructor
-                          (Empty/0),
-                          Constructor
-                            (Empty/0)),
+                        (Tuple
+                          (Constructor
+                            (Empty/0),
+                            Constructor
+                              (Empty/0)),
+                          Any),
                         Return
                           (?,
                             Constructor
                               (234,
                                 Empty/0)));
                       (Tuple
-                        (Constructor
-                          (Node/0,
-                            l1,
-                            v1,
-                            d1,
-                            r1,
-                            h1),
-                          Any),
+                        (Tuple
+                          (Constructor
+                            (Node/0,
+                              l1,
+                              v1,
+                              d1,
+                              r1,
+                              h1),
+                            Any),
+                          Int(1)),
                         Bind
                           (?,
                             Lift
@@ -2635,6 +2717,7 @@ Value
                                 [
                                   Counter/3;
                                   OCaml.Invalid_argument/3;
+                                  OCaml.Match_failure/3;
                                   NonTermination/3;
                                   OCaml.Not_found/3
                                 ],
@@ -2717,51 +2800,68 @@ Value
                                                 ]),
                                             Some
                                               x_1,
-                                            Apply
-                                              (237,
-                                                Variable
-                                                  (237,
-                                                    concat_or_join/0),
+                                            Lift
+                                              (?,
                                                 [
-                                                  Variable
-                                                    (?,
-                                                      x/0);
-                                                  Variable
-                                                    (237,
-                                                      v1/0);
-                                                  Apply
-                                                    (237,
+                                                  Counter/3;
+                                                  OCaml.Invalid_argument/3;
+                                                  NonTermination/3;
+                                                  OCaml.Not_found/3
+                                                ],
+                                                [
+                                                  Counter/3;
+                                                  OCaml.Invalid_argument/3;
+                                                  OCaml.Match_failure/3;
+                                                  NonTermination/3;
+                                                  OCaml.Not_found/3
+                                                ],
+                                                Apply
+                                                  (237,
+                                                    Variable
+                                                      (237,
+                                                        concat_or_join/0),
+                                                    [
+                                                      Variable
+                                                        (?,
+                                                          x/0);
                                                       Variable
                                                         (237,
-                                                          f/0),
-                                                      [
-                                                        Variable
-                                                          (237,
-                                                            v1/0);
-                                                        Constructor
-                                                          (237,
-                                                            Some/3,
+                                                          v1/0);
+                                                      Apply
+                                                        (237,
+                                                          Variable
+                                                            (237,
+                                                              f/0),
+                                                          [
                                                             Variable
                                                               (237,
-                                                                d1/0));
-                                                        Variable
-                                                          (237,
-                                                            d2/0)
-                                                      ]);
-                                                  Variable
-                                                    (?,
-                                                      x_1/0)
-                                                ]))))
+                                                                v1/0);
+                                                            Constructor
+                                                              (237,
+                                                                Some/3,
+                                                                Variable
+                                                                  (237,
+                                                                    d1/0));
+                                                            Variable
+                                                              (237,
+                                                                d2/0)
+                                                          ]);
+                                                      Variable
+                                                        (?,
+                                                          x_1/0)
+                                                    ])))))
                                 ])));
                       (Tuple
-                        (Any,
-                          Constructor
-                            (Node/0,
-                              l2,
-                              v2,
-                              d2,
-                              r2,
-                              h2)),
+                        (Tuple
+                          (Any,
+                            Constructor
+                              (Node/0,
+                                l2,
+                                v2,
+                                d2,
+                                r2,
+                                h2)),
+                          Any),
                         Bind
                           (?,
                             Lift
@@ -2774,6 +2874,7 @@ Value
                                 [
                                   Counter/3;
                                   OCaml.Invalid_argument/3;
+                                  OCaml.Match_failure/3;
                                   NonTermination/3;
                                   OCaml.Not_found/3
                                 ],
@@ -2856,41 +2957,87 @@ Value
                                                 ]),
                                             Some
                                               x_1,
-                                            Apply
-                                              (240,
-                                                Variable
-                                                  (240,
-                                                    concat_or_join/0),
+                                            Lift
+                                              (?,
                                                 [
-                                                  Variable
-                                                    (?,
-                                                      x/0);
-                                                  Variable
-                                                    (240,
-                                                      v2/0);
-                                                  Apply
-                                                    (240,
+                                                  Counter/3;
+                                                  OCaml.Invalid_argument/3;
+                                                  NonTermination/3;
+                                                  OCaml.Not_found/3
+                                                ],
+                                                [
+                                                  Counter/3;
+                                                  OCaml.Invalid_argument/3;
+                                                  OCaml.Match_failure/3;
+                                                  NonTermination/3;
+                                                  OCaml.Not_found/3
+                                                ],
+                                                Apply
+                                                  (240,
+                                                    Variable
+                                                      (240,
+                                                        concat_or_join/0),
+                                                    [
+                                                      Variable
+                                                        (?,
+                                                          x/0);
                                                       Variable
                                                         (240,
-                                                          f/0),
-                                                      [
-                                                        Variable
-                                                          (240,
-                                                            v2/0);
-                                                        Variable
-                                                          (240,
-                                                            d1/0);
-                                                        Constructor
-                                                          (240,
-                                                            Some/3,
+                                                          v2/0);
+                                                      Apply
+                                                        (240,
+                                                          Variable
+                                                            (240,
+                                                              f/0),
+                                                          [
                                                             Variable
                                                               (240,
-                                                                d2/0))
-                                                      ]);
-                                                  Variable
-                                                    (?,
-                                                      x_1/0)
-                                                ]))))
+                                                                v2/0);
+                                                            Variable
+                                                              (240,
+                                                                d1/0);
+                                                            Constructor
+                                                              (240,
+                                                                Some/3,
+                                                                Variable
+                                                                  (240,
+                                                                    d2/0))
+                                                          ]);
+                                                      Variable
+                                                        (?,
+                                                          x_1/0)
+                                                    ])))))
+                                ])));
+                      (Any,
+                        Lift
+                          (?,
+                            [
+                              OCaml.Match_failure/3
+                            ],
+                            [
+                              Counter/3;
+                              OCaml.Invalid_argument/3;
+                              OCaml.Match_failure/3;
+                              NonTermination/3;
+                              OCaml.Not_found/3
+                            ],
+                            Apply
+                              (?,
+                                Variable
+                                  (?,
+                                    OCaml.raise_Match_failure/3),
+                                [
+                                  Tuple
+                                    (?,
+                                      Constant
+                                        (?,
+                                          String("tests/ex33.ml")),
+                                      Constant
+                                        (?,
+                                          Int(233)),
+                                      Constant
+                                        (?,
+                                          Int(2)))
                                 ])))
                     ]))
             ]))
@@ -2914,6 +3061,7 @@ Value
           ([
             Counter/3;
             OCaml.Invalid_argument/3;
+            OCaml.Match_failure/3;
             NonTermination/3;
             OCaml.Not_found/3
           ], Type (t/0, C))),
@@ -2924,6 +3072,7 @@ Value
                 [
                   Counter/3;
                   OCaml.Invalid_argument/3;
+                  OCaml.Match_failure/3;
                   NonTermination/3;
                   OCaml.Not_found/3
                 ],
