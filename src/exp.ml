@@ -280,8 +280,19 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           (index, (p, None, of_expression env typ_vars e) :: l)) (None, []) in
     begin match index with
     | Some _ ->
+      let string_t = Type.Apply
+        (FullEnvi.Typ.bound Loc.Unknown (PathName.of_name [] "string") env, []) in
       let int_t = Type.Apply
         (FullEnvi.Typ.bound Loc.Unknown (PathName.of_name [] "Z") env, []) in
+      let match_fail = FullEnvi.Var.bound Loc.Unknown
+        (PathName.of_name ["OCaml"] "raise_Match_failure") env in
+      let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
+      let no_match = (Pattern.Any,
+          Apply ((Loc.Unknown, typ), Variable ((Loc.Unknown, typ), match_fail),
+            [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
+              [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
+              Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
+              Constant ((Loc.Unknown, int_t), Constant.Int fail_char)])])) in
       let (index_pattern, pattern) = rev_cases
         |> List.fold_left (fun (index_pattern, pattern) (p, g, e) ->
           match g with
@@ -300,11 +311,11 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
               (p, Constant ((Loc.Unknown, int_t), Constant.Int 0))
               :: index_pattern in
             let pattern = (Pattern.Tuple [p; Pattern.Any], e) :: pattern in
-            (index_pattern, pattern)) ([], []) in
+            (index_pattern, pattern)) ([], [no_match]) in
       let (i, env) = FullEnvi.fresh_var "i" () env in
       let x = FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] i) env in
       let tup_t = Type.Tuple [snd (annotation e); int_t] in
-      LetVar ((Loc.Unknown, snd a), CoqName.Name i,
+      LetVar ((Loc.Unknown, typ), CoqName.Name i,
         Match ((Loc.Unknown, int_t), e, index_pattern),
         Match (a,
           Tuple ((Loc.Unknown, tup_t), [e; Variable ((Loc.Unknown, int_t), x)]),
