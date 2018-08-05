@@ -21,7 +21,7 @@ Value
       [
         ((g, [ A ], [ (b, Type (bool/4)) ], A),
           IfThenElse
-            ((11, Effect ([ Outside/1; Inside/0 ], .)),
+            ((11, Effect ([ Inside/0; Outside/1 ], .)),
               Variable ((11, Effect ([ ], .)), b/0),
               Apply
                 ((12, Effect ([ Inside/0 ], .)),
@@ -72,7 +72,7 @@ Value
     [
       ((h_rec, [ A; B ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ], B),
         Match
-          ((?, Effect ([ IO/3; NonTermination/3; Outside/0; G.Inside/0 ], .)),
+          ((?, Effect ([ IO/3; G.Inside/0; NonTermination/3; Outside/0 ], .)),
             Variable ((?, Effect ([ ], .)), counter/0),
             [
               (Constructor (O/3),
@@ -108,9 +108,9 @@ Value
                     Effect
                       ([
                         IO/3;
+                        G.Inside/0;
                         NonTermination/3;
-                        Outside/0;
-                        G.Inside/0
+                        Outside/0
                       ],
                         .)),
                     Variable
@@ -128,8 +128,8 @@ Value
                             Effect
                               ([
                                 IO/3;
-                                Outside/0;
-                                G.Inside/0
+                                G.Inside/0;
+                                Outside/0
                               ],
                                 .)),
                             Apply
@@ -163,8 +163,8 @@ Value
                               ((19,
                                 Effect
                                   ([
-                                    Outside/0;
-                                    G.Inside/0
+                                    G.Inside/0;
+                                    Outside/0
                                   ],
                                     .)),
                                 Variable
@@ -174,8 +174,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            Outside/0;
-                                            G.Inside/0
+                                            G.Inside/0;
+                                            Outside/0
                                           ]->
                                           .)),
                                     G.g/0),
@@ -242,9 +242,9 @@ Value
                             Effect
                               ([
                                 IO/3;
+                                G.Inside/0;
                                 NonTermination/3;
-                                Outside/0;
-                                G.Inside/0
+                                Outside/0
                               ],
                                 .)),
                             Apply
@@ -255,9 +255,9 @@ Value
                                     .
                                       -[
                                         IO/3;
+                                        G.Inside/0;
                                         NonTermination/3;
-                                        Outside/0;
-                                        G.Inside/0
+                                        Outside/0
                                       ]->
                                       .)),
                                 Variable
@@ -270,9 +270,9 @@ Value
                                           .
                                             -[
                                               IO/3;
+                                              G.Inside/0;
                                               NonTermination/3;
-                                              Outside/0;
-                                              G.Inside/0
+                                              Outside/0
                                             ]->
                                             .)),
                                     h_rec/0),
@@ -309,9 +309,9 @@ Value
               ([
                 Counter/3;
                 IO/3;
+                G.Inside/0;
                 NonTermination/3;
-                Outside/0;
-                G.Inside/0
+                Outside/0
               ], .)),
             Variable
               ((?,
@@ -321,9 +321,9 @@ Value
                       .
                         -[
                           IO/3;
+                          G.Inside/0;
                           NonTermination/3;
-                          Outside/0;
-                          G.Inside/0
+                          Outside/0
                         ]-> .)), h_rec/0),
             [
               Apply

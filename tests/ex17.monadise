@@ -15,11 +15,11 @@ Value
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/4)) ], Monad ([ Outside/1; Inside/0 ], A)),
+        ((g, [ A ], [ (b, Type (bool/4)) ], Monad ([ Inside/0; Outside/1 ], A)),
           IfThenElse
             (11, Variable (11, b/0),
               Lift
-                (?, [ Inside/0 ], [ Outside/1; Inside/0 ],
+                (?, [ Inside/0 ], [ Inside/0; Outside/1 ],
                   Apply
                     (12, Variable (12, raise_Inside/0),
                       [
@@ -33,7 +33,7 @@ Value
                                 String("no")))
                       ])),
               Lift
-                (?, [ Outside/1 ], [ Outside/1; Inside/0 ],
+                (?, [ Outside/1 ], [ Inside/0; Outside/1 ],
                   Apply
                     (14, Variable (14, raise_Outside/1),
                       [ Tuple (?) ]))))
@@ -44,7 +44,7 @@ Value
   (rec, @.,
     [
       ((h_rec, [ A; B ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ],
-        Monad ([ IO/3; NonTermination/3; Outside/0; G.Inside/0 ], B)),
+        Monad ([ IO/3; G.Inside/0; NonTermination/3; Outside/0 ], B)),
         Match
           (?, Variable (?, counter/0),
             [
@@ -56,9 +56,9 @@ Value
                     ],
                     [
                       IO/3;
+                      G.Inside/0;
                       NonTermination/3;
-                      Outside/0;
-                      G.Inside/0
+                      Outside/0
                     ],
                     Apply
                       (?,
@@ -82,14 +82,14 @@ Value
                           (?,
                             [
                               IO/3;
-                              Outside/0;
-                              G.Inside/0
+                              G.Inside/0;
+                              Outside/0
                             ],
                             [
                               IO/3;
+                              G.Inside/0;
                               NonTermination/3;
-                              Outside/0;
-                              G.Inside/0
+                              Outside/0
                             ],
                             Bind
                               (?,
@@ -100,8 +100,8 @@ Value
                                     ],
                                     [
                                       IO/3;
-                                      Outside/0;
-                                      G.Inside/0
+                                      G.Inside/0;
+                                      Outside/0
                                     ],
                                     Apply
                                       (19,
@@ -117,13 +117,13 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      Outside/0;
-                                      G.Inside/0
+                                      G.Inside/0;
+                                      Outside/0
                                     ],
                                     [
                                       IO/3;
-                                      Outside/0;
-                                      G.Inside/0
+                                      G.Inside/0;
+                                      Outside/0
                                     ],
                                     Apply
                                       (19,
@@ -147,9 +147,9 @@ Value
                             ],
                             [
                               IO/3;
+                              G.Inside/0;
                               NonTermination/3;
-                              Outside/0;
-                              G.Inside/0
+                              Outside/0
                             ],
                             Apply
                               (20,
@@ -197,7 +197,7 @@ Value
     [
       ((h, [ A; B ], [ (l, Type (list/3, A)) ],
         Monad
-          ([ Counter/3; IO/3; NonTermination/3; Outside/0; G.Inside/0 ], B)),
+          ([ Counter/3; IO/3; G.Inside/0; NonTermination/3; Outside/0 ], B)),
         Bind
           (?,
             Lift
@@ -205,20 +205,20 @@ Value
                 [
                   Counter/3;
                   IO/3;
+                  G.Inside/0;
                   NonTermination/3;
-                  Outside/0;
-                  G.Inside/0
+                  Outside/0
                 ],
                 Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ IO/3; NonTermination/3; Outside/0; G.Inside/0 ],
+              (?, [ IO/3; G.Inside/0; NonTermination/3; Outside/0 ],
                 [
                   Counter/3;
                   IO/3;
+                  G.Inside/0;
                   NonTermination/3;
-                  Outside/0;
-                  G.Inside/0
+                  Outside/0
                 ],
                 Apply
                   (?, Variable (?, h_rec/0),

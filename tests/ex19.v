@@ -26,11 +26,11 @@ Definition x2 {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
 
 Definition x3 (b : bool) : M [ OCaml.Failure ] Z :=
   let! x :=
-    Exception.run 1
+    Exception.run 0
       (if b then
-        lift [_;_] "10" (OCaml.Pervasives.failwith "arg" % string)
+        lift [_;_] "01" (OCaml.Pervasives.failwith "arg" % string)
       else
-        lift [_;_] "01" (raise_Error tt)) tt in
+        lift [_;_] "10" (raise_Error tt)) tt in
   match x with
   | inl x => ret x
   | inr tt => ret 12
