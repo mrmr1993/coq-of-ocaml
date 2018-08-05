@@ -671,9 +671,9 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
-    singleton (Id.Type (Effect.PureType.Apply
+    singleton (Id.Type
       (FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env, [typ]))) in
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env, [typ])) in
   let type_effect_of_exp e =
     if Type.is_function @@ snd @@ annotation e ||
         Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
@@ -756,9 +756,9 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       (l, { eff with Effect.typ = Effect.Type.map (fun i desc ->
         Effect.Descriptor.Set.map (fun key ->
           match key with
-          | Effect.Descriptor.Id.Type (Effect.PureType.Apply
-            (ty, [Effect.PureType.Variable key])) ->
-            Effect.Descriptor.Id.Type (Effect.PureType.Apply
+          | Effect.Descriptor.Id.Type
+            (ty, [Effect.PureType.Variable key]) ->
+            Effect.Descriptor.Id.Type
               (ty, [ match int_of_string_opt key with
                 | Some i ->
                   begin match List.nth_opt e_xs i with
@@ -769,7 +769,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
                     Effect.PureType.Variable
                       (string_of_int (i - List.length e_xs))
                   end
-                | None -> Effect.PureType.Variable key]))
+                | None -> Effect.PureType.Variable key])
           | _ -> key) desc)
         eff.Effect.typ })) e_f in
     (* Add an effect for the type, if there is one *)

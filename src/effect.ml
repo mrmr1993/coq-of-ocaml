@@ -49,18 +49,17 @@ end
 module Descriptor = struct
   module Id = struct
     type t =
-      | Type of PureType.t
+      | Type of BoundName.t * PureType.t list (* Mirrors PureType.Apply *)
 
-    let ether (x : BoundName.t) : t = Type (PureType.Apply (x, []))
+    let ether (x : BoundName.t) : t = Type (x, [])
 
     let map (f : BoundName.t -> BoundName.t) (x : t) =
       match x with
-      | Type typ -> Type (PureType.map f typ)
+      | Type (x, typs) -> Type (f x, List.map (PureType.map f) typs)
 
     let bound_name (x : t) : BoundName.t =
       match x with
-      | Type (PureType.Apply (x, _)) -> x
-      | _ -> failwith "Could not convert descriptor to bound name."
+      | Type (x, _) -> x
   end
   module Set = Set.Make (struct
       type t = Id.t
@@ -68,11 +67,10 @@ module Descriptor = struct
       (* Compare on the base name first, for better stability across modules. *)
       let compare x y =
         match x, y with
-        | Id.Type (PureType.Apply ({path_name={base=a}}, _)),
-          Id.Type (PureType.Apply ({path_name={base=b}}, _)) ->
+        | Id.Type ({path_name={base=a}}, _),
+          Id.Type ({path_name={base=b}}, _) ->
           let cmp = compare a b in
           if cmp == 0 then compare x y else cmp
-        | _, _ -> compare x y
 
     end)
   type t = Set.t
@@ -80,7 +78,7 @@ module Descriptor = struct
   let pp (d : t) : SmartPrint.t =
     Set.elements d |> OCaml.list (fun id ->
       match id with
-      | Id.Type pt -> PureType.pp pt)
+      | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs)))
 
   let pure : t = Set.empty
 
@@ -112,9 +110,10 @@ module Descriptor = struct
     find_index (Set.elements d) (fun y -> x = Id.bound_name y)
 
   let to_coq (d : t) : SmartPrint.t =
-    OCaml.list (fun x ->
+    Set.elements d |> OCaml.list (fun x ->
       match x with
-      | Id.Type pt -> PureType.to_coq false pt) (Set.elements d)
+      | Id.Type (x, typs) ->
+        PureType.to_coq false (PureType.Apply (x, typs)))
 
   let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
     let rec aux xs1 xs2 : bool list =

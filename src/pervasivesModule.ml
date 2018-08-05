@@ -12,10 +12,10 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   let typ_d (x : int) : Effect.Descriptor.t =
     let i = string_of_int x in
     Effect.Descriptor.singleton
-      (Effect.Descriptor.Id.Type (Effect.PureType.Apply
+      (Effect.Descriptor.Id.Type
         ({ BoundName.depth = 0; BoundName.path_name =
             (PathName.of_name ["Effect"; "State"] "state") },
-          [Effect.PureType.Variable i]))) in
+          [Effect.PureType.Variable i])) in
   let add_exn path base = add_exception_with_effects path base in
   FullEnvi.empty None (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
