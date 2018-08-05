@@ -213,7 +213,6 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
   let effect_typ =
     Effect.Type.Arrow (
-      Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether bound_descriptor)
-        bound_descriptor,
+      Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether bound_descriptor),
       Effect.Type.Pure) in
   Var.add path ("raise_" ^ base) effect_typ env

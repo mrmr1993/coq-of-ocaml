@@ -36,6 +36,13 @@ let rec to_coq (paren : bool) (typ : t) : SmartPrint.t =
   | Apply (path, typs) ->
     Pp.parens (paren && typs <> []) @@ nest @@ separate space
       (BoundName.to_coq path :: List.map (to_coq true) typs)
+
+let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
+  match typ with
+  | Variable x -> Variable x
+  | Arrow (typ_x, typ_y) -> Arrow (map f typ_x, map f typ_y)
+  | Tuple typs -> Tuple (List.map (map f) typs)
+  | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
 end
 
 
@@ -44,54 +51,61 @@ module Descriptor = struct
     type t =
       | Ether of BoundName.t
       | Type of PureType.t
+
+    let map (f : BoundName.t -> BoundName.t) (x : t) =
+      match x with
+      | Ether x -> Ether (f x)
+      | Type typ -> Type (PureType.map f typ)
+
+    let bound_name (x : t) =
+      match x with
+      | Ether x -> x
+      | Type (PureType.Apply (x, _)) -> x
+      | _ -> failwith "Could not convert descriptor to bound name."
   end
-  module Map = Map.Make (struct type t = Id.t let compare = compare end)
-  type t = BoundName.t Map.t
+  module Set = Set.Make (struct type t = Id.t let compare = compare end)
+  type t = Set.t
 
   let pp (d : t) : SmartPrint.t =
-    OCaml.list (fun (id, x) ->
+    Set.elements d |> OCaml.list (fun id ->
       match id with
-      | Id.Type pt -> !^ "TypeEffect" ^^ OCaml.tuple [PureType.pp pt; BoundName.pp x]
-      | _ -> BoundName.pp x) (Map.bindings d)
+      | Id.Type pt -> !^ "TypeEffect" ^^ OCaml.tuple [PureType.pp pt]
+      | Id.Ether x -> BoundName.pp x)
 
-  let pure : t = Map.empty
+  let pure : t = Set.empty
 
-  let is_pure (d : t) : bool =
-    Map.is_empty d
+  let is_pure (d : t) : bool = Set.is_empty d
 
-  let eq (d1 : t) (d2 : t) : bool =
-    Map.equal (fun _ _ -> true) d1 d2
+  let eq (d1 : t) (d2 : t) : bool = Set.equal d1 d2
 
-  let singleton (id : Id.t) (x : BoundName.t) : t =
-    Map.singleton id x
+  let singleton (id : Id.t) : t = Set.singleton id
 
   let union (ds : t list) : t =
-    List.fold_left (fun d1 d2 -> Map.fold Map.add d1 d2) pure ds
+    List.fold_left (fun d1 d2 -> Set.fold Set.add d1 d2) pure ds
 
   let mem (x : BoundName.t) (d : t) : bool =
-    Map.exists (fun _ y -> x = y) d
+    Set.exists (fun y -> x = Id.bound_name y) d
 
   let remove (x : BoundName.t) (d : t) : t =
-    Map.filter (fun _ y -> x <> y) d
+    Set.filter (fun y -> x <> Id.bound_name y) d
 
-  let filter (f : Id.t -> bool) (d : t) : t =
-    Map.filter (fun id _ -> f id) d
+  let filter (f : Id.t -> bool) (d : t) : t = Set.filter f d
 
   let elements (d : t) : BoundName.t list =
-    List.map snd (Map.bindings d)
+    Set.elements d |> List.map Id.bound_name
 
   let index (x : BoundName.t) (d : t) : int =
     let rec find_index l f =
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index (Map.bindings d) (fun (_, y) -> y = x)
+    find_index (Set.elements d) (fun y -> x = Id.bound_name y)
 
   let to_coq (d : t) : SmartPrint.t =
-    OCaml.list (fun (id, x) ->
-      match id with
-      | Id.Type pt -> nest (BoundName.to_coq x ^^ PureType.to_coq true pt)
-      | _ -> BoundName.to_coq x) (Map.bindings d)
+    OCaml.list (fun x ->
+      match x with
+      | Id.Type pt -> PureType.to_coq false pt
+      | Id.Ether x -> BoundName.to_coq x) (Set.elements d)
 
   let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
     let rec aux xs1 xs2 : bool list =
@@ -104,19 +118,19 @@ module Descriptor = struct
           false :: aux xs1 xs2'
       | (_ :: _, []) ->
         failwith "Must be a subset to display the subset." in
-    let bs = aux (Map.bindings d1) (Map.bindings d2) in
+    let bs = aux (Set.elements d1) (Set.elements d2) in
     brakets (separate (!^ ";") (List.map (fun _ -> !^ "_") bs)) ^^
     double_quotes (separate empty
       (List.map (fun b -> if b then !^ "1" else !^ "0") bs))
 
   let depth_lift (d : t) : t =
-    Map.map BoundName.depth_lift d
+    Set.map (Id.map BoundName.depth_lift) d
 
   let leave_prefix (name : Name.t option) (d : t) : t =
-    Map.map (fun x -> BoundName.leave_prefix name x) d
+    Set.map (Id.map (BoundName.leave_prefix name)) d
 
   let resolve_open (name_list : Name.t list) (d : t) : t =
-    Map.map (fun x -> BoundName.resolve_open name_list x) d
+    Set.map (Id.map (BoundName.resolve_open name_list)) d
 end
 
 module Type = struct

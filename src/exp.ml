@@ -671,9 +671,9 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
-    singleton (Id.Type typ)
+    singleton (Id.Type (Effect.PureType.Apply
       (FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env) in
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env, [typ]))) in
   let type_effect_of_exp e =
     if Type.is_function @@ snd @@ annotation e ||
         Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
@@ -754,33 +754,23 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
        OCaml.Effect.State.read/write. *)
     let e_f = update_annotation (fun (l, eff) ->
       (l, { eff with Effect.typ = Effect.Type.map (fun i desc ->
-        let type_desc = Effect.Descriptor.filter (fun id ->
-          match id with
-          | Effect.Descriptor.Id.Type (Effect.PureType.Variable _) -> true
-          | _ -> false) desc in
-          if Effect.Descriptor.is_pure type_desc then
-            desc
-          else
-            Effect.Descriptor.Map.fold (fun key' eff desc ->
-              let key = match key' with
-              | Effect.Descriptor.Id.Type (Effect.PureType.Variable key) ->
-                Effect.Descriptor.Id.Type
-                  begin match int_of_string_opt key with
-                  | Some i ->
-                    begin match List.nth_opt e_xs i with
-                    | Some e_x ->
-                      Effect.PureType.first_param @@ Type.pure_type @@
-                        snd @@ annotation e_x
-                    | None ->
-                      Effect.PureType.Variable
-                        (string_of_int (i - List.length e_xs))
-                    end
-                  | None -> Effect.PureType.Variable key
+        Effect.Descriptor.Set.map (fun key ->
+          match key with
+          | Effect.Descriptor.Id.Type (Effect.PureType.Apply
+            (ty, [Effect.PureType.Variable key])) ->
+            Effect.Descriptor.Id.Type (Effect.PureType.Apply
+              (ty, [ match int_of_string_opt key with
+                | Some i ->
+                  begin match List.nth_opt e_xs i with
+                  | Some e_x ->
+                    Effect.PureType.first_param @@ Type.pure_type @@
+                      snd @@ annotation e_x
+                  | None ->
+                    Effect.PureType.Variable
+                      (string_of_int (i - List.length e_xs))
                   end
-              | _ -> key' in
-              desc
-              |> Effect.Descriptor.Map.remove key'
-              |> Effect.Descriptor.Map.add key eff) type_desc desc)
+                | None -> Effect.PureType.Variable key]))
+          | _ -> key) desc)
         eff.Effect.typ })) e_f in
     (* Add an effect for the type, if there is one *)
     let e_f = match type_effect_of_exp e with
