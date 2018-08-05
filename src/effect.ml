@@ -43,7 +43,6 @@ module Descriptor = struct
   module Id = struct
     type t =
       | Ether of PathName.t
-      | Loc of Loc.t
       | Type of PureType.t
   end
   module Map = Map.Make (struct type t = Id.t let compare = compare end)

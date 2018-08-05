@@ -46,7 +46,7 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
-  (env : Effect.Type.t FullEnvi.t) (id : Effect.Descriptor.Id.t)
+  (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
   let (name, coq_name) = CoqName.assoc_names r.name in
   let (state_name, coq_state_name) = CoqName.assoc_names r.state_name in

@@ -189,11 +189,9 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (TypeDefinition.update_env typ_def Effect.Type.Pure env,
        TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
-      let id = Effect.Descriptor.Id.Loc loc in
-      (Exception.update_env_with_effects exn env id, Exception (loc, exn))
+      (Exception.update_env_with_effects exn env, Exception (loc, exn))
     | Reference (loc, r) ->
-      let id = Effect.Descriptor.Id.Loc loc in
-      let (env, r) = Reference.update_env_with_effects r env id in
+      let (env, r) = Reference.update_env_with_effects r env in
       (env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
