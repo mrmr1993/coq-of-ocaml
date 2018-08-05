@@ -6,7 +6,7 @@ open SmartPrint
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor depth (path, base) =
     let x = { BoundName.path_name = PathName.of_name path base; depth } in
-    Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x) in
+    Effect.Descriptor.singleton (Effect.Descriptor.Id.ether x) in
   let d depth xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map (descriptor depth) xs) in
   let typ_d (x : int) : Effect.Descriptor.t =

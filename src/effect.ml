@@ -14,7 +14,7 @@ let rec pp (typ : t) : SmartPrint.t =
   | Arrow (typ1, typ2) -> nest @@ parens (pp typ1 ^^ !^ "->" ^^ pp typ2)
   | Tuple typs -> nest @@ parens (separate (space ^^ !^ "*" ^^ space) (List.map pp typs))
   | Apply (x, typs) ->
-    nest @@ parens @@
+    nest @@ Pp.parens (typs <> []) @@
       separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs)
 
 let first_param (typ : t) : t =
@@ -49,17 +49,16 @@ end
 module Descriptor = struct
   module Id = struct
     type t =
-      | Ether of BoundName.t
       | Type of PureType.t
+
+    let ether (x : BoundName.t) : t = Type (PureType.Apply (x, []))
 
     let map (f : BoundName.t -> BoundName.t) (x : t) =
       match x with
-      | Ether x -> Ether (f x)
       | Type typ -> Type (PureType.map f typ)
 
     let bound_name (x : t) : BoundName.t =
       match x with
-      | Ether x -> x
       | Type (PureType.Apply (x, _)) -> x
       | _ -> failwith "Could not convert descriptor to bound name."
   end
@@ -69,11 +68,6 @@ module Descriptor = struct
       (* Compare on the base name first, for better stability across modules. *)
       let compare x y =
         match x, y with
-        | Id.Ether {path_name={base=a}}, Id.Ether {path_name={base=b}}
-        | Id.Ether {path_name={base=a}},
-          Id.Type (PureType.Apply ({path_name={base=b}}, _))
-        | Id.Type (PureType.Apply ({path_name={base=a}}, _)),
-          Id.Ether {path_name={base=b}}
         | Id.Type (PureType.Apply ({path_name={base=a}}, _)),
           Id.Type (PureType.Apply ({path_name={base=b}}, _)) ->
           let cmp = compare a b in
@@ -86,8 +80,7 @@ module Descriptor = struct
   let pp (d : t) : SmartPrint.t =
     Set.elements d |> OCaml.list (fun id ->
       match id with
-      | Id.Type pt -> PureType.pp pt
-      | Id.Ether x -> BoundName.pp x)
+      | Id.Type pt -> PureType.pp pt)
 
   let pure : t = Set.empty
 
@@ -121,8 +114,7 @@ module Descriptor = struct
   let to_coq (d : t) : SmartPrint.t =
     OCaml.list (fun x ->
       match x with
-      | Id.Type pt -> PureType.to_coq false pt
-      | Id.Ether x -> BoundName.to_coq x) (Set.elements d)
+      | Id.Type pt -> PureType.to_coq false pt) (Set.elements d)
 
   let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
     let rec aux xs1 xs2 : bool list =

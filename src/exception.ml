@@ -41,7 +41,7 @@ let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
     (PathName.of_name [] name) env in
   let effect_typ =
     Effect.Type.Arrow (
-      Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether bound_effect),
+      Effect.Descriptor.singleton (Effect.Descriptor.Id.ether bound_effect),
       Effect.Type.Pure) in
   FullEnvi.Var.assoc [] raise_name coq_raise_name effect_typ env
 
