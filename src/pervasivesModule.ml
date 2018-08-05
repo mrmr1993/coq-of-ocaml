@@ -5,9 +5,8 @@ open SmartPrint
 
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor depth (path, base) =
-    let x = PathName.of_name path base in
-    Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x)
-      { BoundName.path_name = x; depth } in
+    let x = { BoundName.path_name = PathName.of_name path base; depth } in
+    Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x) x in
   let d depth xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map (descriptor depth) xs) in
   let typ_d (x : int) : Effect.Descriptor.t =
@@ -16,9 +15,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
       (Effect.Descriptor.Id.Type (Effect.PureType.Variable i))
       { BoundName.depth = 0; BoundName.path_name =
         (PathName.of_name ["Effect"; "State"] "state") } in
-  let add_exn path base =
-    add_exception_with_effects path base
-      (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
+  let add_exn path base = add_exception_with_effects path base in
   FullEnvi.empty None (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat" Pure
