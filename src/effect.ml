@@ -51,8 +51,6 @@ module Descriptor = struct
     type t =
       | Type of BoundName.t * PureType.t list (* Mirrors PureType.Apply *)
 
-    let ether (x : BoundName.t) : t = Type (x, [])
-
     let map (f : BoundName.t -> BoundName.t) (x : t) =
       match x with
       | Type (x, typs) -> Type (f x, List.map (PureType.map f) typs)
@@ -86,7 +84,8 @@ module Descriptor = struct
 
   let eq (d1 : t) (d2 : t) : bool = Set.equal d1 d2
 
-  let singleton (id : Id.t) : t = Set.singleton id
+  let singleton (x : BoundName.t) (typs : PureType.t list) : t =
+    Set.singleton (Id.Type (x, typs))
 
   let union (ds : t list) : t =
     List.fold_left (fun d1 d2 -> Set.fold Set.add d1 d2) pure ds

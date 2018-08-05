@@ -671,9 +671,9 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
-    singleton (Id.Type
-      (FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env, [typ])) in
+    singleton (FullEnvi.Descriptor.bound Loc.Unknown
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env)
+      [typ] in
   let type_effect_of_exp e =
     if Type.is_function @@ snd @@ annotation e ||
         Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e

@@ -19,8 +19,7 @@ module Shape = struct
     let descriptor ds : Effect.Descriptor.t =
       let ds = ds |> List.map (fun d ->
         let bound_descriptor = FullEnvi.Descriptor.bound Loc.Unknown d env in
-        Effect.Descriptor.singleton
-          (Effect.Descriptor.Id.ether bound_descriptor)) in
+        Effect.Descriptor.singleton bound_descriptor []) in
       Effect.Descriptor.union ds in
     List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
       shape Effect.Type.Pure
