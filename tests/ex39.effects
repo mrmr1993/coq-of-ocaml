@@ -5,44 +5,23 @@ Value
   (non_rec, @.,
     [
       ((get_local_ref, [ ], [ (tt, Type (unit/3)) ], Type (Z/3)),
-        LetVar
-          (4,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)) x =
+        LetVar (4, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)) x =
           Apply
-            ((4,
-              Effect
-                ([
-                  TypeEffect
-                  (Type (Z/3), OCaml.Effect.State.state/3)
-                ], .)),
+            ((4, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
               Variable
                 ((4,
                   Effect
                     ([ ],
-                      .
-                        -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ]-> .)), OCaml.Pervasives.ref/3),
+                      . -[ (OCaml.Effect.State.state/3, Z/3) ]->
+                        .)), OCaml.Pervasives.ref/3),
               [ Constant ((4, Effect ([ ], .)), Int(12)) ]) in
         Apply
-          ((5,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((5, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Variable
               ((5,
                 Effect
-                  ([ ],
-                    .
-                      -[
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ]-> .)), OCaml.Effect.State.read/3),
+                  ([ ], . -[ (OCaml.Effect.State.state/3, Z/3) ]-> .)),
+                OCaml.Effect.State.read/3),
             [ Variable ((5, Effect ([ ], .)), x/0) ]))
     ])
 
@@ -51,41 +30,20 @@ Value
   (non_rec, @.,
     [
       ((set_local_ref, [ ], [ (tt, Type (unit/3)) ], Type (Z/3)),
-        LetVar
-          (8,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)) x =
+        LetVar (8, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)) x =
           Apply
-            ((8,
-              Effect
-                ([
-                  TypeEffect
-                  (Type (Z/3), OCaml.Effect.State.state/3)
-                ], .)),
+            ((8, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
               Variable
                 ((8,
                   Effect
                     ([ ],
-                      .
-                        -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ]-> .)), OCaml.Pervasives.ref/3),
+                      . -[ (OCaml.Effect.State.state/3, Z/3) ]->
+                        .)), OCaml.Pervasives.ref/3),
               [ Constant ((8, Effect ([ ], .)), Int(12)) ]) in
         Sequence
-          ((9,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((9, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Apply
-              ((9,
-                Effect
-                  ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3)
-                  ], .)),
+              ((9, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                 Variable
                   ((9,
                     Effect
@@ -93,9 +51,8 @@ Value
                         . ->
                           .
                             -[
-                              TypeEffect
-                              (Type (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]-> .)),
                     OCaml.Effect.State.write/3),
                 [
@@ -103,21 +60,15 @@ Value
                   Constant ((9, Effect ([ ], .)), Int(15))
                 ]),
             Apply
-              ((10,
-                Effect
-                  ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3)
-                  ], .)),
+              ((10, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                 Variable
                   ((10,
                     Effect
                       ([ ],
                         .
                           -[
-                            TypeEffect
-                            (Type (Z/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3)
                           ]-> .)), OCaml.Effect.State.read/3),
                 [ Variable ((10, Effect ([ ], .)), x/0) ])))
     ])
@@ -129,41 +80,20 @@ Value
       ((add_multiple_by_refs, [ ],
         [ (a, Type (Z/3)); (b, Type (Z/3)); (c, Type (Z/3)); (d, Type (Z/3)) ],
         Type (Z/3)),
-        LetVar
-          (13,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)) x =
+        LetVar (13, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)) x =
           Apply
-            ((13,
-              Effect
-                ([
-                  TypeEffect
-                  (Type (Z/3), OCaml.Effect.State.state/3)
-                ], .)),
+            ((13, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
               Variable
                 ((13,
                   Effect
                     ([ ],
-                      .
-                        -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ]-> .)), OCaml.Pervasives.ref/3),
+                      . -[ (OCaml.Effect.State.state/3, Z/3) ]->
+                        .)), OCaml.Pervasives.ref/3),
               [ Variable ((13, Effect ([ ], .)), a/0) ]) in
         Sequence
-          ((14,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((14, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Apply
-              ((14,
-                Effect
-                  ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3)
-                  ], .)),
+              ((14, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                 Variable
                   ((14,
                     Effect
@@ -171,9 +101,8 @@ Value
                         . ->
                           .
                             -[
-                              TypeEffect
-                              (Type (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]-> .)),
                     OCaml.Effect.State.write/3),
                 [
@@ -182,10 +111,8 @@ Value
                     ((14,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .)),
                       Variable
@@ -200,10 +127,8 @@ Value
                           ((14,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ],
                                 .)),
                             Variable
@@ -213,10 +138,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]->
                                       .)),
                                 OCaml.Effect.State.read/3),
@@ -238,47 +161,28 @@ Value
                             b/0)
                       ])
                 ]),
-            LetVar
-              (15,
-                Effect
-                  ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3)
-                  ], .)) y =
+            LetVar (15, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .))
+              y =
               Apply
                 ((15,
-                  Effect
-                    ([
-                      TypeEffect
-                      (Type (Z/3), OCaml.Effect.State.state/3)
-                    ], .)),
+                  Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                   Variable
                     ((15,
                       Effect
                         ([ ],
                           .
                             -[
-                              TypeEffect
-                              (Type (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]-> .)),
                       OCaml.Pervasives.ref/3),
                   [ Variable ((15, Effect ([ ], .)), c/0) ]) in
             Sequence
-              ((16,
-                Effect
-                  ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3)
-                  ], .)),
+              ((16, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                 Apply
                   ((16,
                     Effect
-                      ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ], .)),
+                      ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                     Variable
                       ((16,
                         Effect
@@ -286,9 +190,8 @@ Value
                             . ->
                               .
                                 -[
-                                  TypeEffect
-                                  (Type (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]-> .)),
                         OCaml.Effect.State.write/3),
                     [
@@ -297,10 +200,8 @@ Value
                         ((16,
                           Effect
                             ([
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ],
                               .)),
                           Variable
@@ -315,10 +216,8 @@ Value
                               ((16,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ],
                                     .)),
                                 Variable
@@ -328,10 +227,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ]->
                                           .)),
                                     OCaml.Effect.State.read/3),
@@ -356,28 +253,21 @@ Value
                 LetVar
                   (17,
                     Effect
-                      ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ], .)) z =
+                      ([ (OCaml.Effect.State.state/3, Z/3) ], .))
+                  z =
                   Apply
                     ((17,
                       Effect
-                        ([
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ], .)),
+                        ([ (OCaml.Effect.State.state/3, Z/3) ],
+                          .)),
                       Variable
                         ((17,
                           Effect
                             ([ ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]-> .)),
                           OCaml.Pervasives.ref/3),
                       [
@@ -385,10 +275,8 @@ Value
                           ((17,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ],
                                 .)),
                             Variable
@@ -403,10 +291,8 @@ Value
                                 ((17,
                                   Effect
                                     ([
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ],
                                       .)),
                                   Variable
@@ -416,10 +302,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (Z/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                Z/3)
                                             ]->
                                             .)),
                                       OCaml.Effect.State.read/3),
@@ -436,10 +320,8 @@ Value
                                 ((17,
                                   Effect
                                     ([
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ],
                                       .)),
                                   Variable
@@ -449,10 +331,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (Z/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                Z/3)
                                             ]->
                                             .)),
                                       OCaml.Effect.State.read/3),
@@ -470,20 +350,15 @@ Value
                 Apply
                   ((18,
                     Effect
-                      ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ], .)),
+                      ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
                     Variable
                       ((18,
                         Effect
                           ([ ],
                             .
                               -[
-                                TypeEffect
-                                (Type (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ]-> .)),
                         OCaml.Effect.State.read/3),
                     [ Variable ((18, Effect ([ ], .)), z/0) ]))))
@@ -496,21 +371,14 @@ Value
       ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
         Type (unit/3)),
         Apply
-          ((21,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((21, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Variable
               ((21,
                 Effect
                   ([ ],
                     . ->
-                      .
-                        -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ]-> .)), OCaml.Effect.State.write/3),
+                      . -[ (OCaml.Effect.State.state/3, Z/3) ]->
+                        .)), OCaml.Effect.State.write/3),
             [
               Variable ((21, Effect ([ ], .)), x/0);
               Constant ((21, Effect ([ ], .)), Int(15))
@@ -524,20 +392,12 @@ Value
       ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
         Type (Z/3)),
         Apply
-          ((24,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((24, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Variable
               ((24,
                 Effect
-                  ([ ],
-                    .
-                      -[
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ]-> .)), OCaml.Effect.State.read/3),
+                  ([ ], . -[ (OCaml.Effect.State.state/3, Z/3) ]-> .)),
+                OCaml.Effect.State.read/3),
             [ Variable ((24, Effect ([ ], .)), x/0) ]))
     ])
 
@@ -548,31 +408,22 @@ Value
       ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
         Type (unit/3)),
         Apply
-          ((27,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((27, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Variable
               ((27,
                 Effect
                   ([ ],
                     . ->
-                      .
-                        -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3)
-                        ]-> .)), OCaml.Effect.State.write/3),
+                      . -[ (OCaml.Effect.State.state/3, Z/3) ]->
+                        .)), OCaml.Effect.State.write/3),
             [
               Variable ((27, Effect ([ ], .)), x/0);
               Apply
                 ((27,
                   Effect
                     ([
-                      TypeEffect
-                      (Type
-                        (Z/3),
-                        OCaml.Effect.State.state/3)
+                      (OCaml.Effect.State.state/3,
+                        Z/3)
                     ], .)),
                   Variable
                     ((27,
@@ -586,10 +437,8 @@ Value
                       ((27,
                         Effect
                           ([
-                            TypeEffect
-                            (Type
-                              (Z/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3)
                           ],
                             .)),
                         Variable
@@ -599,10 +448,8 @@ Value
                               ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                             OCaml.Effect.State.read/3),
@@ -633,20 +480,12 @@ Value
       ((new_ref, [ ], [ (x, Type (unit/3)) ],
         Type (OCaml.Effect.State.t/3, Type (Z/3))),
         Apply
-          ((30,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)),
+          ((30, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
             Variable
               ((30,
                 Effect
-                  ([ ],
-                    .
-                      -[
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ]-> .)), OCaml.Pervasives.ref/3),
+                  ([ ], . -[ (OCaml.Effect.State.state/3, Z/3) ]-> .)),
+                OCaml.Pervasives.ref/3),
             [ Constant ((30, Effect ([ ], .)), Int(15)) ]))
     ])
 
@@ -661,34 +500,23 @@ Value
           ((34,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, r_state/0)
               ], .)),
             Variable
               ((34,
                 Effect
-                  ([ ],
-                    .
-                      -[
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ]-> .)), set_ref/0),
+                  ([ ], . -[ (OCaml.Effect.State.state/3, Z/3) ]-> .)),
+                set_ref/0),
             [
               Apply
                 ((?,
                   Effect
                     ([
-                      TypeEffect
-                      (Type
-                        (Z/3),
-                        OCaml.Effect.State.state/3);
-                      TypeEffect
-                      (Type
-                        (r_state/0),
-                        OCaml.Effect.State.state/3)
+                      (OCaml.Effect.State.state/3,
+                        Z/3);
+                      (OCaml.Effect.State.state/3,
+                        r_state/0)
                     ], .)),
                   Variable
                     ((?,
@@ -699,10 +527,8 @@ Value
                             ->
                             .
                               -[
-                                TypeEffect
-                                (Type
-                                  (r_state/0),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  r_state/0)
                               ]->
                               .)),
                       OCaml.Effect.State.global/3),
@@ -718,10 +544,8 @@ Value
                       ((?,
                         Effect
                           ([
-                            TypeEffect
-                            (Type
-                              (Z/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3)
                           ],
                             .)),
                         Variable
@@ -731,10 +555,8 @@ Value
                               ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                             OCaml.Effect.State.peekstate/3),
@@ -759,34 +581,23 @@ Value
           ((36,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, r_state/0)
               ], .)),
             Variable
               ((36,
                 Effect
-                  ([ ],
-                    .
-                      -[
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3)
-                      ]-> .)), get_ref/0),
+                  ([ ], . -[ (OCaml.Effect.State.state/3, Z/3) ]-> .)),
+                get_ref/0),
             [
               Apply
                 ((?,
                   Effect
                     ([
-                      TypeEffect
-                      (Type
-                        (Z/3),
-                        OCaml.Effect.State.state/3);
-                      TypeEffect
-                      (Type
-                        (r_state/0),
-                        OCaml.Effect.State.state/3)
+                      (OCaml.Effect.State.state/3,
+                        Z/3);
+                      (OCaml.Effect.State.state/3,
+                        r_state/0)
                     ], .)),
                   Variable
                     ((?,
@@ -797,10 +608,8 @@ Value
                             ->
                             .
                               -[
-                                TypeEffect
-                                (Type
-                                  (r_state/0),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  r_state/0)
                               ]->
                               .)),
                       OCaml.Effect.State.global/3),
@@ -816,10 +625,8 @@ Value
                       ((?,
                         Effect
                           ([
-                            TypeEffect
-                            (Type
-                              (Z/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3)
                           ],
                             .)),
                         Variable
@@ -829,10 +636,8 @@ Value
                               ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                             OCaml.Effect.State.peekstate/3),
@@ -857,19 +662,15 @@ Value
           (39,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, r_state/0)
               ], .)) i =
           Apply
             ((39,
               Effect
                 ([
-                  TypeEffect
-                  (Type (Z/3), OCaml.Effect.State.state/3);
-                  TypeEffect
-                  (Type (r_state/0), OCaml.Effect.State.state/3)
+                  (OCaml.Effect.State.state/3, Z/3);
+                  (OCaml.Effect.State.state/3, r_state/0)
                 ], .)),
               Variable
                 ((39,
@@ -877,31 +678,24 @@ Value
                     ([ ],
                       .
                         -[
-                          TypeEffect
-                          (Type (Z/3),
-                            OCaml.Effect.State.state/3);
-                          TypeEffect
-                          (Type (r_state/0),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3, Z/3);
+                          (OCaml.Effect.State.state/3,
+                            r_state/0)
                         ]-> .)), get_r/0),
               [ Constructor ((39, Effect ([ ], .)), tt/3) ]) in
         Sequence
           ((40,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, r_state/0)
               ], .)),
             Apply
               ((40,
                 Effect
                   ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (r_state/0), OCaml.Effect.State.state/3)
+                    (OCaml.Effect.State.state/3, Z/3);
+                    (OCaml.Effect.State.state/3, r_state/0)
                   ], .)),
                 Variable
                   ((40,
@@ -909,32 +703,25 @@ Value
                       ([ ],
                         .
                           -[
-                            TypeEffect
-                            (Type (Z/3),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (r_state/0),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3);
+                            (OCaml.Effect.State.state/3,
+                              r_state/0)
                           ]-> .)), set_r/0),
                 [ Constructor ((40, Effect ([ ], .)), tt/3) ]),
             LetVar
               (41,
                 Effect
                   ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (r_state/0), OCaml.Effect.State.state/3)
+                    (OCaml.Effect.State.state/3, Z/3);
+                    (OCaml.Effect.State.state/3, r_state/0)
                   ], .)) j =
               Apply
                 ((41,
                   Effect
                     ([
-                      TypeEffect
-                      (Type (Z/3), OCaml.Effect.State.state/3);
-                      TypeEffect
-                      (Type (r_state/0),
-                        OCaml.Effect.State.state/3)
+                      (OCaml.Effect.State.state/3, Z/3);
+                      (OCaml.Effect.State.state/3, r_state/0)
                     ], .)),
                   Variable
                     ((41,
@@ -942,33 +729,26 @@ Value
                         ([ ],
                           .
                             -[
-                              TypeEffect
-                              (Type (Z/3),
-                                OCaml.Effect.State.state/3);
-                              TypeEffect
-                              (Type (r_state/0),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3);
+                              (OCaml.Effect.State.state/3,
+                                r_state/0)
                             ]-> .)), get_r/0),
                   [ Constructor ((41, Effect ([ ], .)), tt/3) ]) in
             Sequence
               ((42,
                 Effect
                   ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (r_state/0), OCaml.Effect.State.state/3)
+                    (OCaml.Effect.State.state/3, Z/3);
+                    (OCaml.Effect.State.state/3, r_state/0)
                   ], .)),
                 Apply
                   ((42,
                     Effect
                       ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (r_state/0),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3, Z/3);
+                        (OCaml.Effect.State.state/3,
+                          r_state/0)
                       ], .)),
                     Variable
                       ((42,
@@ -977,9 +757,8 @@ Value
                             . ->
                               .
                                 -[
-                                  TypeEffect
-                                  (Type (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]-> .)),
                         OCaml.Effect.State.write/3),
                     [
@@ -987,14 +766,10 @@ Value
                         ((?,
                           Effect
                             ([
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3);
-                              TypeEffect
-                              (Type
-                                (r_state/0),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3);
+                              (OCaml.Effect.State.state/3,
+                                r_state/0)
                             ],
                               .)),
                           Variable
@@ -1006,10 +781,8 @@ Value
                                     ->
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (r_state/0),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          r_state/0)
                                       ]->
                                       .)),
                               OCaml.Effect.State.global/3),
@@ -1025,10 +798,8 @@ Value
                               ((?,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ],
                                     .)),
                                 Variable
@@ -1038,10 +809,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ]->
                                           .)),
                                     OCaml.Effect.State.peekstate/3),
@@ -1088,12 +857,9 @@ Value
                   ((43,
                     Effect
                       ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (r_state/0),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3, Z/3);
+                        (OCaml.Effect.State.state/3,
+                          r_state/0)
                       ], .)),
                     Variable
                       ((43,
@@ -1101,9 +867,8 @@ Value
                           ([ ],
                             .
                               -[
-                                TypeEffect
-                                (Type (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ]-> .)),
                         OCaml.Effect.State.read/3),
                     [
@@ -1111,14 +876,10 @@ Value
                         ((?,
                           Effect
                             ([
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3);
-                              TypeEffect
-                              (Type
-                                (r_state/0),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3);
+                              (OCaml.Effect.State.state/3,
+                                r_state/0)
                             ],
                               .)),
                           Variable
@@ -1130,10 +891,8 @@ Value
                                     ->
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (r_state/0),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          r_state/0)
                                       ]->
                                       .)),
                               OCaml.Effect.State.global/3),
@@ -1149,10 +908,8 @@ Value
                               ((?,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ],
                                     .)),
                                 Variable
@@ -1162,10 +919,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ]->
                                           .)),
                                     OCaml.Effect.State.peekstate/3),
@@ -1191,76 +946,52 @@ Value
           (46,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (bool/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (string/3), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, bool/3);
+                (OCaml.Effect.State.state/3, r_state/0);
+                (OCaml.Effect.State.state/3, string/3)
               ], .)) b =
           Apply
-            ((46,
-              Effect
-                ([
-                  TypeEffect
-                  (Type (bool/3), OCaml.Effect.State.state/3)
-                ], .)),
+            ((46, Effect ([ (OCaml.Effect.State.state/3, bool/3) ], .)),
               Variable
                 ((46,
                   Effect
                     ([ ],
                       .
                         -[
-                          TypeEffect
-                          (Type (bool/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            bool/3)
                         ]-> .)), OCaml.Pervasives.ref/3),
               [ Constructor ((46, Effect ([ ], .)), true/3) ]) in
         LetVar
           (47,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (bool/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (string/3), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, bool/3);
+                (OCaml.Effect.State.state/3, r_state/0);
+                (OCaml.Effect.State.state/3, string/3)
               ], .)) str =
           Apply
-            ((47,
-              Effect
-                ([
-                  TypeEffect
-                  (Type (string/3), OCaml.Effect.State.state/3)
-                ], .)),
+            ((47, Effect ([ (OCaml.Effect.State.state/3, string/3) ], .)),
               Variable
                 ((47,
                   Effect
                     ([ ],
                       .
                         -[
-                          TypeEffect
-                          (Type (string/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            string/3)
                         ]-> .)), OCaml.Pervasives.ref/3),
               [ Constant ((47, Effect ([ ], .)), String("")) ]) in
         LetFun
           (48,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (bool/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (string/3), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, bool/3);
+                (OCaml.Effect.State.state/3, r_state/0);
+                (OCaml.Effect.State.state/3, string/3)
               ], .))
           (non_rec, @.,
             [
@@ -1269,14 +1000,10 @@ Value
                   ((?,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (bool/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
-                          (string/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          bool/3);
+                        (OCaml.Effect.State.state/3,
+                          string/3)
                       ],
                         .)),
                     Variable
@@ -1293,24 +1020,18 @@ Value
                           ((49,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (bool/3),
-                                  OCaml.Effect.State.state/3);
-                                TypeEffect
-                                (Type
-                                  (string/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  bool/3);
+                                (OCaml.Effect.State.state/3,
+                                  string/3)
                               ],
                                 .)),
                             Apply
                               ((49,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (bool/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      bool/3)
                                   ],
                                     .)),
                                 Variable
@@ -1322,10 +1043,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (bool/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                bool/3)
                                             ]->
                                             .)),
                                     OCaml.Effect.State.write/3),
@@ -1341,10 +1060,8 @@ Value
                                     ((49,
                                       Effect
                                         ([
-                                          TypeEffect
-                                          (Type
-                                            (bool/3),
-                                            OCaml.Effect.State.state/3)
+                                          (OCaml.Effect.State.state/3,
+                                            bool/3)
                                         ],
                                           .)),
                                       Variable
@@ -1354,10 +1071,8 @@ Value
                                             ],
                                               .
                                                 -[
-                                                  TypeEffect
-                                                  (Type
-                                                    (bool/3),
-                                                    OCaml.Effect.State.state/3)
+                                                  (OCaml.Effect.State.state/3,
+                                                    bool/3)
                                                 ]->
                                                 .)),
                                           OCaml.Effect.State.read/3),
@@ -1375,10 +1090,8 @@ Value
                               ((50,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (string/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      string/3)
                                   ],
                                     .)),
                                 Variable
@@ -1390,10 +1103,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (string/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                string/3)
                                             ]->
                                             .)),
                                     OCaml.Effect.State.write/3),
@@ -1409,10 +1120,8 @@ Value
                                     ((50,
                                       Effect
                                         ([
-                                          TypeEffect
-                                          (Type
-                                            (string/3),
-                                            OCaml.Effect.State.state/3)
+                                          (OCaml.Effect.State.state/3,
+                                            string/3)
                                         ],
                                           .)),
                                       Variable
@@ -1434,10 +1143,8 @@ Value
                                           ((50,
                                             Effect
                                               ([
-                                                TypeEffect
-                                                (Type
-                                                  (string/3),
-                                                  OCaml.Effect.State.state/3)
+                                                (OCaml.Effect.State.state/3,
+                                                  string/3)
                                               ],
                                                 .)),
                                             Variable
@@ -1447,10 +1154,8 @@ Value
                                                   ],
                                                     .
                                                       -[
-                                                        TypeEffect
-                                                        (Type
-                                                          (string/3),
-                                                          OCaml.Effect.State.state/3)
+                                                        (OCaml.Effect.State.state/3,
+                                                          string/3)
                                                       ]->
                                                       .)),
                                                 OCaml.Effect.State.read/3),
@@ -1471,23 +1176,17 @@ Value
           ((51,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (bool/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (string/3), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, bool/3);
+                (OCaml.Effect.State.state/3, r_state/0);
+                (OCaml.Effect.State.state/3, string/3)
               ], .)),
             Apply
               ((51,
                 Effect
                   ([
-                    TypeEffect
-                    (Type (bool/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (string/3), OCaml.Effect.State.state/3)
+                    (OCaml.Effect.State.state/3, bool/3);
+                    (OCaml.Effect.State.state/3, string/3)
                   ], .)),
                 Variable
                   ((51,
@@ -1495,37 +1194,27 @@ Value
                       ([ ],
                         .
                           -[
-                            TypeEffect
-                            (Type (bool/3),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (string/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              bool/3);
+                            (OCaml.Effect.State.state/3,
+                              string/3)
                           ]-> .)), update/0),
                 [ Constructor ((51, Effect ([ ], .)), tt/3) ]),
             Sequence
               ((52,
                 Effect
                   ([
-                    TypeEffect
-                    (Type (Z/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (bool/3), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (r_state/0), OCaml.Effect.State.state/3);
-                    TypeEffect
-                    (Type (string/3), OCaml.Effect.State.state/3)
+                    (OCaml.Effect.State.state/3, Z/3);
+                    (OCaml.Effect.State.state/3, bool/3);
+                    (OCaml.Effect.State.state/3, r_state/0);
+                    (OCaml.Effect.State.state/3, string/3)
                   ], .)),
                 Apply
                   ((52,
                     Effect
                       ([
-                        TypeEffect
-                        (Type (bool/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (string/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3, bool/3);
+                        (OCaml.Effect.State.state/3, string/3)
                       ], .)),
                     Variable
                       ((52,
@@ -1533,41 +1222,30 @@ Value
                           ([ ],
                             .
                               -[
-                                TypeEffect
-                                (Type (bool/3),
-                                  OCaml.Effect.State.state/3);
-                                TypeEffect
-                                (Type (string/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  bool/3);
+                                (OCaml.Effect.State.state/3,
+                                  string/3)
                               ]-> .)), update/0),
                     [ Constructor ((52, Effect ([ ], .)), tt/3) ]),
                 Sequence
                   ((53,
                     Effect
                       ([
-                        TypeEffect
-                        (Type (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (bool/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (r_state/0),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type (string/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3, Z/3);
+                        (OCaml.Effect.State.state/3, bool/3);
+                        (OCaml.Effect.State.state/3,
+                          r_state/0);
+                        (OCaml.Effect.State.state/3, string/3)
                       ], .)),
                     Apply
                       ((53,
                         Effect
                           ([
-                            TypeEffect
-                            (Type (bool/3),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (string/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              bool/3);
+                            (OCaml.Effect.State.state/3,
+                              string/3)
                           ], .)),
                         Variable
                           ((53,
@@ -1575,13 +1253,10 @@ Value
                               ([ ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type (bool/3),
-                                      OCaml.Effect.State.state/3);
-                                    TypeEffect
-                                    (Type
-                                      (string/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      bool/3);
+                                    (OCaml.Effect.State.state/3,
+                                      string/3)
                                   ]-> .)), update/0),
                         [
                           Constructor
@@ -1596,26 +1271,21 @@ Value
                       ((54,
                         Effect
                           ([
-                            TypeEffect
-                            (Type (Z/3),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (bool/3),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (r_state/0),
-                              OCaml.Effect.State.state/3);
-                            TypeEffect
-                            (Type (string/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3);
+                            (OCaml.Effect.State.state/3,
+                              bool/3);
+                            (OCaml.Effect.State.state/3,
+                              r_state/0);
+                            (OCaml.Effect.State.state/3,
+                              string/3)
                           ], .)),
                         Apply
                           ((54,
                             Effect
                               ([
-                                TypeEffect
-                                (Type (bool/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  bool/3)
                               ], .)),
                             Variable
                               ((54,
@@ -1623,10 +1293,8 @@ Value
                                   ([ ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (bool/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          bool/3)
                                       ]-> .)),
                                 OCaml.Effect.State.read/3),
                             [
@@ -1642,9 +1310,8 @@ Value
                           ((54,
                             Effect
                               ([
-                                TypeEffect
-                                (Type (string/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  string/3)
                               ], .)),
                             Variable
                               ((54,
@@ -1652,10 +1319,8 @@ Value
                                   ([ ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (string/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          string/3)
                                       ]-> .)),
                                 OCaml.Effect.State.read/3),
                             [
@@ -1671,12 +1336,10 @@ Value
                           ((54,
                             Effect
                               ([
-                                TypeEffect
-                                (Type (Z/3),
-                                  OCaml.Effect.State.state/3);
-                                TypeEffect
-                                (Type (r_state/0),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3);
+                                (OCaml.Effect.State.state/3,
+                                  r_state/0)
                               ], .)),
                             Variable
                               ((54,
@@ -1684,10 +1347,8 @@ Value
                                   ([ ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]-> .)),
                                 OCaml.Effect.State.read/3),
                             [
@@ -1695,14 +1356,10 @@ Value
                                 ((?,
                                   Effect
                                     ([
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3);
-                                      TypeEffect
-                                      (Type
-                                        (r_state/0),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3);
+                                      (OCaml.Effect.State.state/3,
+                                        r_state/0)
                                     ],
                                       .)),
                                   Variable
@@ -1714,10 +1371,8 @@ Value
                                             ->
                                             .
                                               -[
-                                                TypeEffect
-                                                (Type
-                                                  (r_state/0),
-                                                  OCaml.Effect.State.state/3)
+                                                (OCaml.Effect.State.state/3,
+                                                  r_state/0)
                                               ]->
                                               .)),
                                       OCaml.Effect.State.global/3),
@@ -1733,10 +1388,8 @@ Value
                                       ((?,
                                         Effect
                                           ([
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ],
                                             .)),
                                         Variable
@@ -1746,10 +1399,8 @@ Value
                                               ],
                                                 .
                                                   -[
-                                                    TypeEffect
-                                                    (Type
-                                                      (Z/3),
-                                                      OCaml.Effect.State.state/3)
+                                                    (OCaml.Effect.State.state/3,
+                                                      Z/3)
                                                   ]->
                                                   .)),
                                             OCaml.Effect.State.peekstate/3),
@@ -1775,12 +1426,9 @@ Value
           ((?,
             Effect
               ([
-                TypeEffect
-                (Type (Z/3), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (list/3, Type (Z/3)), OCaml.Effect.State.state/3);
-                TypeEffect
-                (Type (r_state/0), OCaml.Effect.State.state/3)
+                (OCaml.Effect.State.state/3, Z/3);
+                (OCaml.Effect.State.state/3, (list/3, Z/3));
+                (OCaml.Effect.State.state/3, r_state/0)
               ], .)), Variable ((?, Effect ([ ], .)), x/0),
             [
               (Constructor (tt/3),
@@ -1788,20 +1436,13 @@ Value
                   (57,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
-                          (r_state/0),
-                          OCaml.Effect.State.state/3)
+                            Z/3));
+                        (OCaml.Effect.State.state/3,
+                          r_state/0)
                       ],
                         .))
                   (non_rec, @.,
@@ -1827,20 +1468,16 @@ Value
                           ((58,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ],
                                 .)),
                             Apply
                               ((58,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ],
                                     .)),
                                 Variable
@@ -1852,10 +1489,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (Z/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                Z/3)
                                             ]->
                                             .)),
                                     OCaml.Effect.State.write/3),
@@ -1888,20 +1523,13 @@ Value
                   (60,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
-                          (r_state/0),
-                          OCaml.Effect.State.state/3)
+                            Z/3));
+                        (OCaml.Effect.State.state/3,
+                          r_state/0)
                       ],
                         .))
                   f1_test =
@@ -1909,21 +1537,15 @@ Value
                     ((60,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3);
-                          TypeEffect
-                          (Type
-                            (r_state/0),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3);
+                          (OCaml.Effect.State.state/3,
+                            r_state/0)
                         ],
                           .
                             -[
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]->
                             .)),
                       Variable
@@ -1935,10 +1557,8 @@ Value
                                 ->
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                           f1/0),
@@ -1947,14 +1567,10 @@ Value
                           ((?,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3);
-                                TypeEffect
-                                (Type
-                                  (r_state/0),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3);
+                                (OCaml.Effect.State.state/3,
+                                  r_state/0)
                               ],
                                 .)),
                             Variable
@@ -1966,10 +1582,8 @@ Value
                                       ->
                                       .
                                         -[
-                                          TypeEffect
-                                          (Type
-                                            (r_state/0),
-                                            OCaml.Effect.State.state/3)
+                                          (OCaml.Effect.State.state/3,
+                                            r_state/0)
                                         ]->
                                         .)),
                                 OCaml.Effect.State.global/3),
@@ -1985,10 +1599,8 @@ Value
                                 ((?,
                                   Effect
                                     ([
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ],
                                       .)),
                                   Variable
@@ -1998,10 +1610,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (Z/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                Z/3)
                                             ]->
                                             .)),
                                       OCaml.Effect.State.peekstate/3),
@@ -2020,16 +1630,11 @@ Value
                   (61,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3)
+                            Z/3))
                       ],
                         .))
                   f1_test =
@@ -2037,10 +1642,8 @@ Value
                     ((61,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .)),
                       Variable
@@ -2050,10 +1653,8 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .)),
                           f1_test/0),
@@ -2071,16 +1672,11 @@ Value
                   (62,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3)
+                            Z/3))
                       ],
                         .))
                   (non_rec, @.,
@@ -2110,16 +1706,11 @@ Value
                           ((63,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3);
-                                TypeEffect
-                                (Type
+                                (OCaml.Effect.State.state/3,
+                                  Z/3);
+                                (OCaml.Effect.State.state/3,
                                   (list/3,
-                                    Type
-                                      (Z/3)),
-                                  OCaml.Effect.State.state/3)
+                                    Z/3))
                               ],
                                 .)),
                             Variable
@@ -2129,10 +1720,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]->
                                       .)),
                                 OCaml.Pervasives.ref/3),
@@ -2141,12 +1730,9 @@ Value
                                 ((63,
                                   Effect
                                     ([
-                                      TypeEffect
-                                      (Type
+                                      (OCaml.Effect.State.state/3,
                                         (list/3,
-                                          Type
-                                            (Z/3)),
-                                        OCaml.Effect.State.state/3)
+                                          Z/3))
                                     ],
                                       .)),
                                   Variable
@@ -2161,12 +1747,9 @@ Value
                                       ((63,
                                         Effect
                                           ([
-                                            TypeEffect
-                                            (Type
+                                            (OCaml.Effect.State.state/3,
                                               (list/3,
-                                                Type
-                                                  (Z/3)),
-                                              OCaml.Effect.State.state/3)
+                                                Z/3))
                                           ],
                                             .)),
                                         Variable
@@ -2181,12 +1764,9 @@ Value
                                             ((63,
                                               Effect
                                                 ([
-                                                  TypeEffect
-                                                  (Type
+                                                  (OCaml.Effect.State.state/3,
                                                     (list/3,
-                                                      Type
-                                                        (Z/3)),
-                                                    OCaml.Effect.State.state/3)
+                                                      Z/3))
                                                 ],
                                                   .)),
                                               Variable
@@ -2196,12 +1776,9 @@ Value
                                                     ],
                                                       .
                                                         -[
-                                                          TypeEffect
-                                                          (Type
+                                                          (OCaml.Effect.State.state/3,
                                                             (list/3,
-                                                              Type
-                                                                (Z/3)),
-                                                            OCaml.Effect.State.state/3)
+                                                              Z/3))
                                                         ]->
                                                         .)),
                                                   OCaml.Effect.State.read/3),
@@ -2245,16 +1822,11 @@ Value
                   (64,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3)
+                            Z/3))
                       ],
                         .))
                   f2_test =
@@ -2262,25 +1834,17 @@ Value
                     ((64,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
+                          (OCaml.Effect.State.state/3,
                             (list/3,
-                              Type
-                                (Z/3)),
-                            OCaml.Effect.State.state/3)
+                              Z/3))
                         ],
                           .
                             -[
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3);
-                              TypeEffect
-                              (Type
+                              (OCaml.Effect.State.state/3,
+                                Z/3);
+                              (OCaml.Effect.State.state/3,
                                 (list/3,
-                                  Type
-                                    (Z/3)),
-                                OCaml.Effect.State.state/3)
+                                  Z/3))
                             ]->
                             .)),
                       Variable
@@ -2292,16 +1856,11 @@ Value
                                 ->
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3);
-                                    TypeEffect
-                                    (Type
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3);
+                                    (OCaml.Effect.State.state/3,
                                       (list/3,
-                                        Type
-                                          (Z/3)),
-                                      OCaml.Effect.State.state/3)
+                                        Z/3))
                                   ]->
                                   .)),
                           f2/0),
@@ -2310,12 +1869,9 @@ Value
                           ((64,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
+                                (OCaml.Effect.State.state/3,
                                   (list/3,
-                                    Type
-                                      (Z/3)),
-                                  OCaml.Effect.State.state/3)
+                                    Z/3))
                               ],
                                 .)),
                             Variable
@@ -2325,12 +1881,9 @@ Value
                                   ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
+                                        (OCaml.Effect.State.state/3,
                                           (list/3,
-                                            Type
-                                              (Z/3)),
-                                          OCaml.Effect.State.state/3)
+                                            Z/3))
                                       ]->
                                       .)),
                                 OCaml.Pervasives.ref/3),
@@ -2391,16 +1944,11 @@ Value
                   (65,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3);
-                        TypeEffect
-                        (Type
+                        (OCaml.Effect.State.state/3,
+                          Z/3);
+                        (OCaml.Effect.State.state/3,
                           (list/3,
-                            Type
-                              (Z/3)),
-                          OCaml.Effect.State.state/3)
+                            Z/3))
                       ],
                         .))
                   f2_test =
@@ -2408,16 +1956,11 @@ Value
                     ((65,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3);
-                          TypeEffect
-                          (Type
+                          (OCaml.Effect.State.state/3,
+                            Z/3);
+                          (OCaml.Effect.State.state/3,
                             (list/3,
-                              Type
-                                (Z/3)),
-                            OCaml.Effect.State.state/3)
+                              Z/3))
                         ],
                           .)),
                       Variable
@@ -2427,16 +1970,11 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3);
-                                  TypeEffect
-                                  (Type
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3);
+                                  (OCaml.Effect.State.state/3,
                                     (list/3,
-                                      Type
-                                        (Z/3)),
-                                    OCaml.Effect.State.state/3)
+                                      Z/3))
                                 ]->
                                 .)),
                           f2_test/0),
@@ -2482,10 +2020,8 @@ Value
                   ((66,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .)),
                     Variable
@@ -2497,10 +2033,8 @@ Value
                               ->
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .)),
                         f1/0),
@@ -2516,10 +2050,8 @@ Value
                         ((66,
                           Effect
                             ([
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ],
                               .)),
                           Variable
@@ -2529,10 +2061,8 @@ Value
                                 ],
                                   .
                                     -[
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ]->
                                     .)),
                               OCaml.Effect.State.read/3),
@@ -2556,20 +2086,16 @@ Value
       ((multiple_returns_test, [ ], [ (x, Type (unit/3)) ],
         (Type (Z/3) * Type (OCaml.Effect.State.t/3, Type (Z/3)))),
         Match
-          ((?,
-            Effect
-              ([ TypeEffect (Type (Z/3), OCaml.Effect.State.state/3) ],
-                .)), Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ (OCaml.Effect.State.state/3, Z/3) ], .)),
+            Variable ((?, Effect ([ ], .)), x/0),
             [
               (Constructor (tt/3),
                 LetFun
                   (69,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   (non_rec, @.,
@@ -2603,34 +2129,26 @@ Value
                           ((70,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .
                                     -[
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ]->
                                     .)),
                             Apply
                               ((70,
                                 Effect
                                   ([
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ],
                                     .)),
                                 Variable
@@ -2642,10 +2160,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              TypeEffect
-                                              (Type
-                                                (Z/3),
-                                                OCaml.Effect.State.state/3)
+                                              (OCaml.Effect.State.state/3,
+                                                Z/3)
                                             ]->
                                             .)),
                                     OCaml.Effect.State.write/3),
@@ -2672,17 +2188,13 @@ Value
                                   ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]->
                                       .
                                         -[
-                                          TypeEffect
-                                          (Type
-                                            (Z/3),
-                                            OCaml.Effect.State.state/3)
+                                          (OCaml.Effect.State.state/3,
+                                            Z/3)
                                         ]->
                                         .)),
                                 z,
@@ -2690,27 +2202,21 @@ Value
                                   ((71,
                                     Effect
                                       ([
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ],
                                         .
                                           -[
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ]->
                                           .)),
                                     Apply
                                       ((72,
                                         Effect
                                           ([
-                                            TypeEffect
-                                            (Type
-                                              (Z/3),
-                                              OCaml.Effect.State.state/3)
+                                            (OCaml.Effect.State.state/3,
+                                              Z/3)
                                           ],
                                             .)),
                                         Variable
@@ -2722,10 +2228,8 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      TypeEffect
-                                                      (Type
-                                                        (Z/3),
-                                                        OCaml.Effect.State.state/3)
+                                                      (OCaml.Effect.State.state/3,
+                                                        Z/3)
                                                     ]->
                                                     .)),
                                             OCaml.Effect.State.write/3),
@@ -2741,10 +2245,8 @@ Value
                                             ((72,
                                               Effect
                                                 ([
-                                                  TypeEffect
-                                                  (Type
-                                                    (Z/3),
-                                                    OCaml.Effect.State.state/3)
+                                                  (OCaml.Effect.State.state/3,
+                                                    Z/3)
                                                 ],
                                                   .)),
                                               Variable
@@ -2759,10 +2261,8 @@ Value
                                                   ((72,
                                                     Effect
                                                       ([
-                                                        TypeEffect
-                                                        (Type
-                                                          (Z/3),
-                                                          OCaml.Effect.State.state/3)
+                                                        (OCaml.Effect.State.state/3,
+                                                          Z/3)
                                                       ],
                                                         .)),
                                                     Variable
@@ -2772,10 +2272,8 @@ Value
                                                           ],
                                                             .
                                                               -[
-                                                                TypeEffect
-                                                                (Type
-                                                                  (Z/3),
-                                                                  OCaml.Effect.State.state/3)
+                                                                (OCaml.Effect.State.state/3,
+                                                                  Z/3)
                                                               ]->
                                                               .)),
                                                         OCaml.Effect.State.read/3),
@@ -2804,10 +2302,8 @@ Value
                                           ],
                                             .
                                               -[
-                                                TypeEffect
-                                                (Type
-                                                  (Z/3),
-                                                  OCaml.Effect.State.state/3)
+                                                (OCaml.Effect.State.state/3,
+                                                  Z/3)
                                               ]->
                                               .)),
                                         w,
@@ -2815,10 +2311,8 @@ Value
                                           (73,
                                             Effect
                                               ([
-                                                TypeEffect
-                                                (Type
-                                                  (Z/3),
-                                                  OCaml.Effect.State.state/3)
+                                                (OCaml.Effect.State.state/3,
+                                                  Z/3)
                                               ],
                                                 .))
                                           tmp
@@ -2827,10 +2321,8 @@ Value
                                             ((74,
                                               Effect
                                                 ([
-                                                  TypeEffect
-                                                  (Type
-                                                    (Z/3),
-                                                    OCaml.Effect.State.state/3)
+                                                  (OCaml.Effect.State.state/3,
+                                                    Z/3)
                                                 ],
                                                   .)),
                                               Variable
@@ -2840,10 +2332,8 @@ Value
                                                     ],
                                                       .
                                                         -[
-                                                          TypeEffect
-                                                          (Type
-                                                            (Z/3),
-                                                            OCaml.Effect.State.state/3)
+                                                          (OCaml.Effect.State.state/3,
+                                                            Z/3)
                                                         ]->
                                                         .)),
                                                   OCaml.Effect.State.read/3),
@@ -2861,20 +2351,16 @@ Value
                                           ((75,
                                             Effect
                                               ([
-                                                TypeEffect
-                                                (Type
-                                                  (Z/3),
-                                                  OCaml.Effect.State.state/3)
+                                                (OCaml.Effect.State.state/3,
+                                                  Z/3)
                                               ],
                                                 .)),
                                             Apply
                                               ((75,
                                                 Effect
                                                   ([
-                                                    TypeEffect
-                                                    (Type
-                                                      (Z/3),
-                                                      OCaml.Effect.State.state/3)
+                                                    (OCaml.Effect.State.state/3,
+                                                      Z/3)
                                                   ],
                                                     .)),
                                                 Variable
@@ -2886,10 +2372,8 @@ Value
                                                           ->
                                                           .
                                                             -[
-                                                              TypeEffect
-                                                              (Type
-                                                                (Z/3),
-                                                                OCaml.Effect.State.state/3)
+                                                              (OCaml.Effect.State.state/3,
+                                                                Z/3)
                                                             ]->
                                                             .)),
                                                     OCaml.Effect.State.write/3),
@@ -2905,10 +2389,8 @@ Value
                                                     ((75,
                                                       Effect
                                                         ([
-                                                          TypeEffect
-                                                          (Type
-                                                            (Z/3),
-                                                            OCaml.Effect.State.state/3)
+                                                          (OCaml.Effect.State.state/3,
+                                                            Z/3)
                                                         ],
                                                           .)),
                                                       Variable
@@ -2930,10 +2412,8 @@ Value
                                                           ((75,
                                                             Effect
                                                               ([
-                                                                TypeEffect
-                                                                (Type
-                                                                  (Z/3),
-                                                                  OCaml.Effect.State.state/3)
+                                                                (OCaml.Effect.State.state/3,
+                                                                  Z/3)
                                                               ],
                                                                 .)),
                                                             Variable
@@ -2943,10 +2423,8 @@ Value
                                                                   ],
                                                                     .
                                                                       -[
-                                                                        TypeEffect
-                                                                        (Type
-                                                                          (Z/3),
-                                                                          OCaml.Effect.State.state/3)
+                                                                        (OCaml.Effect.State.state/3,
+                                                                          Z/3)
                                                                       ]->
                                                                       .)),
                                                                 OCaml.Effect.State.read/3),
@@ -2965,20 +2443,16 @@ Value
                                               ((76,
                                                 Effect
                                                   ([
-                                                    TypeEffect
-                                                    (Type
-                                                      (Z/3),
-                                                      OCaml.Effect.State.state/3)
+                                                    (OCaml.Effect.State.state/3,
+                                                      Z/3)
                                                   ],
                                                     .)),
                                                 Apply
                                                   ((76,
                                                     Effect
                                                       ([
-                                                        TypeEffect
-                                                        (Type
-                                                          (Z/3),
-                                                          OCaml.Effect.State.state/3)
+                                                        (OCaml.Effect.State.state/3,
+                                                          Z/3)
                                                       ],
                                                         .)),
                                                     Variable
@@ -2990,10 +2464,8 @@ Value
                                                               ->
                                                               .
                                                                 -[
-                                                                  TypeEffect
-                                                                  (Type
-                                                                    (Z/3),
-                                                                    OCaml.Effect.State.state/3)
+                                                                  (OCaml.Effect.State.state/3,
+                                                                    Z/3)
                                                                 ]->
                                                                 .)),
                                                         OCaml.Effect.State.write/3),
@@ -3026,10 +2498,8 @@ Value
                   (80,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   s =
@@ -3037,10 +2507,8 @@ Value
                     ((80,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .)),
                       Variable
@@ -3050,10 +2518,8 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .)),
                           OCaml.Pervasives.ref/3),
@@ -3071,10 +2537,8 @@ Value
                   (81,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   f1 =
@@ -3082,31 +2546,23 @@ Value
                     ((81,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .
                             -[
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]->
                             .
                               -[
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ]->
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .)),
                       Variable
@@ -3118,24 +2574,18 @@ Value
                                 ->
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .
                                     -[
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ]->
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]->
                                       .)),
                           f/0),
@@ -3144,10 +2594,8 @@ Value
                           ((81,
                             Effect
                               ([
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ],
                                 .)),
                             Variable
@@ -3157,10 +2605,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        TypeEffect
-                                        (Type
-                                          (Z/3),
-                                          OCaml.Effect.State.state/3)
+                                        (OCaml.Effect.State.state/3,
+                                          Z/3)
                                       ]->
                                       .)),
                                 OCaml.Pervasives.ref/3),
@@ -3179,10 +2625,8 @@ Value
                   (82,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   f2 =
@@ -3190,24 +2634,18 @@ Value
                     ((82,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .
                             -[
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]->
                             .
                               -[
-                                TypeEffect
-                                (Type
-                                  (Z/3),
-                                  OCaml.Effect.State.state/3)
+                                (OCaml.Effect.State.state/3,
+                                  Z/3)
                               ]->
                               .)),
                       Variable
@@ -3217,24 +2655,18 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .
                                     -[
-                                      TypeEffect
-                                      (Type
-                                        (Z/3),
-                                        OCaml.Effect.State.state/3)
+                                      (OCaml.Effect.State.state/3,
+                                        Z/3)
                                     ]->
                                     .)),
                           f1/0),
@@ -3252,10 +2684,8 @@ Value
                   (83,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   f3 =
@@ -3263,17 +2693,13 @@ Value
                     ((83,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .
                             -[
-                              TypeEffect
-                              (Type
-                                (Z/3),
-                                OCaml.Effect.State.state/3)
+                              (OCaml.Effect.State.state/3,
+                                Z/3)
                             ]->
                             .)),
                       Variable
@@ -3283,17 +2709,13 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                           f2/0),
@@ -3311,10 +2733,8 @@ Value
                   (84,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .))
                   f4 =
@@ -3322,10 +2742,8 @@ Value
                     ((84,
                       Effect
                         ([
-                          TypeEffect
-                          (Type
-                            (Z/3),
-                            OCaml.Effect.State.state/3)
+                          (OCaml.Effect.State.state/3,
+                            Z/3)
                         ],
                           .)),
                       Variable
@@ -3335,10 +2753,8 @@ Value
                             ],
                               .
                                 -[
-                                  TypeEffect
-                                  (Type
-                                    (Z/3),
-                                    OCaml.Effect.State.state/3)
+                                  (OCaml.Effect.State.state/3,
+                                    Z/3)
                                 ]->
                                 .)),
                           f3/0),
@@ -3356,20 +2772,16 @@ Value
                   ((85,
                     Effect
                       ([
-                        TypeEffect
-                        (Type
-                          (Z/3),
-                          OCaml.Effect.State.state/3)
+                        (OCaml.Effect.State.state/3,
+                          Z/3)
                       ],
                         .)),
                     Apply
                       ((85,
                         Effect
                           ([
-                            TypeEffect
-                            (Type
-                              (Z/3),
-                              OCaml.Effect.State.state/3)
+                            (OCaml.Effect.State.state/3,
+                              Z/3)
                           ],
                             .)),
                         Variable
@@ -3379,10 +2791,8 @@ Value
                               ],
                                 .
                                   -[
-                                    TypeEffect
-                                    (Type
-                                      (Z/3),
-                                      OCaml.Effect.State.state/3)
+                                    (OCaml.Effect.State.state/3,
+                                      Z/3)
                                   ]->
                                   .)),
                             OCaml.Effect.State.read/3),
