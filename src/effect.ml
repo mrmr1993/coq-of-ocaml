@@ -57,13 +57,30 @@ module Descriptor = struct
       | Ether x -> Ether (f x)
       | Type typ -> Type (PureType.map f typ)
 
-    let bound_name (x : t) =
+    let bound_name (x : t) : BoundName.t =
       match x with
       | Ether x -> x
       | Type (PureType.Apply (x, _)) -> x
       | _ -> failwith "Could not convert descriptor to bound name."
   end
-  module Set = Set.Make (struct type t = Id.t let compare = compare end)
+  module Set = Set.Make (struct
+      type t = Id.t
+
+      (* Compare on the base name first, for better stability across modules. *)
+      let compare x y =
+        match x, y with
+        | Id.Ether {path_name={base=a}}, Id.Ether {path_name={base=b}}
+        | Id.Ether {path_name={base=a}},
+          Id.Type (PureType.Apply ({path_name={base=b}}, _))
+        | Id.Type (PureType.Apply ({path_name={base=a}}, _)),
+          Id.Ether {path_name={base=b}}
+        | Id.Type (PureType.Apply ({path_name={base=a}}, _)),
+          Id.Type (PureType.Apply ({path_name={base=b}}, _)) ->
+          let cmp = compare a b in
+          if cmp == 0 then compare x y else cmp
+        | _, _ -> compare x y
+
+    end)
   type t = Set.t
 
   let pp (d : t) : SmartPrint.t =
