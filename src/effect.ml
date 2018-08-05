@@ -14,8 +14,8 @@ let rec pp (typ : t) : SmartPrint.t =
   | Arrow (typ1, typ2) -> nest @@ parens (pp typ1 ^^ !^ "->" ^^ pp typ2)
   | Tuple typs -> nest @@ parens (separate (space ^^ !^ "*" ^^ space) (List.map pp typs))
   | Apply (x, typs) ->
-    nest (!^ "Type" ^^ nest (parens (
-      separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs))))
+    nest @@ parens @@
+      separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs)
 
 let first_param (typ : t) : t =
   match typ with
@@ -86,7 +86,7 @@ module Descriptor = struct
   let pp (d : t) : SmartPrint.t =
     Set.elements d |> OCaml.list (fun id ->
       match id with
-      | Id.Type pt -> !^ "TypeEffect" ^^ OCaml.tuple [PureType.pp pt]
+      | Id.Type pt -> PureType.pp pt
       | Id.Ether x -> BoundName.pp x)
 
   let pure : t = Set.empty
