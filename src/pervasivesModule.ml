@@ -29,7 +29,6 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Var.add [] "read_counter" (Arrow (d 0 [[], "Counter"], Pure))
   |> Descriptor.add [] "NonTermination"
   |> Var.add [] "not_terminated" (Arrow (d 0 [[], "NonTermination"], Pure))
-  |> Descriptor.add [] "__type__"
 
   (* The core library *)
   (* Built-in types *)
@@ -101,36 +100,27 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Typ.add ["Effect"; "State"] "t" (Arrow (d 0 [["Effect"; "State"], "state"], Pure))
   |> Var.add ["Effect"; "State"] "peekstate" Pure
   |> Var.add ["Effect"; "State"] "global" Pure
-  |> Var.add ["Effect"; "State"] "read"
-    (Arrow (Effect.Descriptor.union [typ_d 0;
-      Effect.Descriptor.singleton
-        { BoundName.depth = 1;
-          path_name = PathName.of_name [] "__type__" }
-        [Effect.PureType.Arrow
-          (Effect.PureType.Apply
-            ({ BoundName.depth = 0;
-                path_name = PathName.of_name ["Effect"; "State"] "state" },
-              [Effect.PureType.Variable "0"]),
-            Effect.PureType.Variable "0")
-    ]], Pure))
-  |> Var.add ["Effect"; "State"] "write"
-    (Arrow (
-      Effect.Descriptor.singleton
-        { BoundName.depth = 1;
-          path_name = PathName.of_name [] "__type__" }
-        [Effect.PureType.Arrow
-          (Effect.PureType.Apply
-            ({ BoundName.depth = 0;
-                path_name = PathName.of_name ["Effect"; "State"] "state" },
-              [Effect.PureType.Variable "0"]),
-            Effect.PureType.Arrow
-              (Effect.PureType.Variable "0",
-              Effect.PureType.Apply
-                ({ BoundName.depth = 1;
-                    path_name = PathName.of_name [] "unit" },
-                [])))
-        ],
-    Arrow (typ_d 0, Pure)))
+  |> Function.add ["Effect"; "State"] "read"
+    (Arrow (typ_d 0, Pure))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Apply
+        ({ BoundName.depth = 0;
+            path_name = PathName.of_name ["Effect"; "State"] "state" },
+          [Effect.PureType.Variable "0"]),
+        Effect.PureType.Variable "0"))
+  |> Function.add ["Effect"; "State"] "write"
+    (Arrow (d 0 [], Arrow (typ_d 0, Pure)))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Apply
+        ({ BoundName.depth = 0;
+            path_name = PathName.of_name ["Effect"; "State"] "state" },
+          [Effect.PureType.Variable "0"]),
+        Effect.PureType.Arrow
+          (Effect.PureType.Variable "0",
+          Effect.PureType.Apply
+            ({ BoundName.depth = 1;
+                path_name = PathName.of_name [] "unit" },
+            []))))
 
   (* Pervasives *)
   (* Exceptions *)

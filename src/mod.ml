@@ -4,6 +4,7 @@ open SmartPrint
 module Value = struct
   type 'a t =
     | Variable of 'a
+    | Function of 'a * Effect.PureType.t
     | Type of 'a
     | Descriptor
     | Constructor
@@ -12,6 +13,7 @@ module Value = struct
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
     match v with
     | Variable a -> Variable (f a)
+    | Function (a, typ) -> Function (f a, typ)
     | Type a -> Type (f a)
     | Descriptor -> Descriptor
     | Constructor -> Constructor
@@ -20,6 +22,7 @@ module Value = struct
   let to_string (v : 'a t) : string =
     match v with
     | Variable _ -> "variable"
+    | Function _ -> "function"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
     | Constructor -> "constructor"
@@ -72,7 +75,7 @@ let pp (m : 'a t) : SmartPrint.t =
   let fields = ref [] in
   m.values |> PathName.Map.iter (fun x v ->
     match v with
-    | Variable _ -> vars := x :: !vars
+    | Variable _ | Function _ -> vars := x :: !vars
     | Type _ -> typs := x :: !typs
     | Descriptor -> descriptors := x :: !descriptors
     | Constructor -> constructors := x :: !constructors
@@ -149,12 +152,13 @@ module Vars = struct
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
-    | Some (Variable _) -> true
+    | Some (Variable _ | Function _) -> true
     | _ -> false
 
   let find (x : PathName.t) (m : 'a t) : 'a =
     match PathName.Map.find x m.values with
     | Variable a -> a
+    | Function (a, _) -> a
     | _ -> failwith @@
       String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Variable"
 
@@ -162,6 +166,28 @@ module Vars = struct
   let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
     let name = find_free_name prefix env in
     (name, add (PathName.of_name [] name) v env)
+end
+module Function = struct
+  let assoc (x : PathName.t) (y : PathName.t) (v : 'a)
+    (typ : Effect.PureType.t) (m : 'a t) : 'a t =
+    { m with
+      values = PathName.Map.add y (Function (v, typ)) m.values;
+      locator = { m.locator with
+        vars = PathName.Map.add x y.base m.locator.vars } }
+
+  let add (x : PathName.t) (v : 'a) (typ : Effect.PureType.t) (m : 'a t)
+    : 'a t =
+    let y = match Vars.resolve_opt x m with
+      | Some path -> path
+      | None -> find_free_path x m in
+    assoc x y v typ m
+
+  let find (x : PathName.t) (m : 'a t) : Effect.PureType.t option =
+    match PathName.Map.find x m.values with
+    | Variable _ -> None
+    | Function (_, typ) -> Some typ
+    | _ -> failwith @@
+      String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Variable"
 end
 module Typs = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =

@@ -186,6 +186,24 @@ end
 module Var = ValueCarrier(Mod.Vars)
 module Typ = ValueCarrier(Mod.Typs)
 
+module Function = struct
+  include Carrier(Mod.Vars)
+
+  let add (path : Name.t list) (base : Name.t) (v : 'a)
+    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
+    update_active (Mod.Function.add (PathName.of_name path base) v typ) env
+
+  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
+    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
+    update_active (Mod.Function.assoc (PathName.of_name path base)
+      (PathName.of_name path assoc_base) v typ) env
+
+  let find (x : BoundName.t) (env : 'a t)
+    (open_lift : Effect.PureType.t -> Effect.PureType.t)
+    : Effect.PureType.t option =
+    find_bound_name Mod.Function.find x env (option_map open_lift)
+end
+
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =

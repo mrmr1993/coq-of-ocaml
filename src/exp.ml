@@ -668,6 +668,13 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     let env = Definition.env_after_def def env in
     (env, [def])
 
+let rec function_type (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
+  : Effect.PureType.t option =
+  match e with
+  | Variable ((l, typ), x) ->
+    FullEnvi.Function.find x env (Effect.PureType.map BoundName.depth_lift)
+  | _ -> None
+
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
@@ -748,28 +755,15 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
     let typ_f = snd @@ annotation e_f in
+    let ptyp_f = function_type env e_f in
     let e_f = effects env e_f in
     (* Resolve effects with type variables *)
     let e_f = e_f |> update_annotation (fun (l, eff) ->
-      let type_effect_bound = FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name [] "__type__") env in
-      let descriptor = Effect.Type.return_descriptor eff.Effect.typ 1 in
-      let (type_effect_descriptors, descriptor) =
-        Effect.Descriptor.partition type_effect_bound descriptor in
-      match Effect.Descriptor.choose type_effect_descriptors with
-      | Some (Effect.Descriptor.Id.Type (_, [ptyp_f])) ->
-        let eff = { eff with Effect.typ =
-          Effect.Type.Arrow (descriptor,
-            Effect.Type.return_type eff.Effect.typ 1) } in
+      match ptyp_f with
+      | Some ptyp_f ->
         let vars_map = Type.unify ptyp_f typ_f in
-        let new_eff = Effect.map_type_vars vars_map eff in
-        if Effect.has_type_vars new_eff then
-          (l, new_eff)
-        else
-          (l, { new_eff with Effect.descriptor =
-            Effect.Descriptor.remove type_effect_bound new_eff.descriptor })
-      | _ -> (l, eff)
-        ) in
+        (l, Effect.map_type_vars vars_map eff)
+      | None -> (l, eff)) in
     (* Add an effect for the type, if there is one *)
     let e_f = match type_effect_of_exp e with
       | None -> e_f
