@@ -649,7 +649,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       let env = Header.env_in_header header env_after_def' () in
       let rec_typ = List.fold_right (fun (_, arg_typ) typ ->
           Type.Arrow (arg_typ, typ))
-        header.Header.args (snd (annotation rec_e)) in
+        header.Header.args header.Header.typ in
       let e = Apply ((Loc.Unknown, snd (annotation rec_e)),
         var (CoqName.ocaml_name name_rec) (Type.Arrow (nat_type, rec_typ)) env,
         Apply ((Loc.Unknown, nat_type),
@@ -831,7 +831,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e1 = effects env e1 in
     let effect1 = snd (annotation e1) in
     let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name effect1.Effect.typ env in
+    let env = if Effect.has_type_vars effect1 then
+      let typ = Type.pure_type typ in
+      FullEnvi.Function.assoc [] name coq_name effect1.Effect.typ typ env
+    else
+      FullEnvi.Var.assoc [] name coq_name effect1.Effect.typ env in
     let e2 = effects env e2 in
     let effect2 = snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [
@@ -925,7 +929,12 @@ and env_after_def_with_effects (env : Effect.Type.t FullEnvi.t)
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
     let (name, coq_name) = CoqName.assoc_names header.Header.name in
-    FullEnvi.Var.assoc [] name coq_name effect_typ env)
+    if Effect.has_type_vars effect then
+      let typ = Type.pure_type @@ List.fold_right (fun (_, arg_typ) typ ->
+        Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
+      FullEnvi.Function.assoc [] name coq_name effect_typ typ env
+    else
+      FullEnvi.Var.assoc [] name coq_name effect_typ env)
     env def.Definition.cases
 
 and effects_of_def_step (env : Effect.Type.t FullEnvi.t)
