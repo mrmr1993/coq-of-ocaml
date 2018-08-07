@@ -120,6 +120,25 @@ let rec pure_type (typ : t) : Effect.PureType.t =
   | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
   | Monad (x, typ) -> pure_type typ
 
+let rec unify (ptyp : Effect.PureType.t) (typ : t)
+  : Effect.PureType.t Name.Map.t =
+  match ptyp, typ with
+  | Effect.PureType.Variable x, _ ->
+    Name.Map.singleton x (pure_type typ)
+  | _, Monad (_, typ) -> unify ptyp typ
+  | Effect.PureType.Arrow (ptyp1, ptyp2), Arrow (typ1, typ2) ->
+    Name.Map.union (fun _ typ _ -> Some typ)
+      (unify ptyp1 typ1) (unify ptyp2 typ2)
+  | Effect.PureType.Tuple ptyps, Tuple typs ->
+    List.fold_left2 (fun var_map ptyp typ ->
+        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
+      Name.Map.empty ptyps typs
+  | Effect.PureType.Apply (px, ptyps), Apply (x, typs) ->
+    List.fold_left2 (fun var_map ptyp typ ->
+        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
+      Name.Map.empty ptyps typs
+  | _, _ -> failwith "Could not unify types"
+
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with
   | Variable x -> Name.Set.singleton x

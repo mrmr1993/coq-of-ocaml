@@ -43,6 +43,21 @@ let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
   | Arrow (typ_x, typ_y) -> Arrow (map f typ_x, map f typ_y)
   | Tuple typs -> Tuple (List.map (map f) typs)
   | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
+
+let rec map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
+  match typ with
+  | Variable x -> Name.Map.find x vars_map
+  | Arrow (typ_x, typ_y) ->
+    Arrow (map_type_vars vars_map typ_x, map_type_vars vars_map typ_y)
+  | Tuple typs -> Tuple (List.map (map_type_vars vars_map) typs)
+  | Apply (path, typs) -> Apply (path, List.map (map_type_vars vars_map) typs)
+
+let rec has_type_vars (typ : t) : bool =
+  match typ with
+  | Variable _ -> true
+  | Arrow (typ_x, typ_y) -> has_type_vars typ_x || has_type_vars typ_y
+  | Tuple typs -> List.exists has_type_vars typs
+  | Apply (_, typs) -> List.exists has_type_vars typs
 end
 
 
@@ -93,6 +108,11 @@ module Descriptor = struct
   let mem (x : BoundName.t) (d : t) : bool =
     Set.exists (fun y -> x = Id.bound_name y) d
 
+  let partition (x : BoundName.t) (d : t) : t * t =
+    Set.partition (fun y -> x = Id.bound_name y) d
+
+  let choose (d : t) : Id.t option = Set.choose_opt d
+
   let remove (x : BoundName.t) (d : t) : t =
     Set.filter (fun y -> x <> Id.bound_name y) d
 
@@ -138,6 +158,14 @@ module Descriptor = struct
 
   let resolve_open (name_list : Name.t list) (d : t) : t =
     Set.map (Id.map (BoundName.resolve_open name_list)) d
+
+  let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
+    d |> Set.map (fun (Type (x, typs)) ->
+      Type (x, List.map (PureType.map_type_vars vars_map) typs))
+
+  let has_type_vars (d : t) : bool =
+    d |> Set.exists (fun (Type (x, typs)) ->
+      List.exists PureType.has_type_vars typs)
 end
 
 module Type = struct
@@ -223,6 +251,17 @@ module Type = struct
     match typ with
     | Pure -> Pure
     | Arrow (d, typ) -> Arrow (Descriptor.resolve_open x d, resolve_open x typ)
+
+  let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
+    match typ with
+    | Pure -> Pure
+    | Arrow (d, typ) ->
+      Arrow (Descriptor.map_type_vars vars_map d, map_type_vars vars_map typ)
+
+  let rec has_type_vars (typ : t) : bool =
+    match typ with
+    | Pure -> false
+    | Arrow (d, typ) -> Descriptor.has_type_vars d || has_type_vars typ
 end
 
 type t = { descriptor : Descriptor.t; typ : Type.t }
@@ -249,3 +288,10 @@ let union (effects : t list) : t =
   { descriptor =
       Descriptor.union @@ List.map (fun effect -> effect.descriptor) effects;
     typ = Type.union (List.map (fun effect -> effect.typ) effects) }
+
+let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
+  { descriptor = Descriptor.map_type_vars vars_map effect.descriptor;
+    typ = Type.map_type_vars vars_map effect.typ }
+
+let has_type_vars (effect : t) : bool =
+  Descriptor.has_type_vars effect.descriptor || Type.has_type_vars effect.typ
