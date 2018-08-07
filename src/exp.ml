@@ -194,7 +194,8 @@ let rec open_function (e : 'a t) : CoqName.t list * 'a t =
 let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   (e : expression) : (Loc.t * Type.t) t =
   let l = Loc.of_location e.exp_loc in
-  let typ = Type.of_type_expr ~allow_anon:true env l e.exp_type in
+  let (typ, typ_vars, _) =
+      Type.of_type_expr_new_typ_vars env l typ_vars e.exp_type in
   let a = (l, typ) in
   match e.exp_desc with
   | Texp_ident (path, _, _) ->
@@ -242,13 +243,15 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
-          let t_exn = Type.of_type_expr ~allow_anon:true env l_exn e_x.exp_type in
+          let (t_exn, typ_vars, _) =
+            Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
           let x = PathName.of_loc x in
           let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
           let x = FullEnvi.Var.bound l_exn x env in
           let typs = List.map (fun e_arg ->
-            Type.of_type_expr ~allow_anon:true env
-              (Loc.of_location e_arg.exp_loc) e_arg.exp_type) es in
+            let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
+              (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
+            t_arg) es in
           let es = List.map (of_expression env typ_vars) es in
           Apply (a, Variable ((l_exn, t_exn), x),
             [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
@@ -397,7 +400,8 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     (p, of_expression env typ_vars e)) in
   let bound_x = FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] x) env in
   let l = Loc.of_location p1.pat_loc in
-  let typ_x = Type.of_type_expr ~allow_anon:true env l p1.pat_type in
+  let (typ_x, _, _) =
+    Type.of_type_expr_new_typ_vars env l typ_vars p1.pat_type in
   (x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
