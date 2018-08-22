@@ -270,6 +270,20 @@ module Type = struct
     match typ with
     | Pure -> false
     | Arrow (d, typ) -> Descriptor.has_type_vars d || has_type_vars typ
+
+  let rec split_calls (typ : t) (e_xs : 'a list)
+    : ('a list * Descriptor.t) list =
+    match e_xs with
+    | [] -> []
+    | e_x :: e_xs ->
+      let e_xs = split_calls (return_type typ 1) e_xs in
+      let d = return_descriptor typ 1 in
+      if Descriptor.is_pure d then
+        match e_xs with
+        | [] -> [([e_x], Descriptor.pure)]
+        | (e_xs', d') :: e_xs -> ((e_x :: e_xs'), d') :: e_xs
+      else
+        ([e_x], d) :: e_xs
 end
 
 type t = { descriptor : Descriptor.t; typ : Type.t }

@@ -772,20 +772,8 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e_xs = List.map (effects env) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
     if effects_e_xs |> List.for_all (fun effect_e_x ->
-      Effect.Type.is_pure effect_e_x.Effect.typ) then
-      let rec e_xss typ e_xs : ('b t list * Effect.Descriptor.t) list =
-        match e_xs with
-        | [] -> []
-        | e_x :: e_xs ->
-          let e_xss = e_xss (Effect.Type.return_type typ 1) e_xs in
-          let d = Effect.Type.return_descriptor typ 1 in
-          if Effect.Descriptor.is_pure d then
-            match e_xss with
-            | [] -> [([e_x], Effect.Descriptor.pure)]
-            | (e_xs', d') :: e_xss -> ((e_x :: e_xs'), d') :: e_xss
-          else
-            ([e_x], d) :: e_xss in
-      let e_xss = e_xss effect_e_f.Effect.typ e_xs in
+        Effect.Type.is_pure effect_e_x.Effect.typ) then
+      let e_xss = Effect.Type.split_calls effect_e_f.Effect.typ e_xs in
       List.fold_left (fun e (e_xs, d) ->
         let effect_e = snd (annotation e) in
         let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
