@@ -731,8 +731,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         let get_var p b =
           FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
         let var a path base = Variable (a, get_var path base) in
-        let state_dsc_eff = type_effect
-          (Effect.PureType.Apply (state_dsc', [])) in
+        let state_dsc_eff = Effect.Descriptor.singleton state_dsc' [] in
         let open Effect.Type in let open Effect.Descriptor in
         let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
         Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),

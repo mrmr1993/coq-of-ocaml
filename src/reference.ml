@@ -61,4 +61,4 @@ let to_coq (r : 'a t) : SmartPrint.t =
     !^ "OCaml.Effect.State.init" ^^ Exp.to_coq true r.expr ^-^ !^ ".")
   ^^ newline ^^
   nest (!^ "Definition" ^^ CoqName.to_coq r.state_name ^^ !^ ":=" ^^
-    !^ "nat" ^-^ !^ ".")
+    !^ "OCaml.Effect.State.state nat" ^-^ !^ ".")
