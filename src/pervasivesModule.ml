@@ -170,7 +170,14 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
-  |> Var.add ["Pervasives"] "ref" Pure
+  |> Function.add ["Pervasives"] "ref"
+    (Arrow (typ_d 0, Pure))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Variable "0",
+        Effect.PureType.Apply
+          ({ BoundName.depth = 0;
+              path_name = PathName.of_name ["Effect"; "State"] "state" },
+            [Effect.PureType.Variable "0"])))
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open

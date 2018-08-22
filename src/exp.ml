@@ -768,24 +768,6 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         let vars_map = Type.unify ptyp_f typ_f in
         (l, Effect.map_type_vars vars_map eff)
       | None -> (l, eff)) in
-    (* Add an effect for the type, if there is one *)
-    let e_f = match type_effect_of_exp e with
-      | None -> e_f
-      | Some e_e -> update_annotation (fun (l, eff) ->
-          let rec change_last_eff typ eff =
-            match typ with
-            | Type.Arrow (_, (Arrow _ as typ)) ->
-              begin match eff with
-              | Effect.Type.Arrow (desc, eff) ->
-                Effect.Type.Arrow (desc, change_last_eff typ eff)
-              | Effect.Type.Pure ->
-                Effect.Type.Arrow (Effect.Descriptor.pure,
-                  change_last_eff typ Effect.Type.Pure)
-              end
-            | Type.Arrow (_, typ) -> Effect.Type.union [eff; e_e]
-            | _ -> eff in
-          (l, {eff with
-            Effect.typ = change_last_eff typ_f eff.Effect.typ})) e_f in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
     let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
