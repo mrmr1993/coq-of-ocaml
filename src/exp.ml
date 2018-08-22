@@ -757,21 +757,20 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (es, effect) = compound es in
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
-    let typ_f = snd @@ annotation e_f in
-    let ptyp_f = function_type env e_f in
-    let e_f = effects env e_f in
-    (* Resolve effects with type variables *)
-    let e_f = e_f |> update_annotation (fun (l, eff) ->
-      match ptyp_f with
-      | Some ptyp_f ->
-        let vars_map = Type.unify ptyp_f typ_f in
-        (l, Effect.map_type_vars vars_map eff)
-      | None -> (l, eff)) in
+    let vars_map = match function_type env e_f with
+      | Some ptyp_f -> Type.unify ptyp_f (snd (annotation e_f))
+      | None -> Name.Map.empty in
+    let e_f = e_f
+      |> effects env
+      |> update_annotation (fun (l, eff) ->
+        (l, Effect.map_type_vars vars_map eff)) in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
-    let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
-    if effects_e_xs |> List.for_all (fun effect_e_x ->
-        Effect.Type.is_pure effect_e_x.Effect.typ) then
+    let arguments_are_pure = e_xs
+      |> List.map (fun e_x -> snd (annotation e_x))
+      |> List.for_all (fun effect_e_x ->
+        Effect.Type.is_pure effect_e_x.Effect.typ) in
+    if arguments_are_pure then
       let e_xss = Effect.Type.split_calls effect_e_f.Effect.typ e_xs in
       List.fold_left (fun e (e_xs, d) ->
         let effect_e = snd (annotation e) in
