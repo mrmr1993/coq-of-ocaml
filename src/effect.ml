@@ -77,13 +77,11 @@ module Descriptor = struct
   module Set = Set.Make (struct
       type t = Id.t
 
-      (* Compare on the base name first, for better stability across modules. *)
       let compare x y =
         match x, y with
-        | Id.Type ({path_name={base=a}}, _),
-          Id.Type ({path_name={base=b}}, _) ->
-          let cmp = compare a b in
-          if cmp == 0 then compare x y else cmp
+        | Id.Type (a, ta), Id.Type (b, tb) ->
+          let cmp = BoundName.stable_compare a b in
+          if cmp == 0 then compare ta tb else cmp
 
     end)
   type t = Set.t
