@@ -74,7 +74,7 @@ module Descriptor = struct
       match x with
       | Type (x, _) -> x
   end
-  module Set = Set.Make (struct
+  module IdSet = Set.Make (struct
       type t = Id.t
 
       let compare x y =
@@ -84,53 +84,57 @@ module Descriptor = struct
           if cmp == 0 then compare ta tb else cmp
 
     end)
-  type t = Set.t
+  module BnSet = Set.Make (struct
+      type t = BoundName.t
+      let compare x y = BoundName.stable_compare x y
+    end)
+  type t = IdSet.t * BnSet.t
 
   let pp (d : t) : SmartPrint.t =
-    Set.elements d |> OCaml.list (fun id ->
-      match id with
-      | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs)))
+    let id_els = IdSet.elements (fst d) |> List.map (fun id ->
+        match id with
+        | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs))) in
+    let bn_els = BnSet.elements (snd d) |> List.map BoundName.pp in
+    OCaml.list (fun x -> x) @@ id_els @ bn_els
 
-  let pure : t = Set.empty
+  let pure : t = (IdSet.empty, BnSet.empty)
 
-  let is_pure (d : t) : bool = Set.is_empty d
+  let is_pure (d : t) : bool =
+    IdSet.is_empty (fst d) && BnSet.is_empty (snd d)
 
-  let eq (d1 : t) (d2 : t) : bool = Set.equal d1 d2
+  let eq (d1 : t) (d2 : t) : bool =
+    IdSet.equal (fst d1) (fst d2) && BnSet.equal (snd d1) (snd d2)
 
   let singleton (x : BoundName.t) (typs : PureType.t list) : t =
-    Set.singleton (Id.Type (x, typs))
+    if typs = [] then
+      (IdSet.empty, BnSet.singleton x)
+    else
+      (IdSet.singleton (Id.Type (x, typs)), BnSet.empty)
 
   let union (ds : t list) : t =
-    List.fold_left (fun d1 d2 -> Set.fold Set.add d1 d2) pure ds
-
-  let mem (x : BoundName.t) (d : t) : bool =
-    Set.exists (fun y -> x = Id.bound_name y) d
-
-  let partition (x : BoundName.t) (d : t) : t * t =
-    Set.partition (fun y -> x = Id.bound_name y) d
-
-  let choose (d : t) : Id.t option = Set.choose_opt d
+    List.fold_left (fun (d1_id, d1_bn) (d2_id, d2_bn) ->
+      (IdSet.fold IdSet.add d1_id d2_id, BnSet.fold BnSet.add d1_bn d2_bn)
+    ) pure ds
 
   let remove (x : BoundName.t) (d : t) : t =
-    Set.filter (fun y -> x <> Id.bound_name y) d
+    (fst d, BnSet.remove x (snd d))
 
-  let filter (f : Id.t -> bool) (d : t) : t = Set.filter f d
-
-  let elements (d : t) : BoundName.t list =
-    Set.elements d |> List.map Id.bound_name
+  let elements (d : t) : BoundName.t list = BnSet.elements (snd d)
 
   let index (x : BoundName.t) (d : t) : int =
     let rec find_index l f =
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index (Set.elements d) (fun y -> x = Id.bound_name y)
+    find_index (BnSet.elements (snd d)) (fun y -> x = y)
 
   let to_coq (d : t) : SmartPrint.t =
-    Set.elements d |> OCaml.list (fun x ->
+    let id_els = IdSet.elements (fst d) |> List.map (fun x ->
       match x with
       | Id.Type (x, typs) ->
-        PureType.to_coq false (PureType.Apply (x, typs)))
+        PureType.to_coq false (PureType.Apply (x, typs))) in
+    let bn_els = BnSet.elements (snd d) |> List.map BoundName.to_coq in
+    OCaml.list (fun x -> x) @@ id_els @ bn_els
 
   let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
     let rec aux xs1 xs2 : bool list =
@@ -143,26 +147,32 @@ module Descriptor = struct
           false :: aux xs1 xs2'
       | (_ :: _, []) ->
         failwith "Must be a subset to display the subset." in
-    let bs = aux (Set.elements d1) (Set.elements d2) in
+    let bs_id = aux (IdSet.elements (fst d1)) (IdSet.elements (fst d2)) in
+    let bs_bn = aux (BnSet.elements (snd d1)) (BnSet.elements (snd d2)) in
+    let bs = bs_id @ bs_bn in
     brakets (separate (!^ ";") (List.map (fun _ -> !^ "_") bs)) ^^
     double_quotes (separate empty
       (List.map (fun b -> if b then !^ "1" else !^ "0") bs))
 
+  let map (f : BoundName.t -> BoundName.t) (d : t) : t =
+    (IdSet.map (Id.map f) (fst d), BnSet.map f (snd d))
+
   let depth_lift (d : t) : t =
-    Set.map (Id.map BoundName.depth_lift) d
+    map BoundName.depth_lift d
 
   let leave_prefix (name : Name.t option) (d : t) : t =
-    Set.map (Id.map (BoundName.leave_prefix name)) d
+    map (BoundName.leave_prefix name) d
 
   let resolve_open (name_list : Name.t list) (d : t) : t =
-    Set.map (Id.map (BoundName.resolve_open name_list)) d
+    map (BoundName.resolve_open name_list) d
 
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    d |> Set.map (fun (Type (x, typs)) ->
+    (fst d |> IdSet.map (fun (Type (x, typs)) ->
       Type (x, List.map (PureType.map_type_vars vars_map) typs))
+    , snd d)
 
   let has_type_vars (d : t) : bool =
-    d |> Set.exists (fun (Type (x, typs)) ->
+    fst d |> IdSet.exists (fun (Type (x, typs)) ->
       List.exists PureType.has_type_vars typs)
 end
 
