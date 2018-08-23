@@ -5,11 +5,7 @@ Value
   (non_rec, @.,
     [
       ((plus_one, [ A ], [ (x, A) ],
-        Monad
-          ([
-            (OCaml.Effect.State.state/3, Z/3);
-            (OCaml.Effect.State.state/3, r_state/0)
-          ], Type (Z/3))),
+        Monad ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (Z/3))),
         Match
           (?, Variable (?, x/0),
             [
@@ -29,8 +25,7 @@ Value
                                 [
                                   (OCaml.Effect.State.state/3,
                                     Z/3);
-                                  (OCaml.Effect.State.state/3,
-                                    r_state/0)
+                                  r_state/0
                                 ],
                                 Apply
                                   (?,
@@ -46,14 +41,12 @@ Value
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    r_state/0)
+                                  r_state/0
                                 ],
                                 [
                                   (OCaml.Effect.State.state/3,
                                     Z/3);
-                                  (OCaml.Effect.State.state/3,
-                                    r_state/0)
+                                  r_state/0
                                 ],
                                 Apply
                                   (?,
@@ -79,8 +72,7 @@ Value
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (4,
@@ -121,9 +113,9 @@ Value
       ((fail, [ A; B ], [ (x, A) ],
         Monad
           ([
+            (OCaml.Effect.State.state/3, string/3);
             OCaml.Failure/3;
-            (OCaml.Effect.State.state/3, s_state/0);
-            (OCaml.Effect.State.state/3, string/3)
+            s_state/0
           ], B)),
         Match
           (?, Variable (?, x/0),
@@ -135,16 +127,14 @@ Value
                       (?,
                         [
                           (OCaml.Effect.State.state/3,
-                            s_state/0);
-                          (OCaml.Effect.State.state/3,
-                            string/3)
+                            string/3);
+                          s_state/0
                         ],
                         [
+                          (OCaml.Effect.State.state/3,
+                            string/3);
                           OCaml.Failure/3;
-                          (OCaml.Effect.State.state/3,
-                            s_state/0);
-                          (OCaml.Effect.State.state/3,
-                            string/3)
+                          s_state/0
                         ],
                         Bind
                           (?,
@@ -158,9 +148,8 @@ Value
                                     ],
                                     [
                                       (OCaml.Effect.State.state/3,
-                                        s_state/0);
-                                      (OCaml.Effect.State.state/3,
-                                        string/3)
+                                        string/3);
+                                      s_state/0
                                     ],
                                     Apply
                                       (?,
@@ -176,14 +165,12 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        s_state/0)
+                                      s_state/0
                                     ],
                                     [
                                       (OCaml.Effect.State.state/3,
-                                        s_state/0);
-                                      (OCaml.Effect.State.state/3,
-                                        string/3)
+                                        string/3);
+                                      s_state/0
                                     ],
                                     Apply
                                       (?,
@@ -208,9 +195,8 @@ Value
                                 ],
                                 [
                                   (OCaml.Effect.State.state/3,
-                                    s_state/0);
-                                  (OCaml.Effect.State.state/3,
-                                    string/3)
+                                    string/3);
+                                  s_state/0
                                 ],
                                 Apply
                                   (8,
@@ -230,11 +216,10 @@ Value
                           OCaml.Failure/3
                         ],
                         [
+                          (OCaml.Effect.State.state/3,
+                            string/3);
                           OCaml.Failure/3;
-                          (OCaml.Effect.State.state/3,
-                            s_state/0);
-                          (OCaml.Effect.State.state/3,
-                            string/3)
+                          s_state/0
                         ],
                         Apply
                           (8,
@@ -255,10 +240,7 @@ Value
     [
       ((reset, [ A ], [ (x, A) ],
         Monad
-          ([
-            (OCaml.Effect.State.state/3, Z/3);
-            (OCaml.Effect.State.state/3, r_state/0)
-          ], Type (unit/3))),
+          ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (unit/3))),
         Match
           (?, Variable (?, x/0),
             [
@@ -276,8 +258,7 @@ Value
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (?,
@@ -293,14 +274,12 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (?,
@@ -326,8 +305,7 @@ Value
                         [
                           (OCaml.Effect.State.state/3,
                             Z/3);
-                          (OCaml.Effect.State.state/3,
-                            r_state/0)
+                          r_state/0
                         ],
                         Apply
                           (11,
@@ -351,10 +329,7 @@ Value
     [
       ((incr, [ A ], [ (x, A) ],
         Monad
-          ([
-            (OCaml.Effect.State.state/3, Z/3);
-            (OCaml.Effect.State.state/3, r_state/0)
-          ], Type (unit/3))),
+          ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (unit/3))),
         Match
           (?, Variable (?, x/0),
             [
@@ -372,8 +347,7 @@ Value
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (?,
@@ -389,14 +363,12 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (?,
@@ -430,8 +402,7 @@ Value
                                         [
                                           (OCaml.Effect.State.state/3,
                                             Z/3);
-                                          (OCaml.Effect.State.state/3,
-                                            r_state/0)
+                                          r_state/0
                                         ],
                                         Apply
                                           (?,
@@ -447,14 +418,12 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            r_state/0)
+                                          r_state/0
                                         ],
                                         [
                                           (OCaml.Effect.State.state/3,
                                             Z/3);
-                                          (OCaml.Effect.State.state/3,
-                                            r_state/0)
+                                          r_state/0
                                         ],
                                         Apply
                                           (?,
@@ -480,8 +449,7 @@ Value
                                     [
                                       (OCaml.Effect.State.state/3,
                                         Z/3);
-                                      (OCaml.Effect.State.state/3,
-                                        r_state/0)
+                                      r_state/0
                                     ],
                                     Apply
                                       (14,
@@ -521,8 +489,7 @@ Value
                             [
                               (OCaml.Effect.State.state/3,
                                 Z/3);
-                              (OCaml.Effect.State.state/3,
-                                r_state/0)
+                              r_state/0
                             ],
                             Apply
                               (14,
