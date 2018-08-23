@@ -28,6 +28,9 @@ module Value = struct
         | _ :: _ ->
           braces @@ group (separate space (List.map Name.to_coq header.Exp.Header.typ_vars) ^^
           !^ ":" ^^ !^ "Type")) ^^
+        group (separate space (header.Exp.Header.implicit_args
+          |> List.map (fun (x, x_typ) ->
+            braces (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
         group (separate space (header.Exp.Header.args |> List.map (fun (x, t) ->
           parens @@ nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
@@ -189,11 +192,9 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (TypeDefinition.update_env typ_def Effect.Type.Pure env,
        TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
-      let id = Effect.Descriptor.Id.Loc loc in
-      (Exception.update_env_with_effects exn env id, Exception (loc, exn))
+      (Exception.update_env_with_effects exn env, Exception (loc, exn))
     | Reference (loc, r) ->
-      let id = Effect.Descriptor.Id.Loc loc in
-      let (env, r) = Reference.update_env_with_effects r env id in
+      let (env, r) = Reference.update_env_with_effects r env in
       (env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
@@ -224,7 +225,9 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
         Exp.Definition.cases =
           def.Exp.Definition.cases |> List.map (fun (header, e) ->
             let typ = Type.monadise header.Exp.Header.typ (snd (Exp.annotation e)) in
-        let header = { header with Exp.Header.typ = typ } in
+        let (implicit_args, typ) = Type.allocate_implicits_for_monad
+          header.Exp.Header.implicit_args header.Exp.Header.args typ in
+        let header = { header with Exp.Header.typ = typ; implicit_args } in
         let env = Exp.Header.env_in_header header env_in_def () in
         let e = Exp.monadise env e in
         (header, e)) } in

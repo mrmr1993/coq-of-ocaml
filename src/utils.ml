@@ -39,3 +39,14 @@ let rec mix_map2 (f : 'a -> bool) (g : 'a -> 'c) (h : 'a -> 'b -> 'c)
       | b :: l2' -> h a b :: mix_map2 f g h l1' l2'
     else
       g a :: mix_map2 f g h l1' l2
+
+let find_index (f : 'a -> bool) (l : 'a list) : int =
+  let rec aux l c =
+    match l with
+    | [] -> failwith "Not found."
+    | x :: l -> if f x then c else aux l (c+1) in
+  aux l 0
+
+let to_coq_list (l : SmartPrint.t list) : SmartPrint.t =
+  let open SmartPrint in
+  brakets @@ separate (!^ ";") l

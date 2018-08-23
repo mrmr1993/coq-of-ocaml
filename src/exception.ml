@@ -33,15 +33,15 @@ let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   |> FullEnvi.Var.assoc [] raise_name coq_raise_name ()
 
 let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
-  (id : Effect.Descriptor.Id.t) : Effect.Type.t FullEnvi.t =
+  : Effect.Type.t FullEnvi.t =
   let (name, coq_name) = CoqName.assoc_names exn.name in
   let (raise_name, coq_raise_name) = CoqName.assoc_names exn.raise_name in
   let env = FullEnvi.Descriptor.assoc [] name coq_name env in
+  let bound_effect = FullEnvi.Descriptor.bound Loc.Unknown
+    (PathName.of_name [] name) env in
   let effect_typ =
     Effect.Type.Arrow (
-      Effect.Descriptor.singleton
-        id
-        (FullEnvi.Descriptor.bound Loc.Unknown (PathName.of_name [] name) env),
+      Effect.Descriptor.singleton bound_effect [],
       Effect.Type.Pure) in
   FullEnvi.Var.assoc [] raise_name coq_raise_name effect_typ env
 

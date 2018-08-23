@@ -120,6 +120,25 @@ let rec pure_type (typ : t) : Effect.PureType.t =
   | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
   | Monad (x, typ) -> pure_type typ
 
+let rec unify (ptyp : Effect.PureType.t) (typ : t)
+  : Effect.PureType.t Name.Map.t =
+  match ptyp, typ with
+  | Effect.PureType.Variable x, _ ->
+    Name.Map.singleton x (pure_type typ)
+  | _, Monad (_, typ) -> unify ptyp typ
+  | Effect.PureType.Arrow (ptyp1, ptyp2), Arrow (typ1, typ2) ->
+    Name.Map.union (fun _ typ _ -> Some typ)
+      (unify ptyp1 typ1) (unify ptyp2 typ2)
+  | Effect.PureType.Tuple ptyps, Tuple typs ->
+    List.fold_left2 (fun var_map ptyp typ ->
+        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
+      Name.Map.empty ptyps typs
+  | Effect.PureType.Apply (px, ptyps), Apply (x, typs) ->
+    List.fold_left2 (fun var_map ptyp typ ->
+        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
+      Name.Map.empty ptyps typs
+  | _, _ -> failwith "Could not unify types"
+
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with
   | Variable x -> Name.Set.singleton x
@@ -141,6 +160,28 @@ let rec open_type (typ : t) (n : int) : t list * t =
       let (typs, typ) = open_type typ2 (n - 1) in
       (typ1 :: typs, typ)
     | _ -> failwith "Expected an arrow type."
+
+let allocate_implicits_for_monad (implicit_args : (CoqName.t * 'a) list)
+  (args : (CoqName.t * 'a) list) (typ : t) : (CoqName.t * 'a) list * t =
+  match typ with
+  | Monad (d, typ) ->
+    if Effect.Descriptor.should_carry d then
+      let args' = implicit_args @ args in
+      let args' = args' |> List.map (fun (name, _) ->
+        snd (CoqName.assoc_names name)) in
+      let args_set = Name.Set.of_list args' in
+      let rec find_name n =
+        let name = "es_in" ^ string_of_int n in
+        if Name.Set.mem name args_set then find_name (n+1) else name in
+      let name = if Name.Set.mem "es_in" args_set then
+          find_name 1
+        else "es_in" in
+      let d = Effect.Descriptor.set_unioned_arg name d in
+      let arg = (CoqName.of_names name name, Variable "list Effect.t") in
+      (arg :: implicit_args, Monad (d, typ))
+    else
+      (implicit_args, Monad (d, typ))
+  | _ -> (implicit_args, typ)
 
 let monadise (typ : t) (effect : Effect.t) : t =
   let rec aux (typ : t) (effect_typ : Effect.Type.t) : t =

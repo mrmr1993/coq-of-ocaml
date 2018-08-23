@@ -83,3 +83,16 @@ let multiple_returns_test () =
   let f3 = f2 7 in
   let f4 = f3 s in
   (!f4, s)
+
+let type_vars_test (x : 'a ref) (y : 'b ref) (a : 'a) (b : 'b) =
+  x := a;
+  y := b
+
+let resolves_test1 (x : 'a ref) (a : 'a) (b : 'a) =
+  type_vars_test x x a b
+
+let resolves_test2 (x : int ref) (y : 'b ref) (a : int) (b : 'b) =
+  type_vars_test x y a b
+
+let resolves_test3 (x : int ref) (y : int ref) (a : int) (b : int) =
+  type_vars_test x y a b

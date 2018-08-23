@@ -8,6 +8,7 @@ module Header = struct
   type t = {
     name : CoqName.t;
     typ_vars : Name.t list;
+    implicit_args : (CoqName.t * Type.t) list;
     args : (CoqName.t * Type.t) list;
     typ : Type.t }
 
@@ -15,11 +16,13 @@ module Header = struct
     OCaml.tuple [
       CoqName.pp header.name; OCaml.list Name.pp header.typ_vars;
       OCaml.list (fun (x, typ) -> OCaml.tuple [CoqName.pp x; Type.pp typ])
-        header.args;
+        (header.implicit_args @ header.args);
       Type.pp header.typ]
 
   let env_in_header (header : t) (env : 'a FullEnvi.t) (v : 'a)
     : 'a FullEnvi.t =
+    (* NOTE: Don't include implicit arguments here: user code should not be
+       able to refer to them. *)
     List.fold_left (fun env (x, _) ->
         let (name, coq_name) = CoqName.assoc_names x in
         FullEnvi.Var.assoc [] name coq_name v env)
@@ -194,7 +197,8 @@ let rec open_function (e : 'a t) : CoqName.t list * 'a t =
 let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   (e : expression) : (Loc.t * Type.t) t =
   let l = Loc.of_location e.exp_loc in
-  let typ = Type.of_type_expr ~allow_anon:true env l e.exp_type in
+  let (typ, typ_vars, _) =
+      Type.of_type_expr_new_typ_vars env l typ_vars e.exp_type in
   let a = (l, typ) in
   match e.exp_desc with
   | Texp_ident (path, _, _) ->
@@ -242,13 +246,15 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
-          let t_exn = Type.of_type_expr ~allow_anon:true env l_exn e_x.exp_type in
+          let (t_exn, typ_vars, _) =
+            Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
           let x = PathName.of_loc x in
           let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
           let x = FullEnvi.Var.bound l_exn x env in
           let typs = List.map (fun e_arg ->
-            Type.of_type_expr ~allow_anon:true env
-              (Loc.of_location e_arg.exp_loc) e_arg.exp_type) es in
+            let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
+              (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
+            t_arg) es in
           let es = List.map (of_expression env typ_vars) es in
           Apply (a, Variable ((l_exn, t_exn), x),
             [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
@@ -397,7 +403,8 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     (p, of_expression env typ_vars e)) in
   let bound_x = FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] x) env in
   let l = Loc.of_location p1.pat_loc in
-  let typ_x = Type.of_type_expr ~allow_anon:true env l p1.pat_type in
+  let (typ_x, _, _) =
+    Type.of_type_expr_new_typ_vars env l typ_vars p1.pat_type in
   (x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
@@ -446,6 +453,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     let header = {
       Header.name = x;
       typ_vars = Name.Set.elements new_typ_vars;
+      implicit_args = [];
       args = List.combine args_names args_typs;
       typ = e_body_typ } in
     (header, e_body)) in
@@ -645,7 +653,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       let env = Header.env_in_header header env_after_def' () in
       let rec_typ = List.fold_right (fun (_, arg_typ) typ ->
           Type.Arrow (arg_typ, typ))
-        header.Header.args (snd (annotation rec_e)) in
+        header.Header.args header.Header.typ in
       let e = Apply ((Loc.Unknown, snd (annotation rec_e)),
         var (CoqName.ocaml_name name_rec) (Type.Arrow (nat_type, rec_typ)) env,
         Apply ((Loc.Unknown, nat_type),
@@ -668,12 +676,19 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     let env = Definition.env_after_def def env in
     (env, [def])
 
+let rec function_type (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
+  : Effect.PureType.t option =
+  match e with
+  | Variable ((l, typ), x) ->
+    FullEnvi.Function.find x env (Effect.PureType.map BoundName.depth_lift)
+  | _ -> None
+
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
-    singleton (Id.Type typ)
-      (FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env) in
+    singleton (FullEnvi.Descriptor.bound Loc.Unknown
+        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env)
+      [typ] in
   let type_effect_of_exp e =
     if Type.is_function @@ snd @@ annotation e ||
         Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
@@ -720,8 +735,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         let get_var p b =
           FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
         let var a path base = Variable (a, get_var path base) in
-        let state_dsc_eff = type_effect
-          (Effect.PureType.Apply (state_dsc', [])) in
+        let state_dsc_eff = Effect.Descriptor.singleton state_dsc' [] in
         let open Effect.Type in let open Effect.Descriptor in
         let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
         Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
@@ -747,77 +761,21 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (es, effect) = compound es in
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
-    let typ_f = snd @@ annotation e_f in
-    let e_f = effects env e_f in
-    (* Resolve effects with type variables *)
-    (* FIXME: This is a hack to handle the type parameters in
-       OCaml.Effect.State.read/write. *)
-    let e_f = update_annotation (fun (l, eff) ->
-      (l, { eff with Effect.typ = Effect.Type.map (fun i desc ->
-        let type_desc = Effect.Descriptor.filter (fun id ->
-          match id with
-          | Effect.Descriptor.Id.Type (Effect.PureType.Variable _) -> true
-          | _ -> false) desc in
-          if Effect.Descriptor.is_pure type_desc then
-            desc
-          else
-            Effect.Descriptor.Map.fold (fun key' eff desc ->
-              let key = match key' with
-              | Effect.Descriptor.Id.Type (Effect.PureType.Variable key) ->
-                Effect.Descriptor.Id.Type
-                  begin match int_of_string_opt key with
-                  | Some i ->
-                    begin match List.nth_opt e_xs i with
-                    | Some e_x ->
-                      Effect.PureType.first_param @@ Type.pure_type @@
-                        snd @@ annotation e_x
-                    | None ->
-                      Effect.PureType.Variable
-                        (string_of_int (i - List.length e_xs))
-                    end
-                  | None -> Effect.PureType.Variable key
-                  end
-              | _ -> key' in
-              desc
-              |> Effect.Descriptor.Map.remove key'
-              |> Effect.Descriptor.Map.add key eff) type_desc desc)
-        eff.Effect.typ })) e_f in
-    (* Add an effect for the type, if there is one *)
-    let e_f = match type_effect_of_exp e with
-      | None -> e_f
-      | Some e_e -> update_annotation (fun (l, eff) ->
-          let rec change_last_eff typ eff =
-            match typ with
-            | Type.Arrow (_, (Arrow _ as typ)) ->
-              begin match eff with
-              | Effect.Type.Arrow (desc, eff) ->
-                Effect.Type.Arrow (desc, change_last_eff typ eff)
-              | Effect.Type.Pure ->
-                Effect.Type.Arrow (Effect.Descriptor.pure,
-                  change_last_eff typ Effect.Type.Pure)
-              end
-            | Type.Arrow (_, typ) -> Effect.Type.union [eff; e_e]
-            | _ -> eff in
-          (l, {eff with
-            Effect.typ = change_last_eff typ_f eff.Effect.typ})) e_f in
+    let vars_map = match function_type env e_f with
+      | Some ptyp_f -> Type.unify ptyp_f (snd (annotation e_f))
+      | None -> Name.Map.empty in
+    let e_f = e_f
+      |> effects env
+      |> update_annotation (fun (l, eff) ->
+        (l, Effect.map_type_vars vars_map eff)) in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
-    let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
-    if effects_e_xs |> List.for_all (fun effect_e_x ->
-      Effect.Type.is_pure effect_e_x.Effect.typ) then
-      let rec e_xss typ e_xs : ('b t list * Effect.Descriptor.t) list =
-        match e_xs with
-        | [] -> []
-        | e_x :: e_xs ->
-          let e_xss = e_xss (Effect.Type.return_type typ 1) e_xs in
-          let d = Effect.Type.return_descriptor typ 1 in
-          if Effect.Descriptor.is_pure d then
-            match e_xss with
-            | [] -> [([e_x], Effect.Descriptor.pure)]
-            | (e_xs', d') :: e_xss -> ((e_x :: e_xs'), d') :: e_xss
-          else
-            ([e_x], d) :: e_xss in
-      let e_xss = e_xss effect_e_f.Effect.typ e_xs in
+    let arguments_are_pure = e_xs
+      |> List.map (fun e_x -> snd (annotation e_x))
+      |> List.for_all (fun effect_e_x ->
+        Effect.Type.is_pure effect_e_x.Effect.typ) in
+    if arguments_are_pure then
+      let e_xss = Effect.Type.split_calls effect_e_f.Effect.typ e_xs in
       List.fold_left (fun e (e_xs, d) ->
         let effect_e = snd (annotation e) in
         let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
@@ -845,7 +803,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e1 = effects env e1 in
     let effect1 = snd (annotation e1) in
     let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name effect1.Effect.typ env in
+    let env = if Effect.has_type_vars effect1 then
+      let typ = Type.pure_type typ in
+      FullEnvi.Function.assoc [] name coq_name effect1.Effect.typ typ env
+    else
+      FullEnvi.Var.assoc [] name coq_name effect1.Effect.typ env in
     let e2 = effects env e2 in
     let effect2 = snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [
@@ -939,7 +901,12 @@ and env_after_def_with_effects (env : Effect.Type.t FullEnvi.t)
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
     let (name, coq_name) = CoqName.assoc_names header.Header.name in
-    FullEnvi.Var.assoc [] name coq_name effect_typ env)
+    if Effect.has_type_vars effect then
+      let typ = Type.pure_type @@ List.fold_right (fun (_, arg_typ) typ ->
+        Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
+      FullEnvi.Function.assoc [] name coq_name effect_typ typ env
+    else
+      FullEnvi.Var.assoc [] name coq_name effect_typ env)
     env def.Definition.cases
 
 and effects_of_def_step (env : Effect.Type.t FullEnvi.t)
@@ -1019,7 +986,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       match es' with
       | e_f :: e_xs ->
         let return_descriptor =
-          Effect.Type.return_descriptor effect_f (List.length e_xs) in
+          Effect.Type.return_single_descriptor effect_f (List.length e_xs) in
         lift return_descriptor d (Apply (l, e_f, e_xs))
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Function ((l, _), x, e) ->
@@ -1135,6 +1102,9 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         else braces @@ group (
           separate space (List.map Name.to_coq header.Header.typ_vars) ^^
           !^ ":" ^^ !^ "Type")) ^^
+        group (separate space (header.Header.implicit_args
+          |> List.map (fun (x, x_typ) ->
+            braces (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
         group (separate space (header.Header.args |> List.map (fun (x, x_typ) ->
           parens (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Header.typ ^-^
@@ -1172,5 +1142,25 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         to_coq false e1 ^^ !^ "in" ^^ newline ^^
       to_coq false e2)
   | Lift (_, d1, d2, e) ->
-    Pp.parens paren @@ nest (
-      !^ "lift" ^^ Effect.Descriptor.subset_to_coq d1 d2 ^^ to_coq true e)
+    let (bs, union_lift) = Effect.Lift.compute d1 d2 in
+    let coq = to_coq true e in
+    let coq = match union_lift with
+      | Some (Effect.Lift.Lift (in_list, n)) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "@Union.lift _ _ _" ^^ in_list ^^ OCaml.int n ^^ coq
+      | Some (Effect.Lift.Mix (in_list, out_list)) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "@Union.mix _ _ _ _" ^^ in_list ^^
+          to_coq_list (List.map OCaml.int out_list) ^-^ !^ "%nat" ^^
+          !^ "eq_refl eq_refl" ^^ coq
+      | Some (Effect.Lift.Inject n) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "Union.inject" ^^ OCaml.int n ^^ coq
+      | None -> coq in
+    match bs with
+    | Some bs ->
+      Pp.parens paren @@ nest @@
+        !^ "lift" ^^ to_coq_list (List.map (fun _ -> !^ "_") bs) ^^
+        double_quotes (separate empty
+          (List.map (fun b -> if b then !^ "1" else !^ "0") bs)) ^^ coq
+    | None -> coq

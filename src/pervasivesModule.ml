@@ -5,20 +5,17 @@ open SmartPrint
 
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let descriptor depth (path, base) =
-    let x = PathName.of_name path base in
-    Effect.Descriptor.singleton (Effect.Descriptor.Id.Ether x)
-      { BoundName.path_name = x; depth } in
+    let x = { BoundName.path_name = PathName.of_name path base; depth } in
+    Effect.Descriptor.singleton x [] in
   let d depth xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map (descriptor depth) xs) in
   let typ_d (x : int) : Effect.Descriptor.t =
     let i = string_of_int x in
     Effect.Descriptor.singleton
-      (Effect.Descriptor.Id.Type (Effect.PureType.Variable i))
       { BoundName.depth = 0; BoundName.path_name =
-        (PathName.of_name ["Effect"; "State"] "state") } in
-  let add_exn path base =
-    add_exception_with_effects path base
-      (Effect.Descriptor.Id.Ether (PathName.of_name path base)) in
+        (PathName.of_name ["Effect"; "State"] "state") }
+      [Effect.PureType.Variable i] in
+  let add_exn path base = add_exception_with_effects path base in
   FullEnvi.empty None (fun _ -> failwith "No modules loaded")
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat" Pure
@@ -103,8 +100,27 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   |> Typ.add ["Effect"; "State"] "t" (Arrow (d 0 [["Effect"; "State"], "state"], Pure))
   |> Var.add ["Effect"; "State"] "peekstate" Pure
   |> Var.add ["Effect"; "State"] "global" Pure
-  |> Var.add ["Effect"; "State"] "read" (Arrow (typ_d 0, Pure))
-  |> Var.add ["Effect"; "State"] "write" (Arrow (d 0 [], Arrow (typ_d 0, Pure)))
+  |> Function.add ["Effect"; "State"] "read"
+    (Arrow (typ_d 0, Pure))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Apply
+        ({ BoundName.depth = 0;
+            path_name = PathName.of_name ["Effect"; "State"] "state" },
+          [Effect.PureType.Variable "0"]),
+        Effect.PureType.Variable "0"))
+  |> Function.add ["Effect"; "State"] "write"
+    (Arrow (d 0 [], Arrow (typ_d 0, Pure)))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Apply
+        ({ BoundName.depth = 0;
+            path_name = PathName.of_name ["Effect"; "State"] "state" },
+          [Effect.PureType.Variable "0"]),
+        Effect.PureType.Arrow
+          (Effect.PureType.Variable "0",
+          Effect.PureType.Apply
+            ({ BoundName.depth = 1;
+                path_name = PathName.of_name [] "unit" },
+            []))))
 
   (* Pervasives *)
   (* Exceptions *)
@@ -154,7 +170,14 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
-  |> Var.add ["Pervasives"] "ref" Pure
+  |> Function.add ["Pervasives"] "ref"
+    (Arrow (typ_d 0, Pure))
+    (Effect.PureType.Arrow
+      (Effect.PureType.Variable "0",
+        Effect.PureType.Apply
+          ({ BoundName.depth = 0;
+              path_name = PathName.of_name ["Effect"; "State"] "state" },
+            [Effect.PureType.Variable "0"])))
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open

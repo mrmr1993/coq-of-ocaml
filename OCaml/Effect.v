@@ -82,6 +82,38 @@ Module Effect.
         + exact (fst s2, expand_state ebs s1 (snd s2)).
     Defined.
   End Ebs.
+
+  Module Lens.
+    Fixpoint get_state (n : nat) (es : list t) {struct es}
+      : state es -> S (List.nth n es Effect.nil).
+      destruct es as [ | e es];
+        destruct n as [ | n].
+      - exact (fun _ => tt).
+      - exact (fun _ => tt).
+      - destruct 1 as [s ss].
+        exact s.
+      - destruct 1 as [s ss].
+        exact (get_state n es ss).
+    Defined.
+
+    Fixpoint set_state (n : nat) (es : list t) {struct es}
+      : S (List.nth n es Effect.nil) -> state es -> state es.
+      destruct es as [ | e es].
+      - exact (fun _ ss => ss).
+      - destruct n as [ | n].
+        * exact (fun s ss => (s, snd ss)).
+        * exact (fun s ss => (fst ss, set_state n es s (snd ss))).
+    Defined.
+
+    Fixpoint set_error (n : nat) (es : list t) {struct es}
+      : E (List.nth n es Effect.nil) -> error es.
+      destruct es as [ | e es].
+      - destruct n; destruct 1.
+      - destruct n as [ | n].
+        * exact (fun e => inl e).
+        * exact (fun e => inr (set_error n es e)).
+    Defined.
+  End Lens.
 End Effect.
 
 Module Raw.
@@ -305,6 +337,370 @@ Module Run.
       | inr err => False_rect _ (error_is_empty err)
       end.
 End Run.
+
+Module Union.
+  Open Scope nat.
+
+  Definition INPUT (es_in es_out : list Effect.t) : Type :=
+    forall (n : nat), Effect.S (List.nth n es_out Effect.nil) ->
+      Effect.state es_in -> Effect.state es_in.
+
+  Definition OUTPUT (es_in es_out : list Effect.t) : Type :=
+    forall (n : nat), Effect.state es_in ->
+      Effect.S (List.nth n es_out Effect.nil).
+
+  Definition ERROR (es_in es_out : list Effect.t) : Type :=
+    forall (n : nat), Effect.E (List.nth n es_out Effect.nil) ->
+      Effect.error es_in.
+
+  Definition CORRECT (es_in es_out : list Effect.t)
+    (index_map : list nat) :=
+    List.map (fun n => List.nth n es_in Effect.nil) index_map = es_out.
+
+  Definition IN_RANGE (es_in es_out : list Effect.t)
+    (index_map : list nat) :=
+    let l := length es_in in
+    List.map (fun x => S x - l) index_map =
+    List.map (fun _ => 0) index_map.
+
+  (** Describes a union of effects.
+      [index_map] describes how to get each effect in [es_out] from an
+      effect in [es_in]. This allows aliases for the same effects to
+      appear multiple times in [es_out], backed by a single effect in
+      [es_in], so that effects containing type variables can resolve to
+      the same effect as necessary.
+
+      This has a few quirks:
+      - The input and output effect lists need to be parameters to
+        make typechecking work correctly. This means that code using
+        it must provide a parameter for [es_in], which will be inferred
+        at the callsite.
+      - There are two proofs to make typechecking work: [index_correct]
+        and [index_in_range]. To keep these both as unintrusive as
+        possible, they are both equality proofs, so passing [eq_refl]
+        should be enough.
+      - The [input], [output], and [error] functions only discharge a
+        single effect from the union. This means that all low-level
+        functions *MUST* only use a single unionable effect or manually
+        perform the discharges as necessary.
+   *)
+  Record t (es_in es_out : list Effect.t) := {
+    index_map : list nat;
+    index_correct : CORRECT es_in es_out index_map;
+    index_in_range : IN_RANGE es_in es_out index_map;
+    input : INPUT es_in es_out;
+    output : OUTPUT es_in es_out;
+    error : ERROR es_in es_out
+  }.
+
+  (** Caution: All code using this assumes that it is the first effect
+      in the effects list. *)
+  Definition union (es_in es_out : list Effect.t) : Effect.t :=
+    Effect.add
+      (Effect.make (t es_in es_out) Empty_set)
+      (Effect.of_list es_in).
+
+  Fixpoint length_compare {A : Type} (n : nat) (l : list A) {struct l} :
+    {n < length l} + {length l <= n}.
+    destruct l as [ | x l], n as [ | n].
+    - now right.
+    - right.
+      rewrite (plus_n_O (S n)); now apply le_plus_r.
+    - left.
+      apply (lt_plus_trans 0 1 (length l)); now repeat constructor.
+    - destruct (length_compare _ n l) as [Sn_lt | Sn_ge].
+      * left; now apply lt_n_S.
+      * right; now apply le_n_S.
+  Defined.
+
+  Definition base_input (es_in es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_in es_out index_map -> INPUT es_in es_out.
+    unfold CORRECT, INPUT.
+    intros index_map index_correct n s.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - apply (Effect.Lens.set_state (List.nth n index_map 0)).
+      rewrite <- (List.map_nth (fun n => nth n es_in Effect.nil)).
+      rewrite index_correct.
+      now rewrite (nth_indep _ _ Effect.nil).
+    - exact (fun state => state).
+  Defined.
+
+  Definition base_output (es_in es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_in es_out index_map -> OUTPUT es_in es_out.
+    unfold CORRECT, INPUT.
+    intros index_map index_correct n ss.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - erewrite (List.nth_indep _ _ _); [ | assumption ].
+      rewrite <- index_correct.
+      erewrite (List.map_nth (fun n => nth n es_in Effect.nil) index_map _ n).
+      now apply (Effect.Lens.get_state (List.nth n index_map 0)).
+    - now rewrite List.nth_overflow.
+  Defined.
+
+  Definition base_error (es_in es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_in es_out index_map -> ERROR es_in es_out.
+    unfold CORRECT, ERROR.
+    intros index_map index_correct n.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - erewrite List.nth_indep; [ | assumption ].
+      rewrite <- index_correct.
+      erewrite (List.map_nth (fun n => nth n es_in Effect.nil) index_map _ n).
+      now apply (Effect.Lens.set_error (List.nth n index_map 0)).
+    - now rewrite List.nth_overflow.
+  Defined.
+
+  Definition create (es_in es_out : list Effect.t) (index_map : list nat)
+    (correct : CORRECT es_in es_out index_map)
+    (in_range : IN_RANGE es_in es_out index_map) : t es_in es_out := {|
+    index_map := index_map;
+    index_correct := correct;
+    index_in_range := in_range;
+    input := base_input correct;
+    output := base_output correct;
+    error := base_error correct
+  |}.
+
+  Definition compose_input (es_in es_mid es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_mid es_out index_map ->
+        INPUT es_in es_mid -> INPUT es_in es_out.
+    unfold CORRECT, INPUT.
+    intros index_map index_correct input1 n s.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - apply (input1 (List.nth n index_map 0)).
+      rewrite <- (List.map_nth (fun n => nth n es_mid Effect.nil)).
+      rewrite index_correct.
+      now rewrite (nth_indep _ _ Effect.nil).
+    - exact (fun state => state).
+  Defined.
+
+  Definition compose_output (es_in es_mid es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_mid es_out index_map ->
+        OUTPUT es_in es_mid -> OUTPUT es_in es_out.
+    unfold CORRECT, OUTPUT.
+    intros index_map index_correct output1 n.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - erewrite (List.nth_indep _ _ _); [ | assumption ].
+      rewrite <- index_correct.
+      erewrite (List.map_nth (fun n => nth n es_mid Effect.nil) index_map _ n).
+      now apply (output1 (List.nth n index_map 0)).
+    - now rewrite List.nth_overflow.
+  Defined.
+
+  Definition compose_error (es_in es_mid es_out : list Effect.t)
+    : forall (index_map : list nat),
+        CORRECT es_mid es_out index_map ->
+        ERROR es_in es_mid -> ERROR es_in es_out.
+    unfold CORRECT, ERROR.
+    intros index_map index_correct error1 n.
+    destruct (length_compare n es_out) as [lt_len | ge_len].
+    - erewrite List.nth_indep; [ | assumption ].
+      rewrite <- index_correct.
+      erewrite (List.map_nth (fun n => nth n es_mid Effect.nil) index_map _ n).
+      now apply (error1 (List.nth n index_map 0)).
+    - now rewrite List.nth_overflow.
+  Defined.
+
+  Lemma in_range_equiv
+    : forall (index_map : list nat) (es_in es_out : list Effect.t),
+        IN_RANGE es_in es_out index_map <->
+        List.Forall (fun n => n < length es_in) index_map.
+  Proof.
+    unfold IN_RANGE.
+    intros index_map es_in _.
+    induction index_map as [ | x index_map IH].
+    - easy.
+    - destruct es_in as [ | e es_in].
+        split; now inversion 1.
+      split; simpl.
+      * inversion 1 as [[x_sub_eq_0 tl_range]].
+        rewrite x_sub_eq_0 in tl_range.
+        now firstorder.
+      * inversion 1 as [ | n l x_le_len tl_forall].
+        apply IH in tl_forall.
+        f_equal; [ | now firstorder ].
+        revert x_le_len; clear.
+        generalize (List.length es_in) as m; clear.
+        induction x as [ | x IH];
+        [ | intros [ | m] Sx_le ].
+        + easy.
+        + inversion Sx_le as [ | n SSx_le_O].
+          now inversion SSx_le_O.
+        + now apply IH, le_S_n.
+  Qed.
+
+  Lemma compose_correct (es_in es_mid es_out : list Effect.t)
+    : forall (index_map1 index_map2 : list nat),
+        CORRECT es_mid es_out index_map1 ->
+        CORRECT es_in es_mid index_map2 ->
+        IN_RANGE es_mid es_out index_map1 ->
+        IN_RANGE es_in es_mid index_map2 ->
+        CORRECT es_in es_out
+          (List.map (fun n => List.nth n index_map2 0) index_map1).
+  Proof.
+    unfold CORRECT, IN_RANGE.
+    intros index_map1.
+    revert es_out.
+    induction index_map1 as [ | i index_map1 IH];
+      intros es_out index_map2 correct1 correct2 range1 range2.
+    - now rewrite <- correct1.
+    - rewrite <- correct1, <- correct2.
+      simpl; f_equal.
+      * erewrite (List.nth_indep (map _ _)).
+        + now rewrite map_nth.
+        + apply (in_range_equiv _ _ es_out) in range1.
+          inversion range1.
+          now rewrite correct2.
+      * destruct es_out as [ | e es_out];
+          inversion correct1 as [[e_eq es_out_eq]].
+        specialize (IH es_out index_map2 es_out_eq correct2).
+        rewrite correct2, es_out_eq.
+        apply IH.
+        + now inversion range1.
+        + now inversion range2.
+  Qed.
+
+  Lemma compose_in_range (es_in es_mid es_out : list Effect.t)
+    : forall (index_map1 index_map2 : list nat),
+        CORRECT es_mid es_out index_map1 ->
+        CORRECT es_in es_mid index_map2 ->
+        IN_RANGE es_mid es_out index_map1 ->
+        IN_RANGE es_in es_mid index_map2 ->
+        IN_RANGE es_in es_out
+          (List.map (fun n => List.nth n index_map2 0) index_map1).
+  Proof.
+    unfold CORRECT, IN_RANGE.
+    intros index_map1.
+    revert es_out.
+    induction index_map1 as [ | i index_map1 IH];
+      intros es_out index_map2 correct1 correct2 range1 range2.
+      easy.
+    destruct es_in as [ | ei es_in];
+    [ | destruct es_out as [ | eo es_out] ].
+    - destruct index_map2 as [ | i2 index_map2].
+        simpl in *; rewrite <- correct2 in range1; now inversion range1.
+        now inversion range2.
+    - now inversion correct1.
+    - simpl; f_equal.
+      * apply (in_range_equiv _ _ es_out) in range1.
+        inversion range1 as [ | i' index_map1' i_lt_len _].
+        cut (In (nth i index_map2 0) index_map2).
+        + intros in_index_map2.
+          apply (List.in_map (fun x => S x - List.length (ei :: es_in)))
+            in in_index_map2.
+          rewrite range2 in in_index_map2.
+          apply List.in_map_iff in in_index_map2.
+          now destruct in_index_map2 as [_ [eq_0 _]].
+        + apply List.nth_In.
+          replace (List.length index_map2) with (List.length es_mid).
+            assumption.
+          rewrite <- correct2.
+          now apply List.map_length.
+      * now apply (IH es_out);
+        [ inversion correct1 | | inversion range1 | ].
+  Qed.
+
+  Definition compose {es_in es_mid es_out : list Effect.t}
+    (map1 : t es_in es_mid) (map2 : t es_mid es_out)
+    : t es_in es_out :=
+    {|
+      index_map := List.map (fun n => List.nth n (index_map map1) 0)
+        (index_map map2);
+      index_correct := compose_correct
+        (index_correct map2) (index_correct map1)
+        (index_in_range map2) (index_in_range map1);
+      index_in_range := compose_in_range
+        (index_correct map2) (index_correct map1)
+        (index_in_range map2) (index_in_range map1);
+      input := compose_input (index_correct map2) (input map1);
+      output := compose_output (index_correct map2) (output map1);
+      error := compose_error (index_correct map2) (error map1)
+    |}.
+
+  Definition mix {es_in es_out es : list Effect.t} {A : Type}
+    (es_mid : list Effect.t) (index_map : list nat)
+    (correct : CORRECT es_mid es_out index_map)
+    (in_range : IN_RANGE es_mid es_out index_map)
+    (x : M (union es_in es_out :: es) A)
+    : M (union es_in es_mid :: es) A :=
+    fun s =>
+      let (union_state, s) := s in
+      let (map', s_inner) := union_state in
+      let map := create correct in_range in
+      let s := ((compose map' map, s_inner), s) in
+      let (x, s) := x s in
+      let (union_state, s) := s in
+      let s := ((map', snd union_state), s) in
+      (x, s).
+
+  Definition lift {es_in es : list Effect.t} {A : Type}
+    (es_out : list Effect.t) (n : nat)
+    (x : M (nth n es_out Effect.nil :: es) A)
+    : M (union es_in es_out :: es) A :=
+    fun s =>
+      let (union_state, s) := s in
+      let (map, s_inner) := union_state in
+      let s' := output map n s_inner in
+      let s := (s', s) in
+      let (x, s) := x s in
+      let (s', s) := s in
+      let s_inner := input map n s' s_inner in
+      let s := ((map, s_inner), s) in
+      let x := match x with
+        | inl x => inl x
+        | inr (inl e) => inr (inl (inr (error map n e)))
+        | inr (inr e) => inr (inr e)
+        end in
+      (x, s).
+
+  Lemma correct_repeat :
+    forall e n, CORRECT [e] (repeat e n) (repeat 0 n).
+  Proof.
+    intros e n.
+    induction n.
+    - exact eq_refl.
+    - unfold CORRECT; simpl.
+      now f_equal.
+  Qed.
+
+  Lemma in_range_repeat :
+    forall e n, IN_RANGE [e] (repeat e n) (repeat 0 n).
+  Proof.
+    intros e n.
+    induction n.
+    - exact eq_refl.
+    - unfold IN_RANGE; simpl.
+      now f_equal.
+  Qed.
+
+  Definition inject {e : Effect.t} {es : list Effect.t} {A : Type}
+    (n : nat) (x : M (union [e] (List.repeat e n) :: es) A)
+    : M (e :: es) A :=
+    fun s =>
+      let (s', s) := s in
+      let map := create (correct_repeat e n) (in_range_repeat e n) in
+      let union_state := (map, (s', tt)) in
+      let s := (union_state, s) in
+      let (x, s) := x s in
+      let (union_state, s) := s in
+      let (_, s') := union_state in
+      let (s', _) := s' in
+      let s := (s', s) in
+      let x := match x with
+        | inl x => inl x
+        | inr (inl (inl err)) => match err with end
+        | inr (inl (inr (inl err))) => inr (inl err)
+        | inr (inl (inr (inr err))) => match err with end
+        | inr (inr err) => inr (inr err)
+        end in
+      (x, s).
+
+  Close Scope nat.
+End Union.
 
 Module State.
   Unset Implicit Arguments.

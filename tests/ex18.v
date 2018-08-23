@@ -5,10 +5,10 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Definition r : OCaml.Effect.State.t Z := OCaml.Effect.State.init 12.
-Definition r_state := nat.
+Definition r_state := OCaml.Effect.State.state nat.
 
 Definition plus_one {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; OCaml.Effect.State.state r_state ] Z :=
+  : M [ OCaml.Effect.State.state Z; r_state ] Z :=
   match x with
   | _ =>
     let! x_1 :=
@@ -21,28 +21,23 @@ Definition plus_one {A : Type} (x : A)
 
 Definition s : OCaml.Effect.State.t string := OCaml.Effect.State.init
   "Hi" % string.
-Definition s_state := nat.
+Definition s_state := OCaml.Effect.State.state nat.
 
 Definition fail {A B : Type} (x : A)
-  : M
-    [
-      OCaml.Failure;
-      OCaml.Effect.State.state s_state;
-      OCaml.Effect.State.state string
-    ] B :=
+  : M [ OCaml.Effect.State.state string; OCaml.Failure; s_state ] B :=
   match x with
   | _ =>
     let! x_1 :=
-      lift [_;_;_] "011"
+      lift [_;_;_] "101"
         (let! x_1 :=
-          let! x_1 := lift [_;_] "01" (OCaml.Effect.State.peekstate tt) in
-          lift [_;_] "10" (OCaml.Effect.State.global s x_1) in
-        lift [_;_] "01" (OCaml.Effect.State.read x_1)) in
-    lift [_;_;_] "100" (OCaml.Pervasives.failwith x_1)
+          let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
+          lift [_;_] "01" (OCaml.Effect.State.global s x_1) in
+        lift [_;_] "10" (OCaml.Effect.State.read x_1)) in
+    lift [_;_;_] "010" (OCaml.Pervasives.failwith x_1)
   end.
 
 Definition reset {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; OCaml.Effect.State.state r_state ] unit :=
+  : M [ OCaml.Effect.State.state Z; r_state ] unit :=
   match x with
   | _ =>
     let! x_1 :=
@@ -52,7 +47,7 @@ Definition reset {A : Type} (x : A)
   end.
 
 Definition incr {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; OCaml.Effect.State.state r_state ] unit :=
+  : M [ OCaml.Effect.State.state Z; r_state ] unit :=
   match x with
   | _ =>
     let! x_1 :=
