@@ -1,5 +1,6 @@
 (** Types for the effects. *)
 open SmartPrint
+open Utils
 
 module PureType = struct
   type t =
@@ -73,6 +74,11 @@ module Descriptor = struct
     let bound_name (x : t) : BoundName.t =
       match x with
       | Type (x, _) -> x
+
+    let map_type_vars (vars_map : PureType.t Name.Map.t) (x : t) : t =
+      match x with
+      | Type (x, typs) ->
+        Type (x, List.map (PureType.map_type_vars vars_map) typs)
   end
   module IdSet = Set.Make (struct
       type t = Id.t
@@ -88,55 +94,79 @@ module Descriptor = struct
       type t = BoundName.t
       let compare x y = BoundName.stable_compare x y
     end)
-  type t = IdSet.t * BnSet.t
+
+  (* NOTE: [unioned] should always represent how a statement accepts compound
+     effects, while [compound] should hold these compound effects. *)
+  type t = {
+    unioned : Id.t list;
+    compound : IdSet.t;
+    simple : BnSet.t
+  }
 
   let pp (d : t) : SmartPrint.t =
-    let id_els = IdSet.elements (fst d) |> List.map (fun id ->
+    let id_els = d.unioned |> List.map (fun id ->
         match id with
         | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs))) in
-    let bn_els = BnSet.elements (snd d) |> List.map BoundName.pp in
+    let bn_els = BnSet.elements d.simple |> List.map BoundName.pp in
     OCaml.list (fun x -> x) @@ id_els @ bn_els
 
-  let pure : t = (IdSet.empty, BnSet.empty)
+  let pure : t = {
+    unioned = [];
+    compound = IdSet.empty;
+    simple = BnSet.empty
+  }
 
   let is_pure (d : t) : bool =
-    IdSet.is_empty (fst d) && BnSet.is_empty (snd d)
+    IdSet.is_empty d.compound && BnSet.is_empty d.simple
 
   let eq (d1 : t) (d2 : t) : bool =
-    IdSet.equal (fst d1) (fst d2) && BnSet.equal (snd d1) (snd d2)
+    d1.unioned = d2.unioned && BnSet.equal d1.simple d2.simple
 
   let singleton (x : BoundName.t) (typs : PureType.t list) : t =
     if typs = [] then
-      (IdSet.empty, BnSet.singleton x)
+      { unioned = []; compound = IdSet.empty; simple = BnSet.singleton x }
     else
-      (IdSet.singleton (Id.Type (x, typs)), BnSet.empty)
+      { unioned = [Id.Type (x, typs)];
+        compound = IdSet.singleton (Id.Type (x, typs));
+        simple = BnSet.empty
+      }
 
   let union (ds : t list) : t =
-    List.fold_left (fun (d1_id, d1_bn) (d2_id, d2_bn) ->
-      (IdSet.fold IdSet.add d1_id d2_id, BnSet.fold BnSet.add d1_bn d2_bn)
-    ) pure ds
+    List.fold_left (fun d1 d2 ->
+      let compound = IdSet.fold IdSet.add d1.compound d2.compound in
+      { unioned = IdSet.elements compound;
+        compound = compound;
+        simple = BnSet.fold BnSet.add d1.simple d2.simple
+      }) pure ds
 
   let remove (x : BoundName.t) (d : t) : t =
-    (fst d, BnSet.remove x (snd d))
+    { d with simple = BnSet.remove x d.simple }
 
-  let elements (d : t) : BoundName.t list = BnSet.elements (snd d)
+  let elements (d : t) : BoundName.t list = BnSet.elements d.simple
 
   let index (x : BoundName.t) (d : t) : int =
     let rec find_index l f =
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index (BnSet.elements (snd d)) (fun y -> x = y)
+    find_index (BnSet.elements d.simple) (fun y -> x = y)
+
+  let should_carry (d : t) : bool = List.compare_length_with d.unioned 2 >= 0
 
   let to_coq (d : t) : SmartPrint.t =
-    let id_els = IdSet.elements (fst d) |> List.map (fun x ->
+    let should_carry = should_carry d in
+    let id_els = d.unioned |> List.map (fun x ->
       match x with
       | Id.Type (x, typs) ->
-        PureType.to_coq false (PureType.Apply (x, typs))) in
-    let bn_els = BnSet.elements (snd d) |> List.map BoundName.to_coq in
-    OCaml.list (fun x -> x) @@ id_els @ bn_els
+        PureType.to_coq should_carry (PureType.Apply (x, typs))) in
+    let id_els = if should_carry then
+        [nest @@
+          !^ "OCaml.Effect.Union.union _" ^^ OCaml.list (fun x -> x) id_els]
+      else id_els in
+    let bn_els = BnSet.elements d.simple |> List.map BoundName.to_coq in
+    OCaml.list (fun x -> x) (id_els @ bn_els)
 
-  let subset_to_coq (d1 : t) (d2 : t) : SmartPrint.t =
+  let subset_to_bools (d1 : t) (d2 : t) : bool list =
     let rec aux xs1 xs2 : bool list =
       match (xs1, xs2) with
       | ([], _) -> List.map (fun _ -> false) xs2
@@ -147,15 +177,13 @@ module Descriptor = struct
           false :: aux xs1 xs2'
       | (_ :: _, []) ->
         failwith "Must be a subset to display the subset." in
-    let bs_id = aux (IdSet.elements (fst d1)) (IdSet.elements (fst d2)) in
-    let bs_bn = aux (BnSet.elements (snd d1)) (BnSet.elements (snd d2)) in
-    let bs = bs_id @ bs_bn in
-    brakets (separate (!^ ";") (List.map (fun _ -> !^ "_") bs)) ^^
-    double_quotes (separate empty
-      (List.map (fun b -> if b then !^ "1" else !^ "0") bs))
+    aux (BnSet.elements d1.simple) (BnSet.elements d2.simple)
 
   let map (f : BoundName.t -> BoundName.t) (d : t) : t =
-    (IdSet.map (Id.map f) (fst d), BnSet.map f (snd d))
+    { unioned = List.map (Id.map f) d.unioned;
+      compound = IdSet.map (Id.map f) d.compound;
+      simple = BnSet.map f d.simple
+    }
 
   let depth_lift (d : t) : t =
     map BoundName.depth_lift d
@@ -167,13 +195,51 @@ module Descriptor = struct
     map (BoundName.resolve_open name_list) d
 
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    (fst d |> IdSet.map (fun (Type (x, typs)) ->
-      Type (x, List.map (PureType.map_type_vars vars_map) typs))
-    , snd d)
+    { unioned = List.map (Id.map_type_vars vars_map) d.unioned;
+      compound = IdSet.map (Id.map_type_vars vars_map) d.compound;
+      simple = d.simple
+    }
 
   let has_type_vars (d : t) : bool =
-    fst d |> IdSet.exists (fun (Type (x, typs)) ->
+     d.compound |> IdSet.exists (fun (Type (x, typs)) ->
       List.exists PureType.has_type_vars typs)
+end
+
+module Lift = struct
+  type t =
+    | Lift of SmartPrint.t * int
+    | Mix of SmartPrint.t * int list
+    | Inject of int
+
+  let compute (d1 : Descriptor.t) (d2 : Descriptor.t)
+    : bool list option * t option =
+    let bs = Descriptor.subset_to_bools d1 d2 in
+    if d1.unioned = d2.unioned then
+      if d1.unioned = [] then
+        (Some bs, None)
+      else
+        (Some (true :: bs), None)
+    else
+      match d1.unioned with
+      | [] -> (Some (false :: bs), None)
+      | (x :: xs) ->
+        let bs = if List.mem false bs then Some (true :: bs) else None in
+        match xs with
+        | [] ->
+          let in_list =
+            to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
+          let n = find_index (fun y -> x = y) d2.unioned in
+          (bs, Some (Lift (in_list, n)))
+        | _ ->
+          match d2.unioned with
+          | [] -> failwith "No backing union found."
+          | [x] -> (bs, Some (Inject (List.length d1.unioned)))
+          | _ ->
+            let in_list =
+              to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
+            let out_list = List.map (fun x ->
+              find_index (fun y -> x = y) d2.unioned) d1.unioned in
+            (bs, Some (Mix (in_list, out_list)))
 end
 
 module Type = struct
@@ -235,6 +301,20 @@ module Type = struct
       match typ with
       | Pure -> Pure
       | Arrow (_, typ) -> return_type typ (nb_args - 1)
+
+  let rec return_single_descriptor (typ : t) (nb_args : int) : Descriptor.t =
+    if nb_args = 0 then
+      Descriptor.pure
+    else
+      match typ with
+      | Pure -> Descriptor.pure
+      | Arrow (d, typ) ->
+        if nb_args = 1 then
+          d
+        else if Descriptor.is_pure d then
+          return_single_descriptor typ (nb_args - 1)
+        else
+          failwith "Found a non-pure callpoint earlier than expected."
 
   let union (typs : t list) : t =
     let rec aux typ1 typ2 =

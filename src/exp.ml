@@ -982,7 +982,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       match es' with
       | e_f :: e_xs ->
         let return_descriptor =
-          Effect.Type.return_descriptor effect_f (List.length e_xs) in
+          Effect.Type.return_single_descriptor effect_f (List.length e_xs) in
         lift return_descriptor d (Apply (l, e_f, e_xs))
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Function ((l, _), x, e) ->
@@ -1135,5 +1135,25 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         to_coq false e1 ^^ !^ "in" ^^ newline ^^
       to_coq false e2)
   | Lift (_, d1, d2, e) ->
-    Pp.parens paren @@ nest (
-      !^ "lift" ^^ Effect.Descriptor.subset_to_coq d1 d2 ^^ to_coq true e)
+    let (bs, union_lift) = Effect.Lift.compute d1 d2 in
+    let coq = to_coq true e in
+    let coq = match union_lift with
+      | Some (Effect.Lift.Lift (in_list, n)) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "@Union.lift _ _ _" ^^ in_list ^^ OCaml.int n ^^ coq
+      | Some (Effect.Lift.Mix (in_list, out_list)) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "@Union.mix _ _ _ _" ^^ in_list ^^
+          to_coq_list (List.map OCaml.int out_list) ^-^ !^ "%nat" ^^
+          !^ "eq_refl eq_refl" ^^ coq
+      | Some (Effect.Lift.Inject n) ->
+        Pp.parens (paren || is_some bs) @@ nest @@
+          !^ "Union.inject" ^^ OCaml.int n ^^ coq
+      | None -> coq in
+    match bs with
+    | Some bs ->
+      Pp.parens paren @@ nest @@
+        !^ "lift" ^^ to_coq_list (List.map (fun _ -> !^ "_") bs) ^^
+        double_quotes (separate empty
+          (List.map (fun b -> if b then !^ "1" else !^ "0") bs)) ^^ coq
+    | None -> coq
