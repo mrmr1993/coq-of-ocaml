@@ -161,6 +161,28 @@ let rec open_type (typ : t) (n : int) : t list * t =
       (typ1 :: typs, typ)
     | _ -> failwith "Expected an arrow type."
 
+let allocate_implicits_for_monad (implicit_args : (CoqName.t * 'a) list)
+  (args : (CoqName.t * 'a) list) (typ : t) : (CoqName.t * 'a) list * t =
+  match typ with
+  | Monad (d, typ) ->
+    if Effect.Descriptor.should_carry d then
+      let args' = implicit_args @ args in
+      let args' = args' |> List.map (fun (name, _) ->
+        snd (CoqName.assoc_names name)) in
+      let args_set = Name.Set.of_list args' in
+      let rec find_name n =
+        let name = "es_in" ^ string_of_int n in
+        if Name.Set.mem name args_set then find_name (n+1) else name in
+      let name = if Name.Set.mem "es_in" args_set then
+          find_name 1
+        else "es_in" in
+      let d = Effect.Descriptor.set_unioned_arg name d in
+      let arg = (CoqName.of_names name name, Variable "list Effect.t") in
+      (arg :: implicit_args, Monad (d, typ))
+    else
+      (implicit_args, Monad (d, typ))
+  | _ -> (implicit_args, typ)
+
 let monadise (typ : t) (effect : Effect.t) : t =
   let rec aux (typ : t) (effect_typ : Effect.Type.t) : t =
     match (typ, effect_typ) with

@@ -98,6 +98,7 @@ module Descriptor = struct
   (* NOTE: [unioned] should always represent how a statement accepts compound
      effects, while [compound] should hold these compound effects. *)
   type t = {
+    unioned_arg : Name.t option;
     unioned : Id.t list;
     compound : IdSet.t;
     simple : BnSet.t
@@ -111,6 +112,7 @@ module Descriptor = struct
     OCaml.list (fun x -> x) @@ id_els @ bn_els
 
   let pure : t = {
+    unioned_arg = None;
     unioned = [];
     compound = IdSet.empty;
     simple = BnSet.empty
@@ -124,9 +126,14 @@ module Descriptor = struct
 
   let singleton (x : BoundName.t) (typs : PureType.t list) : t =
     if typs = [] then
-      { unioned = []; compound = IdSet.empty; simple = BnSet.singleton x }
+      { unioned_arg = None;
+        unioned = [];
+        compound = IdSet.empty;
+        simple = BnSet.singleton x
+      }
     else
-      { unioned = [Id.Type (x, typs)];
+      { unioned_arg = None;
+        unioned = [Id.Type (x, typs)];
         compound = IdSet.singleton (Id.Type (x, typs));
         simple = BnSet.empty
       }
@@ -134,7 +141,8 @@ module Descriptor = struct
   let union (ds : t list) : t =
     List.fold_left (fun d1 d2 ->
       let compound = IdSet.fold IdSet.add d1.compound d2.compound in
-      { unioned = IdSet.elements compound;
+      { unioned_arg = None;
+        unioned = IdSet.elements compound;
         compound = compound;
         simple = BnSet.fold BnSet.add d1.simple d2.simple
       }) pure ds
@@ -151,6 +159,9 @@ module Descriptor = struct
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
     find_index (BnSet.elements d.simple) (fun y -> x = y)
 
+  let set_unioned_arg (arg : Name.t) (d : t) : t =
+    { d with unioned_arg = Some arg }
+
   let should_carry (d : t) : bool = List.compare_length_with d.unioned 2 >= 0
 
   let to_coq (d : t) : SmartPrint.t =
@@ -161,7 +172,11 @@ module Descriptor = struct
         PureType.to_coq should_carry (PureType.Apply (x, typs))) in
     let id_els = if should_carry then
         [nest @@
-          !^ "OCaml.Effect.Union.union _" ^^ OCaml.list (fun x -> x) id_els]
+          !^ "OCaml.Effect.Union.union" ^^
+          (match d.unioned_arg with
+           | Some arg -> Name.to_coq arg
+           | None -> !^ "_") ^^
+          OCaml.list (fun x -> x) id_els]
       else id_els in
     let bn_els = BnSet.elements d.simple |> List.map BoundName.to_coq in
     OCaml.list (fun x -> x) (id_els @ bn_els)
@@ -180,7 +195,8 @@ module Descriptor = struct
     aux (BnSet.elements d1.simple) (BnSet.elements d2.simple)
 
   let map (f : BoundName.t -> BoundName.t) (d : t) : t =
-    { unioned = List.map (Id.map f) d.unioned;
+    { d with
+      unioned = List.map (Id.map f) d.unioned;
       compound = IdSet.map (Id.map f) d.compound;
       simple = BnSet.map f d.simple
     }
@@ -195,7 +211,8 @@ module Descriptor = struct
     map (BoundName.resolve_open name_list) d
 
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    { unioned = List.map (Id.map_type_vars vars_map) d.unioned;
+    { d with
+      unioned = List.map (Id.map_type_vars vars_map) d.unioned;
       compound = IdSet.map (Id.map_type_vars vars_map) d.compound;
       simple = d.simple
     }
