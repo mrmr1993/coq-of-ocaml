@@ -621,21 +621,25 @@ Module Union.
       error := compose_error (index_correct map2) (error map1)
     |}.
 
-  Definition mix {es_in es_mid es_out es : list Effect.t}
-    {A : Type} (map : t es_mid es_out)
+  Definition mix {es_in es_out es : list Effect.t} {A : Type}
+    (es_mid : list Effect.t) (index_map : list nat)
+    (correct : CORRECT es_mid es_out index_map)
+    (in_range : IN_RANGE es_mid es_out index_map)
     (x : M (union es_in es_out :: es) A)
     : M (union es_in es_mid :: es) A :=
     fun s =>
       let (union_state, s) := s in
       let (map', s_inner) := union_state in
+      let map := create correct in_range in
       let s := ((compose map' map, s_inner), s) in
       let (x, s) := x s in
       let (union_state, s) := s in
       let s := ((map', snd union_state), s) in
       (x, s).
 
-  Definition lift {es_in es_out es : list Effect.t} {A : Type}
-    (n : nat) (x : M (nth n es_out Effect.nil :: es) A)
+  Definition lift {es_in es : list Effect.t} {A : Type}
+    (es_out : list Effect.t) (n : nat)
+    (x : M (nth n es_out Effect.nil :: es) A)
     : M (union es_in es_out :: es) A :=
     fun s =>
       let (union_state, s) := s in
@@ -650,6 +654,48 @@ Module Union.
         | inl x => inl x
         | inr (inl e) => inr (inl (inr (error map n e)))
         | inr (inr e) => inr (inr e)
+        end in
+      (x, s).
+
+  Lemma correct_repeat :
+    forall e n, CORRECT [e] (repeat e n) (repeat 0 n).
+  Proof.
+    intros e n.
+    induction n.
+    - exact eq_refl.
+    - unfold CORRECT; simpl.
+      now f_equal.
+  Qed.
+
+  Lemma in_range_repeat :
+    forall e n, IN_RANGE [e] (repeat e n) (repeat 0 n).
+  Proof.
+    intros e n.
+    induction n.
+    - exact eq_refl.
+    - unfold IN_RANGE; simpl.
+      now f_equal.
+  Qed.
+
+  Definition inject {e : Effect.t} {es : list Effect.t} {A : Type}
+    (n : nat) (x : M (union [e] (List.repeat e n) :: es) A)
+    : M (e :: es) A :=
+    fun s =>
+      let (s', s) := s in
+      let map := create (correct_repeat e n) (in_range_repeat e n) in
+      let union_state := (map, (s', tt)) in
+      let s := (union_state, s) in
+      let (x, s) := x s in
+      let (union_state, s) := s in
+      let (_, s') := union_state in
+      let (s', _) := s' in
+      let s := (s', s) in
+      let x := match x with
+        | inl x => inl x
+        | inr (inl (inl err)) => match err with end
+        | inr (inl (inr (inl err))) => inr (inl err)
+        | inr (inl (inr (inr err))) => match err with end
+        | inr (inr err) => inr (inr err)
         end in
       (x, s).
 
