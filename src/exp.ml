@@ -8,6 +8,7 @@ module Header = struct
   type t = {
     name : CoqName.t;
     typ_vars : Name.t list;
+    implicit_args : (CoqName.t * Type.t) list;
     args : (CoqName.t * Type.t) list;
     typ : Type.t }
 
@@ -15,11 +16,13 @@ module Header = struct
     OCaml.tuple [
       CoqName.pp header.name; OCaml.list Name.pp header.typ_vars;
       OCaml.list (fun (x, typ) -> OCaml.tuple [CoqName.pp x; Type.pp typ])
-        header.args;
+        (header.implicit_args @ header.args);
       Type.pp header.typ]
 
   let env_in_header (header : t) (env : 'a FullEnvi.t) (v : 'a)
     : 'a FullEnvi.t =
+    (* NOTE: Don't include implicit arguments here: user code should not be
+       able to refer to them. *)
     List.fold_left (fun env (x, _) ->
         let (name, coq_name) = CoqName.assoc_names x in
         FullEnvi.Var.assoc [] name coq_name v env)
@@ -450,6 +453,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     let header = {
       Header.name = x;
       typ_vars = Name.Set.elements new_typ_vars;
+      implicit_args = [];
       args = List.combine args_names args_typs;
       typ = e_body_typ } in
     (header, e_body)) in
@@ -1098,6 +1102,9 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         else braces @@ group (
           separate space (List.map Name.to_coq header.Header.typ_vars) ^^
           !^ ":" ^^ !^ "Type")) ^^
+        group (separate space (header.Header.implicit_args
+          |> List.map (fun (x, x_typ) ->
+            braces (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
         group (separate space (header.Header.args |> List.map (fun (x, x_typ) ->
           parens (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false x_typ)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Header.typ ^-^
