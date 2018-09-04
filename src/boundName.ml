@@ -1,6 +1,7 @@
 open SmartPrint
 
 type t = {
+  full_path : PathName.t;
   path_name : PathName.t;
   depth : int }
 
@@ -24,7 +25,8 @@ let leave_prefix (name : Name.t option) (x : t) : t =
 
 let resolve_open (name_list : Name.t list) (x : t) : t =
   if x.depth = 1 then
-    { path_name = { x.path_name with
+    { x with
+      path_name = { x.path_name with
         PathName.path = name_list @ x.path_name.path };
       depth = 0 }
   else if x.depth > 1 then

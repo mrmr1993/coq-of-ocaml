@@ -89,7 +89,11 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   match env with
   | Module m :: env | Include m :: env ->
     begin match find x m with
-    | Some x -> Some { BoundName.path_name = x; BoundName.depth = 0 }
+    | Some x -> Some {
+        BoundName.full_path =
+          { x with PathName.path = m.Mod.coq_path @ x.path };
+        path_name = x;
+        depth = 0 }
     | None ->
       bound_name_opt find x env
         |> option_map (fun name ->
@@ -99,7 +103,10 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     (match find x m with
     | Some x ->
       let x = { x with PathName.path = path @ x.PathName.path } in
-      Some { BoundName.path_name = x; depth }
+      Some {
+        BoundName.full_path = { x with PathName.path = m.Mod.coq_path @ path };
+        path_name = x;
+        depth }
     | None -> bound_name_opt find x env)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
