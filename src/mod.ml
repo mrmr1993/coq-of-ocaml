@@ -32,11 +32,11 @@ open Value
 
 module Locator = struct
   type t = {
-    vars : Name.t PathName.Map.t;
-    typs : Name.t PathName.Map.t;
-    descriptors : Name.t PathName.Map.t;
-    constructors : Name.t PathName.Map.t;
-    fields : Name.t PathName.Map.t }
+    vars : PathName.t PathName.Map.t;
+    typs : PathName.t PathName.Map.t;
+    descriptors : PathName.t PathName.Map.t;
+    constructors : PathName.t PathName.Map.t;
+    fields : PathName.t PathName.Map.t }
 
   let empty = {
     vars = PathName.Map.empty;
@@ -45,7 +45,9 @@ module Locator = struct
     constructors = PathName.Map.empty;
     fields = PathName.Map.empty }
 
-  let join (f : Name.t PathName.Map.t -> Name.t PathName.Map.t -> Name.t PathName.Map.t)
+  let join
+    (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
+      PathName.t PathName.Map.t)
     (l1 : t) (l2 : t) : t = {
     vars = f l1.vars l2.vars;
     typs = f l1.typs l2.typs;
@@ -138,14 +140,14 @@ end
 
 module Vars = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
+    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
       PathName.Map.find_opt x m.locator.vars
 
   let assoc (x : PathName.t) (y : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y (Variable v) m.values;
       locator = { m.locator with
-        vars = PathName.Map.add x y.base m.locator.vars } }
+        vars = PathName.Map.add x y m.locator.vars } }
 
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     let y = match resolve_opt x m with
@@ -176,7 +178,7 @@ module Function = struct
     { m with
       values = PathName.Map.add y (Function (v, typ)) m.values;
       locator = { m.locator with
-        vars = PathName.Map.add x y.base m.locator.vars } }
+        vars = PathName.Map.add x y m.locator.vars } }
 
   let add (x : PathName.t) (v : 'a) (typ : Effect.PureType.t) (m : 'a t)
     : 'a t =
@@ -194,14 +196,14 @@ module Function = struct
 end
 module Typs = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
+    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
       PathName.Map.find_opt x m.locator.typs
 
   let assoc (x : PathName.t) (y : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y (Type v) m.values;
       locator = { m.locator with
-        typs = PathName.Map.add x y.base m.locator.typs } }
+        typs = PathName.Map.add x y m.locator.typs } }
 
   let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
     let y = match resolve_opt x m with
@@ -222,14 +224,14 @@ module Typs = struct
 end
 module Descriptors = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
+    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
       PathName.Map.find_opt x m.locator.descriptors
 
   let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y Descriptor m.values;
       locator = { m.locator with
-        descriptors = PathName.Map.add x y.base m.locator.descriptors } }
+        descriptors = PathName.Map.add x y m.locator.descriptors } }
 
   let add (x : PathName.t) (m : 'a t) : 'a t =
     let y = match resolve_opt x m with
@@ -244,14 +246,14 @@ module Descriptors = struct
 end
 module Constructors = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
+    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
       PathName.Map.find_opt x m.locator.constructors
 
   let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y Constructor m.values;
       locator = { m.locator with
-        constructors = PathName.Map.add x y.base m.locator.constructors } }
+        constructors = PathName.Map.add x y m.locator.constructors } }
 
   let add (x : PathName.t) (m : 'a t) : 'a t =
     let y = match resolve_opt x m with
@@ -266,14 +268,14 @@ module Constructors = struct
 end
 module Fields = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
+    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
       PathName.Map.find_opt x m.locator.fields
 
   let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
     { m with
       values = PathName.Map.add y Field m.values;
       locator = { m.locator with
-        fields = PathName.Map.add x y.base m.locator.fields } }
+        fields = PathName.Map.add x y m.locator.fields } }
 
   let add (x : PathName.t) (m : 'a t) : 'a t =
     let y = match resolve_opt x m with
