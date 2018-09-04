@@ -16,8 +16,14 @@ let pp (env : 'a t) : SmartPrint.t =
     | Open (_, path, _) ->
       !^ "open" ^^ separate (!^ ".") (List.map Name.pp path))
 
-let empty (module_name : CoqName.t option) : 'a t =
-  [Module (Mod.empty module_name)]
+let empty (module_name : CoqName.t option) (coq_path : Name.t list)
+  : 'a t =
+  let coq_path = match module_name with
+    | Some module_name ->
+      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
+      coq_name :: coq_path
+    | None -> coq_path in
+  [Module (Mod.empty module_name coq_path)]
 
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
   match env with
@@ -29,19 +35,22 @@ let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
 let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
   hd_map (fun m env -> Module (f m) :: env)
 
+let coq_path (env : 'a t) : Name.t list =
+  hd_map (fun m env -> m.Mod.coq_path) env
+
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
-  Module (Mod.empty (Some module_name)) :: env
+  Module (Mod.empty (Some module_name) (coq_path env)) :: env
 
 let enter_section (env : 'a t) : 'a t =
-  Module (Mod.empty None) :: env
+  Module (Mod.empty None (coq_path env)) :: env
 
 let open_module (m : 'a Mod.t) (path : Name.t list) (depth : int) (env : 'a t)
   : 'a t =
-  Module (Mod.empty None) :: Open (m, path, depth) :: env
+  Module (Mod.empty None (coq_path env)) :: Open (m, path, depth) :: env
 
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
-  let m = { m with name = None } in
-  Module (Mod.empty None) :: Include m :: env
+  let m = { m with name = None; coq_path = coq_path env } in
+  Module (Mod.empty None (coq_path env)) :: Include m :: env
 
 let leave_module (prefix : Name.t option -> 'a -> 'a)
   (resolve_open : Name.t list -> 'a -> 'a) (env : 'a t) : 'a t =

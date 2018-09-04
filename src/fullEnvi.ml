@@ -13,7 +13,7 @@ let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
 let empty (module_name : CoqName.t option)
   (get_module : Name.t -> 'a Mod.t option) : 'a t = {
-  active_module = FullMod.empty module_name;
+  active_module = FullMod.empty module_name [];
   get_module;
   required_modules = ref Name.Set.empty
 }
