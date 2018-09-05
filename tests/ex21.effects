@@ -37,7 +37,7 @@ Value
     [
       ((r, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Failure/3; IO/3 ], .)),
+          ((?, Effect ([ IO/3; OCaml.Failure/3 ], .)),
             Variable ((?, Effect ([ ], .)), x/0),
             [
               (Any,
@@ -45,8 +45,8 @@ Value
                   ((7,
                     Effect
                       ([
-                        OCaml.Failure/3;
-                        IO/3
+                        IO/3;
+                        OCaml.Failure/3
                       ],
                         .)),
                     Apply

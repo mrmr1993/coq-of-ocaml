@@ -33,11 +33,11 @@ Definition f : (list string) -> M [ Counter; IO; NonTermination ] unit :=
   print_list.
 
 Definition x {A : Type} (z : A)
-  : M [ Counter; OCaml.Failure; IO; NonTermination ] unit :=
+  : M [ Counter; IO; NonTermination; OCaml.Failure ] unit :=
   let! x :=
-    lift [_;_;_;_] "0100"
+    lift [_;_;_;_] "0001"
       (tail
         (cons "Stop" % string
           (cons "Hello" % string (cons " " % string (cons "world" % string [])))))
     in
-  lift [_;_;_;_] "1011" (f x).
+  lift [_;_;_;_] "1110" (f x).

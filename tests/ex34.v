@@ -129,28 +129,28 @@ Fixpoint add_max_element (v : elt) (x : t) : M [ OCaml.Invalid_argument ] t :=
   end.
 
 Fixpoint join_rec (counter : nat) (l : t) (v : elt) (r : t)
-  : M [ OCaml.Invalid_argument; NonTermination ] t :=
+  : M [ NonTermination; OCaml.Invalid_argument ] t :=
   match counter with
-  | O => lift [_;_] "01" (not_terminated tt)
+  | O => lift [_;_] "10" (not_terminated tt)
   | S counter =>
     match (l, r) with
-    | (Empty, _) => lift [_;_] "10" (add_min_element v r)
-    | (_, Empty) => lift [_;_] "10" (add_max_element v l)
+    | (Empty, _) => lift [_;_] "01" (add_min_element v r)
+    | (_, Empty) => lift [_;_] "01" (add_max_element v l)
     | (Node ll lv lr lh, Node rl rv rr rh) =>
       if OCaml.Pervasives.gt lh (Z.add rh 2) then
         let! x := (join_rec counter) lr v r in
-        lift [_;_] "10" (bal ll lv x)
+        lift [_;_] "01" (bal ll lv x)
       else
         if OCaml.Pervasives.gt rh (Z.add lh 2) then
           let! x := (join_rec counter) l v rl in
-          lift [_;_] "10" (bal x rv rr)
+          lift [_;_] "01" (bal x rv rr)
         else
           ret (create l v r)
     end
   end.
 
 Definition join (l : t) (v : elt) (r : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ] t :=
   let! x := lift [_;_;_] "100" (read_counter tt) in
   lift [_;_;_] "011" (join_rec x l v r).
 
@@ -189,18 +189,18 @@ Definition merge (t1 : t) (t2 : t)
   end.
 
 Definition concat (t1 : t) (t2 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
   | (t_1, Empty) => ret t_1
   | (_, _) =>
     let! x := lift [_;_;_;_] "0001" (min_elt t2) in
-    let! x_1 := lift [_;_;_;_] "0100" (remove_min_elt t2) in
+    let! x_1 := lift [_;_;_;_] "0010" (remove_min_elt t2) in
     lift [_;_;_;_] "1110" (join t1 x x_1)
   end.
 
 Fixpoint split (x : Ord.t) (x_1 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ] (t * bool * t) :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ] (t * bool * t) :=
   match x_1 with
   | Empty => ret (Empty, false, Empty)
   | Node l v r _ =>
@@ -263,9 +263,9 @@ Fixpoint remove (x : Ord.t) (x_1 : t)
   end.
 
 Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ] t :=
   match counter with
-  | O => lift [_;_;_] "001" (not_terminated tt)
+  | O => lift [_;_;_] "010" (not_terminated tt)
   | S counter =>
     match (s1, s2) with
     | (Empty, t2) => ret t2
@@ -273,7 +273,7 @@ Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
     | (Node l1 v1 r1 h1, Node l2 v2 r2 h2) =>
       if OCaml.Pervasives.ge h1 h2 then
         if equiv_decb h2 1 then
-          lift [_;_;_] "010" (add v2 s1)
+          lift [_;_;_] "001" (add v2 s1)
         else
           let! x := split v1 s2 in
           match x with
@@ -284,7 +284,7 @@ Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
           end
       else
         if equiv_decb h1 1 then
-          lift [_;_;_] "010" (add v1 s2)
+          lift [_;_;_] "001" (add v1 s2)
         else
           let! x := split v2 s1 in
           match x with
@@ -297,12 +297,12 @@ Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
   end.
 
 Definition union (s1 : t) (s2 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ] t :=
   let! x := lift [_;_;_] "100" (read_counter tt) in
   union_rec x s1 s2.
 
 Fixpoint inter (s1 : t) (s2 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match (s1, s2) with
   | (Empty, t2) => ret Empty
   | (t1, Empty) => ret Empty
@@ -321,7 +321,7 @@ Fixpoint inter (s1 : t) (s2 : t)
   end.
 
 Fixpoint diff (s1 : t) (s2 : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match (s1, s2) with
   | (Empty, t2) => ret Empty
   | (t1, Empty) => ret t1
@@ -434,7 +434,7 @@ Fixpoint exists_ (p : elt -> bool) (x : t) : bool :=
   end.
 
 Fixpoint filter (p : elt -> bool) (x : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] t :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] t :=
   match x with
   | Empty => ret Empty
   | Node l v r _ =>
@@ -448,7 +448,7 @@ Fixpoint filter (p : elt -> bool) (x : t)
   end.
 
 Fixpoint partition (p : elt -> bool) (x : t)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ]
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ]
     (t * t) :=
   match x with
   | Empty => ret (Empty, Empty)
@@ -504,11 +504,11 @@ Fixpoint find (x : Ord.t) (x_1 : t) : M [ OCaml.Not_found ] elt :=
   end.
 
 Definition of_sorted_list (l : list elt)
-  : M [ OCaml.Assert_failure; Counter; NonTermination ] t :=
+  : M [ Counter; NonTermination; OCaml.Assert_failure ] t :=
   let fix sub_rec (counter : nat) (n : Z) (l : list elt)
-    : M [ OCaml.Assert_failure; NonTermination ] (t * (list elt)) :=
+    : M [ NonTermination; OCaml.Assert_failure ] (t * (list elt)) :=
     match counter with
-    | O => lift [_;_] "01" (not_terminated tt)
+    | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       match (n, l) with
       | (0, l) => ret (Empty, l)
@@ -523,7 +523,7 @@ Definition of_sorted_list (l : list elt)
         match x with
         | (left_, l) =>
           match l with
-          | [] => lift [_;_] "10" (OCaml.assert false)
+          | [] => lift [_;_] "01" (OCaml.assert false)
           | cons mid l =>
             let! x := (sub_rec counter) (Z.sub (Z.sub n nl) 1) l in
             match x with
@@ -534,8 +534,8 @@ Definition of_sorted_list (l : list elt)
       end
     end in
   let sub (n : Z) (l : list elt)
-    : M [ OCaml.Assert_failure; Counter; NonTermination ] (t * (list elt)) :=
-    let! x := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (sub_rec x n l) in
+    : M [ Counter; NonTermination; OCaml.Assert_failure ] (t * (list elt)) :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (sub_rec x n l) in
   let! x := sub (OCaml.List.length l) l in
   ret (fst x).

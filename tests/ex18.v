@@ -24,16 +24,16 @@ Definition s : OCaml.Effect.State.t string := OCaml.Effect.State.init
 Definition s_state := OCaml.Effect.State.state nat.
 
 Definition fail {A B : Type} (x : A)
-  : M [ OCaml.Effect.State.state string; OCaml.Failure; s_state ] B :=
+  : M [ OCaml.Effect.State.state string; s_state; OCaml.Failure ] B :=
   match x with
   | _ =>
     let! x_1 :=
-      lift [_;_;_] "101"
+      lift [_;_;_] "110"
         (let! x_1 :=
           let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
           lift [_;_] "01" (OCaml.Effect.State.global s x_1) in
         lift [_;_] "10" (OCaml.Effect.State.read x_1)) in
-    lift [_;_;_] "010" (OCaml.Pervasives.failwith x_1)
+    lift [_;_;_] "001" (OCaml.Pervasives.failwith x_1)
   end.
 
 Definition reset {A : Type} (x : A)

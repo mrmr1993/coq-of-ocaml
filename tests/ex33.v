@@ -263,33 +263,33 @@ Fixpoint add_max_binding {A : Type} (k : key) (v : A) (x : t A)
 
 Fixpoint join_rec {A : Type}
   (counter : nat) (l : t A) (v : key) (d : A) (r : t A)
-  : M [ OCaml.Invalid_argument; NonTermination ] (t A) :=
+  : M [ NonTermination; OCaml.Invalid_argument ] (t A) :=
   match counter with
-  | O => lift [_;_] "01" (not_terminated tt)
+  | O => lift [_;_] "10" (not_terminated tt)
   | S counter =>
     match (l, r) with
-    | (Empty, _) => lift [_;_] "10" (add_min_binding v d r)
-    | (_, Empty) => lift [_;_] "10" (add_max_binding v d l)
+    | (Empty, _) => lift [_;_] "01" (add_min_binding v d r)
+    | (_, Empty) => lift [_;_] "01" (add_max_binding v d l)
     | (Node ll lv ld lr lh, Node rl rv rd rr rh) =>
       if OCaml.Pervasives.gt lh (Z.add rh 2) then
         let! x := (join_rec counter) lr v d r in
-        lift [_;_] "10" (bal ll lv ld x)
+        lift [_;_] "01" (bal ll lv ld x)
       else
         if OCaml.Pervasives.gt rh (Z.add lh 2) then
           let! x := (join_rec counter) l v d rl in
-          lift [_;_] "10" (bal x rv rd rr)
+          lift [_;_] "01" (bal x rv rd rr)
         else
           ret (create l v d r)
     end
   end.
 
 Definition join {A : Type} (l : t A) (v : key) (d : A) (r : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ] (t A) :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ] (t A) :=
   let! x := lift [_;_;_] "100" (read_counter tt) in
   lift [_;_;_] "011" (join_rec x l v d r).
 
 Definition concat {A : Type} (t1 : t A) (t2 : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] (t A) :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] (t A) :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
   | (t_1, Empty) => ret t_1
@@ -298,21 +298,21 @@ Definition concat {A : Type} (t1 : t A) (t2 : t A)
     match x with
     | (x, d) =>
       lift [_;_;_;_] "1110"
-        (let! x_1 := lift [_;_;_] "010" (remove_min_binding t2) in
+        (let! x_1 := lift [_;_;_] "001" (remove_min_binding t2) in
         join t1 x d x_1)
     end
   end.
 
 Definition concat_or_join {A : Type}
   (t1 : t A) (v : key) (d : option A) (t2 : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] (t A) :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] (t A) :=
   match d with
   | Some d => lift [_;_;_;_] "1110" (join t1 v d t2)
   | None => concat t1 t2
   end.
 
 Fixpoint split {A : Type} (x : Ord.t) (x_1 : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination ]
+  : M [ Counter; NonTermination; OCaml.Invalid_argument ]
     ((t A) * (option A) * (t A)) :=
   match x_1 with
   | Empty => ret (Empty, None, Empty)
@@ -343,13 +343,13 @@ Fixpoint merge_rec {A B C : Type}
   : M
     [
       Counter;
+      NonTermination;
       OCaml.Invalid_argument;
       OCaml.Match_failure;
-      NonTermination;
       OCaml.Not_found
     ] (t C) :=
   match counter with
-  | O => lift [_;_;_;_;_] "00010" (not_terminated tt)
+  | O => lift [_;_;_;_;_] "01000" (not_terminated tt)
   | S counter =>
     let i :=
       match (s1, s2) with
@@ -364,23 +364,23 @@ Fixpoint merge_rec {A B C : Type}
     match ((s1, s2), i) with
     | ((Empty, Empty), _) => ret Empty
     | ((Node l1 v1 d1 r1 h1, _), 1) =>
-      let! x := lift [_;_;_;_;_] "11010" (split v1 s2) in
+      let! x := lift [_;_;_;_;_] "11100" (split v1 s2) in
       match x with
       | (l2, d2, r2) =>
         let! x := (merge_rec counter) f l1 l2 in
         let! x_1 := (merge_rec counter) f r1 r2 in
-        lift [_;_;_;_;_] "11011" (concat_or_join x v1 (f v1 (Some d1) d2) x_1)
+        lift [_;_;_;_;_] "11101" (concat_or_join x v1 (f v1 (Some d1) d2) x_1)
       end
     | ((_, Node l2 v2 d2 r2 h2), _) =>
-      let! x := lift [_;_;_;_;_] "11010" (split v2 s1) in
+      let! x := lift [_;_;_;_;_] "11100" (split v2 s1) in
       match x with
       | (l1, d1, r1) =>
         let! x := (merge_rec counter) f l1 l2 in
         let! x_1 := (merge_rec counter) f r1 r2 in
-        lift [_;_;_;_;_] "11011" (concat_or_join x v2 (f v2 d1 (Some d2)) x_1)
+        lift [_;_;_;_;_] "11101" (concat_or_join x v2 (f v2 d1 (Some d2)) x_1)
       end
     | _ =>
-      lift [_;_;_;_;_] "00100"
+      lift [_;_;_;_;_] "00010"
         (OCaml.raise_Match_failure ("tests/ex33.ml" % string, 233, 2))
     end
   end.
@@ -390,16 +390,16 @@ Definition merge {A B C : Type}
   : M
     [
       Counter;
+      NonTermination;
       OCaml.Invalid_argument;
       OCaml.Match_failure;
-      NonTermination;
       OCaml.Not_found
     ] (t C) :=
   let! x := lift [_;_;_;_;_] "10000" (read_counter tt) in
   merge_rec x f s1 s2.
 
 Fixpoint filter {A : Type} (p : key -> A -> bool) (x : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ] (t A) :=
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ] (t A) :=
   match x with
   | Empty => ret Empty
   | Node l v d r _ =>
@@ -413,7 +413,7 @@ Fixpoint filter {A : Type} (p : key -> A -> bool) (x : t A)
   end.
 
 Fixpoint partition {A : Type} (p : key -> A -> bool) (x : t A)
-  : M [ Counter; OCaml.Invalid_argument; NonTermination; OCaml.Not_found ]
+  : M [ Counter; NonTermination; OCaml.Invalid_argument; OCaml.Not_found ]
     ((t A) * (t A)) :=
   match x with
   | Empty => ret (Empty, Empty)
