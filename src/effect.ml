@@ -79,16 +79,15 @@ module Descriptor = struct
       match x with
       | Type (x, typs) ->
         Type (x, List.map (PureType.map_type_vars vars_map) typs)
+    let compare x y =
+      match x, y with
+      | Type (a, ta), Type (b, tb) ->
+        let cmp = BoundName.stable_compare a b in
+        if cmp == 0 then compare ta tb else cmp
   end
   module IdSet = Set.Make (struct
       type t = Id.t
-
-      let compare x y =
-        match x, y with
-        | Id.Type (a, ta), Id.Type (b, tb) ->
-          let cmp = BoundName.stable_compare a b in
-          if cmp == 0 then compare ta tb else cmp
-
+      let compare x y = Id.compare x y
     end)
   module BnSet = Set.Make (struct
       type t = BoundName.t
@@ -231,7 +230,9 @@ module Lift = struct
   let compute (d1 : Descriptor.t) (d2 : Descriptor.t)
     : bool list option * t option =
     let bs = Descriptor.subset_to_bools d1 d2 in
-    if d1.unioned = d2.unioned then
+    if List.compare_lengths d1.unioned d2.unioned = 0 &&
+        List.for_all2 (fun x y -> Descriptor.Id.compare x y = 0)
+          d1.unioned d2.unioned then
       if d1.unioned = [] then
         (Some bs, None)
       else
@@ -245,7 +246,8 @@ module Lift = struct
         | [] ->
           let in_list =
             to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
-          let n = find_index (fun y -> x = y) d2.unioned in
+          let n = find_index (fun y ->
+            Descriptor.Id.compare x y = 0) d2.unioned in
           (bs, Some (Lift (in_list, n)))
         | _ ->
           match d2.unioned with
@@ -255,7 +257,8 @@ module Lift = struct
             let in_list =
               to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
             let out_list = List.map (fun x ->
-              find_index (fun y -> x = y) d2.unioned) d1.unioned in
+              find_index (fun y ->
+                Descriptor.Id.compare x y = 0) d2.unioned) d1.unioned in
             (bs, Some (Mix (in_list, out_list)))
 end
 

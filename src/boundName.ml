@@ -2,6 +2,7 @@ open SmartPrint
 
 type t = {
   full_path : PathName.t;
+  local_path : PathName.t;
   path_name : PathName.t;
   depth : int }
 
@@ -36,8 +37,7 @@ let resolve_open (name_list : Name.t list) (x : t) : t =
 
 (* Compare on the base name first, for better stability across modules. *)
 let stable_compare (x : t) (y : t) : int =
-  let cmp = compare x.path_name.base y.path_name.base in
-  if cmp == 0 then compare x y else cmp
+  compare x.full_path y.full_path
 
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.path_name

@@ -6,6 +6,7 @@ open SmartPrint
 let env_with_effects : Effect.Type.t FullEnvi.t =
   let bound_name depth full_path path base = {
       BoundName.full_path = PathName.of_name full_path base;
+      local_path = PathName.of_name path base;
       path_name = PathName.of_name path base;
       depth
     } in

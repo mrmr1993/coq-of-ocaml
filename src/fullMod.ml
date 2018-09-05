@@ -88,6 +88,7 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     | Some x -> Some {
         BoundName.full_path =
           { x with PathName.path = m.Mod.coq_path @ x.path };
+        local_path = x;
         path_name = x;
         depth = 0 }
     | None ->
@@ -99,7 +100,7 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
     (match find x m with
     | Some x ->
       let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
-      Some { BoundName.full_path = x; path_name = x; depth }
+      Some { BoundName.full_path = x; local_path = x; path_name = x; depth }
     | None -> bound_name_opt find x env)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
@@ -130,7 +131,7 @@ let localize_name (x : BoundName.t) (env : 'a t) : BoundName.t option =
           Some path_name in
   let full_path = x.BoundName.full_path in
   localize_name full_path.PathName.path full_path.PathName.base env []
-  |> option_map (fun path -> { x with BoundName.full_path = path })
+  |> option_map (fun path -> { x with BoundName.local_path = path })
 
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   hd_map (fun m env ->

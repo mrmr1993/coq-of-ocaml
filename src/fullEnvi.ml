@@ -76,7 +76,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
       let (_, coq_name) = CoqName.assoc_names @@ Mod.name external_module in
       let x = { x with path = coq_name :: x.path } in
       module_required coq_name env;
-      { BoundName.full_path = x; path_name = x; depth = -1 })
+      { BoundName.full_path = x; local_path = x; path_name = x; depth = -1 })
   | None -> None
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
@@ -99,7 +99,7 @@ let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option
     let (_, coq_name) = CoqName.assoc_names @@ Mod.name wmod in
     module_required coq_name env;
     let x = { PathName.path = []; base = coq_name } in
-    Some { BoundName.full_path = x; path_name = x; depth = -1 }
+    Some { BoundName.full_path = x; local_path = x; path_name = x; depth = -1 }
   | _, _ -> None
 
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
