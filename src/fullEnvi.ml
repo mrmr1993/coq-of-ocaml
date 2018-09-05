@@ -82,7 +82,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> Some name
+  | Some name -> FullMod.localize_name name env.active_module
   | None -> bound_name_external_opt find x env
 
 let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
@@ -113,6 +113,14 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
   | None ->
       let message = PathName.pp x ^^ !^ "not found." in
       Error.raise loc (SmartPrint.to_string 80 2 message)
+
+let localize_name (loc : Loc.t) (x : BoundName.t) (env : 'a t) : BoundName.t =
+  match FullMod.localize_name x env.active_module with
+  | Some name -> name
+  | None ->
+      let message = BoundName.pp x ^^ !^ "could not be localised." in
+      Error.warn loc (SmartPrint.to_string 80 2 message);
+      x
 
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =

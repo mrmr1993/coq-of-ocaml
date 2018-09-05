@@ -108,6 +108,30 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
 
+let localize_name (x : BoundName.t) (env : 'a t) : BoundName.t option =
+  let rec has_resolved_name (x : PathName.t) (env : 'a Mod.t list) =
+    match env with
+    | [] -> false
+    | m :: env ->
+      if PathName.Map.mem x m.Mod.values then true
+      else has_resolved_name x env in
+  let rec localize_name (path : Name.t list) (base : Name.t) (env : 'a t)
+      (env' : 'a Mod.t list) =
+    match env with
+    | [] -> None
+    | Module m :: env | Include m :: env | Open (m, _) :: env ->
+      match strip_prefix m.Mod.coq_path path with
+      | None -> localize_name path base env (m :: env')
+      | Some path' ->
+        let path_name = PathName.of_name path' base in
+        if has_resolved_name path_name env' then
+          localize_name path base env (m :: env')
+        else
+          Some path_name in
+  let full_path = x.BoundName.full_path in
+  localize_name full_path.PathName.path full_path.PathName.base env []
+  |> option_map (fun path -> { x with BoundName.full_path = path })
+
 let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   hd_map (fun m env ->
     let (name, m) = Mod.Vars.fresh prefix v m in
