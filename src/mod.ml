@@ -64,12 +64,19 @@ type 'a t = {
   modules : 'a t PathName.Map.t }
 
 let empty (module_name : CoqName.t option) (coq_path : Name.t list)
-  : 'a t = {
-  name = module_name;
-  coq_path = coq_path;
-  locator = Locator.empty;
-  values = PathName.Map.empty;
-  modules = PathName.Map.empty }
+  : 'a t =
+  let coq_path = match module_name with
+    | Some module_name ->
+      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
+      coq_name :: coq_path
+    | None -> coq_path in
+  {
+    name = module_name;
+    coq_path = coq_path;
+    locator = Locator.empty;
+    values = PathName.Map.empty;
+    modules = PathName.Map.empty
+  }
 
 let pp (m : 'a t) : SmartPrint.t =
   let pp_map = OCaml.list PathName.pp in

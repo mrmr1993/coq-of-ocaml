@@ -4,7 +4,7 @@ open Utils
 type 'a t' =
   | Module of 'a Mod.t
   | Include of 'a Mod.t
-  | Open of 'a Mod.t * Name.t list * int (* (module, path, depth) *)
+  | Open of 'a Mod.t * int (* (module, depth) *)
 
 type 'a t = 'a t' list
 
@@ -13,16 +13,11 @@ let pp (env : 'a t) : SmartPrint.t =
     match m with
     | Module m -> Mod.pp m
     | Include m -> !^ "include" ^^ braces (Mod.pp m)
-    | Open (_, path, _) ->
-      !^ "open" ^^ separate (!^ ".") (List.map Name.pp path))
+    | Open (m, _) ->
+      !^ "open" ^^ separate (!^ ".") (List.map Name.pp m.Mod.coq_path))
 
 let empty (module_name : CoqName.t option) (coq_path : Name.t list)
   : 'a t =
-  let coq_path = match module_name with
-    | Some module_name ->
-      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
-      coq_name :: coq_path
-    | None -> coq_path in
   [Module (Mod.empty module_name coq_path)]
 
 let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
@@ -46,7 +41,7 @@ let enter_section (env : 'a t) : 'a t =
 
 let open_module (m : 'a Mod.t) (path : Name.t list) (depth : int) (env : 'a t)
   : 'a t =
-  Module (Mod.empty None (coq_path env)) :: Open (m, path, depth) :: env
+  Module (Mod.empty None (coq_path env)) :: Open (m, depth) :: env
 
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   let m = { m with name = None; coq_path = coq_path env } in
@@ -63,8 +58,9 @@ let leave_module (prefix : Name.t option -> 'a -> 'a)
       | None -> (* This is a partial module, continue to the rest of it. *)
         leave_module_rec (Module m :: env)
       end
-    | Module m :: Open (mo, path, depth) :: env ->
-      leave_module_rec @@ Module (Mod.map (resolve_open path) m) :: env
+    | Module m :: Open (mo, depth) :: env ->
+      leave_module_rec @@
+        Module (Mod.map (resolve_open mo.Mod.coq_path) m) :: env
     | _ -> failwith "You should have entered in at least one module." in
   leave_module_rec env
 
@@ -99,14 +95,11 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
         |> option_map (fun name ->
           { name with BoundName.depth = name.BoundName.depth + 1 })
     end
-  | Open (m, path, depth) :: env ->
+  | Open (m, depth) :: env ->
     (match find x m with
     | Some x ->
-      let x = { x with PathName.path = path @ x.PathName.path } in
-      Some {
-        BoundName.full_path = { x with PathName.path = m.Mod.coq_path @ path };
-        path_name = x;
-        depth }
+      let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
+      Some { BoundName.full_path = x; path_name = x; depth }
     | None -> bound_name_opt find x env)
       |> option_map (fun name ->
         { name with BoundName.depth = name.BoundName.depth + 1 })
@@ -125,4 +118,4 @@ let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
     match m with
     | Module m -> Module (Mod.map f m)
     | Include m -> Include (Mod.map f m)
-    | Open (m, path, depth) -> Open (Mod.map f m, path, depth)) env
+    | Open (m, depth) -> Open (Mod.map f m, depth)) env
