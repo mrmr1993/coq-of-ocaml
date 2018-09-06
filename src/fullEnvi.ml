@@ -159,28 +159,30 @@ let map (f : 'a -> 'b) (env : 'a t) : 'b t =
 let include_module (x : 'a Mod.t) (env : 'a t) : 'a t =
   { env with active_module = FullMod.include_module x env.active_module }
 
-let find_free_name (base_name : string) (env : 'a Mod.t) : Name.t =
+let find_free_name (path : Name.t list) (base_name : string) (env : 'a t)
+  : Name.t =
+  let values = FullMod.hd_map (fun m -> m.values) env.active_module in
   let prefix_n s n =
     if n = 0 then
       Name.of_string s
     else
       Name.of_string @@ Printf.sprintf "%s_%d" s n in
-  let rec first_n (n : int) : int =
-    if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env.values then
+  let rec first_n (n : int) : Name.t =
+    let name = prefix_n base_name n in
+    if PathName.Map.mem (PathName.of_name path name) values then
       first_n (n + 1)
-    else
-      n in
-  prefix_n base_name (first_n 0)
+    else name in
+  first_n 0
 
-let find_free_path (x : PathName.t) (env : 'a Mod.t) : PathName.t =
-  { x with base = find_free_name x.base env }
+let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
+  { x with base = find_free_name x.path x.base env }
 
 module Carrier (M : Mod.Carrier) = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
     let x = PathName.of_name path base in
     match FullMod.hd_map (M.resolve_opt x) env.active_module with
     | Some path -> path
-    | None -> FullMod.hd_map (find_free_path x) env.active_module
+    | None -> find_free_path x env
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt M.resolve_opt x env
@@ -211,7 +213,7 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-    let name = FullMod.hd_map (find_free_name prefix) env.active_module in
+    let name = find_free_name [] prefix env in
     (name, add [] name v env)
 end
 
@@ -247,7 +249,7 @@ module Function = struct
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
     : Name.t * 'a t =
-    let name = FullMod.hd_map (find_free_name prefix) env.active_module in
+    let name = find_free_name [] prefix env in
     (name, add [] name v typ env)
 end
 
@@ -270,7 +272,7 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
-    let name = FullMod.hd_map (find_free_name prefix) env.active_module in
+    let name = find_free_name [] prefix env in
     (name, add [] name env)
 end
 
