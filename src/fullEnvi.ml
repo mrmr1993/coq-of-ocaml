@@ -160,13 +160,11 @@ let include_module (x : 'a Mod.t) (env : 'a t) : 'a t =
   { env with active_module = FullMod.include_module x env.active_module }
 
 module Carrier (M : Mod.Carrier) = struct
-  let mod_resolve (x : PathName.t) (m : 'a Mod.t) : PathName.t =
-    match M.resolve_opt x m with
-    | Some path -> path
-    | None -> Mod.find_free_path x m
-
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-    FullMod.hd_map (mod_resolve (PathName.of_name path base)) env.active_module
+    let x = PathName.of_name path base in
+    match FullMod.hd_map (M.resolve_opt x) env.active_module with
+    | Some path -> path
+    | None -> FullMod.hd_map (Mod.find_free_path x) env.active_module
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt M.resolve_opt x env
@@ -179,7 +177,7 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (mod_resolve x) env.active_module in
+    let y = resolve path base env in
     { env with
       values = PathName.Map.add y (M.value v) env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
@@ -210,7 +208,7 @@ module Function = struct
   let add (path : Name.t list) (base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (mod_resolve x) env.active_module in
+    let y = resolve path base env in
     { env with
       values = PathName.Map.add y (Mod.Function.value v typ) env.values;
       active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
@@ -241,7 +239,7 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (mod_resolve x) env.active_module in
+    let y = resolve path base env in
     { env with
       values = PathName.Map.add y M.value env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
