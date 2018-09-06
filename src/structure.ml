@@ -110,7 +110,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let name = Name.of_ident name in
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, structures) = of_structure env structure in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ())
+      let env = FullEnvi.leave_module (fun _ -> ()) (fun _ -> ())
         (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
     | Tstr_modtype _ -> Error.raise loc "Signatures not handled."
@@ -165,7 +165,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = monadise_let_rec env defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ())
+      let env = FullEnvi.leave_module (fun _ -> ()) (fun _ -> ())
         (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
   let (env, defs) = List.fold_left (fun (env, defs) def ->
@@ -205,7 +205,8 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = effects env defs in
       let env = FullEnvi.leave_module Effect.Type.leave_prefix
-        Effect.Type.resolve_open (FullMod.localize_type loc) env in
+        Effect.Type.resolve_open
+        (FullMod.localize_type loc Mod.Descriptors.resolve_opt) env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
@@ -250,7 +251,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module (CoqName.Name name) env) defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ())
+      let env = FullEnvi.leave_module (fun _ -> ()) (fun _ -> ())
         (fun _ _ -> ()) env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =

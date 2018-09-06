@@ -36,14 +36,16 @@ module Locator = struct
     typs : PathName.t PathName.Map.t;
     descriptors : PathName.t PathName.Map.t;
     constructors : PathName.t PathName.Map.t;
-    fields : PathName.t PathName.Map.t }
+    fields : PathName.t PathName.Map.t;
+    modules : PathName.t PathName.Map.t }
 
   let empty = {
     vars = PathName.Map.empty;
     typs = PathName.Map.empty;
     descriptors = PathName.Map.empty;
     constructors = PathName.Map.empty;
-    fields = PathName.Map.empty }
+    fields = PathName.Map.empty;
+    modules = PathName.Map.empty }
 
   let join
     (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
@@ -53,7 +55,19 @@ module Locator = struct
     typs = f l1.typs l2.typs;
     descriptors = f l1.descriptors l2.descriptors;
     constructors = f l1.constructors l2.constructors;
-    fields = f l1.fields l2.fields }
+    fields = f l1.fields l2.fields;
+    modules = f l1.modules l2.modules }
+
+  let pp (l : t) : SmartPrint.t =
+    let pp_map map = PathName.Map.bindings map |> OCaml.list (fun (x, y) ->
+      nest (PathName.pp x ^^ !^ "=" ^^ PathName.pp y)) in
+    OCaml.list (fun x -> x) [
+      !^ "vars:" ^^ pp_map l.vars;
+      !^ "typs:" ^^ pp_map l.typs;
+      !^ "descriptors:" ^^ pp_map l.descriptors;
+      !^ "constructors:" ^^ pp_map l.constructors;
+      !^ "fields:" ^^ pp_map l.fields;
+      !^ "modules" ^^ pp_map l.modules ]
 end
 
 type 'a t = {
@@ -68,7 +82,7 @@ let empty (module_name : CoqName.t option) (coq_path : Name.t list)
   let coq_path = match module_name with
     | Some module_name ->
       let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
-      coq_name :: coq_path
+      coq_path @ [coq_name]
     | None -> coq_path in
   {
     name = module_name;
@@ -79,27 +93,13 @@ let empty (module_name : CoqName.t option) (coq_path : Name.t list)
   }
 
 let pp (m : 'a t) : SmartPrint.t =
-  let pp_map = OCaml.list PathName.pp in
-  let vars = ref [] in
-  let typs = ref [] in
-  let descriptors = ref [] in
-  let constructors = ref [] in
-  let fields = ref [] in
-  m.values |> PathName.Map.iter (fun x v ->
-    match v with
-    | Variable _ | Function _ -> vars := x :: !vars
-    | Type _ -> typs := x :: !typs
-    | Descriptor -> descriptors := x :: !descriptors
-    | Constructor -> constructors := x :: !constructors
-    | Field -> fields := x :: !fields);
-  group (
-    !^ "vars:" ^^ nest (pp_map !vars) ^^ newline ^^
-    !^ "typs:" ^^ nest (pp_map !typs) ^^ newline ^^
-    !^ "descriptors:" ^^ nest (pp_map !descriptors) ^^ newline ^^
-    !^ "constructors:" ^^ nest (pp_map !constructors) ^^ newline ^^
-    !^ "fields:" ^^ nest (pp_map !fields) ^^ newline ^^
-    !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
-      PathName.Map.bindings m.modules))
+  OCaml.list (fun x -> x) [
+    group (!^ "module:" ^^ separate (!^ ".") (List.map Name.pp m.coq_path));
+    group @@ !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
+      PathName.Map.bindings m.modules);
+    group @@ !^ "values:" ^^ group (OCaml.list (fun (x, _) -> PathName.pp x) @@
+      PathName.Map.bindings m.values);
+    Locator.pp m.locator ]
 
 let name (m : 'a t) : CoqName.t =
   match m.name with
@@ -131,8 +131,7 @@ end
 
 module Vars = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
-      PathName.Map.find_opt x m.locator.vars
+    PathName.Map.find_opt x m.locator.vars
 
   let value (v : 'a) : 'a Value.t = Variable v
 
@@ -173,8 +172,7 @@ module Function = struct
 end
 module Typs = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
-      PathName.Map.find_opt x m.locator.typs
+    PathName.Map.find_opt x m.locator.typs
 
   let value (v : 'a) : 'a Value.t = Type v
 
@@ -197,8 +195,7 @@ module Typs = struct
 end
 module Descriptors = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
-      PathName.Map.find_opt x m.locator.descriptors
+    PathName.Map.find_opt x m.locator.descriptors
 
   let value : 'a Value.t = Descriptor
 
@@ -215,8 +212,7 @@ module Descriptors = struct
 end
 module Constructors = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
-      PathName.Map.find_opt x m.locator.constructors
+    PathName.Map.find_opt x m.locator.constructors
 
   let value : 'a Value.t = Constructor
 
@@ -233,8 +229,7 @@ module Constructors = struct
 end
 module Fields = struct
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun path_name -> { x with base = path_name.PathName.base }) @@
-      PathName.Map.find_opt x m.locator.fields
+    PathName.Map.find_opt x m.locator.fields
 
   let value : 'a Value.t = Field
 
@@ -250,14 +245,16 @@ module Fields = struct
     | _ -> false
 end
 module Modules = struct
-  let add (x : PathName.t) (v : 'a t) (m : 'a t) : 'a t =
-    { m with modules = PathName.Map.add x v m.modules }
-
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    PathName.Map.mem x m.modules
-
   let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    if mem x m then Some x else None
+    PathName.Map.find_opt x m.locator.modules
+
+  let assoc (x : PathName.t) (y : PathName.t) (v : 'a t) (m : 'a t) : 'a t =
+    { m with
+      modules = PathName.Map.add y v m.modules;
+      locator = { m.locator with
+        modules = PathName.Map.add x y m.locator.modules } }
+
+  let mem (x : PathName.t) (m : 'a t) : bool = PathName.Map.mem x m.modules
 
   let find_opt (x : PathName.t) (m : 'a t) : 'a t option =
     PathName.Map.find_opt x m.modules
@@ -266,7 +263,7 @@ module Modules = struct
     PathName.Map.find x m.modules
 end
 
-let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
+let finish_module (prefix : 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
   : 'a t =
   match option_map CoqName.ocaml_name m1.name with
   | Some module_name ->
@@ -278,19 +275,19 @@ let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
       locator = Locator.join
         (PathName.Map.map_union add_to_path (fun _ v -> v))
         m1.locator m2.locator;
-      values = PathName.Map.map_union add_to_path
-        (fun _ v -> Value.map (prefix (Some module_name)) v)
+      values = PathName.Map.union (fun _ v _ -> Some (Value.map prefix v))
         m1.values m2.values;
-      modules = PathName.Map.map_union add_to_path (fun _ v -> v)
-        m1.modules m2.modules } in
-    Modules.add (PathName.of_name [] module_name) m1 m
+      modules = PathName.Map.union (fun _ v _ -> Some v) m1.modules m2.modules
+    } in
+    Modules.assoc (PathName.of_name [] module_name)
+      (PathName.of_name_list m1.coq_path) m1 m
   | None -> (* This is a partial module, do not add name information. *)
     { name = m2.name;
       coq_path = m2.coq_path;
       locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
         m1.locator m2.locator;
       values = PathName.Map.map_union (fun x -> x)
-        (fun _ v -> Value.map (prefix None) v)
+        (fun _ v -> Value.map prefix v)
         m1.values m2.values;
       modules = PathName.Map.union (fun _ v _ -> Some v)
         m1.modules m2.modules }

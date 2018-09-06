@@ -109,7 +109,7 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
     let env = FullEnvi.enter_module (CoqName.Name x) env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
     FullEnvi.leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
-      (FullMod.localize_type Loc.Unknown) env
+      (FullMod.localize_type Loc.Unknown Mod.Descriptors.resolve_opt) env
 
 let to_mod (coq_prefix : Name.t) (interface : t)
   (env : Effect.Type.t FullEnvi.t) : Effect.Type.t Mod.t =

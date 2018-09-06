@@ -7,7 +7,7 @@ let pp (o : t) : SmartPrint.t =
 
 let of_ocaml (env : 'a FullEnvi.t) (loc : Loc.t) (path : Path.t) : t =
   let path = PathName.of_path loc path in
-  FullEnvi.bound_module loc path env
+  FullEnvi.Module.bound loc path env
 
 let update_env (loc : Loc.t) (o : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   FullEnvi.open_module loc o env

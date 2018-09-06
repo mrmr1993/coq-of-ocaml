@@ -7,7 +7,6 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   let bound_name depth full_path path base = {
       BoundName.full_path = PathName.of_name full_path base;
       local_path = PathName.of_name path base;
-      path_name = PathName.of_name path base;
       depth
     } in
   let descriptor depth (full_path, path, base) =
@@ -176,7 +175,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
-      (FullMod.localize_type Loc.Unknown)
+      (FullMod.localize_type Loc.Unknown Mod.Descriptors.resolve_opt)
 
   (* List *)
   |> fun env ->

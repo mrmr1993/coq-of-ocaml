@@ -26,6 +26,8 @@ let module_required (module_name : Name.t) (env : 'a t) : unit =
 let requires (env : 'a t) : Name.t list =
   Name.Set.elements !(env.required_modules)
 
+let coq_path (env : 'a t) : Name.t list = FullMod.coq_path env.active_module
+
 let find_mod_opt (module_name : Name.t) (env : 'a t) : 'a Mod.t option =
   env.get_module module_name
 
@@ -37,19 +39,14 @@ let find_mod (loc : Loc.t) (module_name : Name.t) (env : 'a t) : 'a Mod.t =
 let update_active (f : 'a Mod.t -> 'a Mod.t) (env : 'a t) : 'a t =
   { env with active_module = FullMod.hd_mod_map f env.active_module }
 
-let add_module (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
-  : 'a t =
-  update_active (Mod.Modules.add (PathName.of_name path base) v) env
-
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_module module_name env.active_module}
 
 let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
-let leave_module (prefix : Name.t option -> 'a -> 'a)
-  (resolve_open : Name.t list -> 'a -> 'a) (localize : 'a FullMod.t -> 'a -> 'a)
-  (env : 'a t) : 'a t =
+let leave_module (prefix : 'a -> 'a) (resolve_open : 'a -> 'a)
+  (localize : 'a FullMod.t -> 'a -> 'a) (env : 'a t) : 'a t =
   {env with active_module =
     FullMod.leave_module prefix resolve_open localize env.active_module}
 
@@ -63,10 +60,9 @@ let find_external_module_path_opt (x : PathName.t) (env : 'a t)
         let x = { x with PathName.path = module_path } in
         (external_module, x))
 
-let find_external_module_path (x : PathName.t) (env : 'a t)
-  : 'a Mod.t * PathName.t =
+let find_external_module (x : PathName.t) (env : 'a t) : 'a Mod.t =
   match find_external_module_path_opt x env with
-  | Some ret -> ret
+  | Some (external_module, _) -> external_module
   | None ->
     failwith @@ to_string 80 2 @@
       !^ "Could not find include for" ^^ PathName.pp x ^-^ !^ "."
@@ -77,15 +73,18 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   | Some (external_module, x) ->
     find x external_module |> option_map (fun (x : PathName.t) ->
       let (_, coq_name) = CoqName.assoc_names @@ Mod.name external_module in
-      let x = { x with path = coq_name :: x.path } in
       module_required coq_name env;
-      { BoundName.full_path = x; local_path = x; path_name = x; depth = -1 })
+      { BoundName.full_path = x; local_path = x; depth = -1 })
   | None -> None
+
+let localize (loc : Loc.t) (find : PathName.t -> 'a Mod.t -> PathName.t option)
+  (x : BoundName.t) (env : 'a t) : BoundName.t =
+  FullMod.localize loc find env.active_module x
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> FullMod.localize_opt name env.active_module
+  | Some name -> Some (localize Loc.Unknown find name env)
   | None -> bound_name_external_opt find x env
 
 let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
@@ -101,54 +100,16 @@ let bound_external_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option
   | [], Some wmod -> (* This is a toplevel module *)
     let (_, coq_name) = CoqName.assoc_names @@ Mod.name wmod in
     module_required coq_name env;
-    let x = { PathName.path = []; base = coq_name } in
-    Some { BoundName.full_path = x; local_path = x; path_name = x; depth = -1 }
+    Some { BoundName.full_path = x; local_path = x; depth = -1 }
   | _, _ -> None
-
-let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-  match bound_name_opt Mod.Modules.resolve_opt x env with
-  | Some name -> Some name
-  | None -> bound_external_module_opt x env
-
-let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  match bound_module_opt x env with
-  | Some name -> name
-  | None ->
-      let message = PathName.pp x ^^ !^ "not found." in
-      Error.raise loc (SmartPrint.to_string 80 2 message)
-
-let localize (loc : Loc.t) (x : BoundName.t) (env : 'a t) : BoundName.t =
-  match FullMod.localize_opt x env.active_module with
-  | Some name -> name
-  | None ->
-      let message = BoundName.pp x ^^ !^ "could not be localised." in
-      Error.warn loc (SmartPrint.to_string 80 2 message);
-      x
 
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
-    let (external_module, x) = find_external_module_path x.full_path env in
-    find x external_module
+    let external_module = find_external_module x.full_path env in
+    find x.full_path external_module
   else
     FullMod.find_bound_name find x env.active_module open_lift
-
-let find_module (loc : Loc.t) (x : BoundName.t) (env : 'a t)
-  (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
-  match x.full_path.path with
-  | [] when x.BoundName.depth == -1 ->
-    (* This is a reference to a top-level external module *)
-    find_mod loc x.full_path.base env
-  | _ -> find_bound_name Mod.Modules.find x env open_lift
-
-let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
-  let m = find_module loc module_name env (fun x -> x) in
-  { env with active_module =
-      FullMod.open_module m module_name.depth env.active_module }
-
-let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
-  let path = PathName.of_name_list module_name in
-  open_module loc (bound_module loc path env) env
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {values = PathName.Map.map (Mod.Value.map f) env.values;
@@ -175,7 +136,8 @@ let find_free_name (path : Name.t list) (base_name : string) (env : 'a t)
   first_n 0
 
 let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
-  { x with base = find_free_name x.path x.base env }
+  let path = coq_path env @ x.path in
+  { PathName.path = path; base = find_free_name path x.base env }
 
 module Carrier (M : Mod.Carrier) = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
@@ -203,8 +165,8 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
-      v env
+    raw_add (PathName.of_name path base)
+      (PathName.of_name (coq_path env @ path) assoc_base) v env
 
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
@@ -234,8 +196,8 @@ module Function = struct
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
-      v typ env
+    raw_add (PathName.of_name path base)
+      (PathName.of_name (coq_path env @ path) assoc_base) v typ env
 
   let find (x : BoundName.t) (env : 'a t)
     (open_lift : Effect.PureType.t -> Effect.PureType.t)
@@ -261,8 +223,8 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
     (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
-      env
+    raw_add (PathName.of_name path base)
+      (PathName.of_name (coq_path env @ path) assoc_base) env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
@@ -273,6 +235,73 @@ end
 module Descriptor = EmptyCarrier(Mod.Descriptors)
 module Constructor = EmptyCarrier(Mod.Constructors)
 module Field = EmptyCarrier(Mod.Fields)
+
+module Module = struct
+  let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
+    let x = PathName.of_name path base in
+    match FullMod.hd_map (Mod.Modules.resolve_opt x) env.active_module with
+    | Some path -> path
+    | None -> { path = coq_path env @ x.path; base = x.base }
+
+  let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
+    match bound_name_opt Mod.Modules.resolve_opt x env with
+    | Some name -> Some name
+    | None -> bound_external_module_opt x env
+
+  let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
+    match bound_opt x env with
+    | Some name -> name
+    | None ->
+        let message = PathName.pp x ^^ !^ "not found." in
+        Error.raise loc (SmartPrint.to_string 80 2 message)
+
+  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a Mod.t) (env : 'a t)
+    : 'a t =
+    { env with
+      active_module =
+        FullMod.hd_mod_map (Mod.Modules.assoc x y v) env.active_module }
+
+  let add (path : Name.t list) (base : Name.t) (v : 'a Mod.t) (env : 'a t)
+    : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) v env
+
+  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
+    (v : 'a Mod.t) (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base)
+      (PathName.of_name (coq_path env @ path) assoc_base) v env
+
+  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t)
+    (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
+    match x.full_path.path with
+    | [] when x.BoundName.depth == -1 ->
+      (* This is a reference to a top-level external module *)
+      find_mod loc x.full_path.base env
+    | _ -> find_bound_name Mod.Modules.find x env open_lift
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (v : 'a Mod.t) (env : 'a t) : Name.t * 'a t =
+    let path = coq_path env in
+    let modules = FullMod.hd_map (fun m -> m.modules) env.active_module in
+    let rec first_n (n : int) : Name.t =
+      let name = if n = 0 then
+          Name.of_string prefix
+        else
+          Name.of_string @@ Printf.sprintf "%s_%d" prefix n in
+      if PathName.Map.mem (PathName.of_name path name) modules then
+        first_n (n + 1)
+      else name in
+    let name = first_n 0 in
+    (name, add [] name v env)
+end
+
+let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
+  let m = Module.find loc module_name env (fun x -> x) in
+  { env with active_module =
+      FullMod.open_module m module_name.depth env.active_module }
+
+let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
+  let path = PathName.of_name_list module_name in
+  open_module loc (Module.bound loc path env) env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   env

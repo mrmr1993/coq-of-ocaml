@@ -336,11 +336,9 @@ module Type = struct
 
   let depth_lift (x : t) : t = map BoundName.depth_lift x
 
-  let leave_prefix (name : Name.t option) (x : t) : t =
-    map (BoundName.leave_prefix name) x
+  let leave_prefix (x : t) : t = map BoundName.leave_prefix x
 
-  let resolve_open (name_list : Name.t list) (x : t) : t =
-    map (BoundName.resolve_open name_list) x
+  let resolve_open (x : t) : t = map BoundName.resolve_open x
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with
