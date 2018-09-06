@@ -106,22 +106,6 @@ let name (m : 'a t) : CoqName.t =
   | Some name -> name
   | None -> failwith "No name associated with this module."
 
-let find_free_name (base_name : string) (env : 'a t) : Name.t =
-  let prefix_n s n =
-    if n = 0 then
-      Name.of_string s
-    else
-      Name.of_string @@ Printf.sprintf "%s_%d" s n in
-  let rec first_n (n : int) : int =
-    if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env.values then
-      first_n (n + 1)
-    else
-      n in
-  prefix_n base_name (first_n 0)
-
-let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
-  { x with base = find_free_name x.base env }
-
 let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
   { m with
     values = m.values |> PathName.Map.map (Value.map f);
