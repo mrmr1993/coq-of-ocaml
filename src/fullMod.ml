@@ -20,18 +20,22 @@ let empty (module_name : CoqName.t option) (coq_path : Name.t list)
   : 'a t =
   [Module (Mod.empty module_name coq_path)]
 
-let hd_map (f : 'a Mod.t -> 'a t -> 'b) (env : 'a t) : 'b =
+let hd_map (f : 'a Mod.t -> 'b) (env : 'a t) : 'b =
   match env with
-  | Module m :: env -> f m env
+  | Module m :: env -> f m
   | (Include _ | Open _) :: env ->
     failwith "The head of the environment must be a module."
   | [] -> failwith "The environment must be a non-empty list."
 
-let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) : 'a t -> 'a t =
-  hd_map (fun m env -> Module (f m) :: env)
+let hd_mod_map (f : 'a Mod.t -> 'a Mod.t) (env : 'a t) : 'a t =
+  match env with
+  | Module m :: env -> Module (f m) :: env
+  | (Include _ | Open _) :: env ->
+    failwith "The head of the environment must be a module."
+  | [] -> failwith "The environment must be a non-empty list."
 
 let coq_path (env : 'a t) : Name.t list =
-  hd_map (fun m env -> m.Mod.coq_path) env
+  hd_map (fun m -> m.Mod.coq_path) env
 
 let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
   Module (Mod.empty (Some module_name) (coq_path env)) :: env
@@ -132,11 +136,6 @@ let localize_name (x : BoundName.t) (env : 'a t) : BoundName.t option =
   let full_path = x.BoundName.full_path in
   localize_name full_path.PathName.path full_path.PathName.base env []
   |> option_map (fun path -> { x with BoundName.local_path = path })
-
-let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-  hd_map (fun m env ->
-    let (name, m) = Mod.Vars.fresh prefix v m in
-    (name, Module m :: env)) env
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
   List.map (fun m ->

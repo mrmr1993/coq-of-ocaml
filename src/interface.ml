@@ -120,7 +120,7 @@ let to_mod (coq_prefix : Name.t) (interface : t)
   | Interface (_, defs) ->
     List.fold_left (fun env def -> to_full_envi def env) env defs
   | _ -> to_full_envi interface env in
-  FullMod.hd_map (fun m _ -> m) env.FullEnvi.active_module
+  FullMod.hd_map (fun m -> m) env.FullEnvi.active_module
 
 let rec to_json (interface : t) : json =
   match interface with

@@ -318,7 +318,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
               :: index_pattern in
             let pattern = (Pattern.Tuple [p; Pattern.Any], e) :: pattern in
             (index_pattern, pattern)) ([], [no_match]) in
-      let (i, env) = FullEnvi.fresh_var "i" () env in
+      let (i, env) = FullEnvi.Var.fresh "i" () env in
       let x = FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] i) env in
       let tup_t = Type.Tuple [snd (annotation e); int_t] in
       LetVar ((Loc.Unknown, typ), CoqName.Name i,
@@ -395,7 +395,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     patterns. *)
 and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   (typ : Type.t) (cases : case list) : Name.t * (Loc.t * Type.t) t =
-  let (x, env) = FullEnvi.fresh_var "x" () env in
+  let (x, env) = FullEnvi.Var.fresh "x" () env in
   let p1 = (List.hd cases).c_lhs in
   let cases = cases |> List.map (fun {c_lhs = p; c_rhs = e} ->
     let p = Pattern.of_pattern env p in
@@ -597,7 +597,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     (* Add the suffix "_rec" to the names. *)
     let def' = { def with Definition.cases =
       def.Definition.cases |> List.map (fun (header, e) ->
-        let (name_rec, _) = FullEnvi.fresh_var
+        let (name_rec, _) = FullEnvi.Var.fresh
           (CoqName.ocaml_name header.Header.name ^ "_rec") () env_in_def in
         let name_rec = (CoqName.of_names name_rec
           (FullEnvi.Var.resolve [] name_rec env).base) in
@@ -610,7 +610,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       def'.Definition.cases |> List.map (fun (header, e) ->
         let name_rec = header.Header.name in
         let (counter, _) =
-          FullEnvi.fresh_var "counter" () env_after_def' in
+          FullEnvi.Var.fresh "counter" () env_after_def' in
         let args_rec = (CoqName.of_names counter counter, nat_type)
           :: header.Header.args in
         let header_rec =
@@ -966,7 +966,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         monadise_list env es d (map fst e :: es') k
       else
         let e' = monadise env e in
-        let (x, env) = FullEnvi.fresh_var "x" () env in
+        let (x, env) = FullEnvi.Var.fresh "x" () env in
         bind d_e d d e' (Some (CoqName.of_names x x)) (monadise_list env es d
           (Variable (Loc.Unknown,
             FullEnvi.Var.bound Loc.Unknown (PathName.of_name [] x) env) :: es') k) in

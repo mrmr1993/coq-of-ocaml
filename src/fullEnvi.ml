@@ -150,10 +150,6 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
   open_module loc (bound_module loc path env) env
 
-let fresh_var (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-  let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in
-  (name, {env with active_module = active_mod})
-
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {values = PathName.Map.map (Mod.Value.map f) env.values;
    active_module = FullMod.map f env.active_module;
@@ -170,8 +166,7 @@ module Carrier (M : Mod.Carrier) = struct
     | None -> Mod.find_free_path x m
 
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
-    FullMod.hd_map (fun m _ -> mod_resolve (PathName.of_name path base) m)
-      env.active_module
+    FullMod.hd_map (mod_resolve (PathName.of_name path base)) env.active_module
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt M.resolve_opt x env
@@ -184,7 +179,7 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    let y = FullMod.hd_map (mod_resolve x) env.active_module in
     { env with
       values = PathName.Map.add y (M.value v) env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
@@ -199,6 +194,11 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
 
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
+    let name = FullMod.hd_map (Mod.find_free_name prefix) env.active_module in
+    (name, add [] name v env)
 end
 
 module Var = ValueCarrier(Mod.Vars)
@@ -210,11 +210,10 @@ module Function = struct
   let add (path : Name.t list) (base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    let y = FullMod.hd_map (mod_resolve x) env.active_module in
     { env with
       values = PathName.Map.add y (Mod.Function.value v typ) env.values;
-      active_module = FullMod.hd_mod_map
-        (Mod.Function.add (PathName.of_name path base) v typ)
+      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
         env.active_module }
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
@@ -230,13 +229,19 @@ module Function = struct
     (open_lift : Effect.PureType.t -> Effect.PureType.t)
     : Effect.PureType.t option =
     find_bound_name Mod.Function.find x env (option_map open_lift)
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
+    : Name.t * 'a t =
+    let name = FullMod.hd_map (Mod.find_free_name prefix) env.active_module in
+    (name, add [] name v typ env)
 end
 
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
     let x = PathName.of_name path base in
-    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    let y = FullMod.hd_map (mod_resolve x) env.active_module in
     { env with
       values = PathName.Map.add y M.value env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
@@ -248,6 +253,11 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
     { env with
       values = PathName.Map.add y M.value env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
+    let name = FullMod.hd_map (Mod.find_free_name prefix) env.active_module in
+    (name, add [] name env)
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)

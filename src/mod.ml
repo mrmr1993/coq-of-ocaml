@@ -136,7 +136,6 @@ module type ValueCarrier = sig
   include Carrier
   val value : 'a -> 'a Value.t
   val assoc : PathName.t -> PathName.t -> 'a -> 'a t -> 'a t
-  val add : PathName.t -> 'a -> 'a t -> 'a t
   val find : PathName.t -> 'a t -> 'a
 end
 
@@ -144,7 +143,6 @@ module type EmptyCarrier = sig
   include Carrier
   val value : 'a Value.t
   val assoc : PathName.t -> PathName.t -> 'a t -> 'a t
-  val add : PathName.t -> 'a t -> 'a t
 end
 
 module Vars = struct
@@ -160,12 +158,6 @@ module Vars = struct
       locator = { m.locator with
         vars = PathName.Map.add x y m.locator.vars } }
 
-  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v m
-
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
     | Some (Variable _ | Function _) -> true
@@ -177,11 +169,6 @@ module Vars = struct
     | Function (a, _) -> a
     | _ -> failwith @@
       String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Variable"
-
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-    let name = find_free_name prefix env in
-    (name, add (PathName.of_name [] name) v env)
 end
 module Function = struct
   let value (v : 'a) (typ : Effect.PureType.t) : 'a Value.t = Function (v, typ)
@@ -192,13 +179,6 @@ module Function = struct
       values = PathName.Map.add y (Function (v, typ)) m.values;
       locator = { m.locator with
         vars = PathName.Map.add x y m.locator.vars } }
-
-  let add (x : PathName.t) (v : 'a) (typ : Effect.PureType.t) (m : 'a t)
-    : 'a t =
-    let y = match Vars.resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v typ m
 
   let find (x : PathName.t) (m : 'a t) : Effect.PureType.t option =
     match PathName.Map.find x m.values with
@@ -219,12 +199,6 @@ module Typs = struct
       values = PathName.Map.add y (Type v) m.values;
       locator = { m.locator with
         typs = PathName.Map.add x y m.locator.typs } }
-
-  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v m
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
@@ -250,12 +224,6 @@ module Descriptors = struct
       locator = { m.locator with
         descriptors = PathName.Map.add x y m.locator.descriptors } }
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
-
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
     | Some Descriptor -> true
@@ -274,12 +242,6 @@ module Constructors = struct
       locator = { m.locator with
         constructors = PathName.Map.add x y m.locator.constructors } }
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
-
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
     | Some Constructor -> true
@@ -297,12 +259,6 @@ module Fields = struct
       values = PathName.Map.add y Field m.values;
       locator = { m.locator with
         fields = PathName.Map.add x y m.locator.fields } }
-
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
 
   let mem (x : PathName.t) (m : 'a t) : bool =
     match PathName.Map.find_opt x m.values with
