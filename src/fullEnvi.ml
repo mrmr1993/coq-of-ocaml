@@ -2,6 +2,7 @@ open SmartPrint
 open Utils
 
 type 'a t = {
+  values : 'a Mod.Value.t PathName.Map.t;
   active_module : 'a FullMod.t;
   get_module : Name.t -> 'a Mod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
@@ -13,6 +14,7 @@ let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
 let empty (module_name : CoqName.t option)
   (get_module : Name.t -> 'a Mod.t option) : 'a t = {
+  values = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
   get_module;
   required_modules = ref Name.Set.empty
@@ -148,12 +150,13 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
   open_module loc (bound_module loc path env) env
 
-let fresh_var  (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
+let fresh_var (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
   let (name, active_mod) = FullMod.fresh_var prefix v env.active_module in
   (name, {env with active_module = active_mod})
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
-  {active_module = FullMod.map f env.active_module;
+  {values = PathName.Map.map (Mod.Value.map f) env.values;
+   active_module = FullMod.map f env.active_module;
    get_module = (fun x -> option_map (Mod.map f) (env.get_module x));
    required_modules = env.required_modules}
 
@@ -180,12 +183,19 @@ end
 module ValueCarrier (M : Mod.ValueCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
-    update_active (M.add (PathName.of_name path base) v) env
+    let x = PathName.of_name path base in
+    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    { env with
+      values = PathName.Map.add y (M.value v) env.values;
+      active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (env : 'a t) : 'a t =
-    update_active (M.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base) v) env
+    let x = PathName.of_name path base in
+    let y = PathName.of_name path assoc_base in
+    { env with
+      values = PathName.Map.add y (M.value v) env.values;
+      active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
 
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
@@ -199,12 +209,22 @@ module Function = struct
 
   let add (path : Name.t list) (base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    update_active (Mod.Function.add (PathName.of_name path base) v typ) env
+    let x = PathName.of_name path base in
+    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    { env with
+      values = PathName.Map.add y (Mod.Function.value v typ) env.values;
+      active_module = FullMod.hd_mod_map
+        (Mod.Function.add (PathName.of_name path base) v typ)
+        env.active_module }
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    update_active (Mod.Function.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base) v typ) env
+    let x = PathName.of_name path base in
+    let y = PathName.of_name path assoc_base in
+    { env with
+      values = PathName.Map.add y (Mod.Function.value v typ) env.values;
+      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
+        env.active_module }
 
   let find (x : BoundName.t) (env : 'a t)
     (open_lift : Effect.PureType.t -> Effect.PureType.t)
@@ -215,12 +235,19 @@ end
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
-    update_active (M.add (PathName.of_name path base)) env
+    let x = PathName.of_name path base in
+    let y = FullMod.hd_map (fun m _ -> mod_resolve x m) env.active_module in
+    { env with
+      values = PathName.Map.add y M.value env.values;
+      active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
 
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
     (env : 'a t) : 'a t =
-    update_active (M.assoc (PathName.of_name path base)
-      (PathName.of_name path assoc_base)) env
+    let x = PathName.of_name path base in
+    let y = PathName.of_name path assoc_base in
+    { env with
+      values = PathName.Map.add y M.value env.values;
+      active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)
