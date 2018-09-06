@@ -176,6 +176,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
+      (FullMod.localize_type Loc.Unknown)
 
   (* List *)
   |> fun env ->

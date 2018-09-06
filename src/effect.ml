@@ -200,15 +200,6 @@ module Descriptor = struct
       simple = BnSet.map f d.simple
     }
 
-  let depth_lift (d : t) : t =
-    map BoundName.depth_lift d
-
-  let leave_prefix (name : Name.t option) (d : t) : t =
-    map (BoundName.leave_prefix name) d
-
-  let resolve_open (name_list : Name.t list) (d : t) : t =
-    map (BoundName.resolve_open name_list) d
-
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
     { d with
       unioned = List.map (Id.map_type_vars vars_map) d.unioned;
@@ -298,12 +289,10 @@ module Type = struct
     | (Arrow (d1, typ1), Arrow (d2, typ2)) ->
       (Descriptor.eq d1 d2) && eq typ1 typ2
 
-  let map (f : int -> Descriptor.t -> Descriptor.t) (x : t) =
-    let rec map i x =
-      match x with
-      | Arrow (desc, x) -> Arrow (f i desc, map (i+1) x)
-      | Pure -> Pure in
-    map 0 x
+  let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
+    match typ with
+    | Pure -> Pure
+    | Arrow (d, typ) -> Arrow (Descriptor.map f d, map f typ)
 
   let rec return_descriptor (typ : t) (nb_args : int) : Descriptor.t =
     if nb_args = 0 then
@@ -345,20 +334,13 @@ module Type = struct
         Arrow (Descriptor.union [d1; d2], aux typ1 typ2) in
     List.fold_left aux Pure typs
 
-  let rec depth_lift (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.depth_lift d, depth_lift typ)
+  let depth_lift (x : t) : t = map BoundName.depth_lift x
 
-  let rec leave_prefix (x : Name.t option) (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.leave_prefix x d, leave_prefix x typ)
+  let leave_prefix (name : Name.t option) (x : t) : t =
+    map (BoundName.leave_prefix name) x
 
-  let rec resolve_open (x : Name.t list) (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.resolve_open x d, resolve_open x typ)
+  let resolve_open (name_list : Name.t list) (x : t) : t =
+    map (BoundName.resolve_open name_list) x
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with

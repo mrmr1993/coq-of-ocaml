@@ -469,7 +469,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
   match e with
   | Constant _ -> e
   | Variable (_, y) ->
-    if PathName.of_name [] x = y.BoundName.path_name then
+    if PathName.of_name [] x = y.BoundName.local_path then
       e'
     else
       e
@@ -690,12 +690,12 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env)
       [typ] in
   let type_effect_of_exp e =
-    if Type.is_function @@ snd @@ annotation e ||
-        Effect.Type.is_pure @@ Type.type_effects env @@ snd @@ annotation e
+    let typ = snd @@ annotation e in
+    if Type.is_function @@ typ ||
+        Effect.Type.is_pure @@ Type.type_effects env typ
     then None
     else
-      let typ = Effect.PureType.first_param @@
-        Type.pure_type @@ snd @@ annotation e in
+      let typ = Effect.PureType.first_param @@ Type.pure_type typ in
       Some (Effect.Type.Arrow (type_effect typ, Effect.Type.Pure)) in
   let compound (es : (Loc.t * Type.t) t list)
   : (Loc.t * Effect.t) t list * Effect.t =
@@ -720,8 +720,8 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         Variable ((l, {
           Effect.descriptor = Effect.Descriptor.pure;
           typ = Effect.Type.Pure }), x)) in
-    let state_dsc = { x.BoundName.path_name with PathName.base =
-        x.BoundName.path_name.PathName.base ^ "_state" } in
+    let state_dsc = { x.BoundName.full_path with PathName.base =
+        x.BoundName.full_path.PathName.base ^ "_state" } in
     begin match FullEnvi.Descriptor.bound_opt state_dsc env with
     | Some state_dsc' ->
       begin match type_effect_of_exp e with

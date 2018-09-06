@@ -40,4 +40,4 @@ let stable_compare (x : t) (y : t) : int =
   compare x.full_path y.full_path
 
 let to_coq (x : t) : SmartPrint.t =
-  PathName.to_coq x.path_name
+  PathName.to_coq x.local_path

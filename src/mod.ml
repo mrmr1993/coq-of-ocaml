@@ -294,3 +294,6 @@ let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
         m1.values m2.values;
       modules = PathName.Map.union (fun _ v _ -> Some v)
         m1.modules m2.modules }
+
+let map_values (f : 'a -> 'a) (m : 'a t) : 'a t =
+  { m with values = m.values |> PathName.Map.map (Value.map f) }

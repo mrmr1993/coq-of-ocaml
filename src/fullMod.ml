@@ -43,8 +43,7 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   Module (Mod.empty None (coq_path env)) :: env
 
-let open_module (m : 'a Mod.t) (path : Name.t list) (depth : int) (env : 'a t)
-  : 'a t =
+let open_module (m : 'a Mod.t) (depth : int) (env : 'a t) : 'a t =
   Module (Mod.empty None (coq_path env)) :: Open (m, depth) :: env
 
 let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
@@ -52,13 +51,16 @@ let include_module (m : 'a Mod.t) (env : 'a t) : 'a t =
   Module (Mod.empty None (coq_path env)) :: Include m :: env
 
 let leave_module (prefix : Name.t option -> 'a -> 'a)
-  (resolve_open : Name.t list -> 'a -> 'a) (env : 'a t) : 'a t =
+  (resolve_open : Name.t list -> 'a -> 'a) (localize : 'a t -> 'a -> 'a)
+  (env : 'a t) : 'a t =
   let rec leave_module_rec (env : 'a t) =
     match env with
     | Module m1 :: (Module m2 | Include m2) :: env ->
       let m = Mod.finish_module prefix m1 m2 in
       begin match m1.name with
-      | Some _ -> Module m :: env
+      | Some _ ->
+        let env' = Module m :: env in
+        Module (Mod.map_values (localize env') m) :: env
       | None -> (* This is a partial module, continue to the rest of it. *)
         leave_module_rec (Module m :: env)
       end
@@ -113,12 +115,13 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
 
-let localize_name (x : BoundName.t) (env : 'a t) : BoundName.t option =
+let localize_opt (x : BoundName.t) (env : 'a t) : BoundName.t option =
   let rec has_resolved_name (x : PathName.t) (env : 'a Mod.t list) =
     match env with
     | [] -> false
     | m :: env ->
       if PathName.Map.mem x m.Mod.values then true
+      else if PathName.Map.mem x m.Mod.modules then true
       else has_resolved_name x env in
   let rec localize_name (path : Name.t list) (base : Name.t) (env : 'a t)
       (env' : 'a Mod.t list) =
@@ -129,13 +132,26 @@ let localize_name (x : BoundName.t) (env : 'a t) : BoundName.t option =
       | None -> localize_name path base env (m :: env')
       | Some path' ->
         let path_name = PathName.of_name path' base in
-        if has_resolved_name path_name env' then
+        if not (has_resolved_name path_name [m]) ||
+            has_resolved_name path_name env' then
           localize_name path base env (m :: env')
         else
           Some path_name in
   let full_path = x.BoundName.full_path in
   localize_name full_path.PathName.path full_path.PathName.base env []
   |> option_map (fun path -> { x with BoundName.local_path = path })
+
+let localize (loc : Loc.t) (env : 'a t) (name : BoundName.t) : BoundName.t =
+  match localize_opt name env with
+  | Some name -> name
+  | None ->
+      let message = BoundName.pp name ^^ !^ "could not be localised." in
+      Error.warn loc (SmartPrint.to_string 80 2 message);
+      name
+
+let localize_type (loc : Loc.t) (env : 'a t) (typ : Effect.Type.t)
+  : Effect.Type.t =
+  Effect.Type.map (localize loc env) typ
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
   List.map (fun m ->

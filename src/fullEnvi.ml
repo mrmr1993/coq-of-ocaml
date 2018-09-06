@@ -48,9 +48,10 @@ let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
 let leave_module (prefix : Name.t option -> 'a -> 'a)
-  (resolve_open : Name.t list -> 'a -> 'a) (env : 'a t) : 'a t =
+  (resolve_open : Name.t list -> 'a -> 'a) (localize : 'a FullMod.t -> 'a -> 'a)
+  (env : 'a t) : 'a t =
   {env with active_module =
-    FullMod.leave_module prefix resolve_open env.active_module}
+    FullMod.leave_module prefix resolve_open localize env.active_module}
 
 let find_external_module_path_opt (x : PathName.t) (env : 'a t)
   : ('a Mod.t * PathName.t) option =
@@ -84,7 +85,7 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
   (x : PathName.t) (env : 'a t) : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> FullMod.localize_name name env.active_module
+  | Some name -> FullMod.localize_opt name env.active_module
   | None -> bound_name_external_opt find x env
 
 let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
@@ -116,8 +117,8 @@ let bound_module (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
       let message = PathName.pp x ^^ !^ "not found." in
       Error.raise loc (SmartPrint.to_string 80 2 message)
 
-let localize_name (loc : Loc.t) (x : BoundName.t) (env : 'a t) : BoundName.t =
-  match FullMod.localize_name x env.active_module with
+let localize (loc : Loc.t) (x : BoundName.t) (env : 'a t) : BoundName.t =
+  match FullMod.localize_opt x env.active_module with
   | Some name -> name
   | None ->
       let message = BoundName.pp x ^^ !^ "could not be localised." in
@@ -127,24 +128,23 @@ let localize_name (loc : Loc.t) (x : BoundName.t) (env : 'a t) : BoundName.t =
 let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
   (env : 'a t) (open_lift : 'b -> 'b) : 'b =
   if x.BoundName.depth == -1 then
-    let (external_module, x) = find_external_module_path x.path_name env in
+    let (external_module, x) = find_external_module_path x.full_path env in
     find x external_module
   else
     FullMod.find_bound_name find x env.active_module open_lift
 
 let find_module (loc : Loc.t) (x : BoundName.t) (env : 'a t)
   (open_lift : 'a Mod.t -> 'a Mod.t) : 'a Mod.t =
-  match x.path_name.path with
+  match x.full_path.path with
   | [] when x.BoundName.depth == -1 ->
     (* This is a reference to a top-level external module *)
-    find_mod loc x.path_name.base env
+    find_mod loc x.full_path.base env
   | _ -> find_bound_name Mod.Modules.find x env open_lift
 
 let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
   let m = find_module loc module_name env (fun x -> x) in
-  let path = PathName.to_name_list module_name.path_name in
   { env with active_module =
-      FullMod.open_module m path module_name.depth env.active_module }
+      FullMod.open_module m module_name.depth env.active_module }
 
 let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in

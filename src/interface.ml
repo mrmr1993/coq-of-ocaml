@@ -12,7 +12,7 @@ module Shape = struct
     | Effect.Type.Pure -> []
     | Effect.Type.Arrow (d, typ) ->
       let ds = Effect.Descriptor.elements d |> List.map (fun x ->
-        x.BoundName.path_name) in
+        x.BoundName.local_path) in
       ds :: of_effect_typ typ
 
   let to_effect_typ (shape : t) (env : 'a FullEnvi.t) : Effect.Type.t =
@@ -93,7 +93,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let state_name = CoqName.ocaml_name r.Reference.state_name in
     [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
-  | Structure.Include (_, name) -> [Include name.path_name]
+  | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
 
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
@@ -108,7 +108,8 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module (CoqName.Name x) env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module Effect.Type.leave_prefix Effect.Type.resolve_open env
+    FullEnvi.leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
+      (FullMod.localize_type Loc.Unknown) env
 
 let to_mod (coq_prefix : Name.t) (interface : t)
   (env : Effect.Type.t FullEnvi.t) : Effect.Type.t Mod.t =
