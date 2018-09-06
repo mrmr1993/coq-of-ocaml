@@ -193,20 +193,18 @@ end
 
 module ValueCarrier (M : Mod.ValueCarrier) = struct
   include Carrier(M)
-  let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = resolve path base env in
+  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a) (env : 'a t) : 'a t =
     { env with
       values = PathName.Map.add y (M.value v) env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
 
+  let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) v env
+
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = PathName.of_name path assoc_base in
-    { env with
-      values = PathName.Map.add y (M.value v) env.values;
-      active_module = FullMod.hd_mod_map (M.assoc x y v) env.active_module }
+    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
+      v env
 
   let find (x : BoundName.t) (env : 'a t) (open_lift : 'a -> 'a) : 'a =
     find_bound_name M.find x env open_lift
@@ -223,23 +221,21 @@ module Typ = ValueCarrier(Mod.Typs)
 module Function = struct
   include Carrier(Mod.Vars)
 
-  let add (path : Name.t list) (base : Name.t) (v : 'a)
+  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = resolve path base env in
     { env with
       values = PathName.Map.add y (Mod.Function.value v typ) env.values;
       active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
         env.active_module }
 
+  let add (path : Name.t list) (base : Name.t) (v : 'a)
+    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) v typ env
+
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = PathName.of_name path assoc_base in
-    { env with
-      values = PathName.Map.add y (Mod.Function.value v typ) env.values;
-      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
-        env.active_module }
+    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
+      v typ env
 
   let find (x : BoundName.t) (env : 'a t)
     (open_lift : Effect.PureType.t -> Effect.PureType.t)
@@ -255,20 +251,18 @@ end
 
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
-  let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = resolve path base env in
+  let raw_add (x : PathName.t) (y : PathName.t) (env : 'a t) : 'a t =
     { env with
       values = PathName.Map.add y M.value env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
 
+  let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) env
+
   let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
     (env : 'a t) : 'a t =
-    let x = PathName.of_name path base in
-    let y = PathName.of_name path assoc_base in
-    { env with
-      values = PathName.Map.add y M.value env.values;
-      active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
+    raw_add (PathName.of_name path base) (PathName.of_name path assoc_base)
+      env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
