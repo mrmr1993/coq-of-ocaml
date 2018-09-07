@@ -3,6 +3,7 @@ open Utils
 
 type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
+  modules : 'a Mod.t PathName.Map.t;
   active_module : 'a FullMod.t;
   get_module : Name.t -> 'a Mod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
@@ -15,6 +16,7 @@ let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 let empty (module_name : CoqName.t option)
   (get_module : Name.t -> 'a Mod.t option) : 'a t = {
   values = PathName.Map.empty;
+  modules = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
   get_module;
   required_modules = ref Name.Set.empty
@@ -115,6 +117,7 @@ let find_bound_name (find : PathName.t -> 'a Mod.t -> 'b) (x : BoundName.t)
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {values = PathName.Map.map (Mod.Value.map f) env.values;
+   modules = PathName.Map.map (Mod.map f) env.modules;
    active_module = FullMod.map f env.active_module;
    get_module = (fun x -> option_map (Mod.map f) (env.get_module x));
    required_modules = env.required_modules}
@@ -249,12 +252,12 @@ module Module = struct
     | Some path -> path
     | None -> { path = coq_path env @ x.path; base = x.base }
 
-  let has_name (x : PathName.t) (m : 'a Mod.t) =
+  let has_name (env : 'a t) (x : PathName.t) (m : 'a Mod.t) =
     let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
-    PathName.Map.mem x m.values
+    PathName.Map.mem x env.modules
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-    match bound_name_opt Mod.Modules.resolve_opt has_name x env with
+    match bound_name_opt Mod.Modules.resolve_opt (has_name env) x env with
     | Some name -> Some name
     | None -> bound_external_module_opt x env
 
@@ -268,6 +271,7 @@ module Module = struct
   let raw_add (x : PathName.t) (y : PathName.t) (v : 'a Mod.t) (env : 'a t)
     : 'a t =
     { env with
+      modules = PathName.Map.add y v env.modules;
       active_module =
         FullMod.hd_mod_map (Mod.Modules.assoc x y v) env.active_module }
 
