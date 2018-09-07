@@ -102,12 +102,8 @@ let rec bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
 let bound_module_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
 
-let localize (loc : Loc.t)
-  (find : PathName.t -> 'a Mod.t -> PathName.t option) (env : 'a t)
+let localize (has_name : PathName.t -> 'a Mod.t -> bool) (env : 'a t)
   (x : BoundName.t) : BoundName.t =
-  let has_resolved_name (x : PathName.t) (m : 'a Mod.t) =
-    let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
-    PathName.Map.mem x m.values || PathName.Map.mem x m.modules in
   let rec localize_name (path : Name.t list) (base : Name.t) (env : 'a t)
       (env' : 'a Mod.t list) =
     match env with
@@ -117,7 +113,7 @@ let localize (loc : Loc.t)
       | None -> localize_name path base env (m :: env')
       | Some path' ->
         let path_name = PathName.of_name path' base in
-        if List.exists (has_resolved_name path_name) env' then
+        if List.exists (has_name path_name) env' then
           localize_name path base env (m :: env')
         else
           Some path_name in
@@ -130,10 +126,9 @@ let localize (loc : Loc.t)
   | None ->
     { x with BoundName.local_path = x.BoundName.full_path; depth = -1 }
 
-let localize_type (loc : Loc.t)
-  (find : PathName.t -> 'a Mod.t -> PathName.t option) (env : 'a t)
+let localize_type (has_name : PathName.t -> 'a Mod.t -> bool) (env : 'a t)
   (typ : Effect.Type.t) : Effect.Type.t =
-  Effect.Type.map (localize loc find env) typ
+  Effect.Type.map (localize has_name env) typ
 
 let rec map (f : 'a -> 'b) (env : 'a t) : 'b t =
   List.map (fun m ->

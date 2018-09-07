@@ -206,7 +206,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       let (env, defs) = effects env defs in
       let env = FullEnvi.leave_module Effect.Type.leave_prefix
         Effect.Type.resolve_open
-        (FullMod.localize_type loc Mod.Descriptors.resolve_opt) env in
+        (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->

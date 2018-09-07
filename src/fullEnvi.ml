@@ -77,19 +77,21 @@ let bound_name_external_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
       { BoundName.full_path = x; local_path = x; depth = -1 })
   | None -> None
 
-let localize (loc : Loc.t) (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (x : BoundName.t) (env : 'a t) : BoundName.t =
-  FullMod.localize loc find env.active_module x
+let localize (has_name : PathName.t -> 'a Mod.t -> bool) (x : BoundName.t)
+  (env : 'a t) : BoundName.t =
+  FullMod.localize has_name env.active_module x
 
 let bound_name_opt (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (x : PathName.t) (env : 'a t) : BoundName.t option =
+  (has_name : PathName.t -> 'a Mod.t -> bool) (x : PathName.t) (env : 'a t)
+  : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> Some (localize Loc.Unknown find name env)
+  | Some name -> Some (localize has_name name env)
   | None -> bound_name_external_opt find x env
 
 let bound_name (find : PathName.t -> 'a Mod.t -> PathName.t option)
-  (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-  match bound_name_opt find x env with
+  (has_name : PathName.t -> 'a Mod.t -> bool) (loc : Loc.t) (x : PathName.t)
+  (env : 'a t) : BoundName.t =
+  match bound_name_opt find has_name x env with
   | Some name -> name
   | None ->
     let message = PathName.pp x ^^ !^ "not found." in
@@ -146,11 +148,15 @@ module Carrier (M : Mod.Carrier) = struct
     | Some path -> path
     | None -> find_free_path x env
 
+  let has_name (env : 'a t) (x : PathName.t) (m : 'a Mod.t) =
+    let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
+    PathName.Map.mem x env.values
+
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-    bound_name_opt M.resolve_opt x env
+    bound_name_opt M.resolve_opt (has_name env) x env
 
   let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-    bound_name M.resolve_opt loc x env
+    bound_name M.resolve_opt (has_name env) loc x env
 end
 
 module ValueCarrier (M : Mod.ValueCarrier) = struct
@@ -243,8 +249,12 @@ module Module = struct
     | Some path -> path
     | None -> { path = coq_path env @ x.path; base = x.base }
 
+  let has_name (x : PathName.t) (m : 'a Mod.t) =
+    let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
+    PathName.Map.mem x m.values
+
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-    match bound_name_opt Mod.Modules.resolve_opt x env with
+    match bound_name_opt Mod.Modules.resolve_opt has_name x env with
     | Some name -> Some name
     | None -> bound_external_module_opt x env
 
