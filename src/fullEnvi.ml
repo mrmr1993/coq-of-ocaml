@@ -5,6 +5,7 @@ type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
   modules : 'a Mod.t PathName.Map.t;
   active_module : 'a FullMod.t;
+  loaded_modules : 'a Mod.t Name.Map.t;
   get_module : Name.t -> 'a Mod.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
@@ -18,6 +19,7 @@ let empty (module_name : CoqName.t option)
   values = PathName.Map.empty;
   modules = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
+  loaded_modules = Name.Map.empty;
   get_module;
   required_modules = ref Name.Set.empty
 }
@@ -119,6 +121,7 @@ let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   {values = PathName.Map.map (Mod.Value.map f) env.values;
    modules = PathName.Map.map (Mod.map f) env.modules;
    active_module = FullMod.map f env.active_module;
+   loaded_modules = Name.Map.map (Mod.map f) env.loaded_modules;
    get_module = (fun x -> option_map (Mod.map f) (env.get_module x));
    required_modules = env.required_modules}
 

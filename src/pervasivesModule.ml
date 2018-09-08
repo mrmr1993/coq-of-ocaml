@@ -179,11 +179,15 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
 
   (* List *)
   |> fun env ->
-       let lazy_loader = ref LazyLoader.empty in
+       let lazy_loader = ref env in
        let get_module mod_name =
-         let (wmod, loader) = LazyLoader.find_mod_opt env !lazy_loader mod_name in
-         lazy_loader := loader;
+         let (wmod, loader) = LazyLoader.find_mod_opt !lazy_loader mod_name in
+         lazy_loader := { loader with
+           FullEnvi.loaded_modules = Name.Map.union (fun _ _ m -> Some m)
+             loader.FullEnvi.loaded_modules
+             (!lazy_loader).FullEnvi.loaded_modules };
          wmod in
+       lazy_loader := {!lazy_loader with get_module};
        {env with get_module}
   |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]
