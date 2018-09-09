@@ -11,7 +11,7 @@ let of_ocaml (env : 'a FullEnvi.t) (loc : Loc.t) (path : Path.t) : t =
 
 let update_env (loc : Loc.t) (incl : t) (env : 'a FullEnvi.t)
   : 'a FullEnvi.t =
-  let mod_body = FullEnvi.Module.find loc incl env (fun x -> x) in
+  let mod_body = FullEnvi.Module.find loc incl env in
   FullEnvi.include_module mod_body env
 
 let of_interface (path : PathName.t) (env : 'a FullEnvi.t) =

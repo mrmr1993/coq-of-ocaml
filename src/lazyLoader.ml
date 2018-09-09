@@ -1,31 +1,22 @@
 open SmartPrint
 open Utils
 
-(* NOTE: This is designed under the assumption that
-   - |ocaml_name| is a top-level name (ie. contains no '.' characters)
-   - no two modules share the same |ocaml_name|
-   - |coq_name| is some path name, followed by '.', followed by |ocaml_name| *)
-let add_mod (wmod : 'a Mod.t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
-  let (ocaml_name, coq_name) = CoqName.assoc_names @@ Mod.name wmod in
-  { env with
-    FullEnvi.loaded_modules = env.FullEnvi.loaded_modules
-      |> Name.Map.add ocaml_name wmod
-      |> Name.Map.add coq_name wmod
-  }
-
-let add_interface (env : Effect.Type.t FullEnvi.t) (coq_prefix : Name.t)
-  (file_name : string) : Effect.Type.t Mod.t * Effect.Type.t FullEnvi.t =
+let load_interface (env : Effect.Type.t FullEnvi.t) (coq_prefix : Name.t)
+  (file_name : string) : Name.t * Effect.Type.t FullEnvi.t =
   let interface = Interface.of_file file_name in
-  let wmod = Interface.to_mod coq_prefix interface env in
-  (wmod, add_mod wmod env)
+  Interface.load_interface coq_prefix interface env
 
 (* Mutable list of Coq name, interface directory pairs. *)
 let interfaces : (Name.t * string) list ref = ref []
 
-let find_mod_opt (env : Effect.Type.t FullEnvi.t) (module_name : Name.t)
-  : 'a Mod.t option * 'a FullEnvi.t =
-  match Name.Map.find_opt module_name env.FullEnvi.loaded_modules with
-  | Some wmod -> (Some wmod, env)
+let load_module (x : PathName.t) (env : Effect.Type.t FullEnvi.t)
+  : 'a FullEnvi.t =
+  let module_name = match x with
+    | { PathName.path = module_name :: _ } -> module_name
+    | { PathName.path = []; base = module_name } -> module_name in
+  let module_path = { PathName.path = []; base = module_name } in
+  match FullEnvi.Module.bound_opt module_path env with
+  | Some _ -> env
   | None ->
     let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
     match find_first (fun (coq_prefix, dir) ->
@@ -33,6 +24,7 @@ let find_mod_opt (env : Effect.Type.t FullEnvi.t) (module_name : Name.t)
         if Sys.file_exists file_name then Some (coq_prefix, file_name) else None)
       !interfaces with
     | Some (coq_prefix, file_name) ->
-      let (wmod, env) = add_interface env coq_prefix file_name in
-      (Some wmod, env)
-    | None -> (None, env)
+      let (module_name, env) = load_interface env coq_prefix file_name in
+      FullEnvi.module_required module_name env;
+      env
+    | None -> env

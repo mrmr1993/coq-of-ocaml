@@ -174,21 +174,55 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
     (Effect.PureType.Arrow (Effect.PureType.Variable "0", state_type 0))
   (* Operations on format strings *)
   (* Program termination *)
-  |> fun env -> leave_module Effect.Type.leave_prefix Effect.Type.resolve_open
+  |> fun env -> leave_module
       (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env
 
   (* List *)
   |> fun env ->
        let lazy_loader = ref env in
-       let get_module mod_name =
-         let (wmod, loader) = LazyLoader.find_mod_opt !lazy_loader mod_name in
-         lazy_loader := { loader with
-           FullEnvi.loaded_modules = Name.Map.union (fun _ _ m -> Some m)
-             loader.FullEnvi.loaded_modules
-             (!lazy_loader).FullEnvi.loaded_modules };
-         wmod in
-       lazy_loader := {!lazy_loader with get_module};
-       {env with get_module}
+       let default_bound = env.bound_external in
+       let bound_in_flight = ref PathName.Set.empty in
+       let bound_external required_modules find has_name x =
+         if PathName.Set.mem x !bound_in_flight then
+           default_bound required_modules find has_name x
+         else begin
+           bound_in_flight := PathName.Set.add x !bound_in_flight;
+           lazy_loader := FullEnvi.combine !lazy_loader
+             (LazyLoader.load_module x !lazy_loader);
+           required_modules := !((!lazy_loader).required_modules);
+           let bound = FullEnvi.bound_name_opt find has_name x !lazy_loader in
+           bound_in_flight := PathName.Set.remove x !bound_in_flight;
+           bound
+         end in
+       let default_find = env.find_external in
+       let find_in_flight = ref PathName.Set.empty in
+       let find_external loc x =
+         if PathName.Set.mem x.BoundName.full_path !find_in_flight then
+           default_find loc x
+         else begin
+           find_in_flight := PathName.Set.add x.BoundName.full_path
+             !find_in_flight;
+           let value = FullEnvi.find loc x !lazy_loader in
+           find_in_flight := PathName.Set.remove x.BoundName.full_path
+             !find_in_flight;
+           value
+         end in
+       let default_find_module = env.find_external_module in
+       let find_module_in_flight = ref PathName.Set.empty in
+       let find_external_module loc x =
+         if PathName.Set.mem x.BoundName.full_path !find_module_in_flight then
+           default_find_module loc x
+         else begin
+           find_module_in_flight := PathName.Set.add x.BoundName.full_path
+             !find_module_in_flight;
+           let m = FullEnvi.Module.find loc x !lazy_loader in
+           find_module_in_flight := PathName.Set.remove x.BoundName.full_path
+             !find_module_in_flight;
+           m
+         end in
+       lazy_loader := { !lazy_loader with bound_external; find_external;
+         find_external_module };
+       { env with bound_external; find_external; find_external_module }
   |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]
 

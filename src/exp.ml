@@ -628,7 +628,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
         (List.tl header.Header.args) header.Header.typ in
       let e_name_rec =
         List.fold_left2 (fun e_name_rec name (header, e) ->
-          substitute (CoqName.ocaml_name name)
+          substitute (snd (CoqName.assoc_names name))
             (Apply ((Loc.Unknown, rec_typ),
               var (CoqName.ocaml_name header.Header.name)
                 (Arrow (counter_typ, rec_typ)) env,
@@ -679,8 +679,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 let rec function_type (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : Effect.PureType.t option =
   match e with
-  | Variable ((l, typ), x) ->
-    FullEnvi.Function.find x env (Effect.PureType.map BoundName.depth_lift)
+  | Variable ((l, typ), x) -> FullEnvi.Function.find l x env
   | _ -> None
 
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
@@ -712,7 +711,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let normal_variable () = (try
         let effect =
           { Effect.descriptor = Effect.Descriptor.pure;
-            typ = FullEnvi.Var.find x env Effect.Type.depth_lift } in
+            typ = FullEnvi.Var.find l x env } in
         Variable ((l, effect), x)
       with Not_found ->
         let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
@@ -723,7 +722,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let state_dsc = { x.BoundName.full_path with PathName.base =
         x.BoundName.full_path.PathName.base ^ "_state" } in
     begin match FullEnvi.Descriptor.bound_opt state_dsc env with
-    | Some state_dsc' ->
+    | Some state_dsc ->
       begin match type_effect_of_exp e with
       | Some typ_eff ->
         let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
@@ -735,7 +734,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         let get_var p b =
           FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
         let var a path base = Variable (a, get_var path base) in
-        let state_dsc_eff = Effect.Descriptor.singleton state_dsc' [] in
+        let state_dsc_eff = Effect.Descriptor.singleton state_dsc [] in
         let open Effect.Type in let open Effect.Descriptor in
         let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
         Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
