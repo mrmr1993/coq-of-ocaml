@@ -30,27 +30,40 @@ module Value = struct
 end
 open Value
 
-module Locator = struct
-  type t = {
-    vars : PathName.t PathName.Map.t;
-    typs : PathName.t PathName.Map.t;
-    descriptors : PathName.t PathName.Map.t;
-    constructors : PathName.t PathName.Map.t;
-    fields : PathName.t PathName.Map.t;
-    modules : PathName.t PathName.Map.t }
+type t = {
+  name : CoqName.t option;
+  coq_path : Name.t list;
+  vars : PathName.t PathName.Map.t;
+  typs : PathName.t PathName.Map.t;
+  descriptors : PathName.t PathName.Map.t;
+  constructors : PathName.t PathName.Map.t;
+  fields : PathName.t PathName.Map.t;
+  modules : PathName.t PathName.Map.t;
+}
 
-  let empty = {
+let empty (module_name : CoqName.t option) (coq_path : Name.t list) : t =
+  let coq_path = match module_name with
+    | Some module_name ->
+      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
+      coq_path @ [coq_name]
+    | None -> coq_path in
+  {
+    name = module_name;
+    coq_path = coq_path;
     vars = PathName.Map.empty;
     typs = PathName.Map.empty;
     descriptors = PathName.Map.empty;
     constructors = PathName.Map.empty;
     fields = PathName.Map.empty;
-    modules = PathName.Map.empty }
+    modules = PathName.Map.empty;
+  }
+
+module Locator = struct
 
   let join
     (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
       PathName.t PathName.Map.t)
-    (l1 : t) (l2 : t) : t = {
+    (l1 : t) (l2 : t) : t = { l2 with
     vars = f l1.vars l2.vars;
     typs = f l1.typs l2.typs;
     descriptors = f l1.descriptors l2.descriptors;
@@ -79,28 +92,10 @@ module Locator = struct
       !^ "modules" ^^ pp_map l.modules ]
 end
 
-type t = {
-  name : CoqName.t option;
-  coq_path : Name.t list;
-  locator : Locator.t;
-}
-
-let empty (module_name : CoqName.t option) (coq_path : Name.t list) : t =
-  let coq_path = match module_name with
-    | Some module_name ->
-      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
-      coq_path @ [coq_name]
-    | None -> coq_path in
-  {
-    name = module_name;
-    coq_path = coq_path;
-    locator = Locator.empty;
-  }
-
 let pp (m : t) : SmartPrint.t =
   OCaml.list (fun x -> x) [
     group (!^ "module:" ^^ separate (!^ ".") (List.map Name.pp m.coq_path));
-    Locator.pp m.locator ]
+    Locator.pp m ]
 
 let name (m : t) : CoqName.t =
   match m.name with
@@ -108,10 +103,7 @@ let name (m : t) : CoqName.t =
   | None -> failwith "No name associated with this module."
 
 let combine (m1 : t) (m2 : t) : t =
-  { m1 with
-    locator = Locator.join (PathName.Map.union (fun _ _ name -> Some name))
-      m1.locator m2.locator
-  }
+  Locator.join (PathName.Map.union (fun _ name _ -> Some name)) m2 m1
 
 module type Carrier = sig
   val resolve_opt : PathName.t -> t -> PathName.t option
@@ -131,14 +123,12 @@ end
 
 module Vars = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.vars
+    PathName.Map.find_opt x m.vars
 
   let value (v : 'a) : 'a Value.t = Variable v
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        vars = PathName.Map.add x y m.locator.vars } }
+    { m with vars = PathName.Map.add x y m.vars }
 
   let unpack (v : 'a Value.t) : 'a =
     match v with
@@ -151,9 +141,7 @@ module Function = struct
 
   let assoc (x : PathName.t) (y : PathName.t) (v : 'a)
     (typ : Effect.PureType.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        vars = PathName.Map.add x y m.locator.vars } }
+    { m with vars = PathName.Map.add x y m.vars }
 
   let unpack (v : 'a Value.t) : Effect.PureType.t option =
     match v with
@@ -163,14 +151,12 @@ module Function = struct
 end
 module Typs = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.typs
+    PathName.Map.find_opt x m.typs
 
   let value (v : 'a) : 'a Value.t = Type v
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        typs = PathName.Map.add x y m.locator.typs } }
+    { m with typs = PathName.Map.add x y m.typs }
 
   let unpack (v : 'a Value.t) : 'a =
     match v with
@@ -179,45 +165,37 @@ module Typs = struct
 end
 module Descriptors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.descriptors
+    PathName.Map.find_opt x m.descriptors
 
   let value : 'a Value.t = Descriptor
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        descriptors = PathName.Map.add x y m.locator.descriptors } }
+    { m with descriptors = PathName.Map.add x y m.descriptors }
 end
 module Constructors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.constructors
+    PathName.Map.find_opt x m.constructors
 
   let value : 'a Value.t = Constructor
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        constructors = PathName.Map.add x y m.locator.constructors } }
+    { m with constructors = PathName.Map.add x y m.constructors }
 end
 module Fields = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.fields
+    PathName.Map.find_opt x m.fields
 
   let value : 'a Value.t = Field
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        fields = PathName.Map.add x y m.locator.fields } }
+    { m with fields = PathName.Map.add x y m.fields }
 end
 module Modules = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
-    PathName.Map.find_opt x m.locator.modules
+    PathName.Map.find_opt x m.modules
 
   let assoc (x : PathName.t) (y : PathName.t) (v : t) (m : t) : t =
-    { m with
-      locator = { m.locator with
-        modules = PathName.Map.add x y m.locator.modules } }
+    { m with modules = PathName.Map.add x y m.modules }
 end
 
 let finish_module (m1 : t) (m2 : t) : t =
@@ -225,21 +203,12 @@ let finish_module (m1 : t) (m2 : t) : t =
   | Some module_name ->
     let add_to_path x =
       { x with PathName.path = module_name :: x.PathName.path } in
-    let m =
-    { name = m2.name;
-      coq_path = m2.coq_path;
-      locator = Locator.join
-        (PathName.Map.map_union add_to_path (fun _ v -> v))
-        m1.locator m2.locator;
-    } in
+    let m = Locator.join (PathName.Map.map_union add_to_path (fun _ v -> v))
+      m1 m2 in
     Modules.assoc (PathName.of_name [] module_name)
       (PathName.of_name_list m1.coq_path) m1 m
   | None -> (* This is a partial module, do not add name information. *)
-    { name = m2.name;
-      coq_path = m2.coq_path;
-      locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
-        m1.locator m2.locator;
-    }
+    Locator.join (PathName.Map.union (fun _ v _ -> Some v)) m1 m2
 
 let fold (f : PathName.t -> PathName.t -> 'b -> 'b) (m : t) (a : 'b) : 'b =
-  Locator.fold f m.locator a
+  Locator.fold f m a
