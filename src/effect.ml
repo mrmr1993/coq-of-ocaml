@@ -334,12 +334,6 @@ module Type = struct
         Arrow (Descriptor.union [d1; d2], aux typ1 typ2) in
     List.fold_left aux Pure typs
 
-  let depth_lift (x : t) : t = map BoundName.depth_lift x
-
-  let leave_prefix (x : t) : t = map BoundName.leave_prefix x
-
-  let resolve_open (x : t) : t = map BoundName.resolve_open x
-
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with
     | Pure -> Pure

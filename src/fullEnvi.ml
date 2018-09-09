@@ -269,8 +269,7 @@ end
 
 let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
   let m = Module.find loc module_name env in
-  { env with active_module =
-      FullMod.open_module m module_name.depth env.active_module }
+  { env with active_module = FullMod.open_module m env.active_module }
 
 let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
