@@ -58,44 +58,37 @@ let empty (module_name : CoqName.t option) (coq_path : Name.t list) : t =
     modules = PathName.Map.empty;
   }
 
-module Locator = struct
+let join
+  (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
+    PathName.t PathName.Map.t)
+  (l1 : t) (l2 : t) : t = { l2 with
+  vars = f l1.vars l2.vars;
+  typs = f l1.typs l2.typs;
+  descriptors = f l1.descriptors l2.descriptors;
+  constructors = f l1.constructors l2.constructors;
+  fields = f l1.fields l2.fields;
+  modules = f l1.modules l2.modules }
 
-  let join
-    (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
-      PathName.t PathName.Map.t)
-    (l1 : t) (l2 : t) : t = { l2 with
-    vars = f l1.vars l2.vars;
-    typs = f l1.typs l2.typs;
-    descriptors = f l1.descriptors l2.descriptors;
-    constructors = f l1.constructors l2.constructors;
-    fields = f l1.fields l2.fields;
-    modules = f l1.modules l2.modules }
-
-  let fold (f : PathName.t -> PathName.t -> 'a -> 'a) (l : t) (a : 'a) : 'a =
-    let a = PathName.Map.fold f l.vars a in
-    let a = PathName.Map.fold f l.typs a in
-    let a = PathName.Map.fold f l.descriptors a in
-    let a = PathName.Map.fold f l.constructors a in
-    let a = PathName.Map.fold f l.fields a in
-    let a = PathName.Map.fold f l.modules a in
-    a
-
-  let pp (l : t) : SmartPrint.t =
-    let pp_map map = PathName.Map.bindings map |> OCaml.list (fun (x, y) ->
-      nest (PathName.pp x ^^ !^ "=" ^^ PathName.pp y)) in
-    OCaml.list (fun x -> x) [
-      !^ "vars:" ^^ pp_map l.vars;
-      !^ "typs:" ^^ pp_map l.typs;
-      !^ "descriptors:" ^^ pp_map l.descriptors;
-      !^ "constructors:" ^^ pp_map l.constructors;
-      !^ "fields:" ^^ pp_map l.fields;
-      !^ "modules" ^^ pp_map l.modules ]
-end
+let fold (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a) : 'a =
+  let a = PathName.Map.fold f m.vars a in
+  let a = PathName.Map.fold f m.typs a in
+  let a = PathName.Map.fold f m.descriptors a in
+  let a = PathName.Map.fold f m.constructors a in
+  let a = PathName.Map.fold f m.fields a in
+  let a = PathName.Map.fold f m.modules a in
+  a
 
 let pp (m : t) : SmartPrint.t =
+  let pp_map map = PathName.Map.bindings map |> OCaml.list (fun (x, y) ->
+    nest (PathName.pp x ^^ !^ "=" ^^ PathName.pp y)) in
   OCaml.list (fun x -> x) [
     group (!^ "module:" ^^ separate (!^ ".") (List.map Name.pp m.coq_path));
-    Locator.pp m ]
+    !^ "vars:" ^^ pp_map m.vars;
+    !^ "typs:" ^^ pp_map m.typs;
+    !^ "descriptors:" ^^ pp_map m.descriptors;
+    !^ "constructors:" ^^ pp_map m.constructors;
+    !^ "fields:" ^^ pp_map m.fields;
+    !^ "modules" ^^ pp_map m.modules ]
 
 let name (m : t) : CoqName.t =
   match m.name with
@@ -103,7 +96,7 @@ let name (m : t) : CoqName.t =
   | None -> failwith "No name associated with this module."
 
 let combine (m1 : t) (m2 : t) : t =
-  Locator.join (PathName.Map.union (fun _ name _ -> Some name)) m2 m1
+  join (PathName.Map.union (fun _ name _ -> Some name)) m2 m1
 
 module type Carrier = sig
   val resolve_opt : PathName.t -> t -> PathName.t option
@@ -139,8 +132,7 @@ end
 module Function = struct
   let value (v : 'a) (typ : Effect.PureType.t) : 'a Value.t = Function (v, typ)
 
-  let assoc (x : PathName.t) (y : PathName.t) (v : 'a)
-    (typ : Effect.PureType.t) (m : t) : t =
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with vars = PathName.Map.add x y m.vars }
 
   let unpack (v : 'a Value.t) : Effect.PureType.t option =
@@ -194,7 +186,7 @@ module Modules = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.modules
 
-  let assoc (x : PathName.t) (y : PathName.t) (v : t) (m : t) : t =
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with modules = PathName.Map.add x y m.modules }
 end
 
@@ -203,12 +195,6 @@ let finish_module (m1 : t) (m2 : t) : t =
   | Some module_name ->
     let add_to_path x =
       { x with PathName.path = module_name :: x.PathName.path } in
-    let m = Locator.join (PathName.Map.map_union add_to_path (fun _ v -> v))
-      m1 m2 in
-    Modules.assoc (PathName.of_name [] module_name)
-      (PathName.of_name_list m1.coq_path) m1 m
+    join (PathName.Map.map_union add_to_path (fun _ v -> v)) m1 m2
   | None -> (* This is a partial module, do not add name information. *)
-    Locator.join (PathName.Map.union (fun _ v _ -> Some v)) m1 m2
-
-let fold (f : PathName.t -> PathName.t -> 'b -> 'b) (m : t) (a : 'b) : 'b =
-  Locator.fold f m a
+    join (PathName.Map.union (fun _ v _ -> Some v)) m1 m2

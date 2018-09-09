@@ -166,7 +166,7 @@ module Function = struct
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
     { env with
       values = PathName.Map.add y (Mod.Function.value v typ) env.values;
-      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y v typ)
+      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y)
         env.active_module }
 
   let add (path : Name.t list) (base : Name.t) (v : 'a)
@@ -236,7 +236,7 @@ module Module = struct
     { env with
       modules = PathName.Map.add y v env.modules;
       active_module =
-        FullMod.hd_mod_map (Mod.Modules.assoc x y v) env.active_module }
+        FullMod.hd_mod_map (Mod.Modules.assoc x y) env.active_module }
 
   let add (path : Name.t list) (base : Name.t) (v : Mod.t) (env : 'a t)
     : 'a t =
@@ -282,10 +282,11 @@ let leave_module (localize : FullMod.t -> 'a -> 'a) (env : 'a t) : 'a t =
       (option_map (Mod.Value.map (localize active_module))))
     m env.values in
   let env = { env with active_module; values } in
-  let coq_name = match option_map CoqName.assoc_names m.Mod.name with
-    | Some (ocaml_name, coq_name) -> coq_name
+  let module_name = match option_map CoqName.ocaml_name m.Mod.name with
+    | Some module_name -> module_name
     | None -> failwith "Leaving a module with no name." in
-  Module.add [] coq_name m env
+  Module.raw_add (PathName.of_name [] module_name)
+    (PathName.of_name_list m.coq_path) m env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   env
