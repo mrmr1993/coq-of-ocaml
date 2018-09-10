@@ -179,25 +179,15 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* List *)
   |> fun env ->
        let lazy_loader = ref env in
-       let default_bound = env.bound_external in
-       let bound_in_flight = ref PathName.Set.empty in
-       let bound_external find has_name x =
-         if PathName.Set.mem x !bound_in_flight then
-           default_bound find has_name x
-         else begin
-           bound_in_flight := PathName.Set.add x !bound_in_flight;
-           lazy_loader := FullEnvi.combine !lazy_loader
-             (LazyLoader.load_module x !lazy_loader);
-           let bound = FullEnvi.bound_name_opt find has_name x !lazy_loader in
-           bound_in_flight := PathName.Set.remove x !bound_in_flight;
-           bound
-         end in
        let run_in_external f env =
          let (x, env) = FullEnvi.run_in_env f env !lazy_loader in
          lazy_loader := env;
          x in
-       lazy_loader := { !lazy_loader with bound_external; run_in_external;
-         convert = (fun x -> x) };
-       { env with bound_external; run_in_external; convert = (fun x -> x) }
+       lazy_loader := { !lazy_loader with
+           run_in_external;
+           convert = (fun x -> x);
+           load_module = Interface.load_module
+         };
+       { env with run_in_external; convert = (fun x -> x) }
   |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]

@@ -5,12 +5,10 @@ type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
   active_module : FullMod.t;
+  load_module : Name.t -> Effect.Type.t t -> Effect.Type.t t;
   run_in_external :
     'b. (Effect.Type.t t -> 'b * Effect.Type.t t) -> 'a t -> 'b option;
   convert : Effect.Type.t -> 'a;
-  bound_external :
-    (PathName.t -> Mod.t -> PathName.t option) ->
-    (PathName.t -> Mod.t -> bool) -> PathName.t -> BoundName.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref;
@@ -24,9 +22,10 @@ let empty (interfaces : (Name.t * string) list)
   values = PathName.Map.empty;
   modules = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
+  load_module =
+    (fun _ _ -> failwith "Cannot load module: no module loader specified.");
   run_in_external = (fun _ _ -> failwith "No external environment to run in.");
   convert = (fun _ -> failwith "Cannot convert: unknown destination type.");
-  bound_external = (fun _ _ _ -> None);
   required_modules = ref Name.Set.empty;
   interfaces
 }
@@ -76,12 +75,35 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
 let localize_type (env : 'a t) (typ : Effect.Type.t) : Effect.Type.t =
   Effect.Type.map (localize (has_value env) env) typ
 
+let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
+  env1.required_modules := Name.Set.union !(env1.required_modules)
+    !(env2.required_modules);
+  { env1 with
+    values = PathName.Map.union (fun _ _ x -> Some x) env1.values env2.values;
+    modules = PathName.Map.union (fun _ _ x -> Some x) env1.modules
+      env2.modules;
+    active_module = FullMod.combine env1.active_module env2.active_module;
+  }
+
 let bound_name_opt (find : PathName.t -> Mod.t -> PathName.t option)
   (has_name : PathName.t -> Mod.t -> bool) (x : PathName.t) (env : 'a t)
   : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some (localize has_name env name)
-  | None -> env.bound_external find has_name x
+  | None ->
+    let f env =
+      match FullMod.bound_name_opt find x env.active_module with
+      | Some name -> (Some name, env)
+      | None ->
+        let module_name = match x with
+          | { PathName.path = module_name :: _ } -> module_name
+          | { PathName.path = []; base = module_name } -> module_name in
+        let env = combine env @@ env.load_module module_name env in
+        (FullMod.bound_name_opt find x env.active_module, env) in
+    match env.run_in_external f env with
+    | Some (Some name) -> Some (localize has_name env name)
+    | Some None -> None
+    | None -> failwith "Didn't attempt to search for an external module"
 
 let bound_name (find : PathName.t -> Mod.t -> PathName.t option)
   (has_name : PathName.t -> Mod.t -> bool) (loc : Loc.t) (x : PathName.t)
@@ -98,16 +120,6 @@ let map (f : 'a -> 'b) (env : 'a t) : 'b t =
     run_in_external = (fun f _ -> env.run_in_external f (empty [] None));
     convert = (fun x -> f @@ env.convert x);
     }
-
-let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
-  env1.required_modules := Name.Set.union !(env1.required_modules)
-    !(env2.required_modules);
-  { env1 with
-    values = PathName.Map.union (fun _ _ x -> Some x) env1.values env2.values;
-    modules = PathName.Map.union (fun _ _ x -> Some x) env1.modules
-      env2.modules;
-    active_module = FullMod.combine env1.active_module env2.active_module;
-  }
 
 let import_module (f : PathName.t -> PathName.t) (g : 'a t -> 'a -> 'a)
   (m : Mod.t) (env : 'a t) : Mod.t * 'a t =
