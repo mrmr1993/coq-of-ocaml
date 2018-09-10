@@ -3,7 +3,8 @@ open FullEnvi
 open Effect.Type
 open SmartPrint
 
-let env_with_effects : Effect.Type.t FullEnvi.t =
+let env_with_effects (interfaces : (Name.t * string) list)
+  : Effect.Type.t FullEnvi.t =
   let bound_name full_path path base = {
       BoundName.full_path = PathName.of_name full_path base;
       local_path = PathName.of_name path base
@@ -24,7 +25,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
       [Effect.PureType.Variable i]) in
   let add_exn path base = add_exception_with_effects path base in
-  FullEnvi.empty None (fun _ -> failwith "No modules loaded")
+  FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat" Pure
   |> Constructor.add [] "O"
@@ -223,10 +224,3 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
        { env with bound_external; find_external; find_external_module }
   |> enter_section
   |> open_module' Loc.Unknown ["OCaml"]
-
-let show out_channel : unit =
-  to_out_channel 80 2 out_channel (FullEnvi.pp env_with_effects)
-
-(* show stdout;; *)
-
-let env : unit FullEnvi.t = FullEnvi.map (fun _ -> ()) env_with_effects

@@ -12,13 +12,14 @@ type 'a t = {
   find_external_module : Loc.t -> BoundName.t -> Mod.t;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
-  required_modules : Name.Set.t ref
+  required_modules : Name.Set.t ref;
+  interfaces : (Name.t * string) list
 }
 
 let pp (env : 'a t) : SmartPrint.t = FullMod.pp env.active_module
 
-let empty (module_name : CoqName.t option)
-  (get_module : Name.t -> Mod.t option) : 'a t = {
+let empty (interfaces : (Name.t * string) list)
+  (module_name : CoqName.t option) : 'a t = {
   values = PathName.Map.empty;
   modules = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
@@ -29,7 +30,8 @@ let empty (module_name : CoqName.t option)
   find_external_module = (fun loc x ->
     let message = !^ "Module" ^^ BoundName.pp x ^^ !^ "not found." in
     Error.raise loc (SmartPrint.to_string 80 2 message));
-  required_modules = ref Name.Set.empty
+  required_modules = ref Name.Set.empty;
+  interfaces
 }
 
 let module_required (module_name : Name.t) (env : 'a t) : unit =

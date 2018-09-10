@@ -1,9 +1,6 @@
 open SmartPrint
 open Utils
 
-(* Mutable list of Coq name, interface directory pairs. *)
-let interfaces : (Name.t * string) list ref = ref []
-
 let load_module (x : PathName.t) (env : Effect.Type.t FullEnvi.t)
   : 'a FullEnvi.t =
   let module_name = match x with
@@ -12,4 +9,4 @@ let load_module (x : PathName.t) (env : Effect.Type.t FullEnvi.t)
   let module_path = { PathName.path = []; base = module_name } in
   match FullEnvi.Module.bound_opt module_path env with
   | Some _ -> env
-  | None -> Interface.load_module !interfaces module_name env
+  | None -> Interface.load_module module_name env

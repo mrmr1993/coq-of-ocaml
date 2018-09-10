@@ -1,17 +1,18 @@
 open SmartPrint
 
-let exp (structure : Typedtree.structure)
+let exp  (env : unit FullEnvi.t) (structure : Typedtree.structure)
   : (Loc.t * Type.t) Structure.t list =
-  let (_, defs) = Structure.of_structure PervasivesModule.env structure in
-  snd @@ Structure.monadise_let_rec PervasivesModule.env defs
+  let (_, defs) = Structure.of_structure env structure in
+  snd @@ Structure.monadise_let_rec env defs
 
-let effects (exp : (Loc.t * Type.t) Structure.t list)
+let effects (env : Effect.Type.t FullEnvi.t)
+  (exp : (Loc.t * Type.t) Structure.t list)
   : (Loc.t * Effect.t) Structure.t list =
-  snd @@ Structure.effects PervasivesModule.env_with_effects @@ exp
+  snd @@ Structure.effects env @@ exp
 
-let monadise (effects : (Loc.t * Effect.t) Structure.t list)
-  : Loc.t Structure.t list =
-  snd @@ Structure.monadise PervasivesModule.env @@ effects
+let monadise (env : unit FullEnvi.t)
+  (effects : (Loc.t * Effect.t) Structure.t list) : Loc.t Structure.t list =
+  snd @@ Structure.monadise env @@ effects
 
 let interface (module_name : string)
   (effects : (Loc.t * Effect.t) Structure.t list) : Interface.t =
@@ -93,9 +94,12 @@ let do_out (f : out_channel -> 'a -> 'b) (file_name : string) (x : 'a) : 'b =
   ret
 
 (** Display on stdout the conversion in Coq of an OCaml structure. *)
-let of_ocaml (structure : Typedtree.structure) (mode : string option)
+let of_ocaml (interfaces : (Name.t * string) list)
+  (structure : Typedtree.structure) (mode : string option)
   (mode_files : mode_files) (module_name : string) : unit =
   try
+    let env_with_effects = PervasivesModule.env_with_effects interfaces in
+    let env = FullEnvi.map (fun _ -> ()) env_with_effects in
     let (exp_l, effects_l, interface_l, monadise_l, coq_l) =
       if stropt_eq "exp" mode then
         [output_exp stdout], [], [], [], []
@@ -122,10 +126,10 @@ let of_ocaml (structure : Typedtree.structure) (mode : string option)
       (List.map (do_out to_out_channel) mode_files.v) in
 
     map_apply structure
-      (result_map exp (exp_l @
-      (result_map effects (effects_l @
+      (result_map (exp env) (exp_l @
+      (result_map (effects env_with_effects) (effects_l @
       (result_map (interface module_name) interface_l) @
-      (result_map monadise (monadise_l @
+      (result_map (monadise env) (monadise_l @
       (result_map coq coq_l)))))))
  with
   | Error.Make x ->
@@ -167,6 +171,7 @@ let main () =
   let stdlib = ref true in
   let output_all = ref false in
   let output_default_force = ref false in
+  let interfaces = ref [] in
   let options = Arg.align [
     "--v", Arg.String
         (fun file -> mode_files := {!mode_files with v = file :: !mode_files.v}),
@@ -191,7 +196,7 @@ let main () =
         (["v"; "interface"; "exp"; "effects"; "monadise"], fun m -> mode := Some m),
       "\tdirect the mode's output to stdout";
     "-I", Arg.Tuple [Arg.Set_string dir; Arg.String (fun coq_name ->
-        LazyLoader.interfaces := (Name.of_string coq_name, !dir) :: !LazyLoader.interfaces)],
+        interfaces := (Name.of_string coq_name, !dir) :: !interfaces)],
       "dir coqdir\tsearch physical dir for interface files, mapped to logical coqdir";
     "-o", Arg.Set_string output_dir,
       "dir\tset the output directory to dir";
@@ -203,7 +208,7 @@ let main () =
     (* Add the default interfaces directory to the interfaces list. *)
     (match find_interfaces_dir Sys.executable_name with
     | Some interfaces_dir ->
-      LazyLoader.interfaces := ("OCaml", interfaces_dir) :: !LazyLoader.interfaces
+      interfaces := ("OCaml", interfaces_dir) :: !interfaces
     | None ->
       prerr_endline @@ to_string 80 2 (!^ "Warning: interfaces directory was not found"));
   end else ();
@@ -229,6 +234,7 @@ let main () =
       };
     if !output_dir != "" then
       mode_files := mode_files_localise !output_dir !mode_files;
-    of_ocaml (parse_cmt file_name) !mode !mode_files (module_name bare_file_name);
+    of_ocaml !interfaces (parse_cmt file_name) !mode !mode_files
+      (module_name bare_file_name);
 
 ;;main ()
