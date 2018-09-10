@@ -1,29 +1,29 @@
-1 Reference (r, r_state, Type (Z/3), Constant (1, Int(12)))
+1 Reference (r, r_state, Type (Z), Constant (1, Int(12)))
 
 3
 Value
   (non_rec, @.,
     [
-      ((plus_one, [ A ], [ (x, A) ], Type (Z/3)),
+      ((plus_one, [ A ], [ (x, A) ], Type (Z)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (4,
                     Variable
                       (4,
-                        Z.add/3),
+                        Z.add),
                     [
                       Apply
                         (4,
                           Variable
                             (4,
-                              OCaml.Effect.State.read/3),
+                              OCaml.Effect.State.read),
                           [
                             Variable
                               (4,
-                                r/0)
+                                r)
                           ]);
                       Constant
                         (4,
@@ -32,7 +32,7 @@ Value
             ]))
     ])
 
-6 Reference (s, s_state, Type (string/3), Constant (6, String("Hi")))
+6 Reference (s, s_state, Type (string), Constant (6, String("Hi")))
 
 8
 Value
@@ -40,24 +40,24 @@ Value
     [
       ((fail, [ A; B ], [ (x, A) ], B),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (8,
                     Variable
                       (8,
-                        OCaml.Pervasives.failwith/3),
+                        OCaml.Pervasives.failwith),
                     [
                       Apply
                         (8,
                           Variable
                             (8,
-                              OCaml.Effect.State.read/3),
+                              OCaml.Effect.State.read),
                           [
                             Variable
                               (8,
-                                s/0)
+                                s)
                           ])
                     ]))
             ]))
@@ -67,20 +67,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((reset, [ A ], [ (x, A) ], Type (unit/3)),
+      ((reset, [ A ], [ (x, A) ], Type (unit)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (11,
                     Variable
                       (11,
-                        OCaml.Effect.State.write/3),
+                        OCaml.Effect.State.write),
                     [
                       Variable
                         (11,
-                          r/0);
+                          r);
                       Constant
                         (11,
                           Int(0))
@@ -92,35 +92,35 @@ Value
 Value
   (non_rec, @.,
     [
-      ((incr, [ A ], [ (x, A) ], Type (unit/3)),
+      ((incr, [ A ], [ (x, A) ], Type (unit)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (14,
                     Variable
                       (14,
-                        OCaml.Effect.State.write/3),
+                        OCaml.Effect.State.write),
                     [
                       Variable
                         (14,
-                          r/0);
+                          r);
                       Apply
                         (14,
                           Variable
                             (14,
-                              Z.add/3),
+                              Z.add),
                           [
                             Apply
                               (14,
                                 Variable
                                   (14,
-                                    OCaml.Effect.State.read/3),
+                                    OCaml.Effect.State.read),
                                 [
                                   Variable
                                     (14,
-                                      r/0)
+                                      r)
                                 ]);
                             Constant
                               (14,

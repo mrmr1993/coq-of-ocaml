@@ -102,7 +102,7 @@ let rec type_effects (env : Effect.Type.t FullEnvi.t) (typ : t)
     Effect.Type.union (List.map (type_effects env) [typ1; typ2])
   | Tuple typs -> Effect.Type.union (List.map (type_effects env) typs)
   | Apply (x, typs) ->
-    Effect.Type.union (FullEnvi.Typ.find x env Effect.Type.depth_lift ::
+    Effect.Type.union (FullEnvi.Typ.find Loc.Unknown x env ::
       List.map (type_effects env) typs)
   | Monad (x, typ) -> type_effects env typ
 

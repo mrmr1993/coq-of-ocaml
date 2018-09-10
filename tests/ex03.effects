@@ -2,19 +2,18 @@
 Value
   (non_rec, @.,
     [
-      ((n1, [ ], [ ], Type (Z/3)),
+      ((n1, [ ], [ ], Type (Z)),
         LetVar (4, Effect ([ ], .)) m =
           Constant ((4, Effect ([ ], .)), Int(12)) in
-        LetVar (5, Effect ([ ], .)) n1 = Variable ((5, Effect ([ ], .)), m/0)
-          in
-        Variable ((6, Effect ([ ], .)), n1/0))
+        LetVar (5, Effect ([ ], .)) n1 = Variable ((5, Effect ([ ], .)), m) in
+        Variable ((6, Effect ([ ], .)), n1))
     ])
 
 8
 Value
   (non_rec, @.,
     [
-      ((n2, [ ], [ ], Type (Z/3)),
+      ((n2, [ ], [ ], Type (Z)),
         LetFun (9, Effect ([ ], .))
           (non_rec, @.,
             [
@@ -27,7 +26,7 @@ Value
                           ([
                           ],
                             .)),
-                        c/0),
+                        c),
                     [
                       Function
                         ((9,
@@ -55,13 +54,13 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  x/0)))
+                                  x)))
                     ]))
             ]) in
         LetFun (10, Effect ([ ], .))
           (non_rec, @.,
             [
-              ((c, [ A ], [ (f, (Type (Z/3) -> (Type (Z/3) -> A))) ], A),
+              ((c, [ A ], [ (f, (Type (Z) -> (Type (Z) -> A))) ], A),
                 Apply
                   ((10, Effect ([ ], .)),
                     Variable
@@ -70,7 +69,7 @@ Value
                           ([
                           ],
                             .)),
-                        f/0),
+                        f),
                     [
                       Constant
                         ((10,
@@ -89,7 +88,6 @@ Value
                     ]))
             ]) in
         Apply
-          ((11, Effect ([ ], .)),
-            Variable ((11, Effect ([ ], . -> .)), p1/0),
-            [ Variable ((11, Effect ([ ], . -> .)), c/0) ]))
+          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], . -> .)), p1),
+            [ Variable ((11, Effect ([ ], . -> .)), c) ]))
     ])

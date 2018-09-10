@@ -110,7 +110,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let name = Name.of_ident name in
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, structures) = of_structure env structure in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
     | Tstr_modtype _ -> Error.raise loc "Signatures not handled."
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
@@ -164,7 +164,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = monadise_let_rec env defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
   let (env, defs) = List.fold_left (fun (env, defs) def ->
     let (env, defs') = monadise_let_rec_one env def in
@@ -198,12 +198,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
-      (Include.update_env loc name env, Include (loc, name))
+      (Include.update_env_with_effects loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.leave_module Effect.Type.leave_prefix
-        Effect.Type.resolve_open env in
+      let env = FullEnvi.leave_module FullEnvi.localize_type env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
@@ -248,7 +247,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module (CoqName.Name name) env) defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->

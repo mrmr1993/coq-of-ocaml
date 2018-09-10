@@ -30,299 +30,185 @@ module Value = struct
 end
 open Value
 
-module Locator = struct
-  type t = {
-    vars : Name.t PathName.Map.t;
-    typs : Name.t PathName.Map.t;
-    descriptors : Name.t PathName.Map.t;
-    constructors : Name.t PathName.Map.t;
-    fields : Name.t PathName.Map.t }
+type t = {
+  name : CoqName.t option;
+  coq_path : Name.t list;
+  vars : PathName.t PathName.Map.t;
+  typs : PathName.t PathName.Map.t;
+  descriptors : PathName.t PathName.Map.t;
+  constructors : PathName.t PathName.Map.t;
+  fields : PathName.t PathName.Map.t;
+  modules : PathName.t PathName.Map.t;
+}
 
-  let empty = {
+let empty (module_name : CoqName.t option) (coq_path : Name.t list) : t =
+  let coq_path = match module_name with
+    | Some module_name ->
+      let (ocaml_name, coq_name) = CoqName.assoc_names module_name in
+      coq_path @ [coq_name]
+    | None -> coq_path in
+  {
+    name = module_name;
+    coq_path = coq_path;
     vars = PathName.Map.empty;
     typs = PathName.Map.empty;
     descriptors = PathName.Map.empty;
     constructors = PathName.Map.empty;
-    fields = PathName.Map.empty }
+    fields = PathName.Map.empty;
+    modules = PathName.Map.empty;
+  }
 
-  let join (f : Name.t PathName.Map.t -> Name.t PathName.Map.t -> Name.t PathName.Map.t)
-    (l1 : t) (l2 : t) : t = {
-    vars = f l1.vars l2.vars;
-    typs = f l1.typs l2.typs;
-    descriptors = f l1.descriptors l2.descriptors;
-    constructors = f l1.constructors l2.constructors;
-    fields = f l1.fields l2.fields }
-end
+let join
+  (f : PathName.t PathName.Map.t -> PathName.t PathName.Map.t ->
+    PathName.t PathName.Map.t)
+  (l1 : t) (l2 : t) : t = { l2 with
+  vars = f l1.vars l2.vars;
+  typs = f l1.typs l2.typs;
+  descriptors = f l1.descriptors l2.descriptors;
+  constructors = f l1.constructors l2.constructors;
+  fields = f l1.fields l2.fields;
+  modules = f l1.modules l2.modules }
 
-type 'a t = {
-  name : CoqName.t option;
-  locator : Locator.t;
-  values : 'a Value.t PathName.Map.t;
-  modules : 'a t PathName.Map.t }
+let fold_values (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a)
+  : 'a =
+  let a = PathName.Map.fold f m.vars a in
+  let a = PathName.Map.fold f m.typs a in
+  let a = PathName.Map.fold f m.descriptors a in
+  let a = PathName.Map.fold f m.constructors a in
+  let a = PathName.Map.fold f m.fields a in
+  a
 
-let empty (module_name : CoqName.t option) : 'a t = {
-  name = module_name;
-  locator = Locator.empty;
-  values = PathName.Map.empty;
-  modules = PathName.Map.empty }
+let fold_modules (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a)
+  : 'a =
+  PathName.Map.fold f m.modules a
 
-let pp (m : 'a t) : SmartPrint.t =
-  let pp_map = OCaml.list PathName.pp in
-  let vars = ref [] in
-  let typs = ref [] in
-  let descriptors = ref [] in
-  let constructors = ref [] in
-  let fields = ref [] in
-  m.values |> PathName.Map.iter (fun x v ->
-    match v with
-    | Variable _ | Function _ -> vars := x :: !vars
-    | Type _ -> typs := x :: !typs
-    | Descriptor -> descriptors := x :: !descriptors
-    | Constructor -> constructors := x :: !constructors
-    | Field -> fields := x :: !fields);
-  group (
-    !^ "vars:" ^^ nest (pp_map !vars) ^^ newline ^^
-    !^ "typs:" ^^ nest (pp_map !typs) ^^ newline ^^
-    !^ "descriptors:" ^^ nest (pp_map !descriptors) ^^ newline ^^
-    !^ "constructors:" ^^ nest (pp_map !constructors) ^^ newline ^^
-    !^ "fields:" ^^ nest (pp_map !fields) ^^ newline ^^
-    !^ "modules:" ^^ nest (OCaml.list (fun (x, _) -> PathName.pp x) @@
-      PathName.Map.bindings m.modules))
+let map (f : PathName.t -> PathName.t) (m : t) : t =
+  { m with
+    vars = PathName.Map.map f m.vars;
+    typs = PathName.Map.map f m.typs;
+    descriptors = PathName.Map.map f m.descriptors;
+    constructors = PathName.Map.map f m.constructors;
+    fields = PathName.Map.map f m.fields;
+    modules = PathName.Map.map f m.modules;
+  }
 
-let name (m : 'a t) : CoqName.t =
+let pp (m : t) : SmartPrint.t =
+  let pp_map map = PathName.Map.bindings map |> OCaml.list (fun (x, y) ->
+    nest (PathName.pp x ^^ !^ "=" ^^ PathName.pp y)) in
+  OCaml.list (fun x -> x) [
+    group (!^ "module:" ^^ separate (!^ ".") (List.map Name.pp m.coq_path));
+    !^ "vars:" ^^ pp_map m.vars;
+    !^ "typs:" ^^ pp_map m.typs;
+    !^ "descriptors:" ^^ pp_map m.descriptors;
+    !^ "constructors:" ^^ pp_map m.constructors;
+    !^ "fields:" ^^ pp_map m.fields;
+    !^ "modules" ^^ pp_map m.modules ]
+
+let name (m : t) : CoqName.t =
   match m.name with
   | Some name -> name
   | None -> failwith "No name associated with this module."
 
-let find_free_name (base_name : string) (env : 'a t) : Name.t =
-  let prefix_n s n =
-    if n = 0 then
-      Name.of_string s
-    else
-      Name.of_string @@ Printf.sprintf "%s_%d" s n in
-  let rec first_n (n : int) : int =
-    if PathName.Map.mem (PathName.of_name [] @@ prefix_n base_name n) env.values then
-      first_n (n + 1)
-    else
-      n in
-  prefix_n base_name (first_n 0)
-
-let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
-  { x with base = find_free_name x.base env }
-
-let rec map (f : 'a -> 'b) (m : 'a t) : 'b t =
-  { m with
-    values = m.values |> PathName.Map.map (Value.map f);
-    modules = PathName.Map.map (map f) m.modules }
+let combine (m1 : t) (m2 : t) : t =
+  join (PathName.Map.union (fun _ name _ -> Some name)) m2 m1
 
 module type Carrier = sig
-  val resolve_opt : PathName.t -> 'a t -> PathName.t option
-  val mem : PathName.t -> 'a t -> bool
+  val resolve_opt : PathName.t -> t -> PathName.t option
+  val assoc : PathName.t -> PathName.t -> t -> t
 end
 
 module type ValueCarrier = sig
   include Carrier
-  val assoc : PathName.t -> PathName.t -> 'a -> 'a t -> 'a t
-  val add : PathName.t -> 'a -> 'a t -> 'a t
-  val find : PathName.t -> 'a t -> 'a
+  val value : 'a -> 'a Value.t
+  val unpack : 'a Value.t -> 'a
 end
 
 module type EmptyCarrier = sig
   include Carrier
-  val assoc : PathName.t -> PathName.t -> 'a t -> 'a t
-  val add : PathName.t -> 'a t -> 'a t
+  val value : 'a Value.t
 end
 
 module Vars = struct
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
-      PathName.Map.find_opt x m.locator.vars
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
+    PathName.Map.find_opt x m.vars
 
-  let assoc (x : PathName.t) (y : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y (Variable v) m.values;
-      locator = { m.locator with
-        vars = PathName.Map.add x y.base m.locator.vars } }
+  let value (v : 'a) : 'a Value.t = Variable v
 
-  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v m
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with vars = PathName.Map.add x y m.vars }
 
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    match PathName.Map.find_opt x m.values with
-    | Some (Variable _ | Function _) -> true
-    | _ -> false
-
-  let find (x : PathName.t) (m : 'a t) : 'a =
-    match PathName.Map.find x m.values with
+  let unpack (v : 'a Value.t) : 'a =
+    match v with
     | Variable a -> a
     | Function (a, _) -> a
-    | _ -> failwith @@
-      String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Variable"
-
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
-    let name = find_free_name prefix env in
-    (name, add (PathName.of_name [] name) v env)
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Function = struct
-  let assoc (x : PathName.t) (y : PathName.t) (v : 'a)
-    (typ : Effect.PureType.t) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y (Function (v, typ)) m.values;
-      locator = { m.locator with
-        vars = PathName.Map.add x y.base m.locator.vars } }
+  let value (v : 'a) (typ : Effect.PureType.t) : 'a Value.t = Function (v, typ)
 
-  let add (x : PathName.t) (v : 'a) (typ : Effect.PureType.t) (m : 'a t)
-    : 'a t =
-    let y = match Vars.resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v typ m
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with vars = PathName.Map.add x y m.vars }
 
-  let find (x : PathName.t) (m : 'a t) : Effect.PureType.t option =
-    match PathName.Map.find x m.values with
+  let unpack (v : 'a Value.t) : Effect.PureType.t option =
+    match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ
-    | _ -> failwith @@
-      String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Variable"
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Typs = struct
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
-      PathName.Map.find_opt x m.locator.typs
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
+    PathName.Map.find_opt x m.typs
 
-  let assoc (x : PathName.t) (y : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y (Type v) m.values;
-      locator = { m.locator with
-        typs = PathName.Map.add x y.base m.locator.typs } }
+  let value (v : 'a) : 'a Value.t = Type v
 
-  let add (x : PathName.t) (v : 'a) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y v m
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with typs = PathName.Map.add x y m.typs }
 
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    match PathName.Map.find_opt x m.values with
-    | Some (Type _) -> true
-    | _ -> false
-
-  let find (x : PathName.t) (m : 'a t) : 'a =
-    match PathName.Map.find x m.values with
+  let unpack (v : 'a Value.t) : 'a =
+    match v with
     | Type a -> a
-    | _ -> failwith @@
-      String.concat "." x.PathName.path ^ "." ^ x.PathName.base ^ " is not a Type"
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."
 end
 module Descriptors = struct
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
-      PathName.Map.find_opt x m.locator.descriptors
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
+    PathName.Map.find_opt x m.descriptors
 
-  let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y Descriptor m.values;
-      locator = { m.locator with
-        descriptors = PathName.Map.add x y.base m.locator.descriptors } }
+  let value : 'a Value.t = Descriptor
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
-
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    match PathName.Map.find_opt x m.values with
-    | Some Descriptor -> true
-    | _ -> false
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with descriptors = PathName.Map.add x y m.descriptors }
 end
 module Constructors = struct
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
-      PathName.Map.find_opt x m.locator.constructors
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
+    PathName.Map.find_opt x m.constructors
 
-  let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y Constructor m.values;
-      locator = { m.locator with
-        constructors = PathName.Map.add x y.base m.locator.constructors } }
+  let value : 'a Value.t = Constructor
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
-
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    match PathName.Map.find_opt x m.values with
-    | Some Constructor -> true
-    | _ -> false
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with constructors = PathName.Map.add x y m.constructors }
 end
 module Fields = struct
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    option_map (fun name -> { x with base = name }) @@
-      PathName.Map.find_opt x m.locator.fields
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
+    PathName.Map.find_opt x m.fields
 
-  let assoc (x : PathName.t) (y : PathName.t) (m : 'a t) : 'a t =
-    { m with
-      values = PathName.Map.add y Field m.values;
-      locator = { m.locator with
-        fields = PathName.Map.add x y.base m.locator.fields } }
+  let value : 'a Value.t = Field
 
-  let add (x : PathName.t) (m : 'a t) : 'a t =
-    let y = match resolve_opt x m with
-      | Some path -> path
-      | None -> find_free_path x m in
-    assoc x y m
-
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    match PathName.Map.find_opt x m.values with
-    | Some Field -> true
-    | _ -> false
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with fields = PathName.Map.add x y m.fields }
 end
 module Modules = struct
-  let add (x : PathName.t) (v : 'a t) (m : 'a t) : 'a t =
-    { m with modules = PathName.Map.add x v m.modules }
-
-  let mem (x : PathName.t) (m : 'a t) : bool =
-    PathName.Map.mem x m.modules
-
-  let resolve_opt (x : PathName.t) (m : 'a t) : PathName.t option =
-    if mem x m then Some x else None
-
-  let find_opt (x : PathName.t) (m : 'a t) : 'a t option =
+  let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.modules
 
-  let find (x : PathName.t) (m : 'a t) : 'a t =
-    PathName.Map.find x m.modules
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with modules = PathName.Map.add x y m.modules }
 end
 
-let finish_module (prefix : Name.t option -> 'a -> 'a) (m1 : 'a t) (m2 : 'a t)
-  : 'a t =
+let finish_module (m1 : t) (m2 : t) : t =
   match option_map CoqName.ocaml_name m1.name with
   | Some module_name ->
     let add_to_path x =
       { x with PathName.path = module_name :: x.PathName.path } in
-    let m =
-    { name = m2.name;
-      locator = Locator.join
-        (PathName.Map.map_union add_to_path (fun _ v -> v))
-        m1.locator m2.locator;
-      values = PathName.Map.map_union add_to_path
-        (fun _ v -> Value.map (prefix (Some module_name)) v)
-        m1.values m2.values;
-      modules = PathName.Map.map_union add_to_path (fun _ v -> v)
-        m1.modules m2.modules } in
-    Modules.add (PathName.of_name [] module_name) m1 m
+    join (PathName.Map.map_union add_to_path (fun _ v -> v)) m1 m2
   | None -> (* This is a partial module, do not add name information. *)
-    { name = m2.name;
-      locator = Locator.join (PathName.Map.union (fun _ v _ -> Some v))
-        m1.locator m2.locator;
-      values = PathName.Map.map_union (fun x -> x)
-        (fun _ v -> Value.map (prefix None) v)
-        m1.values m2.values;
-      modules = PathName.Map.union (fun _ v _ -> Some v)
-        m1.modules m2.modules }
+    join (PathName.Map.union (fun _ v _ -> Some v)) m1 m2

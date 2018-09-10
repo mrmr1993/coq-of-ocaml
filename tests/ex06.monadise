@@ -3,34 +3,34 @@ Value
   (rec, @.,
     [
       ((map_rec, [ A; B ],
-        [ (counter, Type (nat/3)); (f, (A -> B)); (l, Type (list/3, A)) ],
-        Monad ([ NonTermination/3 ], Type (list/3, B))),
+        [ (counter, Type (nat)); (f, (A -> B)); (l, Type (list, A)) ],
+        Monad ([ NonTermination ], Type (list, B))),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (4, Variable (4, l/0),
+                  (4, Variable (4, l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Return
                           (?,
                             Constructor
                               (5,
-                                []/3)));
+                                [])));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           xs),
                         Bind
@@ -41,19 +41,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        map_rec/0),
+                                        map_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
                                     (6,
-                                      f/0);
+                                      f);
                                   Variable
                                     (6,
-                                      xs/0)
+                                      xs)
                                 ]),
                             Some
                               x_1,
@@ -61,20 +61,20 @@ Value
                               (?,
                                 Constructor
                                   (6,
-                                    cons/3,
+                                    cons,
                                     Apply
                                       (6,
                                         Variable
                                           (6,
-                                            f/0),
+                                            f),
                                         [
                                           Variable
                                             (6,
-                                              x/0)
+                                              x)
                                         ]),
                                     Variable
                                       (?,
-                                        x_1/0)))))
+                                        x_1)))))
                     ]))
             ]))
     ])
@@ -83,22 +83,22 @@ Value
 Value
   (non_rec, @.,
     [
-      ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list/3, A)) ],
-        Monad ([ Counter/3; NonTermination/3 ], Type (list/3, B))),
+      ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ],
+        Monad ([ Counter; NonTermination ], Type (list, B))),
         Bind
           (?,
             Lift
-              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
-                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
+              (?, [ Counter ], [ Counter; NonTermination ],
+                Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination/3 ], [ Counter/3; NonTermination/3 ],
+              (?, [ NonTermination ], [ Counter; NonTermination ],
                 Apply
-                  (?, Variable (?, map_rec/0),
+                  (?, Variable (?, map_rec),
                     [
-                      Variable (?, x/0);
-                      Variable (?, f/0);
-                      Variable (?, l/0)
+                      Variable (?, x);
+                      Variable (?, f);
+                      Variable (?, l)
                     ]))))
     ])
 
@@ -108,37 +108,37 @@ Value
     [
       ((fold_rec, [ A; B ],
         [
-          (counter, Type (nat/3));
+          (counter, Type (nat));
           (f, (A -> (B -> A)));
           (a, A);
-          (l, Type (list/3, B))
-        ], Monad ([ NonTermination/3 ], A)),
+          (l, Type (list, B))
+        ], Monad ([ NonTermination ], A)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (9, Variable (9, l/0),
+                  (9, Variable (9, l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Return
                           (?,
                             Variable
                               (10,
-                                a/0)));
+                                a)));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           xs),
                         Apply
@@ -147,32 +147,32 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    fold_rec/0),
+                                    fold_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter/0)
+                                      counter)
                                 ]),
                             [
                               Variable
                                 (11,
-                                  f/0);
+                                  f);
                               Apply
                                 (11,
                                   Variable
                                     (11,
-                                      f/0),
+                                      f),
                                   [
                                     Variable
                                       (11,
-                                        a/0);
+                                        a);
                                     Variable
                                       (11,
-                                        x/0)
+                                        x)
                                   ]);
                               Variable
                                 (11,
-                                  xs/0)
+                                  xs)
                             ]))
                     ]))
             ]))
@@ -182,23 +182,23 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fold, [ A; B ], [ (f, (A -> (B -> A))); (a, A); (l, Type (list/3, B)) ],
-        Monad ([ Counter/3; NonTermination/3 ], A)),
+      ((fold, [ A; B ], [ (f, (A -> (B -> A))); (a, A); (l, Type (list, B)) ],
+        Monad ([ Counter; NonTermination ], A)),
         Bind
           (?,
             Lift
-              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
-                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
+              (?, [ Counter ], [ Counter; NonTermination ],
+                Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination/3 ], [ Counter/3; NonTermination/3 ],
+              (?, [ NonTermination ], [ Counter; NonTermination ],
                 Apply
-                  (?, Variable (?, fold_rec/0),
+                  (?, Variable (?, fold_rec),
                     [
-                      Variable (?, x/0);
-                      Variable (?, f/0);
-                      Variable (?, a/0);
-                      Variable (?, l/0)
+                      Variable (?, x);
+                      Variable (?, f);
+                      Variable (?, a);
+                      Variable (?, l)
                     ]))))
     ])
 
@@ -206,16 +206,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((l, [ ], [ ], Type (list/3, Type (Z/3))),
+      ((l, [ ], [ ], Type (list, Type (Z))),
         Constructor
-          (13, cons/3, Constant (13, Int(5)),
+          (13, cons, Constant (13, Int(5)),
             Constructor
-              (13, cons/3, Constant (13, Int(6)),
+              (13, cons, Constant (13, Int(6)),
                 Constructor
-                  (13, cons/3, Constant (13, Int(7)),
+                  (13, cons, Constant (13, Int(7)),
                     Constructor
-                      (13, cons/3, Constant (13, Int(2)),
-                        Constructor (13, []/3))))))
+                      (13, cons, Constant (13, Int(2)),
+                        Constructor (13, []))))))
     ])
 
 15
@@ -223,18 +223,15 @@ Value
   (non_rec, @.,
     [
       ((n, [ A ],
-        [
-          (incr, (Type (Z/3) -> A));
-          (plus, (Type (Z/3) -> (A -> Type (Z/3))))
-        ], Monad ([ Counter/3; NonTermination/3 ], Type (Z/3))),
+        [ (incr, (Type (Z) -> A)); (plus, (Type (Z) -> (A -> Type (Z)))) ],
+        Monad ([ Counter; NonTermination ], Type (Z))),
         Bind
           (?,
             Apply
-              (16, Variable (16, map/0),
-                [ Variable (16, incr/0); Variable (16, l/0) ]),
-            Some x,
+              (16, Variable (16, map),
+                [ Variable (16, incr); Variable (16, l) ]), Some x,
             Apply
-              (16, Variable (16, fold/0),
+              (16, Variable (16, fold),
                 [
                   Function
                     (16, x,
@@ -245,16 +242,16 @@ Value
                             (16,
                               Variable
                                 (16,
-                                  plus/0),
+                                  plus),
                               [
                                 Variable
                                   (16,
-                                    x/0);
+                                    x);
                                 Variable
                                   (16,
-                                    y/0)
+                                    y)
                               ])));
                   Constant (16, Int(0));
-                  Variable (?, x/0)
+                  Variable (?, x)
                 ])))
     ])

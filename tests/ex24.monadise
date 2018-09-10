@@ -2,16 +2,16 @@
 Value
   (non_rec, @.,
     [
-      ((e_invalid, [ A; B ], [ (x, A) ], Monad ([ OCaml.Invalid_argument/3 ], B)),
+      ((e_invalid, [ A; B ], [ (x, A) ], Monad ([ OCaml.Invalid_argument ], B)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (5,
                     Variable
                       (5,
-                        OCaml.Pervasives.invalid_arg/3),
+                        OCaml.Pervasives.invalid_arg),
                     [
                       Constant
                         (5,
@@ -24,16 +24,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure/3 ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure ], B)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (6,
                     Variable
                       (6,
-                        OCaml.Pervasives.failwith/3),
+                        OCaml.Pervasives.failwith),
                     [
                       Constant
                         (6,
@@ -46,16 +46,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit1, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit/3 ], B)),
+      ((e_exit1, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit ], B)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (7,
                     Variable
                       (7,
-                        OCaml.Pervasives.raise_Exit/3),
+                        OCaml.Pervasives.raise_Exit),
                     [
                       Tuple
                         (?)
@@ -67,16 +67,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit2, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit/3 ], B)),
+      ((e_exit2, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit ], B)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (8,
                     Variable
                       (8,
-                        OCaml.Pervasives.raise_Exit/3),
+                        OCaml.Pervasives.raise_Exit),
                     [
                       Tuple
                         (?)
@@ -88,9 +88,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_eq, [ ], [ ], Type (bool/3)),
+      ((b_eq, [ ], [ ], Type (bool)),
         Apply
-          (11, Variable (11, equiv_decb/3),
+          (11, Variable (11, equiv_decb),
             [ Constant (11, Int(1)); Constant (11, Int(2)) ]))
     ])
 
@@ -98,29 +98,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_neq1, [ ], [ ], Type (bool/3)),
+      ((b_neq1, [ ], [ ], Type (bool)),
         Apply
-          (12, Variable (12, nequiv_decb/3),
-            [ Constructor (12, true/3); Constructor (12, false/3) ]))
+          (12, Variable (12, nequiv_decb),
+            [ Constructor (12, true); Constructor (12, false) ]))
     ])
 
 13
 Value
   (non_rec, @.,
     [
-      ((b_neq2, [ ], [ ], Type (bool/3)),
+      ((b_neq2, [ ], [ ], Type (bool)),
         Apply
-          (13, Variable (13, nequiv_decb/3),
-            [ Constructor (13, tt/3); Constructor (13, tt/3) ]))
+          (13, Variable (13, nequiv_decb),
+            [ Constructor (13, tt); Constructor (13, tt) ]))
     ])
 
 14
 Value
   (non_rec, @.,
     [
-      ((b_lt, [ ], [ ], Type (bool/3)),
+      ((b_lt, [ ], [ ], Type (bool)),
         Apply
-          (14, Variable (14, OCaml.Pervasives.lt/3),
+          (14, Variable (14, OCaml.Pervasives.lt),
             [ Constant (14, Int(1)); Constant (14, Int(2)) ]))
     ])
 
@@ -128,9 +128,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_gt, [ ], [ ], Type (bool/3)),
+      ((b_gt, [ ], [ ], Type (bool)),
         Apply
-          (15, Variable (15, OCaml.Pervasives.gt/3),
+          (15, Variable (15, OCaml.Pervasives.gt),
             [ Constant (15, Int(1)); Constant (15, Int(2)) ]))
     ])
 
@@ -138,29 +138,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_le, [ ], [ ], Type (bool/3)),
+      ((b_le, [ ], [ ], Type (bool)),
         Apply
-          (16, Variable (16, OCaml.Pervasives.le/3),
-            [ Constructor (16, true/3); Constructor (16, false/3) ]))
+          (16, Variable (16, OCaml.Pervasives.le),
+            [ Constructor (16, true); Constructor (16, false) ]))
     ])
 
 17
 Value
   (non_rec, @.,
     [
-      ((b_ge, [ ], [ ], Type (bool/3)),
+      ((b_ge, [ ], [ ], Type (bool)),
         Apply
-          (17, Variable (17, OCaml.Pervasives.ge/3),
-            [ Constructor (17, tt/3); Constructor (17, tt/3) ]))
+          (17, Variable (17, OCaml.Pervasives.ge),
+            [ Constructor (17, tt); Constructor (17, tt) ]))
     ])
 
 18
 Value
   (non_rec, @.,
     [
-      ((comp, [ ], [ ], Type (Z/3)),
+      ((comp, [ ], [ ], Type (Z)),
         Apply
-          (18, Variable (18, OCaml.Pervasives.compare/3),
+          (18, Variable (18, OCaml.Pervasives.compare),
             [ Constant (18, Int(1)); Constant (18, Int(2)) ]))
     ])
 
@@ -168,9 +168,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_min, [ ], [ ], Type (Z/3)),
+      ((n_min, [ ], [ ], Type (Z)),
         Apply
-          (19, Variable (19, OCaml.Pervasives.min/3),
+          (19, Variable (19, OCaml.Pervasives.min),
             [ Constant (19, Int(1)); Constant (19, Int(2)) ]))
     ])
 
@@ -178,9 +178,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_max, [ ], [ ], Type (Z/3)),
+      ((n_max, [ ], [ ], Type (Z)),
         Apply
-          (20, Variable (20, OCaml.Pervasives.max/3),
+          (20, Variable (20, OCaml.Pervasives.max),
             [ Constant (20, Int(1)); Constant (20, Int(2)) ]))
     ])
 
@@ -188,123 +188,115 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b_not, [ ], [ ], Type (bool/3)),
-        Apply (25, Variable (25, negb/3), [ Constructor (25, false/3) ]))
+      ((b_not, [ ], [ ], Type (bool)),
+        Apply (25, Variable (25, negb), [ Constructor (25, false) ]))
     ])
 
 26
 Value
   (non_rec, @.,
     [
-      ((b_and, [ ], [ ], Type (bool/3)),
+      ((b_and, [ ], [ ], Type (bool)),
         Apply
-          (26, Variable (26, andb/3),
-            [ Constructor (26, true/3); Constructor (26, false/3) ]))
+          (26, Variable (26, andb),
+            [ Constructor (26, true); Constructor (26, false) ]))
     ])
 
 27
 Value
   (non_rec, @.,
     [
-      ((b_and_old, [ ], [ ], Type (bool/3)),
+      ((b_and_old, [ ], [ ], Type (bool)),
         Apply
-          (27, Variable (27, andb/3),
-            [ Constructor (27, true/3); Constructor (27, false/3) ]))
+          (27, Variable (27, andb),
+            [ Constructor (27, true); Constructor (27, false) ]))
     ])
 
 28
 Value
   (non_rec, @.,
     [
-      ((b_or, [ ], [ ], Type (bool/3)),
+      ((b_or, [ ], [ ], Type (bool)),
         Apply
-          (28, Variable (28, orb/3),
-            [ Constructor (28, true/3); Constructor (28, false/3) ]))
+          (28, Variable (28, orb),
+            [ Constructor (28, true); Constructor (28, false) ]))
     ])
 
 29
 Value
   (non_rec, @.,
     [
-      ((b_or_old, [ ], [ ], Type (bool/3)),
+      ((b_or_old, [ ], [ ], Type (bool)),
         Apply
-          (29, Variable (29, orb/3),
-            [ Constructor (29, true/3); Constructor (29, false/3) ]))
+          (29, Variable (29, orb),
+            [ Constructor (29, true); Constructor (29, false) ]))
     ])
 
 32
 Value
   (non_rec, @.,
     [
-      ((app1, [ ], [ ], Type (Z/3)),
+      ((app1, [ ], [ ], Type (Z)),
         Apply
-          (32, Variable (32, OCaml.Pervasives.reverse_apply/3),
-            [
-              Constant (32, Int(12));
-              Function (32, x, Variable (32, x/0))
-            ]))
+          (32, Variable (32, OCaml.Pervasives.reverse_apply),
+            [ Constant (32, Int(12)); Function (32, x, Variable (32, x)) ]))
     ])
 
 33
 Value
   (non_rec, @.,
     [
-      ((app2, [ ], [ ], Type (Z/3)),
+      ((app2, [ ], [ ], Type (Z)),
         Apply
-          (33, Variable (33, apply/3),
-            [
-              Function (33, x, Variable (33, x/0));
-              Constant (33, Int(12))
-            ]))
+          (33, Variable (33, apply),
+            [ Function (33, x, Variable (33, x)); Constant (33, Int(12)) ]))
     ])
 
 36
 Value
   (non_rec, @.,
     [
-      ((n_neg1, [ ], [ ], Type (Z/3)),
-        Apply (36, Variable (36, Z.opp/3), [ Constant (36, Int(12)) ]))
+      ((n_neg1, [ ], [ ], Type (Z)),
+        Apply (36, Variable (36, Z.opp), [ Constant (36, Int(12)) ]))
     ])
 
 37
-Value
-  (non_rec, @., [ ((n_neg2, [ ], [ ], Type (Z/3)), Constant (37, Int(-12))) ])
+Value (non_rec, @., [ ((n_neg2, [ ], [ ], Type (Z)), Constant (37, Int(-12))) ])
 
 38
 Value
   (non_rec, @.,
     [
-      ((n_pos1, [ ], [ ], Type (Z/3)),
-        Apply (38, Variable (38, /3), [ Constant (38, Int(12)) ]))
+      ((n_pos1, [ ], [ ], Type (Z)),
+        Apply (38, Variable (38, ), [ Constant (38, Int(12)) ]))
     ])
 
 39
-Value
-  (non_rec, @., [ ((n_pos2, [ ], [ ], Type (Z/3)), Constant (39, Int(12))) ])
+Value (non_rec, @., [ ((n_pos2, [ ], [ ], Type (Z)), Constant (39, Int(12))) ])
 
 40
 Value
   (non_rec, @.,
     [
-      ((n_succ, [ ], [ ], Type (Z/3)),
-        Apply (40, Variable (40, Z.succ/3), [ Constant (40, Int(1)) ]))
+      ((n_succ, [ ], [ ], Type (Z)),
+        Apply (40, Variable (40, Z.succ), [ Constant (40, Int(1)) ]))
     ])
 
 41
 Value
   (non_rec, @.,
     [
-      ((n_pred, [ ], [ ], Type (Z/3)),
-        Apply (41, Variable (41, Z.pred/3), [ Constant (41, Int(1)) ]))
+      ((n_pred, [ ], [ ], Type (Z)),
+        Apply (41, Variable (41, Z.pred), [ Constant (41, Int(1)) ]))
     ])
 
 42
 Value
   (non_rec, @.,
     [
-      ((n_plus, [ ], [ ], Type (Z/3)),
+      ((n_plus, [ ], [ ], Type (Z)),
         Apply
-          (42, Variable (42, Z.add/3),
+          (42, Variable (42, Z.add),
             [ Constant (42, Int(1)); Constant (42, Int(2)) ]))
     ])
 
@@ -312,9 +304,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_minus, [ ], [ ], Type (Z/3)),
+      ((n_minus, [ ], [ ], Type (Z)),
         Apply
-          (43, Variable (43, Z.sub/3),
+          (43, Variable (43, Z.sub),
             [ Constant (43, Int(1)); Constant (43, Int(2)) ]))
     ])
 
@@ -322,9 +314,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_times, [ ], [ ], Type (Z/3)),
+      ((n_times, [ ], [ ], Type (Z)),
         Apply
-          (44, Variable (44, Z.mul/3),
+          (44, Variable (44, Z.mul),
             [ Constant (44, Int(1)); Constant (44, Int(2)) ]))
     ])
 
@@ -332,9 +324,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_div, [ ], [ ], Type (Z/3)),
+      ((n_div, [ ], [ ], Type (Z)),
         Apply
-          (45, Variable (45, Z.div/3),
+          (45, Variable (45, Z.div),
             [ Constant (45, Int(1)); Constant (45, Int(2)) ]))
     ])
 
@@ -342,9 +334,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_mod, [ ], [ ], Type (Z/3)),
+      ((n_mod, [ ], [ ], Type (Z)),
         Apply
-          (46, Variable (46, Z.modulo/3),
+          (46, Variable (46, Z.modulo),
             [ Constant (46, Int(1)); Constant (46, Int(2)) ]))
     ])
 
@@ -352,17 +344,17 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_abs, [ ], [ ], Type (Z/3)),
-        Apply (47, Variable (47, Z.abs/3), [ Constant (47, Int(1)) ]))
+      ((n_abs, [ ], [ ], Type (Z)),
+        Apply (47, Variable (47, Z.abs), [ Constant (47, Int(1)) ]))
     ])
 
 52
 Value
   (non_rec, @.,
     [
-      ((n_land, [ ], [ ], Type (Z/3)),
+      ((n_land, [ ], [ ], Type (Z)),
         Apply
-          (52, Variable (52, Z.land/3),
+          (52, Variable (52, Z.land),
             [ Constant (52, Int(12)); Constant (52, Int(13)) ]))
     ])
 
@@ -370,9 +362,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lor, [ ], [ ], Type (Z/3)),
+      ((n_lor, [ ], [ ], Type (Z)),
         Apply
-          (53, Variable (53, Z.lor/3),
+          (53, Variable (53, Z.lor),
             [ Constant (53, Int(12)); Constant (53, Int(13)) ]))
     ])
 
@@ -380,9 +372,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lxor, [ ], [ ], Type (Z/3)),
+      ((n_lxor, [ ], [ ], Type (Z)),
         Apply
-          (54, Variable (54, Z.lxor/3),
+          (54, Variable (54, Z.lxor),
             [ Constant (54, Int(12)); Constant (54, Int(13)) ]))
     ])
 
@@ -390,9 +382,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lsl, [ ], [ ], Type (Z/3)),
+      ((n_lsl, [ ], [ ], Type (Z)),
         Apply
-          (56, Variable (56, Z.shiftl/3),
+          (56, Variable (56, Z.shiftl),
             [ Constant (56, Int(12)); Constant (56, Int(13)) ]))
     ])
 
@@ -400,9 +392,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_lsr, [ ], [ ], Type (Z/3)),
+      ((n_lsr, [ ], [ ], Type (Z)),
         Apply
-          (57, Variable (57, Z.shiftr/3),
+          (57, Variable (57, Z.shiftr),
             [ Constant (57, Int(12)); Constant (57, Int(13)) ]))
     ])
 
@@ -410,9 +402,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ss, [ ], [ ], Type (string/3)),
+      ((ss, [ ], [ ], Type (string)),
         Apply
-          (64, Variable (64, String.append/3),
+          (64, Variable (64, String.append),
             [
               Constant (64, String("begin"));
               Constant (64, String("end"))
@@ -423,9 +415,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_char, [ ], [ ], Type (Z/3)),
+      ((n_char, [ ], [ ], Type (Z)),
         Apply
-          (67, Variable (67, OCaml.Pervasives.int_of_char/3),
+          (67, Variable (67, OCaml.Pervasives.int_of_char),
             [ Constant (67, Char("c")) ]))
     ])
 
@@ -434,16 +426,16 @@ Value
   (non_rec, @.,
     [
       ((char_n, [ A ], [ (x, A) ],
-        Monad ([ OCaml.Invalid_argument/3 ], Type (ascii/3))),
+        Monad ([ OCaml.Invalid_argument ], Type (ascii))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (68,
                     Variable
                       (68,
-                        OCaml.Pervasives.char_of_int/3),
+                        OCaml.Pervasives.char_of_int),
                     [
                       Constant
                         (68,
@@ -456,9 +448,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((i, [ ], [ ], Type (unit/3)),
+      ((i, [ ], [ ], Type (unit)),
         Apply
-          (71, Variable (71, OCaml.Pervasives.ignore/3),
+          (71, Variable (71, OCaml.Pervasives.ignore),
             [ Constant (71, Int(12)) ]))
     ])
 
@@ -466,19 +458,19 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s_bool, [ ], [ ], Type (string/3)),
+      ((s_bool, [ ], [ ], Type (string)),
         Apply
-          (74, Variable (74, OCaml.Pervasives.string_of_bool/3),
-            [ Constructor (74, false/3) ]))
+          (74, Variable (74, OCaml.Pervasives.string_of_bool),
+            [ Constructor (74, false) ]))
     ])
 
 75
 Value
   (non_rec, @.,
     [
-      ((bool_s, [ ], [ ], Type (bool/3)),
+      ((bool_s, [ ], [ ], Type (bool)),
         Apply
-          (75, Variable (75, OCaml.Pervasives.bool_of_string/3),
+          (75, Variable (75, OCaml.Pervasives.bool_of_string),
             [ Constant (75, String("false")) ]))
     ])
 
@@ -486,9 +478,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s_n, [ ], [ ], Type (string/3)),
+      ((s_n, [ ], [ ], Type (string)),
         Apply
-          (76, Variable (76, OCaml.Pervasives.string_of_int/3),
+          (76, Variable (76, OCaml.Pervasives.string_of_int),
             [ Constant (76, Int(12)) ]))
     ])
 
@@ -496,9 +488,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n_s, [ ], [ ], Type (Z/3)),
+      ((n_s, [ ], [ ], Type (Z)),
         Apply
-          (77, Variable (77, OCaml.Pervasives.int_of_string/3),
+          (77, Variable (77, OCaml.Pervasives.int_of_string),
             [ Constant (77, String("12")) ]))
     ])
 
@@ -506,9 +498,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n1, [ ], [ ], Type (Z/3)),
+      ((n1, [ ], [ ], Type (Z)),
         Apply
-          (82, Variable (82, fst/3),
+          (82, Variable (82, fst),
             [ Tuple (82, Constant (82, Int(12)), Constant (82, Int(13))) ]))
     ])
 
@@ -516,9 +508,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n2, [ ], [ ], Type (Z/3)),
+      ((n2, [ ], [ ], Type (Z)),
         Apply
-          (83, Variable (83, snd/3),
+          (83, Variable (83, snd),
             [ Tuple (83, Constant (83, Int(12)), Constant (83, Int(13))) ]))
     ])
 
@@ -526,32 +518,32 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ll, [ ], [ ], Type (list/3, Type (Z/3))),
+      ((ll, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (86, Variable (86, OCaml.Pervasives.app/3),
+          (86, Variable (86, OCaml.Pervasives.app),
             [
               Constructor
-                (86, cons/3, Constant (86, Int(1)),
+                (86, cons, Constant (86, Int(1)),
                   Constructor
                     (86,
-                      cons/3,
+                      cons,
                       Constant
                         (86,
                           Int(2)),
                       Constructor
                         (86,
-                          []/3)));
+                          [])));
               Constructor
-                (86, cons/3, Constant (86, Int(3)),
+                (86, cons, Constant (86, Int(3)),
                   Constructor
                     (86,
-                      cons/3,
+                      cons,
                       Constant
                         (86,
                           Int(4)),
                       Constructor
                         (86,
-                          []/3)))
+                          [])))
             ]))
     ])
 
@@ -559,16 +551,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_c, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((p_c, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (94,
                     Variable
                       (94,
-                        OCaml.Pervasives.print_char/3),
+                        OCaml.Pervasives.print_char),
                     [
                       Constant
                         (94,
@@ -581,16 +573,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_s, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((p_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (95,
                     Variable
                       (95,
-                        OCaml.Pervasives.print_string/3),
+                        OCaml.Pervasives.print_string),
                     [
                       Constant
                         (95,
@@ -603,16 +595,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_n, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((p_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (96,
                     Variable
                       (96,
-                        OCaml.Pervasives.print_int/3),
+                        OCaml.Pervasives.print_int),
                     [
                       Constant
                         (96,
@@ -625,16 +617,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_endline, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((p_endline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (98,
                     Variable
                       (98,
-                        OCaml.Pervasives.print_endline/3),
+                        OCaml.Pervasives.print_endline),
                     [
                       Constant
                         (98,
@@ -647,20 +639,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_newline, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((p_newline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (99,
                     Variable
                       (99,
-                        OCaml.Pervasives.print_newline/3),
+                        OCaml.Pervasives.print_newline),
                     [
                       Constructor
                         (99,
-                          tt/3)
+                          tt)
                     ]))
             ]))
     ])
@@ -669,16 +661,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_c, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((perr_c, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (102,
                     Variable
                       (102,
-                        OCaml.Pervasives.prerr_char/3),
+                        OCaml.Pervasives.prerr_char),
                     [
                       Constant
                         (102,
@@ -691,16 +683,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_s, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((perr_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (103,
                     Variable
                       (103,
-                        OCaml.Pervasives.prerr_string/3),
+                        OCaml.Pervasives.prerr_string),
                     [
                       Constant
                         (103,
@@ -713,16 +705,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_n, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((perr_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (104,
                     Variable
                       (104,
-                        OCaml.Pervasives.prerr_int/3),
+                        OCaml.Pervasives.prerr_int),
                     [
                       Constant
                         (104,
@@ -735,16 +727,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_endline, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((perr_endline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (106,
                     Variable
                       (106,
-                        OCaml.Pervasives.prerr_endline/3),
+                        OCaml.Pervasives.prerr_endline),
                     [
                       Constant
                         (106,
@@ -757,20 +749,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_newline, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (unit/3))),
+      ((perr_newline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (107,
                     Variable
                       (107,
-                        OCaml.Pervasives.prerr_newline/3),
+                        OCaml.Pervasives.prerr_newline),
                     [
                       Constructor
                         (107,
-                          tt/3)
+                          tt)
                     ]))
             ]))
     ])
@@ -779,20 +771,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_s, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (string/3))),
+      ((r_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (string))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (110,
                     Variable
                       (110,
-                        OCaml.Pervasives.read_line/3),
+                        OCaml.Pervasives.read_line),
                     [
                       Constructor
                         (110,
-                          tt/3)
+                          tt)
                     ]))
             ]))
     ])
@@ -801,20 +793,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_n, [ A ], [ (x, A) ], Monad ([ IO/3 ], Type (Z/3))),
+      ((r_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (Z))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (111,
                     Variable
                       (111,
-                        OCaml.Pervasives.read_int/3),
+                        OCaml.Pervasives.read_int),
                     [
                       Constructor
                         (111,
-                          tt/3)
+                          tt)
                     ]))
             ]))
     ])

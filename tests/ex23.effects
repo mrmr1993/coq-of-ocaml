@@ -1,21 +1,20 @@
 4
 Value
   (non_rec, @.,
-    [ ((n, [ ], [ ], Type (Z/3)), Constant ((4, Effect ([ ], .)), Int(12))) ])
+    [ ((n, [ ], [ ], Type (Z)), Constant ((4, Effect ([ ], .)), Int(12))) ])
 
 5
 Value
   (non_rec, @.,
     [
-      ((c1, [ ], [ ], Type (ascii/3)),
-        Constant ((5, Effect ([ ], .)), Char("a")))
+      ((c1, [ ], [ ], Type (ascii)), Constant ((5, Effect ([ ], .)), Char("a")))
     ])
 
 6
 Value
   (non_rec, @.,
     [
-      ((c2, [ ], [ ], Type (ascii/3)),
+      ((c2, [ ], [ ], Type (ascii)),
         Constant ((6, Effect ([ ], .)), Char("\\n")))
     ])
 
@@ -23,7 +22,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((c3, [ ], [ ], Type (ascii/3)),
+      ((c3, [ ], [ ], Type (ascii)),
         Constant ((7, Effect ([ ], .)), Char("\\t")))
     ])
 
@@ -31,80 +30,72 @@ Value
 Value
   (non_rec, @.,
     [
-      ((c4, [ ], [ ], Type (ascii/3)),
-        Constant ((8, Effect ([ ], .)), Char("\"")))
+      ((c4, [ ], [ ], Type (ascii)), Constant ((8, Effect ([ ], .)), Char("\"")))
     ])
 
 9
 Value
   (non_rec, @.,
     [
-      ((s, [ ], [ ], Type (string/3)),
+      ((s, [ ], [ ], Type (string)),
         Constant ((9, Effect ([ ], .)), String("hi\n\t:)\"")))
     ])
 
 11
 Value
   (non_rec, @.,
-    [
-      ((b1, [ ], [ ], Type (bool/3)),
-        Constructor ((11, Effect ([ ], .)), false/3))
-    ])
+    [ ((b1, [ ], [ ], Type (bool)), Constructor ((11, Effect ([ ], .)), false)) ])
 
 12
 Value
   (non_rec, @.,
-    [
-      ((b2, [ ], [ ], Type (bool/3)),
-        Constructor ((12, Effect ([ ], .)), true/3))
-    ])
+    [ ((b2, [ ], [ ], Type (bool)), Constructor ((12, Effect ([ ], .)), true)) ])
 
 13
 Value
   (non_rec, @.,
-    [ ((u, [ ], [ ], Type (unit/3)), Constructor ((13, Effect ([ ], .)), tt/3)) ])
+    [ ((u, [ ], [ ], Type (unit)), Constructor ((13, Effect ([ ], .)), tt)) ])
 
 16
 Value
   (non_rec, @.,
     [
-      ((l1, [ A ], [ ], Type (list/3, A)),
-        Constructor ((16, Effect ([ ], .)), []/3))
+      ((l1, [ A ], [ ], Type (list, A)), Constructor ((16, Effect ([ ], .)), []))
     ])
 
 17
 Value
   (non_rec, @.,
     [
-      ((l2, [ ], [ ], Type (list/3, Type (Z/3))),
+      ((l2, [ ], [ ], Type (list, Type (Z))),
         Constructor
-          ((17, Effect ([ ], .)), cons/3,
+          ((17, Effect ([ ], .)), cons,
             Constant ((17, Effect ([ ], .)), Int(0)),
             Constructor
-              ((17, Effect ([ ], .)), cons/3,
+              ((17, Effect ([ ], .)), cons,
                 Constant ((17, Effect ([ ], .)), Int(1)),
                 Constructor
-                  ((17, Effect ([ ], .)), cons/3,
+                  ((17, Effect ([ ], .)), cons,
                     Constant ((17, Effect ([ ], .)), Int(2)),
                     Constructor
-                      ((17, Effect ([ ], .)), cons/3,
+                      ((17, Effect ([ ], .)), cons,
                         Constant
                           ((17, Effect ([ ], .)), Int(3)),
                         Constructor
-                          ((17, Effect ([ ], .)), []/3))))))
+                          ((17, Effect ([ ], .)), []))))))
     ])
 
 18
 Value
   (non_rec, @.,
     [
-      ((o, [ ], [ ], Type (option/3, Type (Z/3))),
+      ((o, [ ], [ ], Type (option, Type (Z))),
         IfThenElse
-          ((18, Effect ([ ], .)), Variable ((18, Effect ([ ], .)), b1/0),
-            Constructor ((18, Effect ([ ], .)), None/3),
+          ((18, Effect ([ ], .)), Variable ((18, Effect ([ ], .)), b1),
+            Constructor ((18, Effect ([ ], .)), None),
             Constructor
-              ((18, Effect ([ ], .)), Some/3,
-                Variable ((18, Effect ([ ], .)), n/0))))
+              ((18, Effect ([ ], .)), Some,
+                Variable ((18, Effect ([ ], .)), n))))
     ])
 
 26
@@ -113,15 +104,15 @@ Value
     [
       ((e_match, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Match_failure/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Match_failure ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((26,
                     Effect
                       ([
-                        OCaml.Match_failure/3
+                        OCaml.Match_failure
                       ],
                         .)),
                     Variable
@@ -131,10 +122,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Match_failure/3
+                                OCaml.Match_failure
                               ]->
                               .)),
-                        OCaml.raise_Match_failure/3),
+                        OCaml.raise_Match_failure),
                     [
                       Tuple
                         ((?,
@@ -179,15 +170,15 @@ Value
     [
       ((e_assert, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Assert_failure/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Assert_failure ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((27,
                     Effect
                       ([
-                        OCaml.Assert_failure/3
+                        OCaml.Assert_failure
                       ],
                         .)),
                     Variable
@@ -197,10 +188,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Assert_failure/3
+                                OCaml.Assert_failure
                               ]->
                               .)),
-                        OCaml.raise_Assert_failure/3),
+                        OCaml.raise_Assert_failure),
                     [
                       Tuple
                         ((?,
@@ -245,15 +236,15 @@ Value
     [
       ((e_invalid, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Invalid_argument/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Invalid_argument ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((28,
                     Effect
                       ([
-                        OCaml.Invalid_argument/3
+                        OCaml.Invalid_argument
                       ],
                         .)),
                     Variable
@@ -263,10 +254,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument/3
+                                OCaml.Invalid_argument
                               ]->
                               .)),
-                        OCaml.raise_Invalid_argument/3),
+                        OCaml.raise_Invalid_argument),
                     [
                       Tuple
                         ((?,
@@ -291,15 +282,15 @@ Value
     [
       ((e_failure, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Failure/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Failure ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((29,
                     Effect
                       ([
-                        OCaml.Failure/3
+                        OCaml.Failure
                       ],
                         .)),
                     Variable
@@ -309,10 +300,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Failure/3
+                                OCaml.Failure
                               ]->
                               .)),
-                        OCaml.raise_Failure/3),
+                        OCaml.raise_Failure),
                     [
                       Tuple
                         ((?,
@@ -337,15 +328,15 @@ Value
     [
       ((e_not_found, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Not_found/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Not_found ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((30,
                     Effect
                       ([
-                        OCaml.Not_found/3
+                        OCaml.Not_found
                       ],
                         .)),
                     Variable
@@ -355,10 +346,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Not_found/3
+                                OCaml.Not_found
                               ]->
                               .)),
-                        OCaml.raise_Not_found/3),
+                        OCaml.raise_Not_found),
                     [
                       Tuple
                         ((?,
@@ -376,15 +367,15 @@ Value
     [
       ((e_out_of_mem, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Out_of_memory/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Out_of_memory ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((31,
                     Effect
                       ([
-                        OCaml.Out_of_memory/3
+                        OCaml.Out_of_memory
                       ],
                         .)),
                     Variable
@@ -394,10 +385,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Out_of_memory/3
+                                OCaml.Out_of_memory
                               ]->
                               .)),
-                        OCaml.raise_Out_of_memory/3),
+                        OCaml.raise_Out_of_memory),
                     [
                       Tuple
                         ((?,
@@ -415,15 +406,15 @@ Value
     [
       ((e_overflow, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Stack_overflow/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Stack_overflow ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((32,
                     Effect
                       ([
-                        OCaml.Stack_overflow/3
+                        OCaml.Stack_overflow
                       ],
                         .)),
                     Variable
@@ -433,10 +424,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Stack_overflow/3
+                                OCaml.Stack_overflow
                               ]->
                               .)),
-                        OCaml.raise_Stack_overflow/3),
+                        OCaml.raise_Stack_overflow),
                     [
                       Tuple
                         ((?,
@@ -454,15 +445,15 @@ Value
     [
       ((e_sys_err, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Sys_error/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Sys_error ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((33,
                     Effect
                       ([
-                        OCaml.Sys_error/3
+                        OCaml.Sys_error
                       ],
                         .)),
                     Variable
@@ -472,10 +463,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Sys_error/3
+                                OCaml.Sys_error
                               ]->
                               .)),
-                        OCaml.raise_Sys_error/3),
+                        OCaml.raise_Sys_error),
                     [
                       Tuple
                         ((?,
@@ -500,15 +491,15 @@ Value
     [
       ((e_EOF, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.End_of_file/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.End_of_file ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((34,
                     Effect
                       ([
-                        OCaml.End_of_file/3
+                        OCaml.End_of_file
                       ],
                         .)),
                     Variable
@@ -518,10 +509,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.End_of_file/3
+                                OCaml.End_of_file
                               ]->
                               .)),
-                        OCaml.raise_End_of_file/3),
+                        OCaml.raise_End_of_file),
                     [
                       Tuple
                         ((?,
@@ -539,15 +530,15 @@ Value
     [
       ((e_div, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Division_by_zero/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Division_by_zero ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((35,
                     Effect
                       ([
-                        OCaml.Division_by_zero/3
+                        OCaml.Division_by_zero
                       ],
                         .)),
                     Variable
@@ -557,10 +548,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Division_by_zero/3
+                                OCaml.Division_by_zero
                               ]->
                               .)),
-                        OCaml.raise_Division_by_zero/3),
+                        OCaml.raise_Division_by_zero),
                     [
                       Tuple
                         ((?,
@@ -578,15 +569,15 @@ Value
     [
       ((e_sys_blocked, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Sys_blocked_io/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Sys_blocked_io ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((36,
                     Effect
                       ([
-                        OCaml.Sys_blocked_io/3
+                        OCaml.Sys_blocked_io
                       ],
                         .)),
                     Variable
@@ -596,10 +587,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Sys_blocked_io/3
+                                OCaml.Sys_blocked_io
                               ]->
                               .)),
-                        OCaml.raise_Sys_blocked_io/3),
+                        OCaml.raise_Sys_blocked_io),
                     [
                       Tuple
                         ((?,
@@ -617,15 +608,15 @@ Value
     [
       ((e_rec_module, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Undefined_recursive_module/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Undefined_recursive_module ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((37,
                     Effect
                       ([
-                        OCaml.Undefined_recursive_module/3
+                        OCaml.Undefined_recursive_module
                       ],
                         .)),
                     Variable
@@ -635,10 +626,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Undefined_recursive_module/3
+                                OCaml.Undefined_recursive_module
                               ]->
                               .)),
-                        OCaml.raise_Undefined_recursive_module/3),
+                        OCaml.raise_Undefined_recursive_module),
                     [
                       Tuple
                         ((?,

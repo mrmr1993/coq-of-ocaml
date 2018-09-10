@@ -3,33 +3,31 @@ Value
   (rec, @.,
     [
       ((sums_rec, [ ],
-        [
-          (counter, Type (nat/3));
-          (ls, Type (list/3, Type (list/3, Type (Z/3))))
-        ], Monad ([ Counter/3; NonTermination/3 ], Type (list/3, Type (Z/3)))),
+        [ (counter, Type (nat)); (ls, Type (list, Type (list, Type (Z)))) ],
+        Monad ([ Counter; NonTermination ], Type (list, Type (Z)))),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Lift
                   (?,
                     [
-                      NonTermination/3
+                      NonTermination
                     ],
                     [
-                      Counter/3;
-                      NonTermination/3
+                      Counter;
+                      NonTermination
                     ],
                     Apply
                       (?,
                         Variable
                           (?,
-                            not_terminated/3),
+                            not_terminated),
                         [
                           Tuple
                             (?)
                         ])));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 LetFun 4
                   (rec, @.,
                     [
@@ -39,64 +37,64 @@ Value
                         [
                           (counter_1,
                             Type
-                              (nat/3));
+                              (nat));
                           (xs,
                             Type
-                              (list/3,
+                              (list,
                                 Type
-                                  (Z/3)))
+                                  (Z)))
                         ],
                         Monad
                           ([
-                            Counter/3;
-                            NonTermination/3
+                            Counter;
+                            NonTermination
                           ],
                             Type
-                              (Z/3))),
+                              (Z))),
                         Match
                           (?,
                             Variable
                               (?,
-                                counter_1/0),
+                                counter_1),
                             [
                               (Constructor
-                                (O/3),
+                                (O),
                                 Lift
                                   (?,
                                     [
-                                      NonTermination/3
+                                      NonTermination
                                     ],
                                     [
-                                      Counter/3;
-                                      NonTermination/3
+                                      Counter;
+                                      NonTermination
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            not_terminated/3),
+                                            not_terminated),
                                         [
                                           Tuple
                                             (?)
                                         ])));
                               (Constructor
-                                (S/3,
+                                (S,
                                   counter_1),
                                 Match
                                   (5,
                                     Variable
                                       (5,
-                                        xs/0),
+                                        xs),
                                     [
                                       (Constructor
-                                        ([]/3),
+                                        ([]),
                                         Return
                                           (?,
                                             Constant
                                               (6,
                                                 Int(0))));
                                       (Constructor
-                                        (cons/3,
+                                        (cons,
                                           x,
                                           xs),
                                         IfThenElse
@@ -105,11 +103,11 @@ Value
                                               (8,
                                                 Variable
                                                   (8,
-                                                    equiv_decb/3),
+                                                    equiv_decb),
                                                 [
                                                   Variable
                                                     (8,
-                                                      x/0);
+                                                      x);
                                                   Constant
                                                     (8,
                                                       Int(12))
@@ -122,28 +120,28 @@ Value
                                                       (?,
                                                         Variable
                                                           (?,
-                                                            sums_rec/0),
+                                                            sums_rec),
                                                         [
                                                           Variable
                                                             (?,
-                                                              counter/0)
+                                                              counter)
                                                         ]),
                                                     [
                                                       Constructor
                                                         (9,
-                                                          cons/3,
+                                                          cons,
                                                           Constructor
                                                             (9,
-                                                              cons/3,
+                                                              cons,
                                                               Constant
                                                                 (9,
                                                                   Int(13)),
                                                               Constructor
                                                                 (9,
-                                                                  []/3)),
+                                                                  [])),
                                                           Constructor
                                                             (9,
-                                                              []/3))
+                                                              []))
                                                     ]),
                                                 Some
                                                   x_1,
@@ -151,10 +149,10 @@ Value
                                                   (9,
                                                     Variable
                                                       (?,
-                                                        x_1/0),
+                                                        x_1),
                                                     [
                                                       (Constructor
-                                                        (cons/3,
+                                                        (cons,
                                                           x,
                                                           Any),
                                                         Return
@@ -163,11 +161,11 @@ Value
                                                               (10,
                                                                 Variable
                                                                   (10,
-                                                                    Z.sub/3),
+                                                                    Z.sub),
                                                                 [
                                                                   Variable
                                                                     (10,
-                                                                      x/0);
+                                                                      x);
                                                                   Constant
                                                                     (10,
                                                                       Int(1))
@@ -187,16 +185,16 @@ Value
                                                       (?,
                                                         Variable
                                                           (?,
-                                                            sum_rec/0),
+                                                            sum_rec),
                                                         [
                                                           Variable
                                                             (?,
-                                                              counter_1/0)
+                                                              counter_1)
                                                         ]),
                                                     [
                                                       Variable
                                                         (13,
-                                                          xs/0)
+                                                          xs)
                                                     ]),
                                                 Some
                                                   x_1,
@@ -206,14 +204,14 @@ Value
                                                       (13,
                                                         Variable
                                                           (13,
-                                                            Z.add/3),
+                                                            Z.add),
                                                         [
                                                           Variable
                                                             (13,
-                                                              x/0);
+                                                              x);
                                                           Variable
                                                             (?,
-                                                              x_1/0)
+                                                              x_1)
                                                         ])))))
                                     ]))
                             ]))
@@ -222,39 +220,41 @@ Value
                 LetFun 4
                   (non_rec, @.,
                     [
-                      ((sum,
+                      ((sum
+                      (=
+                      sum_1),
                         [
                         ],
                         [
                           (xs,
                             Type
-                              (list/3,
+                              (list,
                                 Type
-                                  (Z/3)))
+                                  (Z)))
                         ],
                         Monad
                           ([
-                            Counter/3;
-                            NonTermination/3
+                            Counter;
+                            NonTermination
                           ],
                             Type
-                              (Z/3))),
+                              (Z))),
                         Bind
                           (?,
                             Lift
                               (?,
                                 [
-                                  Counter/3
+                                  Counter
                                 ],
                                 [
-                                  Counter/3;
-                                  NonTermination/3
+                                  Counter;
+                                  NonTermination
                                 ],
                                 Apply
                                   (?,
                                     Variable
                                       (?,
-                                        read_counter/3),
+                                        read_counter),
                                     [
                                       Tuple
                                         (?)
@@ -265,14 +265,14 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    sum_rec/0),
+                                    sum_rec),
                                 [
                                   Variable
                                     (?,
-                                      x/0);
+                                      x);
                                   Variable
                                     (?,
-                                      xs/0)
+                                      xs)
                                 ])))
                     ])
                   in
@@ -280,17 +280,17 @@ Value
                   (14,
                     Variable
                       (14,
-                        ls/0),
+                        ls),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Return
                           (?,
                             Constructor
                               (15,
-                                []/3)));
+                                [])));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           xs,
                           ls),
                         Bind
@@ -299,11 +299,11 @@ Value
                               (16,
                                 Variable
                                   (16,
-                                    sum/0),
+                                    sum_1),
                                 [
                                   Variable
                                     (16,
-                                      xs/0)
+                                      xs)
                                 ]),
                             Some
                               x,
@@ -315,16 +315,16 @@ Value
                                       (?,
                                         Variable
                                           (?,
-                                            sums_rec/0),
+                                            sums_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter/0)
+                                              counter)
                                         ]),
                                     [
                                       Variable
                                         (16,
-                                          ls/0)
+                                          ls)
                                     ]),
                                 Some
                                   x_1,
@@ -332,13 +332,13 @@ Value
                                   (?,
                                     Constructor
                                       (16,
-                                        cons/3,
+                                        cons,
                                         Variable
                                           (?,
-                                            x/0),
+                                            x),
                                         Variable
                                           (?,
-                                            x_1/0))))))
+                                            x_1))))))
                     ]))
             ]))
     ])
@@ -347,15 +347,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sums, [ ], [ (ls, Type (list/3, Type (list/3, Type (Z/3)))) ],
-        Monad ([ Counter/3; NonTermination/3 ], Type (list/3, Type (Z/3)))),
+      ((sums, [ ], [ (ls, Type (list, Type (list, Type (Z)))) ],
+        Monad ([ Counter; NonTermination ], Type (list, Type (Z)))),
         Bind
           (?,
             Lift
-              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
-                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
+              (?, [ Counter ], [ Counter; NonTermination ],
+                Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Apply
-              (?, Variable (?, sums_rec/0),
-                [ Variable (?, x/0); Variable (?, ls/0) ])))
+              (?, Variable (?, sums_rec),
+                [ Variable (?, x); Variable (?, ls) ])))
     ])

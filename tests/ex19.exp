@@ -4,15 +4,15 @@
 Value
   (non_rec, @.,
     [
-      ((x1, [ ], [ ], Type (Z/3)),
+      ((x1, [ ], [ ], Type (Z)),
         Match
           (6,
             Run
-              (?, Error/0, [ ],
-                Apply (6, Variable (6, raise_Error/0), [ Tuple (?) ])),
+              (?, Error, [ ],
+                Apply (6, Variable (6, raise_Error), [ Tuple (?) ])),
             [
-              (Constructor (inl/3, x), Variable (?, x/0));
-              (Constructor (inr/3, Tuple ()), Constant (7, Int(12)))
+              (Constructor (inl, x), Variable (?, x));
+              (Constructor (inr, Tuple ()), Constant (7, Int(12)))
             ]))
     ])
 
@@ -22,41 +22,41 @@ Value
     [
       ((x2, [ A; B ], [ (x, A) ], B),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Match
                   (10,
                     Run
                       (?,
-                        Error/0,
+                        Error,
                         [
                         ],
                         Apply
                           (10,
                             Variable
                               (10,
-                                raise_Error/0),
+                                raise_Error),
                             [
                               Tuple
                                 (?)
                             ])),
                     [
                       (Constructor
-                        (inl/3,
+                        (inl,
                           x),
                         Variable
                           (?,
-                            x/0));
+                            x));
                       (Constructor
-                        (inr/3,
+                        (inr,
                           Tuple
                             ()),
                         Apply
                           (11,
                             Variable
                               (11,
-                                OCaml.Pervasives.failwith/3),
+                                OCaml.Pervasives.failwith),
                             [
                               Constant
                                 (11,
@@ -70,23 +70,23 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x3, [ ], [ (b, Type (bool/3)) ], Type (Z/3)),
+      ((x3, [ ], [ (b, Type (bool)) ], Type (Z)),
         Match
           (14,
             Run
-              (?, Error/0, [ ],
+              (?, Error, [ ],
                 IfThenElse
-                  (14, Variable (14, b/0),
+                  (14, Variable (14, b),
                     Apply
                       (14,
                         Variable
-                          (14, OCaml.Pervasives.failwith/3),
+                          (14, OCaml.Pervasives.failwith),
                         [ Constant (14, String("arg")) ]),
                     Apply
-                      (14, Variable (14, raise_Error/0),
+                      (14, Variable (14, raise_Error),
                         [ Tuple (?) ]))),
             [
-              (Constructor (inl/3, x), Variable (?, x/0));
-              (Constructor (inr/3, Tuple ()), Constant (15, Int(12)))
+              (Constructor (inl, x), Variable (?, x));
+              (Constructor (inr, Tuple ()), Constant (15, Int(12)))
             ]))
     ])

@@ -3,11 +3,11 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B; C ], [ (x, A) ],
-        Monad ([ IO/3 ], (B -> Monad ([ OCaml.Failure/3 ], C)))),
+        Monad ([ IO ], (B -> Monad ([ OCaml.Failure ], C)))),
         Bind
           (?,
             Apply
-              (4, Variable (4, OCaml.Pervasives.print_string/3),
+              (4, Variable (4, OCaml.Pervasives.print_string),
                 [ Constant (4, String("Hi")) ]), None,
             Return
               (?,
@@ -16,7 +16,7 @@ Value
                     Apply
                       (5,
                         Variable
-                          (5, OCaml.Pervasives.failwith/3),
+                          (5, OCaml.Pervasives.failwith),
                         [ Constant (5, String("Bye")) ])))))
     ])
 
@@ -24,9 +24,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure/3; IO/3 ], B)),
+      ((r, [ A; B ], [ (x, A) ], Monad ([ IO; OCaml.Failure ], B)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Bind
@@ -34,17 +34,17 @@ Value
                     Lift
                       (?,
                         [
-                          IO/3
+                          IO
                         ],
                         [
-                          OCaml.Failure/3;
-                          IO/3
+                          IO;
+                          OCaml.Failure
                         ],
                         Apply
                           (7,
                             Variable
                               (7,
-                                f/0),
+                                f),
                             [
                               Constant
                                 (7,
@@ -55,17 +55,17 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Failure/3
+                          OCaml.Failure
                         ],
                         [
-                          OCaml.Failure/3;
-                          IO/3
+                          IO;
+                          OCaml.Failure
                         ],
                         Apply
                           (7,
                             Variable
                               (?,
-                                x_1/0),
+                                x_1),
                             [
                               Constant
                                 (7,

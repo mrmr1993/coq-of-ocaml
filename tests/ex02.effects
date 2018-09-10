@@ -1,13 +1,13 @@
 3
 Value
   (non_rec, @.,
-    [ ((t0, [ ], [ ], Type (unit/3)), Constructor ((3, Effect ([ ], .)), tt/3)) ])
+    [ ((t0, [ ], [ ], Type (unit)), Constructor ((3, Effect ([ ], .)), tt)) ])
 
 5
 Value
   (non_rec, @.,
     [
-      ((t1, [ ], [ ], (Type (ascii/3) * Type (string/3))),
+      ((t1, [ ], [ ], (Type (ascii) * Type (string))),
         Tuple
           ((5, Effect ([ ], .)), Constant ((5, Effect ([ ], .)), Char("c")),
             Constant ((5, Effect ([ ], .)), String("one"))))
@@ -18,13 +18,13 @@ Value
   (non_rec, @.,
     [
       ((t2, [ ], [ ],
-        (Type (Z/3) * Type (Z/3) * Type (Z/3) * Type (bool/3) * Type (bool/3))),
+        (Type (Z) * Type (Z) * Type (Z) * Type (bool) * Type (bool))),
         Tuple
           ((7, Effect ([ ], .)), Constant ((7, Effect ([ ], .)), Int(1)),
             Constant ((7, Effect ([ ], .)), Int(2)),
             Constant ((7, Effect ([ ], .)), Int(3)),
-            Constructor ((7, Effect ([ ], .)), false/3),
-            Constructor ((7, Effect ([ ], .)), true/3)))
+            Constructor ((7, Effect ([ ], .)), false),
+            Constructor ((7, Effect ([ ], .)), true)))
     ])
 
 9
@@ -33,17 +33,16 @@ Value
     [
       ((f, [ A ], [ (x, A) ], (A * A)),
         Tuple
-          ((9, Effect ([ ], .)), Variable ((9, Effect ([ ], .)), x/0),
-            Variable ((9, Effect ([ ], .)), x/0)))
+          ((9, Effect ([ ], .)), Variable ((9, Effect ([ ], .)), x),
+            Variable ((9, Effect ([ ], .)), x)))
     ])
 
 11
 Value
   (non_rec, @.,
     [
-      ((t3, [ ], [ ], (Type (Z/3) * Type (Z/3))),
+      ((t3, [ ], [ ], (Type (Z) * Type (Z))),
         Apply
-          ((11, Effect ([ ], .)),
-            Variable ((11, Effect ([ ], . -> .)), f/0),
+          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], . -> .)), f),
             [ Constant ((11, Effect ([ ], .)), Int(12)) ]))
     ])

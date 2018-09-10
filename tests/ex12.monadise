@@ -1,40 +1,40 @@
 3
 Inductive tree:
-  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree/0); Type (Z/3); Type (tree/0) ]) ])
+  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree); Type (Z); Type (tree) ]) ])
 
 7
 Value
   (rec, @.,
     [
       ((find_rec, [ ],
-        [ (counter, Type (nat/3)); (x, Type (Z/3)); (t, Type (tree/0)) ],
-        Monad ([ NonTermination/3 ], Type (bool/3))),
+        [ (counter, Type (nat)); (x, Type (Z)); (t, Type (tree)) ],
+        Monad ([ NonTermination ], Type (bool))),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (8, Variable (8, t/0),
+                  (8, Variable (8, t),
                     [
                       (Constructor
-                        (Leaf/0),
+                        (Leaf),
                         Return
                           (?,
                             Constructor
                               (9,
-                                false/3)));
+                                false)));
                       (Constructor
-                        (Node/0,
+                        (Node,
                           t1,
                           x',
                           t2),
@@ -44,14 +44,14 @@ Value
                               (11,
                                 Variable
                                   (11,
-                                    OCaml.Pervasives.lt/3),
+                                    OCaml.Pervasives.lt),
                                 [
                                   Variable
                                     (11,
-                                      x/0);
+                                      x);
                                   Variable
                                     (11,
-                                      x'/0)
+                                      x')
                                 ]),
                             Apply
                               (12,
@@ -59,19 +59,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        find_rec/0),
+                                        find_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
                                     (12,
-                                      x/0);
+                                      x);
                                   Variable
                                     (12,
-                                      t1/0)
+                                      t1)
                                 ]),
                             IfThenElse
                               (13,
@@ -79,14 +79,14 @@ Value
                                   (13,
                                     Variable
                                       (13,
-                                        OCaml.Pervasives.lt/3),
+                                        OCaml.Pervasives.lt),
                                     [
                                       Variable
                                         (13,
-                                          x'/0);
+                                          x');
                                       Variable
                                         (13,
-                                          x/0)
+                                          x)
                                     ]),
                                 Apply
                                   (14,
@@ -94,25 +94,25 @@ Value
                                       (?,
                                         Variable
                                           (?,
-                                            find_rec/0),
+                                            find_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter/0)
+                                              counter)
                                         ]),
                                     [
                                       Variable
                                         (14,
-                                          x/0);
+                                          x);
                                       Variable
                                         (14,
-                                          t2/0)
+                                          t2)
                                     ]),
                                 Return
                                   (?,
                                     Constructor
                                       (16,
-                                        true/3)))))
+                                        true)))))
                     ]))
             ]))
     ])
@@ -121,21 +121,21 @@ Value
 Value
   (non_rec, @.,
     [
-      ((find, [ ], [ (x, Type (Z/3)); (t, Type (tree/0)) ],
-        Monad ([ Counter/3; NonTermination/3 ], Type (bool/3))),
+      ((find, [ ], [ (x, Type (Z)); (t, Type (tree)) ],
+        Monad ([ Counter; NonTermination ], Type (bool))),
         Bind
           (?,
             Lift
-              (?, [ Counter/3 ], [ Counter/3; NonTermination/3 ],
-                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
+              (?, [ Counter ], [ Counter; NonTermination ],
+                Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x_1,
             Lift
-              (?, [ NonTermination/3 ], [ Counter/3; NonTermination/3 ],
+              (?, [ NonTermination ], [ Counter; NonTermination ],
                 Apply
-                  (?, Variable (?, find_rec/0),
+                  (?, Variable (?, find_rec),
                     [
-                      Variable (?, x_1/0);
-                      Variable (?, x/0);
-                      Variable (?, t/0)
+                      Variable (?, x_1);
+                      Variable (?, x);
+                      Variable (?, t)
                     ]))))
     ])

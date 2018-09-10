@@ -2,19 +2,19 @@
 Value
   (non_rec, @.,
     [
-      ((tail, [ A ], [ (l, Type (list/3, A)) ], Type (list/3, A)),
+      ((tail, [ A ], [ (l, Type (list, A)) ], Type (list, A)),
         Match
-          ((4, Effect ([ OCaml.Failure/3 ], .)),
-            Variable ((4, Effect ([ ], .)), l/0),
+          ((4, Effect ([ OCaml.Failure ], .)),
+            Variable ((4, Effect ([ ], .)), l),
             [
-              (Constructor (cons/3, Any, xs),
-                Variable ((5, Effect ([ ], .)), xs/0));
-              (Constructor ([]/3),
+              (Constructor (cons, Any, xs),
+                Variable ((5, Effect ([ ], .)), xs));
+              (Constructor ([]),
                 Apply
                   ((6,
                     Effect
                       ([
-                        OCaml.Failure/3
+                        OCaml.Failure
                       ],
                         .)),
                     Variable
@@ -24,10 +24,10 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Failure/3
+                                OCaml.Failure
                               ]->
                               .)),
-                        OCaml.Pervasives.failwith/3),
+                        OCaml.Pervasives.failwith),
                     [
                       Constant
                         ((6,
@@ -45,18 +45,18 @@ Value
   (rec, @.,
     [
       ((print_list_rec, [ ],
-        [ (counter, Type (nat/3)); (x, Type (list/3, Type (string/3))) ],
-        Type (unit/3)),
+        [ (counter, Type (nat)); (x, Type (list, Type (string))) ],
+        Type (unit)),
         Match
-          ((?, Effect ([ IO/3; NonTermination/3 ], .)),
-            Variable ((?, Effect ([ ], .)), counter/0),
+          ((?, Effect ([ IO; NonTermination ], .)),
+            Variable ((?, Effect ([ ], .)), counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination/3
+                        NonTermination
                       ],
                         .)),
                     Variable
@@ -66,10 +66,10 @@ Value
                           ],
                             .
                               -[
-                                NonTermination/3
+                                NonTermination
                               ]->
                               .)),
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         ((?,
@@ -78,13 +78,13 @@ Value
                             ],
                               .)))
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
                   ((?,
                     Effect
                       ([
-                        IO/3;
-                        NonTermination/3
+                        IO;
+                        NonTermination
                       ],
                         .)),
                     Variable
@@ -93,34 +93,34 @@ Value
                           ([
                           ],
                             .)),
-                        x/0),
+                        x),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Constructor
                           ((9,
                             Effect
                               ([
                               ],
                                 .)),
-                            tt/3));
+                            tt));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           xs),
                         Sequence
                           ((11,
                             Effect
                               ([
-                                IO/3;
-                                NonTermination/3
+                                IO;
+                                NonTermination
                               ],
                                 .)),
                             Apply
                               ((11,
                                 Effect
                                   ([
-                                    IO/3
+                                    IO
                                   ],
                                     .)),
                                 Variable
@@ -130,10 +130,10 @@ Value
                                       ],
                                         .
                                           -[
-                                            IO/3
+                                            IO
                                           ]->
                                           .)),
-                                    OCaml.Pervasives.print_string/3),
+                                    OCaml.Pervasives.print_string),
                                 [
                                   Variable
                                     ((11,
@@ -141,14 +141,14 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x/0)
+                                      x)
                                 ]),
                             Apply
                               ((12,
                                 Effect
                                   ([
-                                    IO/3;
-                                    NonTermination/3
+                                    IO;
+                                    NonTermination
                                   ],
                                     .)),
                                 Apply
@@ -158,8 +158,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            IO/3;
-                                            NonTermination/3
+                                            IO;
+                                            NonTermination
                                           ]->
                                           .)),
                                     Variable
@@ -171,11 +171,11 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  IO/3;
-                                                  NonTermination/3
+                                                  IO;
+                                                  NonTermination
                                                 ]->
                                                 .)),
-                                        print_list_rec/0),
+                                        print_list_rec),
                                     [
                                       Variable
                                         ((?,
@@ -183,7 +183,7 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
@@ -192,7 +192,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      xs/0)
+                                      xs)
                                 ])))
                     ]))
             ]))
@@ -202,15 +202,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((print_list, [ ], [ (x, Type (list/3, Type (string/3))) ], Type (unit/3)),
+      ((print_list, [ ], [ (x, Type (list, Type (string))) ], Type (unit)),
         Apply
-          ((?, Effect ([ Counter/3; IO/3; NonTermination/3 ], .)),
+          ((?, Effect ([ Counter; IO; NonTermination ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -[ IO/3; NonTermination/3 ]-> .)),
-                print_list_rec/0),
+              ((?, Effect ([ ], . -> . -[ IO; NonTermination ]-> .)),
+                print_list_rec),
             [
               Apply
-                ((?, Effect ([ Counter/3 ], .)),
+                ((?, Effect ([ Counter ], .)),
                   Variable
                     ((?,
                       Effect
@@ -218,10 +218,10 @@ Value
                         ],
                           .
                             -[
-                              Counter/3
+                              Counter
                             ]->
                             .)),
-                      read_counter/3),
+                      read_counter),
                   [
                     Tuple
                       ((?,
@@ -230,7 +230,7 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), x/0)
+              Variable ((?, Effect ([ ], .)), x)
             ]))
     ])
 
@@ -238,29 +238,25 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ ], (Type (list/3, Type (string/3)) -> Type (unit/3))),
+      ((f, [ ], [ ], (Type (list, Type (string)) -> Type (unit))),
         Variable
-          ((14, Effect ([ ], . -[ Counter/3; IO/3; NonTermination/3 ]-> .)),
-            print_list/0))
+          ((14, Effect ([ ], . -[ Counter; IO; NonTermination ]-> .)),
+            print_list))
     ])
 
 16
 Value
   (non_rec, @.,
     [
-      ((x, [ A ], [ (z, A) ], Type (unit/3)),
+      ((x, [ A ], [ (z, A) ], Type (unit)),
         Apply
-          ((16,
-            Effect
-              ([ Counter/3; OCaml.Failure/3; IO/3; NonTermination/3 ], .)),
+          ((16, Effect ([ Counter; IO; NonTermination; OCaml.Failure ], .)),
             Variable
-              ((16,
-                Effect
-                  ([ ], . -[ Counter/3; IO/3; NonTermination/3 ]-> .)),
-                f/0),
+              ((16, Effect ([ ], . -[ Counter; IO; NonTermination ]-> .)),
+                f),
             [
               Apply
-                ((16, Effect ([ OCaml.Failure/3 ], .)),
+                ((16, Effect ([ OCaml.Failure ], .)),
                   Variable
                     ((16,
                       Effect
@@ -268,10 +264,10 @@ Value
                         ],
                           .
                             -[
-                              OCaml.Failure/3
+                              OCaml.Failure
                             ]->
                             .)),
-                      tail/0),
+                      tail),
                   [
                     Constructor
                       ((16,
@@ -279,7 +275,7 @@ Value
                           ([
                           ],
                             .)),
-                        cons/3,
+                        cons,
                         Constant
                           ((16,
                             Effect
@@ -293,7 +289,7 @@ Value
                               ([
                               ],
                                 .)),
-                            cons/3,
+                            cons,
                             Constant
                               ((16,
                                 Effect
@@ -307,7 +303,7 @@ Value
                                   ([
                                   ],
                                     .)),
-                                cons/3,
+                                cons,
                                 Constant
                                   ((16,
                                     Effect
@@ -321,7 +317,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    cons/3,
+                                    cons,
                                     Constant
                                       ((16,
                                         Effect
@@ -335,7 +331,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        []/3)))))
+                                        [])))))
                   ])
             ]))
     ])

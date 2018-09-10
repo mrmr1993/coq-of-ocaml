@@ -1,45 +1,40 @@
 3
 Inductive set:
-  ([ ], [ (Empty, [ ]); (Node, [ Type (set/0); Type (Z/3); Type (set/0) ]) ])
+  ([ ], [ (Empty, [ ]); (Node, [ Type (set); Type (Z); Type (set) ]) ])
 
 7
-Value
-  (non_rec, @., [ ((empty, [ ], [ ], Type (set/0)), Constructor (7, Empty/0)) ])
+Value (non_rec, @., [ ((empty, [ ], [ ], Type (set)), Constructor (7, Empty)) ])
 
 9
 Value
   (rec, @.,
     [
       ((member_rec, [ ],
-        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
-        Type (bool/3)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (bool)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (10,
-                    Variable
-                      (10,
-                        s/0),
+                  (10, Variable (10, s),
                     [
                       (Constructor
-                        (Empty/0),
+                        (Empty),
                         Constructor
                           (11,
-                            false/3));
+                            false));
                       (Constructor
-                        (Node/0,
+                        (Node,
                           s1,
                           y,
                           s2),
@@ -49,14 +44,14 @@ Value
                               (13,
                                 Variable
                                   (13,
-                                    OCaml.Pervasives.lt/3),
+                                    OCaml.Pervasives.lt),
                                 [
                                   Variable
                                     (13,
-                                      x/0);
+                                      x);
                                   Variable
                                     (13,
-                                      y/0)
+                                      y)
                                 ]),
                             Apply
                               (14,
@@ -64,19 +59,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        member_rec/0),
+                                        member_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
                                     (14,
-                                      x/0);
+                                      x);
                                   Variable
                                     (14,
-                                      s1/0)
+                                      s1)
                                 ]),
                             IfThenElse
                               (15,
@@ -84,14 +79,14 @@ Value
                                   (15,
                                     Variable
                                       (15,
-                                        OCaml.Pervasives.lt/3),
+                                        OCaml.Pervasives.lt),
                                     [
                                       Variable
                                         (15,
-                                          y/0);
+                                          y);
                                       Variable
                                         (15,
-                                          x/0)
+                                          x)
                                     ]),
                                 Apply
                                   (16,
@@ -99,23 +94,23 @@ Value
                                       (?,
                                         Variable
                                           (?,
-                                            member_rec/0),
+                                            member_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter/0)
+                                              counter)
                                         ]),
                                     [
                                       Variable
                                         (16,
-                                          x/0);
+                                          x);
                                       Variable
                                         (16,
-                                          s2/0)
+                                          s2)
                                     ]),
                                 Constructor
                                   (18,
-                                    true/3))))
+                                    true))))
                     ]))
             ]))
     ])
@@ -124,13 +119,13 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (bool/3)),
+      ((member, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (bool)),
         Apply
-          (?, Variable (?, member_rec/0),
+          (?, Variable (?, member_rec),
             [
-              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
-              Variable (?, x/0);
-              Variable (?, s/0)
+              Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
+              Variable (?, x);
+              Variable (?, s)
             ]))
     ])
 
@@ -139,44 +134,40 @@ Value
   (rec, @.,
     [
       ((insert_rec, [ ],
-        [ (counter, Type (nat/3)); (x, Type (Z/3)); (s, Type (set/0)) ],
-        Type (set/0)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (set)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (21,
-                    Variable
-                      (21,
-                        s/0),
+                  (21, Variable (21, s),
                     [
                       (Constructor
-                        (Empty/0),
+                        (Empty),
                         Constructor
                           (22,
-                            Node/0,
+                            Node,
                             Constructor
                               (22,
-                                Empty/0),
+                                Empty),
                             Variable
                               (22,
-                                x/0),
+                                x),
                             Constructor
                               (22,
-                                Empty/0)));
+                                Empty)));
                       (Constructor
-                        (Node/0,
+                        (Node,
                           s1,
                           y,
                           s2),
@@ -186,91 +177,91 @@ Value
                               (24,
                                 Variable
                                   (24,
-                                    OCaml.Pervasives.lt/3),
+                                    OCaml.Pervasives.lt),
                                 [
                                   Variable
                                     (24,
-                                      x/0);
+                                      x);
                                   Variable
                                     (24,
-                                      y/0)
+                                      y)
                                 ]),
                             Constructor
                               (25,
-                                Node/0,
+                                Node,
                                 Apply
                                   (25,
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            insert_rec/0),
+                                            insert_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter/0)
+                                              counter)
                                         ]),
                                     [
                                       Variable
                                         (25,
-                                          x/0);
+                                          x);
                                       Variable
                                         (25,
-                                          s1/0)
+                                          s1)
                                     ]),
                                 Variable
                                   (25,
-                                    y/0),
+                                    y),
                                 Variable
                                   (25,
-                                    s2/0)),
+                                    s2)),
                             IfThenElse
                               (26,
                                 Apply
                                   (26,
                                     Variable
                                       (26,
-                                        OCaml.Pervasives.lt/3),
+                                        OCaml.Pervasives.lt),
                                     [
                                       Variable
                                         (26,
-                                          y/0);
+                                          y);
                                       Variable
                                         (26,
-                                          x/0)
+                                          x)
                                     ]),
                                 Constructor
                                   (27,
-                                    Node/0,
+                                    Node,
                                     Variable
                                       (27,
-                                        s1/0),
+                                        s1),
                                     Variable
                                       (27,
-                                        y/0),
+                                        y),
                                     Apply
                                       (27,
                                         Apply
                                           (?,
                                             Variable
                                               (?,
-                                                insert_rec/0),
+                                                insert_rec),
                                             [
                                               Variable
                                                 (?,
-                                                  counter/0)
+                                                  counter)
                                             ]),
                                         [
                                           Variable
                                             (27,
-                                              x/0);
+                                              x);
                                           Variable
                                             (27,
-                                              s2/0)
+                                              s2)
                                         ])),
                                 Variable
                                   (28,
-                                    s/0))))
+                                    s))))
                     ]))
             ]))
     ])
@@ -279,12 +270,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z/3)); (s, Type (set/0)) ], Type (set/0)),
+      ((insert, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (set)),
         Apply
-          (?, Variable (?, insert_rec/0),
+          (?, Variable (?, insert_rec),
             [
-              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
-              Variable (?, x/0);
-              Variable (?, s/0)
+              Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
+              Variable (?, x);
+              Variable (?, s)
             ]))
     ])

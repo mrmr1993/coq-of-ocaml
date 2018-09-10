@@ -6,11 +6,11 @@ Import ListNotations.
 
 Require OCaml.List.
 
-Definition get_local_ref (tt : unit) : M [ OCaml.Effect.State.state Z ] Z :=
+Definition get_local_ref (tt_1 : unit) : M [ OCaml.Effect.State.state Z ] Z :=
   let! x := OCaml.Pervasives.ref 12 in
   OCaml.Effect.State.read x.
 
-Definition set_local_ref (tt : unit) : M [ OCaml.Effect.State.state Z ] Z :=
+Definition set_local_ref (tt_1 : unit) : M [ OCaml.Effect.State.state Z ] Z :=
   let! x := OCaml.Pervasives.ref 12 in
   let! _ := OCaml.Effect.State.write x 15 in
   OCaml.Effect.State.read x.

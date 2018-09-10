@@ -2,23 +2,23 @@
 Value
   (non_rec, @.,
     [
-      ((n1, [ ], [ ], Type (Z/3)),
+      ((n1, [ ], [ ], Type (Z)),
         LetVar 4 m = Constant (4, Int(12)) in
-        LetVar 5 n1 = Variable (5, m/0) in
-        Variable (6, n1/0))
+        LetVar 5 n1 = Variable (5, m) in
+        Variable (6, n1))
     ])
 
 8
 Value
   (non_rec, @.,
     [
-      ((n2, [ ], [ ], Type (Z/3)),
+      ((n2, [ ], [ ], Type (Z)),
         LetFun 9
           (non_rec, @.,
             [
               ((p1, [ A; B; C ], [ (c, ((A -> (B -> A)) -> C)) ], C),
                 Apply
-                  (9, Variable (9, c/0),
+                  (9, Variable (9, c),
                     [
                       Function
                         (9,
@@ -28,18 +28,15 @@ Value
                               y,
                               Variable
                                 (9,
-                                  x/0)))
+                                  x)))
                     ]))
             ]) in
         LetFun 10
           (non_rec, @.,
             [
-              ((c, [ A ], [ (f, (Type (Z/3) -> (Type (Z/3) -> A))) ], A),
+              ((c, [ A ], [ (f, (Type (Z) -> (Type (Z) -> A))) ], A),
                 Apply
-                  (10,
-                    Variable
-                      (10,
-                        f/0),
+                  (10, Variable (10, f),
                     [
                       Constant
                         (10,
@@ -49,5 +46,5 @@ Value
                           Int(23))
                     ]))
             ]) in
-        Apply (11, Variable (11, p1/0), [ Variable (11, c/0) ]))
+        Apply (11, Variable (11, p1), [ Variable (11, c) ]))
     ])

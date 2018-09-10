@@ -1,38 +1,37 @@
 3 Module A:
-  4 Value (non_rec, @., [ ((a, [ ], [ ], Type (Z/4)), Constant (4, Int(5))) ])
+  4 Value (non_rec, @., [ ((a, [ ], [ ], Type (Z)), Constant (4, Int(5))) ])
   
   6
   Value
     (non_rec, @.,
       [
-        ((c, [ A ], [ (x, Type (string/4)) ], A),
+        ((c, [ A ], [ (x, Type (string)) ], A),
           Apply
-            (6, Variable (6, OCaml.Pervasives.failwith/4),
-              [ Variable (6, x/0) ]))
+            (6, Variable (6, OCaml.Pervasives.failwith),
+              [ Variable (6, A/x) ]))
       ])
 
-9 Include A/0
+9 Include A
 
 11
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (Z/5)),
+      ((b, [ ], [ ], Type (Z)),
         Apply
-          (11, Variable (11, Z.add/5),
-            [ Variable (11, a/1); Constant (11, Int(2)) ]))
+          (11, Variable (11, Z.add),
+            [ Variable (11, a); Constant (11, Int(2)) ]))
     ])
 
 13
 Value
   (non_rec, @.,
     [
-      ((d, [ A ], [ (b, Type (bool/5)) ], A),
+      ((d, [ A ], [ (b, Type (bool)) ], A),
         IfThenElse
-          (13, Variable (13, b/0),
+          (13, Variable (13, b),
             Apply
-              (13, Variable (13, c/1), [ Constant (13, String("true")) ]),
+              (13, Variable (13, c), [ Constant (13, String("true")) ]),
             Apply
-              (13, Variable (13, c/1),
-                [ Constant (13, String("false")) ])))
+              (13, Variable (13, c), [ Constant (13, String("false")) ])))
     ])

@@ -79,16 +79,15 @@ module Descriptor = struct
       match x with
       | Type (x, typs) ->
         Type (x, List.map (PureType.map_type_vars vars_map) typs)
+    let compare x y =
+      match x, y with
+      | Type (a, ta), Type (b, tb) ->
+        let cmp = BoundName.stable_compare a b in
+        if cmp == 0 then compare ta tb else cmp
   end
   module IdSet = Set.Make (struct
       type t = Id.t
-
-      let compare x y =
-        match x, y with
-        | Id.Type (a, ta), Id.Type (b, tb) ->
-          let cmp = BoundName.stable_compare a b in
-          if cmp == 0 then compare ta tb else cmp
-
+      let compare x y = Id.compare x y
     end)
   module BnSet = Set.Make (struct
       type t = BoundName.t
@@ -201,15 +200,6 @@ module Descriptor = struct
       simple = BnSet.map f d.simple
     }
 
-  let depth_lift (d : t) : t =
-    map BoundName.depth_lift d
-
-  let leave_prefix (name : Name.t option) (d : t) : t =
-    map (BoundName.leave_prefix name) d
-
-  let resolve_open (name_list : Name.t list) (d : t) : t =
-    map (BoundName.resolve_open name_list) d
-
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
     { d with
       unioned = List.map (Id.map_type_vars vars_map) d.unioned;
@@ -231,7 +221,9 @@ module Lift = struct
   let compute (d1 : Descriptor.t) (d2 : Descriptor.t)
     : bool list option * t option =
     let bs = Descriptor.subset_to_bools d1 d2 in
-    if d1.unioned = d2.unioned then
+    if List.compare_lengths d1.unioned d2.unioned = 0 &&
+        List.for_all2 (fun x y -> Descriptor.Id.compare x y = 0)
+          d1.unioned d2.unioned then
       if d1.unioned = [] then
         (Some bs, None)
       else
@@ -245,7 +237,8 @@ module Lift = struct
         | [] ->
           let in_list =
             to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
-          let n = find_index (fun y -> x = y) d2.unioned in
+          let n = find_index (fun y ->
+            Descriptor.Id.compare x y = 0) d2.unioned in
           (bs, Some (Lift (in_list, n)))
         | _ ->
           match d2.unioned with
@@ -255,7 +248,8 @@ module Lift = struct
             let in_list =
               to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
             let out_list = List.map (fun x ->
-              find_index (fun y -> x = y) d2.unioned) d1.unioned in
+              find_index (fun y ->
+                Descriptor.Id.compare x y = 0) d2.unioned) d1.unioned in
             (bs, Some (Mix (in_list, out_list)))
 end
 
@@ -295,12 +289,10 @@ module Type = struct
     | (Arrow (d1, typ1), Arrow (d2, typ2)) ->
       (Descriptor.eq d1 d2) && eq typ1 typ2
 
-  let map (f : int -> Descriptor.t -> Descriptor.t) (x : t) =
-    let rec map i x =
-      match x with
-      | Arrow (desc, x) -> Arrow (f i desc, map (i+1) x)
-      | Pure -> Pure in
-    map 0 x
+  let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
+    match typ with
+    | Pure -> Pure
+    | Arrow (d, typ) -> Arrow (Descriptor.map f d, map f typ)
 
   let rec return_descriptor (typ : t) (nb_args : int) : Descriptor.t =
     if nb_args = 0 then
@@ -341,21 +333,6 @@ module Type = struct
       | (Arrow (d1, typ1), Arrow (d2, typ2)) ->
         Arrow (Descriptor.union [d1; d2], aux typ1 typ2) in
     List.fold_left aux Pure typs
-
-  let rec depth_lift (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.depth_lift d, depth_lift typ)
-
-  let rec leave_prefix (x : Name.t option) (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.leave_prefix x d, leave_prefix x typ)
-
-  let rec resolve_open (x : Name.t list) (typ : t) : t =
-    match typ with
-    | Pure -> Pure
-    | Arrow (d, typ) -> Arrow (Descriptor.resolve_open x d, resolve_open x typ)
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with

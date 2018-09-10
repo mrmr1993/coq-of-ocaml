@@ -50,3 +50,16 @@ let find_index (f : 'a -> bool) (l : 'a list) : int =
 let to_coq_list (l : SmartPrint.t list) : SmartPrint.t =
   let open SmartPrint in
   brakets @@ separate (!^ ";") l
+
+let rec strip_prefix (l_prefix : 'a list) (l : 'a list) : 'a list option =
+  match l_prefix, l with
+  | [], l -> Some l
+  | a :: l_prefix, b :: l when a = b -> strip_prefix l_prefix l
+  | _, _ -> None
+
+let rec drop (n : int) (l : 'a list) : 'a list =
+  if n <= 0 then l
+  else
+    match l with
+    | [] -> l
+    | a :: l -> drop (n-1) l

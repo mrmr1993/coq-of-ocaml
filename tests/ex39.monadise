@@ -4,38 +4,38 @@ Require [ OCaml.List ]
 Value
   (non_rec, @.,
     [
-      ((get_local_ref, [ ], [ (tt, Type (unit/3)) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (Z/3))),
+      ((get_local_ref, [ ], [ (tt (= tt_1), Type (unit)) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
         Bind
           (?,
             Apply
-              (4, Variable (4, OCaml.Pervasives.ref/3),
+              (4, Variable (4, OCaml.Pervasives.ref),
                 [ Constant (4, Int(12)) ]), Some x,
             Apply
-              (5, Variable (5, OCaml.Effect.State.read/3),
-                [ Variable (5, x/0) ])))
+              (5, Variable (5, OCaml.Effect.State.read),
+                [ Variable (5, x) ])))
     ])
 
 7
 Value
   (non_rec, @.,
     [
-      ((set_local_ref, [ ], [ (tt, Type (unit/3)) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (Z/3))),
+      ((set_local_ref, [ ], [ (tt (= tt_1), Type (unit)) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
         Bind
           (?,
             Apply
-              (8, Variable (8, OCaml.Pervasives.ref/3),
+              (8, Variable (8, OCaml.Pervasives.ref),
                 [ Constant (8, Int(12)) ]), Some x,
             Bind
               (?,
                 Apply
-                  (9, Variable (9, OCaml.Effect.State.write/3),
-                    [ Variable (9, x/0); Constant (9, Int(15)) ]),
+                  (9, Variable (9, OCaml.Effect.State.write),
+                    [ Variable (9, x); Constant (9, Int(15)) ]),
                 None,
                 Apply
-                  (10, Variable (10, OCaml.Effect.State.read/3),
-                    [ Variable (10, x/0) ]))))
+                  (10, Variable (10, OCaml.Effect.State.read),
+                    [ Variable (10, x) ]))))
     ])
 
 12
@@ -43,13 +43,13 @@ Value
   (non_rec, @.,
     [
       ((add_multiple_by_refs, [ ],
-        [ (a, Type (Z/3)); (b, Type (Z/3)); (c, Type (Z/3)); (d, Type (Z/3)) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (Z/3))),
+        [ (a, Type (Z)); (b, Type (Z)); (c, Type (Z)); (d, Type (Z)) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
         Bind
           (?,
             Apply
-              (13, Variable (13, OCaml.Pervasives.ref/3),
-                [ Variable (13, a/0) ]), Some x,
+              (13, Variable (13, OCaml.Pervasives.ref),
+                [ Variable (13, a) ]), Some x,
             Bind
               (?,
                 Bind
@@ -60,34 +60,28 @@ Value
                           (14,
                             Variable
                               (14,
-                                OCaml.Effect.State.read/3),
-                            [ Variable (14, x/0) ]),
+                                OCaml.Effect.State.read),
+                            [ Variable (14, x) ]),
                         Some x_1,
                         Return
                           (?,
                             Apply
-                              (14,
-                                Variable (14, Z.add/3),
+                              (14, Variable (14, Z.add),
                                 [
-                                  Variable
-                                    (?,
-                                      x_1/0);
-                                  Variable (14, b/0)
+                                  Variable (?, x_1);
+                                  Variable (14, b)
                                 ]))), Some x_1,
                     Apply
                       (14,
                         Variable
-                          (14, OCaml.Effect.State.write/3),
-                        [
-                          Variable (14, x/0);
-                          Variable (?, x_1/0)
-                        ])), None,
+                          (14, OCaml.Effect.State.write),
+                        [ Variable (14, x); Variable (?, x_1) ])),
+                None,
                 Bind
                   (?,
                     Apply
-                      (15,
-                        Variable (15, OCaml.Pervasives.ref/3),
-                        [ Variable (15, c/0) ]), Some y,
+                      (15, Variable (15, OCaml.Pervasives.ref),
+                        [ Variable (15, c) ]), Some y,
                     Bind
                       (?,
                         Bind
@@ -98,11 +92,11 @@ Value
                                   (16,
                                     Variable
                                       (16,
-                                        OCaml.Effect.State.read/3),
+                                        OCaml.Effect.State.read),
                                     [
                                       Variable
                                         (16,
-                                          y/0)
+                                          y)
                                     ]), Some x_1,
                                 Return
                                   (?,
@@ -110,26 +104,24 @@ Value
                                       (16,
                                         Variable
                                           (16,
-                                            Z.add/3),
+                                            Z.add),
                                         [
                                           Variable
                                             (?,
-                                              x_1/0);
+                                              x_1);
                                           Variable
                                             (16,
-                                              d/0)
+                                              d)
                                         ]))),
                             Some x_1,
                             Apply
                               (16,
                                 Variable
                                   (16,
-                                    OCaml.Effect.State.write/3),
+                                    OCaml.Effect.State.write),
                                 [
-                                  Variable (16, y/0);
-                                  Variable
-                                    (?,
-                                      x_1/0)
+                                  Variable (16, y);
+                                  Variable (?, x_1)
                                 ])), None,
                         Bind
                           (?,
@@ -141,11 +133,11 @@ Value
                                       (17,
                                         Variable
                                           (17,
-                                            OCaml.Effect.State.read/3),
+                                            OCaml.Effect.State.read),
                                         [
                                           Variable
                                             (17,
-                                              x/0)
+                                              x)
                                         ]),
                                     Some x_1,
                                     Bind
@@ -154,11 +146,11 @@ Value
                                           (17,
                                             Variable
                                               (17,
-                                                OCaml.Effect.State.read/3),
+                                                OCaml.Effect.State.read),
                                             [
                                               Variable
                                                 (17,
-                                                  y/0)
+                                                  y)
                                             ]),
                                         Some
                                           x_2,
@@ -168,204 +160,183 @@ Value
                                               (17,
                                                 Variable
                                                   (17,
-                                                    Z.add/3),
+                                                    Z.add),
                                                 [
                                                   Variable
                                                     (?,
-                                                      x_1/0);
+                                                      x_1);
                                                   Variable
                                                     (?,
-                                                      x_2/0)
+                                                      x_2)
                                                 ])))),
                                 Some x_1,
                                 Apply
                                   (17,
                                     Variable
                                       (17,
-                                        OCaml.Pervasives.ref/3),
+                                        OCaml.Pervasives.ref),
                                     [
                                       Variable
                                         (?,
-                                          x_1/0)
+                                          x_1)
                                     ])), Some z,
                             Apply
                               (18,
                                 Variable
                                   (18,
-                                    OCaml.Effect.State.read/3),
-                                [ Variable (18, z/0) ])))))))
+                                    OCaml.Effect.State.read),
+                                [ Variable (18, z) ])))))))
     ])
 
 20
 Value
   (non_rec, @.,
     [
-      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (unit/3))),
+      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (unit))),
         Apply
-          (21, Variable (21, OCaml.Effect.State.write/3),
-            [ Variable (21, x/0); Constant (21, Int(15)) ]))
+          (21, Variable (21, OCaml.Effect.State.write),
+            [ Variable (21, x); Constant (21, Int(15)) ]))
     ])
 
 23
 Value
   (non_rec, @.,
     [
-      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (Z/3))),
+      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
         Apply
-          (24, Variable (24, OCaml.Effect.State.read/3),
-            [ Variable (24, x/0) ]))
+          (24, Variable (24, OCaml.Effect.State.read), [ Variable (24, x) ]))
     ])
 
 26
 Value
   (non_rec, @.,
     [
-      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t/3, Type (Z/3))) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (unit/3))),
+      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
+        Monad ([ (OCaml.Effect.State.state, Z) ], Type (unit))),
         Bind
           (?,
             Bind
               (?,
                 Apply
-                  (27, Variable (27, OCaml.Effect.State.read/3),
-                    [ Variable (27, x/0) ]), Some x_1,
+                  (27, Variable (27, OCaml.Effect.State.read),
+                    [ Variable (27, x) ]), Some x_1,
                 Return
                   (?,
                     Apply
-                      (27, Variable (27, Z.add/3),
+                      (27, Variable (27, Z.add),
                         [
-                          Variable (?, x_1/0);
+                          Variable (?, x_1);
                           Constant (27, Int(5))
                         ]))), Some x_1,
             Apply
-              (27, Variable (27, OCaml.Effect.State.write/3),
-                [ Variable (27, x/0); Variable (?, x_1/0) ])))
+              (27, Variable (27, OCaml.Effect.State.write),
+                [ Variable (27, x); Variable (?, x_1) ])))
     ])
 
 29
 Value
   (non_rec, @.,
     [
-      ((new_ref, [ ], [ (x, Type (unit/3)) ],
+      ((new_ref, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ (OCaml.Effect.State.state/3, Z/3) ],
-            Type (OCaml.Effect.State.t/3, Type (Z/3)))),
+          ([ (OCaml.Effect.State.state, Z) ],
+            Type (OCaml.Effect.State.t, Type (Z)))),
         Apply
-          (30, Variable (30, OCaml.Pervasives.ref/3),
+          (30, Variable (30, OCaml.Pervasives.ref),
             [ Constant (30, Int(15)) ]))
     ])
 
-32 Reference (r, r_state, Type (Z/3), Constant (32, Int(18)))
+32 Reference (r, r_state, Type (Z), Constant (32, Int(18)))
 
 34
 Value
   (non_rec, @.,
     [
-      ((set_r, [ ], [ (x, Type (unit/3)) ],
-        Monad
-          ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (unit/3))),
+      ((set_r, [ ], [ (x, Type (unit)) ],
+        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (unit))),
         Bind
           (?,
             Bind
               (?,
                 Lift
-                  (?, [ (OCaml.Effect.State.state/3, Z/3) ],
-                    [
-                      (OCaml.Effect.State.state/3, Z/3);
-                      r_state/0
-                    ],
+                  (?, [ (OCaml.Effect.State.state, Z) ],
+                    [ (OCaml.Effect.State.state, Z); r_state ],
                     Apply
                       (?,
                         Variable
-                          (?, OCaml.Effect.State.peekstate/3),
+                          (?, OCaml.Effect.State.peekstate),
                         [ Tuple (?) ])), Some x_1,
                 Lift
-                  (?, [ r_state/0 ],
-                    [
-                      (OCaml.Effect.State.state/3, Z/3);
-                      r_state/0
-                    ],
+                  (?, [ r_state ],
+                    [ (OCaml.Effect.State.state, Z); r_state ],
                     Apply
                       (?,
                         Variable
-                          (?, OCaml.Effect.State.global/3),
-                        [
-                          Variable (34, r/0);
-                          Variable (?, x_1/0)
-                        ]))), Some x_1,
+                          (?, OCaml.Effect.State.global),
+                        [ Variable (34, r); Variable (?, x_1) ]))),
+            Some x_1,
             Lift
-              (?, [ (OCaml.Effect.State.state/3, Z/3) ],
-                [ (OCaml.Effect.State.state/3, Z/3); r_state/0 ],
+              (?, [ (OCaml.Effect.State.state, Z) ],
+                [ (OCaml.Effect.State.state, Z); r_state ],
                 Apply
-                  (34, Variable (34, set_ref/0),
-                    [ Variable (?, x_1/0) ]))))
+                  (34, Variable (34, set_ref), [ Variable (?, x_1) ]))))
     ])
 
 36
 Value
   (non_rec, @.,
     [
-      ((get_r, [ ], [ (x, Type (unit/3)) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (Z/3))),
+      ((get_r, [ ], [ (x, Type (unit)) ],
+        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (Z))),
         Bind
           (?,
             Bind
               (?,
                 Lift
-                  (?, [ (OCaml.Effect.State.state/3, Z/3) ],
-                    [
-                      (OCaml.Effect.State.state/3, Z/3);
-                      r_state/0
-                    ],
+                  (?, [ (OCaml.Effect.State.state, Z) ],
+                    [ (OCaml.Effect.State.state, Z); r_state ],
                     Apply
                       (?,
                         Variable
-                          (?, OCaml.Effect.State.peekstate/3),
+                          (?, OCaml.Effect.State.peekstate),
                         [ Tuple (?) ])), Some x_1,
                 Lift
-                  (?, [ r_state/0 ],
-                    [
-                      (OCaml.Effect.State.state/3, Z/3);
-                      r_state/0
-                    ],
+                  (?, [ r_state ],
+                    [ (OCaml.Effect.State.state, Z); r_state ],
                     Apply
                       (?,
                         Variable
-                          (?, OCaml.Effect.State.global/3),
-                        [
-                          Variable (36, r/0);
-                          Variable (?, x_1/0)
-                        ]))), Some x_1,
+                          (?, OCaml.Effect.State.global),
+                        [ Variable (36, r); Variable (?, x_1) ]))),
+            Some x_1,
             Lift
-              (?, [ (OCaml.Effect.State.state/3, Z/3) ],
-                [ (OCaml.Effect.State.state/3, Z/3); r_state/0 ],
+              (?, [ (OCaml.Effect.State.state, Z) ],
+                [ (OCaml.Effect.State.state, Z); r_state ],
                 Apply
-                  (36, Variable (36, get_ref/0),
-                    [ Variable (?, x_1/0) ]))))
+                  (36, Variable (36, get_ref), [ Variable (?, x_1) ]))))
     ])
 
 38
 Value
   (non_rec, @.,
     [
-      ((r_add_15, [ ], [ (x, Type (unit/3)) ],
-        Monad ([ (OCaml.Effect.State.state/3, Z/3); r_state/0 ], Type (Z/3))),
+      ((r_add_15, [ ], [ (x, Type (unit)) ],
+        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (Z))),
         Bind
-          (?,
-            Apply (39, Variable (39, get_r/0), [ Constructor (39, tt/3) ]),
+          (?, Apply (39, Variable (39, get_r), [ Constructor (39, tt) ]),
             Some i,
             Bind
               (?,
                 Apply
-                  (40, Variable (40, set_r/0),
-                    [ Constructor (40, tt/3) ]), None,
+                  (40, Variable (40, set_r),
+                    [ Constructor (40, tt) ]), None,
                 Bind
                   (?,
                     Apply
-                      (41, Variable (41, get_r/0),
-                        [ Constructor (41, tt/3) ]), Some j,
+                      (41, Variable (41, get_r),
+                        [ Constructor (41, tt) ]), Some j,
                     Bind
                       (?,
                         Bind
@@ -375,77 +346,77 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3)
+                                      (OCaml.Effect.State.state,
+                                        Z)
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.peekstate/3),
+                                            OCaml.Effect.State.peekstate),
                                         [
                                           Tuple
                                             (?)
                                         ])),
                                 Some x_1,
                                 Lift
-                                  (?, [ r_state/0 ],
+                                  (?, [ r_state ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.global/3),
+                                            OCaml.Effect.State.global),
                                         [
                                           Variable
                                             (42,
-                                              r/0);
+                                              r);
                                           Variable
                                             (?,
-                                              x_1/0)
+                                              x_1)
                                         ]))),
                             Some x_1,
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3)
+                                  (OCaml.Effect.State.state,
+                                    Z)
                                 ],
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3);
-                                  r_state/0
+                                  (OCaml.Effect.State.state,
+                                    Z);
+                                  r_state
                                 ],
                                 Apply
                                   (42,
                                     Variable
                                       (42,
-                                        OCaml.Effect.State.write/3),
+                                        OCaml.Effect.State.write),
                                     [
                                       Variable
                                         (?,
-                                          x_1/0);
+                                          x_1);
                                       Apply
                                         (42,
                                           Variable
                                             (42,
-                                              Z.add/3),
+                                              Z.add),
                                           [
                                             Variable
                                               (42,
-                                                i/0);
+                                                i);
                                             Variable
                                               (42,
-                                                j/0)
+                                                j)
                                           ])
                                     ]))), None,
                         Bind
@@ -455,65 +426,65 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3)
+                                      (OCaml.Effect.State.state,
+                                        Z)
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.peekstate/3),
+                                            OCaml.Effect.State.peekstate),
                                         [
                                           Tuple
                                             (?)
                                         ])),
                                 Some x_1,
                                 Lift
-                                  (?, [ r_state/0 ],
+                                  (?, [ r_state ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.global/3),
+                                            OCaml.Effect.State.global),
                                         [
                                           Variable
                                             (43,
-                                              r/0);
+                                              r);
                                           Variable
                                             (?,
-                                              x_1/0)
+                                              x_1)
                                         ]))),
                             Some x_1,
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3)
+                                  (OCaml.Effect.State.state,
+                                    Z)
                                 ],
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3);
-                                  r_state/0
+                                  (OCaml.Effect.State.state,
+                                    Z);
+                                  r_state
                                 ],
                                 Apply
                                   (43,
                                     Variable
                                       (43,
-                                        OCaml.Effect.State.read/3),
+                                        OCaml.Effect.State.read),
                                     [
                                       Variable
                                         (?,
-                                          x_1/0)
+                                          x_1)
                                     ]))))))))
     ])
 
@@ -521,76 +492,75 @@ Value
 Value
   (non_rec, @.,
     [
-      ((mixed_type, [ ], [ (es_in, list Effect.t); (x, Type (unit/3)) ],
+      ((mixed_type, [ ], [ (es_in, list Effect.t); (x, Type (unit)) ],
         Monad
           ([
-            (OCaml.Effect.State.state/3, Z/3);
-            (OCaml.Effect.State.state/3, bool/3);
-            (OCaml.Effect.State.state/3, string/3);
-            r_state/0
-          ], (Type (bool/3) * Type (string/3) * Type (Z/3)))),
+            (OCaml.Effect.State.state, Z);
+            (OCaml.Effect.State.state, bool);
+            (OCaml.Effect.State.state, string);
+            r_state
+          ], (Type (bool) * Type (string) * Type (Z)))),
         Bind
           (?,
             Lift
-              (?, [ (OCaml.Effect.State.state/3, bool/3) ],
+              (?, [ (OCaml.Effect.State.state, bool) ],
                 [
-                  (OCaml.Effect.State.state/3, Z/3);
-                  (OCaml.Effect.State.state/3, bool/3);
-                  (OCaml.Effect.State.state/3, string/3);
-                  r_state/0
+                  (OCaml.Effect.State.state, Z);
+                  (OCaml.Effect.State.state, bool);
+                  (OCaml.Effect.State.state, string);
+                  r_state
                 ],
                 Apply
-                  (46, Variable (46, OCaml.Pervasives.ref/3),
-                    [ Constructor (46, true/3) ])), Some b,
+                  (46, Variable (46, OCaml.Pervasives.ref),
+                    [ Constructor (46, true) ])), Some b,
             Bind
               (?,
                 Lift
-                  (?, [ (OCaml.Effect.State.state/3, string/3) ],
+                  (?, [ (OCaml.Effect.State.state, string) ],
                     [
-                      (OCaml.Effect.State.state/3, Z/3);
-                      (OCaml.Effect.State.state/3, bool/3);
-                      (OCaml.Effect.State.state/3, string/3);
-                      r_state/0
+                      (OCaml.Effect.State.state, Z);
+                      (OCaml.Effect.State.state, bool);
+                      (OCaml.Effect.State.state, string);
+                      r_state
                     ],
                     Apply
-                      (47,
-                        Variable (47, OCaml.Pervasives.ref/3),
+                      (47, Variable (47, OCaml.Pervasives.ref),
                         [ Constant (47, String("")) ])),
                 Some str,
                 LetFun 48
                   (non_rec, @.,
                     [
-                      ((update, [ ], [ (x_1, Type (unit/3)) ],
+                      ((update, [ ], [ (x_1, Type (unit)) ],
                         Monad
                           ([
-                            (OCaml.Effect.State.state/3,
-                              bool/3);
-                            (OCaml.Effect.State.state/3,
-                              string/3)
+                            (OCaml.Effect.State.state,
+                              bool);
+                            (OCaml.Effect.State.state,
+                              string)
                           ],
                             Type
-                              (unit/3))),
+                              (unit))),
                         Match
                           (?,
                             Variable
                               (?,
-                                x_1/0),
+                                x_1),
                             [
                               (Constructor
-                                (tt/3),
+                                (tt),
                                 Bind
                                   (?,
                                     Lift
                                       (?,
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            bool/3)
+                                          (OCaml.Effect.State.state,
+                                            bool)
                                         ],
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            bool/3);
-                                          (OCaml.Effect.State.state/3,
-                                            string/3)
+                                          (OCaml.Effect.State.state,
+                                            bool);
+                                          (OCaml.Effect.State.state,
+                                            string)
                                         ],
                                         Bind
                                           (?,
@@ -598,11 +568,11 @@ Value
                                               (49,
                                                 Variable
                                                   (49,
-                                                    OCaml.Effect.State.read/3),
+                                                    OCaml.Effect.State.read),
                                                 [
                                                   Variable
                                                     (49,
-                                                      b/0)
+                                                      b)
                                                 ]),
                                             Some
                                               x_2,
@@ -610,27 +580,27 @@ Value
                                               (49,
                                                 Variable
                                                   (49,
-                                                    OCaml.Effect.State.write/3),
+                                                    OCaml.Effect.State.write),
                                                 [
                                                   Variable
                                                     (49,
-                                                      b/0);
+                                                      b);
                                                   Variable
                                                     (?,
-                                                      x_2/0)
+                                                      x_2)
                                                 ]))),
                                     None,
                                     Lift
                                       (?,
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            string/3)
+                                          (OCaml.Effect.State.state,
+                                            string)
                                         ],
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            bool/3);
-                                          (OCaml.Effect.State.state/3,
-                                            string/3)
+                                          (OCaml.Effect.State.state,
+                                            bool);
+                                          (OCaml.Effect.State.state,
+                                            string)
                                         ],
                                         Bind
                                           (?,
@@ -640,11 +610,11 @@ Value
                                                   (50,
                                                     Variable
                                                       (50,
-                                                        OCaml.Effect.State.read/3),
+                                                        OCaml.Effect.State.read),
                                                     [
                                                       Variable
                                                         (50,
-                                                          str/0)
+                                                          str)
                                                     ]),
                                                 Some
                                                   x_2,
@@ -654,14 +624,14 @@ Value
                                                       (50,
                                                         Variable
                                                           (50,
-                                                            String.append/3),
+                                                            String.append),
                                                         [
                                                           Constant
                                                             (50,
                                                               String("toggle "));
                                                           Variable
                                                             (?,
-                                                              x_2/0)
+                                                              x_2)
                                                         ]))),
                                             Some
                                               x_2,
@@ -669,14 +639,14 @@ Value
                                               (50,
                                                 Variable
                                                   (50,
-                                                    OCaml.Effect.State.write/3),
+                                                    OCaml.Effect.State.write),
                                                 [
                                                   Variable
                                                     (50,
-                                                      str/0);
+                                                      str);
                                                   Variable
                                                     (?,
-                                                      x_2/0)
+                                                      x_2)
                                                 ])))))
                             ]))
                     ]) in
@@ -685,106 +655,101 @@ Value
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state/3,
-                            bool/3);
-                          (OCaml.Effect.State.state/3,
-                            string/3)
+                          (OCaml.Effect.State.state, bool);
+                          (OCaml.Effect.State.state, string)
                         ],
                         [
-                          (OCaml.Effect.State.state/3, Z/3);
-                          (OCaml.Effect.State.state/3,
-                            bool/3);
-                          (OCaml.Effect.State.state/3,
-                            string/3);
-                          r_state/0
+                          (OCaml.Effect.State.state, Z);
+                          (OCaml.Effect.State.state, bool);
+                          (OCaml.Effect.State.state, string);
+                          r_state
                         ],
                         Apply
-                          (51, Variable (51, update/0),
-                            [ Constructor (51, tt/3) ])),
+                          (51, Variable (51, update),
+                            [ Constructor (51, tt) ])),
                     None,
                     Bind
                       (?,
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state/3,
-                                bool/3);
-                              (OCaml.Effect.State.state/3,
-                                string/3)
+                              (OCaml.Effect.State.state,
+                                bool);
+                              (OCaml.Effect.State.state,
+                                string)
                             ],
                             [
-                              (OCaml.Effect.State.state/3,
-                                Z/3);
-                              (OCaml.Effect.State.state/3,
-                                bool/3);
-                              (OCaml.Effect.State.state/3,
-                                string/3);
-                              r_state/0
+                              (OCaml.Effect.State.state,
+                                Z);
+                              (OCaml.Effect.State.state,
+                                bool);
+                              (OCaml.Effect.State.state,
+                                string);
+                              r_state
                             ],
                             Apply
                               (52,
-                                Variable
-                                  (52, update/0),
+                                Variable (52, update),
                                 [
                                   Constructor
                                     (52,
-                                      tt/3)
+                                      tt)
                                 ])), None,
                         Bind
                           (?,
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    bool/3);
-                                  (OCaml.Effect.State.state/3,
-                                    string/3)
+                                  (OCaml.Effect.State.state,
+                                    bool);
+                                  (OCaml.Effect.State.state,
+                                    string)
                                 ],
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3);
-                                  (OCaml.Effect.State.state/3,
-                                    bool/3);
-                                  (OCaml.Effect.State.state/3,
-                                    string/3);
-                                  r_state/0
+                                  (OCaml.Effect.State.state,
+                                    Z);
+                                  (OCaml.Effect.State.state,
+                                    bool);
+                                  (OCaml.Effect.State.state,
+                                    string);
+                                  r_state
                                 ],
                                 Apply
                                   (53,
                                     Variable
                                       (53,
-                                        update/0),
+                                        update),
                                     [
                                       Constructor
                                         (53,
-                                          tt/3)
+                                          tt)
                                     ])), None,
                             Bind
                               (?,
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        bool/3)
+                                      (OCaml.Effect.State.state,
+                                        bool)
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      (OCaml.Effect.State.state/3,
-                                        bool/3);
-                                      (OCaml.Effect.State.state/3,
-                                        string/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      (OCaml.Effect.State.state,
+                                        bool);
+                                      (OCaml.Effect.State.state,
+                                        string);
+                                      r_state
                                     ],
                                     Apply
                                       (54,
                                         Variable
                                           (54,
-                                            OCaml.Effect.State.read/3),
+                                            OCaml.Effect.State.read),
                                         [
                                           Variable
                                             (54,
-                                              b/0)
+                                              b)
                                         ])),
                                 Some x_1,
                                 Bind
@@ -792,27 +757,27 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            string/3)
+                                          (OCaml.Effect.State.state,
+                                            string)
                                         ],
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            Z/3);
-                                          (OCaml.Effect.State.state/3,
-                                            bool/3);
-                                          (OCaml.Effect.State.state/3,
-                                            string/3);
-                                          r_state/0
+                                          (OCaml.Effect.State.state,
+                                            Z);
+                                          (OCaml.Effect.State.state,
+                                            bool);
+                                          (OCaml.Effect.State.state,
+                                            string);
+                                          r_state
                                         ],
                                         Apply
                                           (54,
                                             Variable
                                               (54,
-                                                OCaml.Effect.State.read/3),
+                                                OCaml.Effect.State.read),
                                             [
                                               Variable
                                                 (54,
-                                                  str/0)
+                                                  str)
                                             ])),
                                     Some x_2,
                                     Bind
@@ -820,18 +785,18 @@ Value
                                         Lift
                                           (?,
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                Z/3);
-                                              r_state/0
+                                              (OCaml.Effect.State.state,
+                                                Z);
+                                              r_state
                                             ],
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                Z/3);
-                                              (OCaml.Effect.State.state/3,
-                                                bool/3);
-                                              (OCaml.Effect.State.state/3,
-                                                string/3);
-                                              r_state/0
+                                              (OCaml.Effect.State.state,
+                                                Z);
+                                              (OCaml.Effect.State.state,
+                                                bool);
+                                              (OCaml.Effect.State.state,
+                                                string);
+                                              r_state
                                             ],
                                             Bind
                                               (?,
@@ -840,19 +805,19 @@ Value
                                                     Lift
                                                       (?,
                                                         [
-                                                          (OCaml.Effect.State.state/3,
-                                                            Z/3)
+                                                          (OCaml.Effect.State.state,
+                                                            Z)
                                                         ],
                                                         [
-                                                          (OCaml.Effect.State.state/3,
-                                                            Z/3);
-                                                          r_state/0
+                                                          (OCaml.Effect.State.state,
+                                                            Z);
+                                                          r_state
                                                         ],
                                                         Apply
                                                           (?,
                                                             Variable
                                                               (?,
-                                                                OCaml.Effect.State.peekstate/3),
+                                                                OCaml.Effect.State.peekstate),
                                                             [
                                                               Tuple
                                                                 (?)
@@ -862,48 +827,48 @@ Value
                                                     Lift
                                                       (?,
                                                         [
-                                                          r_state/0
+                                                          r_state
                                                         ],
                                                         [
-                                                          (OCaml.Effect.State.state/3,
-                                                            Z/3);
-                                                          r_state/0
+                                                          (OCaml.Effect.State.state,
+                                                            Z);
+                                                          r_state
                                                         ],
                                                         Apply
                                                           (?,
                                                             Variable
                                                               (?,
-                                                                OCaml.Effect.State.global/3),
+                                                                OCaml.Effect.State.global),
                                                             [
                                                               Variable
                                                                 (54,
-                                                                  r/0);
+                                                                  r);
                                                               Variable
                                                                 (?,
-                                                                  x_3/0)
+                                                                  x_3)
                                                             ]))),
                                                 Some
                                                   x_3,
                                                 Lift
                                                   (?,
                                                     [
-                                                      (OCaml.Effect.State.state/3,
-                                                        Z/3)
+                                                      (OCaml.Effect.State.state,
+                                                        Z)
                                                     ],
                                                     [
-                                                      (OCaml.Effect.State.state/3,
-                                                        Z/3);
-                                                      r_state/0
+                                                      (OCaml.Effect.State.state,
+                                                        Z);
+                                                      r_state
                                                     ],
                                                     Apply
                                                       (54,
                                                         Variable
                                                           (54,
-                                                            OCaml.Effect.State.read/3),
+                                                            OCaml.Effect.State.read),
                                                         [
                                                           Variable
                                                             (?,
-                                                              x_3/0)
+                                                              x_3)
                                                         ])))),
                                         Some
                                           x_3,
@@ -913,30 +878,30 @@ Value
                                               (54,
                                                 Variable
                                                   (?,
-                                                    x_1/0),
+                                                    x_1),
                                                 Variable
                                                   (?,
-                                                    x_2/0),
+                                                    x_2),
                                                 Variable
                                                   (?,
-                                                    x_3/0))))))))))))
+                                                    x_3))))))))))))
     ])
 
 56
 Value
   (non_rec, @.,
     [
-      ((partials_test, [ ], [ (es_in, list Effect.t); (x, Type (unit/3)) ],
+      ((partials_test, [ ], [ (es_in, list Effect.t); (x, Type (unit)) ],
         Monad
           ([
-            (OCaml.Effect.State.state/3, Z/3);
-            (OCaml.Effect.State.state/3, (list/3, Z/3));
-            r_state/0
-          ], Type (OCaml.Effect.State.t/3, Type (Z/3)))),
+            (OCaml.Effect.State.state, Z);
+            (OCaml.Effect.State.state, (list, Z));
+            r_state
+          ], Type (OCaml.Effect.State.t, Type (Z)))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
-              (Constructor (tt/3),
+              (Constructor (tt),
                 LetFun 57
                   (non_rec, @.,
                     [
@@ -946,43 +911,43 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t/3,
+                              (OCaml.Effect.State.t,
                                 Type
-                                  (Z/3)));
+                                  (Z)));
                           (y,
                             Type
-                              (Z/3))
+                              (Z))
                         ],
                         Monad
                           ([
-                            (OCaml.Effect.State.state/3,
-                              Z/3)
+                            (OCaml.Effect.State.state,
+                              Z)
                           ],
                             Type
-                              (OCaml.Effect.State.t/3,
+                              (OCaml.Effect.State.t,
                                 Type
-                                  (Z/3)))),
+                                  (Z)))),
                         Bind
                           (?,
                             Apply
                               (58,
                                 Variable
                                   (58,
-                                    OCaml.Effect.State.write/3),
+                                    OCaml.Effect.State.write),
                                 [
                                   Variable
                                     (58,
-                                      x/0);
+                                      x);
                                   Variable
                                     (58,
-                                      y/0)
+                                      y)
                                 ]),
                             None,
                             Return
                               (?,
                                 Variable
                                   (59,
-                                    x/0))))
+                                    x))))
                     ])
                   in
                 Bind
@@ -990,17 +955,17 @@ Value
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state/3,
-                            Z/3);
-                          r_state/0
+                          (OCaml.Effect.State.state,
+                            Z);
+                          r_state
                         ],
                         [
-                          (OCaml.Effect.State.state/3,
-                            Z/3);
-                          (OCaml.Effect.State.state/3,
-                            (list/3,
-                              Z/3));
-                          r_state/0
+                          (OCaml.Effect.State.state,
+                            Z);
+                          (OCaml.Effect.State.state,
+                            (list,
+                              Z));
+                          r_state
                         ],
                         Bind
                           (?,
@@ -1009,19 +974,19 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3)
+                                      (OCaml.Effect.State.state,
+                                        Z)
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.peekstate/3),
+                                            OCaml.Effect.State.peekstate),
                                         [
                                           Tuple
                                             (?)
@@ -1031,25 +996,25 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      r_state/0
+                                      r_state
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      r_state/0
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      r_state
                                     ],
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            OCaml.Effect.State.global/3),
+                                            OCaml.Effect.State.global),
                                         [
                                           Variable
                                             (60,
-                                              r/0);
+                                              r);
                                           Variable
                                             (?,
-                                              x_1/0)
+                                              x_1)
                                         ]))),
                             Some
                               x_1,
@@ -1059,51 +1024,51 @@ Value
                                   (60,
                                     Variable
                                       (60,
-                                        f1/0),
+                                        f1),
                                     [
                                       Variable
                                         (?,
-                                          x_1/0)
+                                          x_1)
                                     ])))),
                     Some
                       f1_test,
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state/3,
-                            Z/3);
-                          (OCaml.Effect.State.state/3,
-                            (list/3,
-                              Z/3))
+                          (OCaml.Effect.State.state,
+                            Z);
+                          (OCaml.Effect.State.state,
+                            (list,
+                              Z))
                         ],
                         [
-                          (OCaml.Effect.State.state/3,
-                            Z/3);
-                          (OCaml.Effect.State.state/3,
-                            (list/3,
-                              Z/3));
-                          r_state/0
+                          (OCaml.Effect.State.state,
+                            Z);
+                          (OCaml.Effect.State.state,
+                            (list,
+                              Z));
+                          r_state
                         ],
                         Bind
                           (?,
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3)
+                                  (OCaml.Effect.State.state,
+                                    Z)
                                 ],
                                 [
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3);
-                                  (OCaml.Effect.State.state/3,
-                                    (list/3,
-                                      Z/3))
+                                  (OCaml.Effect.State.state,
+                                    Z);
+                                  (OCaml.Effect.State.state,
+                                    (list,
+                                      Z))
                                 ],
                                 Apply
                                   (61,
                                     Variable
                                       (61,
-                                        f1_test/0),
+                                        f1_test),
                                     [
                                       Constant
                                         (61,
@@ -1122,44 +1087,44 @@ Value
                                     [
                                       (l1,
                                         Type
-                                          (OCaml.Effect.State.t/3,
+                                          (OCaml.Effect.State.t,
                                             Type
-                                              (list/3,
+                                              (list,
                                                 Type
-                                                  (Z/3))));
+                                                  (Z))));
                                       (l2,
                                         Type
-                                          (list/3,
+                                          (list,
                                             Type
-                                              (string/3)))
+                                              (string)))
                                     ],
                                     Monad
                                       ([
-                                        (OCaml.Effect.State.state/3,
-                                          Z/3);
-                                        (OCaml.Effect.State.state/3,
-                                          (list/3,
-                                            Z/3))
+                                        (OCaml.Effect.State.state,
+                                          Z);
+                                        (OCaml.Effect.State.state,
+                                          (list,
+                                            Z))
                                       ],
                                         Type
-                                          (OCaml.Effect.State.t/3,
+                                          (OCaml.Effect.State.t,
                                             Type
-                                              (Z/3)))),
+                                              (Z)))),
                                     Bind
                                       (?,
                                         Lift
                                           (?,
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                (list/3,
-                                                  Z/3))
+                                              (OCaml.Effect.State.state,
+                                                (list,
+                                                  Z))
                                             ],
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                Z/3);
-                                              (OCaml.Effect.State.state/3,
-                                                (list/3,
-                                                  Z/3))
+                                              (OCaml.Effect.State.state,
+                                                Z);
+                                              (OCaml.Effect.State.state,
+                                                (list,
+                                                  Z))
                                             ],
                                             Bind
                                               (?,
@@ -1169,11 +1134,11 @@ Value
                                                       (63,
                                                         Variable
                                                           (63,
-                                                            OCaml.Effect.State.read/3),
+                                                            OCaml.Effect.State.read),
                                                         [
                                                           Variable
                                                             (63,
-                                                              l1/0)
+                                                              l1)
                                                         ]),
                                                     Some
                                                       x_1,
@@ -1183,11 +1148,11 @@ Value
                                                           (63,
                                                             Variable
                                                               (63,
-                                                                OCaml.List.length/-1),
+                                                                OCaml.List.length),
                                                             [
                                                               Variable
                                                                 (?,
-                                                                  x_1/0)
+                                                                  x_1)
                                                             ]))),
                                                 Some
                                                   x_1,
@@ -1197,20 +1162,20 @@ Value
                                                       (63,
                                                         Variable
                                                           (63,
-                                                            Z.add/3),
+                                                            Z.add),
                                                         [
                                                           Variable
                                                             (?,
-                                                              x_1/0);
+                                                              x_1);
                                                           Apply
                                                             (63,
                                                               Variable
                                                                 (63,
-                                                                  OCaml.List.length/-1),
+                                                                  OCaml.List.length),
                                                               [
                                                                 Variable
                                                                   (63,
-                                                                    l2/0)
+                                                                    l2)
                                                               ])
                                                         ])))),
                                         Some
@@ -1218,25 +1183,25 @@ Value
                                         Lift
                                           (?,
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                Z/3)
+                                              (OCaml.Effect.State.state,
+                                                Z)
                                             ],
                                             [
-                                              (OCaml.Effect.State.state/3,
-                                                Z/3);
-                                              (OCaml.Effect.State.state/3,
-                                                (list/3,
-                                                  Z/3))
+                                              (OCaml.Effect.State.state,
+                                                Z);
+                                              (OCaml.Effect.State.state,
+                                                (list,
+                                                  Z))
                                             ],
                                             Apply
                                               (63,
                                                 Variable
                                                   (63,
-                                                    OCaml.Pervasives.ref/3),
+                                                    OCaml.Pervasives.ref),
                                                 [
                                                   Variable
                                                     (?,
-                                                      x_1/0)
+                                                      x_1)
                                                 ]))))
                                 ])
                               in
@@ -1245,16 +1210,16 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        (list/3,
-                                          Z/3))
+                                      (OCaml.Effect.State.state,
+                                        (list,
+                                          Z))
                                     ],
                                     [
-                                      (OCaml.Effect.State.state/3,
-                                        Z/3);
-                                      (OCaml.Effect.State.state/3,
-                                        (list/3,
-                                          Z/3))
+                                      (OCaml.Effect.State.state,
+                                        Z);
+                                      (OCaml.Effect.State.state,
+                                        (list,
+                                          Z))
                                     ],
                                     Bind
                                       (?,
@@ -1262,29 +1227,29 @@ Value
                                           (64,
                                             Variable
                                               (64,
-                                                OCaml.Pervasives.ref/3),
+                                                OCaml.Pervasives.ref),
                                             [
                                               Constructor
                                                 (64,
-                                                  cons/3,
+                                                  cons,
                                                   Constant
                                                     (64,
                                                       Int(1)),
                                                   Constructor
                                                     (64,
-                                                      cons/3,
+                                                      cons,
                                                       Constant
                                                         (64,
                                                           Int(2)),
                                                       Constructor
                                                         (64,
-                                                          cons/3,
+                                                          cons,
                                                           Constant
                                                             (64,
                                                               Int(3)),
                                                           Constructor
                                                             (64,
-                                                              []/3))))
+                                                              []))))
                                             ]),
                                         Some
                                           x_1,
@@ -1294,11 +1259,11 @@ Value
                                               (64,
                                                 Variable
                                                   (64,
-                                                    f2/0),
+                                                    f2),
                                                 [
                                                   Variable
                                                     (?,
-                                                      x_1/0)
+                                                      x_1)
                                                 ])))),
                                 Some
                                   f2_test,
@@ -1308,38 +1273,38 @@ Value
                                       (65,
                                         Variable
                                           (65,
-                                            f2_test/0),
+                                            f2_test),
                                         [
                                           Constructor
                                             (65,
-                                              cons/3,
+                                              cons,
                                               Constant
                                                 (65,
                                                   String("hi")),
                                               Constructor
                                                 (65,
-                                                  cons/3,
+                                                  cons,
                                                   Constant
                                                     (65,
                                                       String("hey")),
                                                   Constructor
                                                     (65,
-                                                      []/3)))
+                                                      [])))
                                         ]),
                                     Some
                                       f2_test,
                                     Lift
                                       (?,
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            Z/3)
+                                          (OCaml.Effect.State.state,
+                                            Z)
                                         ],
                                         [
-                                          (OCaml.Effect.State.state/3,
-                                            Z/3);
-                                          (OCaml.Effect.State.state/3,
-                                            (list/3,
-                                              Z/3))
+                                          (OCaml.Effect.State.state,
+                                            Z);
+                                          (OCaml.Effect.State.state,
+                                            (list,
+                                              Z))
                                         ],
                                         Bind
                                           (?,
@@ -1347,11 +1312,11 @@ Value
                                               (66,
                                                 Variable
                                                   (66,
-                                                    OCaml.Effect.State.read/3),
+                                                    OCaml.Effect.State.read),
                                                 [
                                                   Variable
                                                     (66,
-                                                      f1_test/0)
+                                                      f1_test)
                                                 ]),
                                             Some
                                               x_1,
@@ -1359,14 +1324,14 @@ Value
                                               (66,
                                                 Variable
                                                   (66,
-                                                    f1/0),
+                                                    f1),
                                                 [
                                                   Variable
                                                     (66,
-                                                      f2_test/0);
+                                                      f2_test);
                                                   Variable
                                                     (?,
-                                                      x_1/0)
+                                                      x_1)
                                                 ])))))))))
             ]))
     ])
@@ -1375,14 +1340,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((multiple_returns_test, [ ], [ (x, Type (unit/3)) ],
+      ((multiple_returns_test, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ (OCaml.Effect.State.state/3, Z/3) ],
-            (Type (Z/3) * Type (OCaml.Effect.State.t/3, Type (Z/3))))),
+          ([ (OCaml.Effect.State.state, Z) ],
+            (Type (Z) * Type (OCaml.Effect.State.t, Type (Z))))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
-              (Constructor (tt/3),
+              (Constructor (tt),
                 LetFun 69
                   (non_rec, @.,
                     [
@@ -1392,54 +1357,54 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t/3,
+                              (OCaml.Effect.State.t,
                                 Type
-                                  (Z/3)));
+                                  (Z)));
                           (y,
                             Type
-                              (Z/3))
+                              (Z))
                         ],
                         Monad
                           ([
-                            (OCaml.Effect.State.state/3,
-                              Z/3)
+                            (OCaml.Effect.State.state,
+                              Z)
                           ],
                             (Type
-                              (Z/3)
+                              (Z)
                               ->
                               Monad
                                 ([
-                                  (OCaml.Effect.State.state/3,
-                                    Z/3)
+                                  (OCaml.Effect.State.state,
+                                    Z)
                                 ],
                                   (Type
-                                    (OCaml.Effect.State.t/3,
+                                    (OCaml.Effect.State.t,
                                       Type
-                                        (Z/3))
+                                        (Z))
                                     ->
                                     Monad
                                       ([
-                                        (OCaml.Effect.State.state/3,
-                                          Z/3)
+                                        (OCaml.Effect.State.state,
+                                          Z)
                                       ],
                                         Type
-                                          (OCaml.Effect.State.t/3,
+                                          (OCaml.Effect.State.t,
                                             Type
-                                              (Z/3)))))))),
+                                              (Z)))))))),
                         Bind
                           (?,
                             Apply
                               (70,
                                 Variable
                                   (70,
-                                    OCaml.Effect.State.write/3),
+                                    OCaml.Effect.State.write),
                                 [
                                   Variable
                                     (70,
-                                      x/0);
+                                      x);
                                   Variable
                                     (70,
-                                      y/0)
+                                      y)
                                 ]),
                             None,
                             Return
@@ -1457,11 +1422,11 @@ Value
                                                   (72,
                                                     Variable
                                                       (72,
-                                                        OCaml.Effect.State.read/3),
+                                                        OCaml.Effect.State.read),
                                                     [
                                                       Variable
                                                         (72,
-                                                          x/0)
+                                                          x)
                                                     ]),
                                                 Some
                                                   x_1,
@@ -1471,14 +1436,14 @@ Value
                                                       (72,
                                                         Variable
                                                           (72,
-                                                            Z.add/3),
+                                                            Z.add),
                                                         [
                                                           Variable
                                                             (?,
-                                                              x_1/0);
+                                                              x_1);
                                                           Variable
                                                             (72,
-                                                              z/0)
+                                                              z)
                                                         ]))),
                                             Some
                                               x_1,
@@ -1486,14 +1451,14 @@ Value
                                               (72,
                                                 Variable
                                                   (72,
-                                                    OCaml.Effect.State.write/3),
+                                                    OCaml.Effect.State.write),
                                                 [
                                                   Variable
                                                     (72,
-                                                      x/0);
+                                                      x);
                                                   Variable
                                                     (?,
-                                                      x_1/0)
+                                                      x_1)
                                                 ])),
                                         None,
                                         Return
@@ -1507,11 +1472,11 @@ Value
                                                       (74,
                                                         Variable
                                                           (74,
-                                                            OCaml.Effect.State.read/3),
+                                                            OCaml.Effect.State.read),
                                                         [
                                                           Variable
                                                             (74,
-                                                              w/0)
+                                                              w)
                                                         ]),
                                                     Some
                                                       tmp,
@@ -1525,11 +1490,11 @@ Value
                                                                   (75,
                                                                     Variable
                                                                       (75,
-                                                                        OCaml.Effect.State.read/3),
+                                                                        OCaml.Effect.State.read),
                                                                     [
                                                                       Variable
                                                                         (75,
-                                                                          x/0)
+                                                                          x)
                                                                     ]),
                                                                 Some
                                                                   x_1,
@@ -1539,14 +1504,14 @@ Value
                                                                       (75,
                                                                         Variable
                                                                           (75,
-                                                                            Z.mul/3),
+                                                                            Z.mul),
                                                                         [
                                                                           Constant
                                                                             (75,
                                                                               Int(2));
                                                                           Variable
                                                                             (?,
-                                                                              x_1/0)
+                                                                              x_1)
                                                                         ]))),
                                                             Some
                                                               x_1,
@@ -1554,14 +1519,14 @@ Value
                                                               (75,
                                                                 Variable
                                                                   (75,
-                                                                    OCaml.Effect.State.write/3),
+                                                                    OCaml.Effect.State.write),
                                                                 [
                                                                   Variable
                                                                     (75,
-                                                                      w/0);
+                                                                      w);
                                                                   Variable
                                                                     (?,
-                                                                      x_1/0)
+                                                                      x_1)
                                                                 ])),
                                                         None,
                                                         Bind
@@ -1570,21 +1535,21 @@ Value
                                                               (76,
                                                                 Variable
                                                                   (76,
-                                                                    OCaml.Effect.State.write/3),
+                                                                    OCaml.Effect.State.write),
                                                                 [
                                                                   Variable
                                                                     (76,
-                                                                      x/0);
+                                                                      x);
                                                                   Variable
                                                                     (76,
-                                                                      tmp/0)
+                                                                      tmp)
                                                                 ]),
                                                             None,
                                                             Return
                                                               (?,
                                                                 Variable
                                                                   (77,
-                                                                    x/0))))))))))))
+                                                                    x))))))))))))
                     ])
                   in
                 Bind
@@ -1593,7 +1558,7 @@ Value
                       (80,
                         Variable
                           (80,
-                            OCaml.Pervasives.ref/3),
+                            OCaml.Pervasives.ref),
                         [
                           Constant
                             (80,
@@ -1609,7 +1574,7 @@ Value
                               (81,
                                 Variable
                                   (81,
-                                    OCaml.Pervasives.ref/3),
+                                    OCaml.Pervasives.ref),
                                 [
                                   Constant
                                     (81,
@@ -1623,11 +1588,11 @@ Value
                                   (81,
                                     Variable
                                       (81,
-                                        f/0),
+                                        f),
                                     [
                                       Variable
                                         (?,
-                                          x_1/0)
+                                          x_1)
                                     ]))),
                         Some
                           f1,
@@ -1637,7 +1602,7 @@ Value
                               (82,
                                 Variable
                                   (82,
-                                    f1/0),
+                                    f1),
                                 [
                                   Constant
                                     (82,
@@ -1651,7 +1616,7 @@ Value
                                   (83,
                                     Variable
                                       (83,
-                                        f2/0),
+                                        f2),
                                     [
                                       Constant
                                         (83,
@@ -1665,11 +1630,11 @@ Value
                                       (84,
                                         Variable
                                           (84,
-                                            f3/0),
+                                            f3),
                                         [
                                           Variable
                                             (84,
-                                              s/0)
+                                              s)
                                         ]),
                                     Some
                                       f4,
@@ -1679,11 +1644,11 @@ Value
                                           (85,
                                             Variable
                                               (85,
-                                                OCaml.Effect.State.read/3),
+                                                OCaml.Effect.State.read),
                                             [
                                               Variable
                                                 (85,
-                                                  f4/0)
+                                                  f4)
                                             ]),
                                         Some
                                           x_1,
@@ -1693,10 +1658,10 @@ Value
                                               (85,
                                                 Variable
                                                   (?,
-                                                    x_1/0),
+                                                    x_1),
                                                 Variable
                                                   (85,
-                                                    s/0))))))))))
+                                                    s))))))))))
             ]))
     ])
 
@@ -1707,37 +1672,35 @@ Value
       ((type_vars_test, [ A; B ],
         [
           (es_in, list Effect.t);
-          (x, Type (OCaml.Effect.State.t/3, A));
-          (y, Type (OCaml.Effect.State.t/3, B));
+          (x, Type (OCaml.Effect.State.t, A));
+          (y, Type (OCaml.Effect.State.t, B));
           (a, A);
           (b, B)
         ],
         Monad
-          ([
-            (OCaml.Effect.State.state/3, A);
-            (OCaml.Effect.State.state/3, B)
-          ], Type (unit/3))),
+          ([ (OCaml.Effect.State.state, A); (OCaml.Effect.State.state, B) ],
+            Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ (OCaml.Effect.State.state/3, A) ],
+              (?, [ (OCaml.Effect.State.state, A) ],
                 [
-                  (OCaml.Effect.State.state/3, A);
-                  (OCaml.Effect.State.state/3, B)
+                  (OCaml.Effect.State.state, A);
+                  (OCaml.Effect.State.state, B)
                 ],
                 Apply
-                  (88, Variable (88, OCaml.Effect.State.write/3),
-                    [ Variable (88, x/0); Variable (88, a/0) ])),
+                  (88, Variable (88, OCaml.Effect.State.write),
+                    [ Variable (88, x); Variable (88, a) ])),
             None,
             Lift
-              (?, [ (OCaml.Effect.State.state/3, B) ],
+              (?, [ (OCaml.Effect.State.state, B) ],
                 [
-                  (OCaml.Effect.State.state/3, A);
-                  (OCaml.Effect.State.state/3, B)
+                  (OCaml.Effect.State.state, A);
+                  (OCaml.Effect.State.state, B)
                 ],
                 Apply
-                  (89, Variable (89, OCaml.Effect.State.write/3),
-                    [ Variable (89, y/0); Variable (89, b/0) ]))))
+                  (89, Variable (89, OCaml.Effect.State.write),
+                    [ Variable (89, y); Variable (89, b) ]))))
     ])
 
 91
@@ -1745,21 +1708,21 @@ Value
   (non_rec, @.,
     [
       ((resolves_test1, [ A ],
-        [ (x, Type (OCaml.Effect.State.t/3, A)); (a, A); (b, A) ],
-        Monad ([ (OCaml.Effect.State.state/3, A) ], Type (unit/3))),
+        [ (x, Type (OCaml.Effect.State.t, A)); (a, A); (b, A) ],
+        Monad ([ (OCaml.Effect.State.state, A) ], Type (unit))),
         Lift
           (?,
             [
-              (OCaml.Effect.State.state/3, A);
-              (OCaml.Effect.State.state/3, A)
-            ], [ (OCaml.Effect.State.state/3, A) ],
+              (OCaml.Effect.State.state, A);
+              (OCaml.Effect.State.state, A)
+            ], [ (OCaml.Effect.State.state, A) ],
             Apply
-              (92, Variable (92, type_vars_test/0),
+              (92, Variable (92, type_vars_test),
                 [
-                  Variable (92, x/0);
-                  Variable (92, x/0);
-                  Variable (92, a/0);
-                  Variable (92, b/0)
+                  Variable (92, x);
+                  Variable (92, x);
+                  Variable (92, a);
+                  Variable (92, b)
                 ])))
     ])
 
@@ -1770,33 +1733,31 @@ Value
       ((resolves_test2, [ A ],
         [
           (es_in, list Effect.t);
-          (x, Type (OCaml.Effect.State.t/3, Type (Z/3)));
-          (y, Type (OCaml.Effect.State.t/3, A));
-          (a, Type (Z/3));
+          (x, Type (OCaml.Effect.State.t, Type (Z)));
+          (y, Type (OCaml.Effect.State.t, A));
+          (a, Type (Z));
           (b, A)
         ],
         Monad
-          ([
-            (OCaml.Effect.State.state/3, A);
-            (OCaml.Effect.State.state/3, Z/3)
-          ], Type (unit/3))),
+          ([ (OCaml.Effect.State.state, A); (OCaml.Effect.State.state, Z) ],
+            Type (unit))),
         Lift
           (?,
             [
-              (OCaml.Effect.State.state/3, Z/3);
-              (OCaml.Effect.State.state/3, A)
+              (OCaml.Effect.State.state, Z);
+              (OCaml.Effect.State.state, A)
             ],
             [
-              (OCaml.Effect.State.state/3, A);
-              (OCaml.Effect.State.state/3, Z/3)
+              (OCaml.Effect.State.state, A);
+              (OCaml.Effect.State.state, Z)
             ],
             Apply
-              (95, Variable (95, type_vars_test/0),
+              (95, Variable (95, type_vars_test),
                 [
-                  Variable (95, x/0);
-                  Variable (95, y/0);
-                  Variable (95, a/0);
-                  Variable (95, b/0)
+                  Variable (95, x);
+                  Variable (95, y);
+                  Variable (95, a);
+                  Variable (95, b)
                 ])))
     ])
 
@@ -1806,23 +1767,23 @@ Value
     [
       ((resolves_test3, [ ],
         [
-          (x, Type (OCaml.Effect.State.t/3, Type (Z/3)));
-          (y, Type (OCaml.Effect.State.t/3, Type (Z/3)));
-          (a, Type (Z/3));
-          (b, Type (Z/3))
-        ], Monad ([ (OCaml.Effect.State.state/3, Z/3) ], Type (unit/3))),
+          (x, Type (OCaml.Effect.State.t, Type (Z)));
+          (y, Type (OCaml.Effect.State.t, Type (Z)));
+          (a, Type (Z));
+          (b, Type (Z))
+        ], Monad ([ (OCaml.Effect.State.state, Z) ], Type (unit))),
         Lift
           (?,
             [
-              (OCaml.Effect.State.state/3, Z/3);
-              (OCaml.Effect.State.state/3, Z/3)
-            ], [ (OCaml.Effect.State.state/3, Z/3) ],
+              (OCaml.Effect.State.state, Z);
+              (OCaml.Effect.State.state, Z)
+            ], [ (OCaml.Effect.State.state, Z) ],
             Apply
-              (98, Variable (98, type_vars_test/0),
+              (98, Variable (98, type_vars_test),
                 [
-                  Variable (98, x/0);
-                  Variable (98, y/0);
-                  Variable (98, a/0);
-                  Variable (98, b/0)
+                  Variable (98, x);
+                  Variable (98, y);
+                  Variable (98, a);
+                  Variable (98, b)
                 ])))
     ])

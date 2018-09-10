@@ -1,24 +1,24 @@
 3
 Inductive tree:
-  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree/0); Type (Z/3); Type (tree/0) ]) ])
+  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree); Type (Z); Type (tree) ]) ])
 
 7
 Value
   (rec, @.,
     [
       ((find_rec, [ ],
-        [ (counter, Type (nat/3)); (x, Type (Z/3)); (t, Type (tree/0)) ],
-        Type (bool/3)),
+        [ (counter, Type (nat)); (x, Type (Z)); (t, Type (tree)) ],
+        Type (bool)),
         Match
-          ((?, Effect ([ NonTermination/3 ], .)),
-            Variable ((?, Effect ([ ], .)), counter/0),
+          ((?, Effect ([ NonTermination ], .)),
+            Variable ((?, Effect ([ ], .)), counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination/3
+                        NonTermination
                       ],
                         .)),
                     Variable
@@ -28,10 +28,10 @@ Value
                           ],
                             .
                               -[
-                                NonTermination/3
+                                NonTermination
                               ]->
                               .)),
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         ((?,
@@ -40,12 +40,12 @@ Value
                             ],
                               .)))
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
                   ((8,
                     Effect
                       ([
-                        NonTermination/3
+                        NonTermination
                       ],
                         .)),
                     Variable
@@ -54,19 +54,19 @@ Value
                           ([
                           ],
                             .)),
-                        t/0),
+                        t),
                     [
                       (Constructor
-                        (Leaf/0),
+                        (Leaf),
                         Constructor
                           ((9,
                             Effect
                               ([
                               ],
                                 .)),
-                            false/3));
+                            false));
                       (Constructor
-                        (Node/0,
+                        (Node,
                           t1,
                           x',
                           t2),
@@ -74,7 +74,7 @@ Value
                           ((11,
                             Effect
                               ([
-                                NonTermination/3
+                                NonTermination
                               ],
                                 .)),
                             Apply
@@ -89,7 +89,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    OCaml.Pervasives.lt/3),
+                                    OCaml.Pervasives.lt),
                                 [
                                   Variable
                                     ((11,
@@ -97,20 +97,20 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x/0);
+                                      x);
                                   Variable
                                     ((11,
                                       Effect
                                         ([
                                         ],
                                           .)),
-                                      x'/0)
+                                      x')
                                 ]),
                             Apply
                               ((12,
                                 Effect
                                   ([
-                                    NonTermination/3
+                                    NonTermination
                                   ],
                                     .)),
                                 Apply
@@ -122,7 +122,7 @@ Value
                                           ->
                                           .
                                             -[
-                                              NonTermination/3
+                                              NonTermination
                                             ]->
                                             .)),
                                     Variable
@@ -136,10 +136,10 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination/3
+                                                    NonTermination
                                                   ]->
                                                   .)),
-                                        find_rec/0),
+                                        find_rec),
                                     [
                                       Variable
                                         ((?,
@@ -147,7 +147,7 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
@@ -156,20 +156,20 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x/0);
+                                      x);
                                   Variable
                                     ((12,
                                       Effect
                                         ([
                                         ],
                                           .)),
-                                      t1/0)
+                                      t1)
                                 ]),
                             IfThenElse
                               ((13,
                                 Effect
                                   ([
-                                    NonTermination/3
+                                    NonTermination
                                   ],
                                     .)),
                                 Apply
@@ -184,7 +184,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        OCaml.Pervasives.lt/3),
+                                        OCaml.Pervasives.lt),
                                     [
                                       Variable
                                         ((13,
@@ -192,20 +192,20 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          x'/0);
+                                          x');
                                       Variable
                                         ((13,
                                           Effect
                                             ([
                                             ],
                                               .)),
-                                          x/0)
+                                          x)
                                     ]),
                                 Apply
                                   ((14,
                                     Effect
                                       ([
-                                        NonTermination/3
+                                        NonTermination
                                       ],
                                         .)),
                                     Apply
@@ -217,7 +217,7 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination/3
+                                                  NonTermination
                                                 ]->
                                                 .)),
                                         Variable
@@ -231,10 +231,10 @@ Value
                                                     ->
                                                     .
                                                       -[
-                                                        NonTermination/3
+                                                        NonTermination
                                                       ]->
                                                       .)),
-                                            find_rec/0),
+                                            find_rec),
                                         [
                                           Variable
                                             ((?,
@@ -242,7 +242,7 @@ Value
                                                 ([
                                                 ],
                                                   .)),
-                                              counter/0)
+                                              counter)
                                         ]),
                                     [
                                       Variable
@@ -251,14 +251,14 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          x/0);
+                                          x);
                                       Variable
                                         ((14,
                                           Effect
                                             ([
                                             ],
                                               .)),
-                                          t2/0)
+                                          t2)
                                     ]),
                                 Constructor
                                   ((16,
@@ -266,7 +266,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    true/3))))
+                                    true))))
                     ]))
             ]))
     ])
@@ -275,15 +275,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((find, [ ], [ (x, Type (Z/3)); (t, Type (tree/0)) ], Type (bool/3)),
+      ((find, [ ], [ (x, Type (Z)); (t, Type (tree)) ], Type (bool)),
         Apply
-          ((?, Effect ([ Counter/3; NonTermination/3 ], .)),
+          ((?, Effect ([ Counter; NonTermination ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -> . -[ NonTermination/3 ]-> .)),
-                find_rec/0),
+              ((?, Effect ([ ], . -> . -> . -[ NonTermination ]-> .)),
+                find_rec),
             [
               Apply
-                ((?, Effect ([ Counter/3 ], .)),
+                ((?, Effect ([ Counter ], .)),
                   Variable
                     ((?,
                       Effect
@@ -291,10 +291,10 @@ Value
                         ],
                           .
                             -[
-                              Counter/3
+                              Counter
                             ]->
                             .)),
-                      read_counter/3),
+                      read_counter),
                   [
                     Tuple
                       ((?,
@@ -303,7 +303,7 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), x/0);
-              Variable ((?, Effect ([ ], .)), t/0)
+              Variable ((?, Effect ([ ], .)), x);
+              Variable ((?, Effect ([ ], .)), t)
             ]))
     ])

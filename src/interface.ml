@@ -1,5 +1,6 @@
 open SmartPrint
 open Yojson.Basic
+open Utils
 
 module Shape = struct
   type t = PathName.t list list
@@ -12,7 +13,7 @@ module Shape = struct
     | Effect.Type.Pure -> []
     | Effect.Type.Arrow (d, typ) ->
       let ds = Effect.Descriptor.elements d |> List.map (fun x ->
-        x.BoundName.path_name) in
+        x.BoundName.local_path) in
       ds :: of_effect_typ typ
 
   let to_effect_typ (shape : t) (env : 'a FullEnvi.t) : Effect.Type.t =
@@ -93,7 +94,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let state_name = CoqName.ocaml_name r.Reference.state_name in
     [ Var (name, []); Descriptor state_name ]
   | Structure.Open _ -> []
-  | Structure.Include (_, name) -> [Include name.path_name]
+  | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) -> [Interface (name, of_structures defs)]
 
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
@@ -108,19 +109,19 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module (CoqName.Name x) env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module Effect.Type.leave_prefix Effect.Type.resolve_open env
+    FullEnvi.leave_module FullEnvi.localize_type env
 
-let to_mod (coq_prefix : Name.t) (interface : t)
-  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t Mod.t =
+let load_interface (coq_prefix : Name.t) (interface : t)
+  (env : Effect.Type.t FullEnvi.t) : Name.t * Effect.Type.t FullEnvi.t =
   let name = match interface with | Interface (name, _) -> name | _ -> "" in
   let coq_name = if coq_prefix == "" || name == "" then coq_prefix ^ name
     else coq_prefix ^ "." ^ name in
   let env = FullEnvi.enter_module (CoqName.of_names name coq_name) env in
   let env = match interface with
-  | Interface (_, defs) ->
-    List.fold_left (fun env def -> to_full_envi def env) env defs
-  | _ -> to_full_envi interface env in
-  FullMod.hd_map (fun m _ -> m) env.FullEnvi.active_module
+    | Interface (_, defs) ->
+      List.fold_left (fun env def -> to_full_envi def env) env defs
+    | _ -> to_full_envi interface env in
+  (coq_name, FullEnvi.leave_module FullEnvi.localize_type env)
 
 let rec to_json (interface : t) : json =
   match interface with
@@ -177,3 +178,17 @@ let of_file (file_name : string) : t =
   let content = Bytes.make size ' ' in
   really_input file content 0 size;
   of_json_string (Bytes.to_string content)
+
+let load_module (module_name : Name.t) (env : Effect.Type.t FullEnvi.t)
+  : Effect.Type.t FullEnvi.t =
+    let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
+    match find_first (fun (coq_prefix, dir) ->
+        let file_name = Filename.concat dir (file_name ^ ".interface") in
+        if Sys.file_exists file_name then Some (coq_prefix, file_name) else None)
+      env.interfaces with
+    | Some (coq_prefix, file_name) ->
+      let interface = of_file file_name in
+      let (module_name, env) = load_interface coq_prefix interface env in
+      FullEnvi.module_required module_name env;
+      env
+    | None -> env

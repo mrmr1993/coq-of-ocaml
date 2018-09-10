@@ -312,9 +312,9 @@ Module StableSort.
   
   Fixpoint sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; NonTermination ] (list A) :=
+    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
     match counter with
-    | O => lift [_;_] "01" (not_terminated tt)
+    | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
@@ -344,7 +344,7 @@ Module StableSort.
       | (n, l) =>
         let n1 := Z.div n 2 in
         let n2 := Z.sub n n1 in
-        let! l2 := lift [_;_] "10" (chop n1 l) in
+        let! l2 := lift [_;_] "01" (chop n1 l) in
         let! s1 := (rev_sort_rec counter) cmp n1 l in
         let! s2 := (rev_sort_rec counter) cmp n2 l2 in
         ret (rev_merge_rev cmp s1 s2 [])
@@ -353,9 +353,9 @@ Module StableSort.
   
   with rev_sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; NonTermination ] (list A) :=
+    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
     match counter with
-    | O => lift [_;_] "01" (not_terminated tt)
+    | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
@@ -385,7 +385,7 @@ Module StableSort.
       | (n, l) =>
         let n1 := Z.div n 2 in
         let n2 := Z.sub n n1 in
-        let! l2 := lift [_;_] "10" (chop n1 l) in
+        let! l2 := lift [_;_] "01" (chop n1 l) in
         let! s1 := (sort_rec counter) cmp n1 l in
         let! s2 := (sort_rec counter) cmp n2 l2 in
         ret (rev_merge cmp s1 s2 [])
@@ -393,18 +393,18 @@ Module StableSort.
     end.
   
   Definition sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
-    let! x := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (sort_rec x cmp n l).
+    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (sort_rec x cmp n l).
   
   Definition rev_sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
-    let! x := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (rev_sort_rec x cmp n l).
+    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (rev_sort_rec x cmp n l).
 End StableSort.
 
 Definition stable_sort {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
+  : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
   let len := length l in
   if OCaml.Pervasives.lt len 2 then
     ret l
@@ -413,12 +413,12 @@ Definition stable_sort {A : Type} (cmp : A -> A -> Z) (l : list A)
 
 Definition sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) -> M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
+    (list A) -> M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
   stable_sort.
 
 Definition fast_sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) -> M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
+    (list A) -> M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
   stable_sort.
 
 Module SortUniq.
@@ -460,9 +460,9 @@ Module SortUniq.
   
   Fixpoint sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; NonTermination ] (list A) :=
+    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
     match counter with
-    | O => lift [_;_] "01" (not_terminated tt)
+    | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
@@ -523,7 +523,7 @@ Module SortUniq.
       | (n, l) =>
         let n1 := Z.div n 2 in
         let n2 := Z.sub n n1 in
-        let! l2 := lift [_;_] "10" (chop n1 l) in
+        let! l2 := lift [_;_] "01" (chop n1 l) in
         let! s1 := (rev_sort_rec counter) cmp n1 l in
         let! s2 := (rev_sort_rec counter) cmp n2 l2 in
         ret (rev_merge_rev cmp s1 s2 [])
@@ -532,9 +532,9 @@ Module SortUniq.
   
   with rev_sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; NonTermination ] (list A) :=
+    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
     match counter with
-    | O => lift [_;_] "01" (not_terminated tt)
+    | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
@@ -595,7 +595,7 @@ Module SortUniq.
       | (n, l) =>
         let n1 := Z.div n 2 in
         let n2 := Z.sub n n1 in
-        let! l2 := lift [_;_] "10" (chop n1 l) in
+        let! l2 := lift [_;_] "01" (chop n1 l) in
         let! s1 := (sort_rec counter) cmp n1 l in
         let! s2 := (sort_rec counter) cmp n2 l2 in
         ret (rev_merge cmp s1 s2 [])
@@ -603,18 +603,18 @@ Module SortUniq.
     end.
   
   Definition sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
-    let! x := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (sort_rec x cmp n l).
+    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (sort_rec x cmp n l).
   
   Definition rev_sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
-    let! x := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (rev_sort_rec x cmp n l).
+    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (rev_sort_rec x cmp n l).
 End SortUniq.
 
 Definition sort_uniq {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ OCaml.Assert_failure; Counter; NonTermination ] (list A) :=
+  : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
   let len := length l in
   if OCaml.Pervasives.lt len 2 then
     ret l
