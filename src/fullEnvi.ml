@@ -9,7 +9,7 @@ type 'a t = {
     'b. (Effect.Type.t t -> 'b * Effect.Type.t t) -> 'a t -> 'b option;
   convert : Effect.Type.t -> 'a;
   bound_external :
-    Name.Set.t ref -> (PathName.t -> Mod.t -> PathName.t option) ->
+    (PathName.t -> Mod.t -> PathName.t option) ->
     (PathName.t -> Mod.t -> bool) -> PathName.t -> BoundName.t option;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
@@ -26,7 +26,7 @@ let empty (interfaces : (Name.t * string) list)
   active_module = FullMod.empty module_name [];
   run_in_external = (fun _ _ -> failwith "No external environment to run in.");
   convert = (fun _ -> failwith "Cannot convert: unknown destination type.");
-  bound_external = (fun _ _ _ _ -> None);
+  bound_external = (fun _ _ _ -> None);
   required_modules = ref Name.Set.empty;
   interfaces
 }
@@ -48,7 +48,11 @@ let module_required (module_name : Name.t) (env : 'a t) : unit =
   env.required_modules := Name.Set.add module_name !(env.required_modules)
 
 let requires (env : 'a t) : Name.t list =
-  Name.Set.elements !(env.required_modules)
+  let rec f : 'b. 'b t -> Name.Set.t = fun env ->
+    match env.run_in_external (fun env -> (f env, env)) env with
+    | Some requires -> Name.Set.union !(env.required_modules) requires
+    | None -> !(env.required_modules) in
+  Name.Set.elements (f env)
 
 let coq_path (env : 'a t) : Name.t list = FullMod.coq_path env.active_module
 
@@ -77,7 +81,7 @@ let bound_name_opt (find : PathName.t -> Mod.t -> PathName.t option)
   : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
   | Some name -> Some (localize has_name env name)
-  | None -> env.bound_external env.required_modules find has_name x
+  | None -> env.bound_external find has_name x
 
 let bound_name (find : PathName.t -> Mod.t -> PathName.t option)
   (has_name : PathName.t -> Mod.t -> bool) (loc : Loc.t) (x : PathName.t)
