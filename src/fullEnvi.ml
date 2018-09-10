@@ -5,11 +5,12 @@ type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
   active_module : FullMod.t;
+  run_in_external : 'b 'c. ('b t -> 'c) -> 'a t -> 'c option;
   bound_external :
     Name.Set.t ref -> (PathName.t -> Mod.t -> PathName.t option) ->
     (PathName.t -> Mod.t -> bool) -> PathName.t -> BoundName.t option;
-  find_external : Loc.t -> BoundName.t -> 'a Mod.Value.t;
-  find_external_module : Loc.t -> BoundName.t -> Mod.t;
+  find_external : 'a t -> Loc.t -> BoundName.t -> 'a Mod.Value.t;
+  find_external_module : 'a t -> Loc.t -> BoundName.t -> Mod.t;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref;
@@ -23,16 +24,30 @@ let empty (interfaces : (Name.t * string) list)
   values = PathName.Map.empty;
   modules = PathName.Map.empty;
   active_module = FullMod.empty module_name [];
+  run_in_external = (fun _ _ -> failwith "No external environment to run in.");
   bound_external = (fun _ _ _ _ -> None);
-  find_external = (fun loc x ->
+  find_external = (fun _ loc x ->
     let message = BoundName.pp x ^^ !^ "not found." in
     Error.raise loc (SmartPrint.to_string 80 2 message));
-  find_external_module = (fun loc x ->
+  find_external_module = (fun _ loc x ->
     let message = !^ "Module" ^^ BoundName.pp x ^^ !^ "not found." in
     Error.raise loc (SmartPrint.to_string 80 2 message));
   required_modules = ref Name.Set.empty;
   interfaces
 }
+
+(** Execute a function on another environment [env] if it is not the same as
+    the current environment [env'].
+    This ensures that we don't get into a situation where we are executing the
+    same function repeatedly on the same arguments, expecting a different
+    result. *)
+let run_in_env (f : 'a t -> 'b * 'a t) (env' : 'a t) (env : 'a t)
+  : 'b option * 'a t =
+  if env == env' then
+    (None, env)
+  else
+    let (x, env) = f env in
+    (Some x, env)
 
 let module_required (module_name : Name.t) (env : 'a t) : unit =
   env.required_modules := Name.Set.add module_name !(env.required_modules)
@@ -81,7 +96,12 @@ let bound_name (find : PathName.t -> Mod.t -> PathName.t option)
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   { env with
     values = PathName.Map.map (Mod.Value.map f) env.values;
-    find_external = (fun loc x -> Mod.Value.map f @@ env.find_external loc x)
+    run_in_external = (fun f _ ->
+      env.run_in_external f (empty [] None));
+    find_external = (fun _ loc x ->
+      Mod.Value.map f @@ env.find_external (empty [] None) loc x);
+    find_external_module = (fun _ loc x ->
+      env.find_external_module (empty [] None) loc x);
     }
 
 let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
@@ -149,7 +169,7 @@ let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
 let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a Mod.Value.t =
   match PathName.Map.find_opt x.full_path env.values with
   | Some v -> v
-  | None -> env.find_external loc x
+  | None -> env.find_external env loc x
 
 module Carrier (M : Mod.Carrier) = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
@@ -283,7 +303,7 @@ module Module = struct
   let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : Mod.t =
     match PathName.Map.find_opt x.full_path env.modules with
     | Some v -> v
-    | None -> env.find_external_module loc x
+    | None -> env.find_external_module env loc x
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : Mod.t) (env : 'a t) : Name.t * 'a t =
