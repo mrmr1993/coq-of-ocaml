@@ -1,5 +1,6 @@
 open SmartPrint
 open Yojson.Basic
+open Utils
 
 module Shape = struct
   type t = PathName.t list list
@@ -177,3 +178,18 @@ let of_file (file_name : string) : t =
   let content = Bytes.make size ' ' in
   really_input file content 0 size;
   of_json_string (Bytes.to_string content)
+
+let load_module (interface_dirs : (Name.t * string) list)
+  (module_name : Name.t) (env : Effect.Type.t FullEnvi.t)
+  : Effect.Type.t FullEnvi.t =
+    let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
+    match find_first (fun (coq_prefix, dir) ->
+        let file_name = Filename.concat dir (file_name ^ ".interface") in
+        if Sys.file_exists file_name then Some (coq_prefix, file_name) else None)
+      interface_dirs with
+    | Some (coq_prefix, file_name) ->
+      let interface = of_file file_name in
+      let (module_name, env) = load_interface coq_prefix interface env in
+      FullEnvi.module_required module_name env;
+      env
+    | None -> env
