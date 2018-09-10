@@ -28,13 +28,13 @@ Fixpoint sums_rec (counter : nat) (ls : list (list Z))
             ret (Z.add x x_1)
         end
       end in
-    let sum (xs : list Z) : M [ Counter; NonTermination ] Z :=
+    let sum_1 (xs : list Z) : M [ Counter; NonTermination ] Z :=
       let! x := lift [_;_] "10" (read_counter tt) in
       sum_rec x xs in
     match ls with
     | [] => ret []
     | cons xs ls =>
-      let! x := sum xs in
+      let! x := sum_1 xs in
       let! x_1 := (sums_rec counter) ls in
       ret (cons x x_1)
     end

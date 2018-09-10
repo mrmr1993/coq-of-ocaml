@@ -1,51 +1,50 @@
 3 Module SizedString:
   4
   Record t:
-    [ (name, Type (string/4)); (size, Type (Z/4)) ]
+    [ (name, Type (string)); (size, Type (Z)) ]
 
 9
 Value
   (non_rec, @.,
     [
-      ((r, [ ], [ ], Type (SizedString.t/0)),
+      ((r, [ ], [ ], Type (SizedString.t)),
         Record
-          (9, None, (SizedString.name/0, Some Constant (9, String("gre"))),
-            (SizedString.size/0, Some Constant (9, Int(3)))))
+          (9, None, (SizedString.name, Some Constant (9, String("gre"))),
+            (SizedString.size, Some Constant (9, Int(3)))))
     ])
 
 10
 Value
   (non_rec, @.,
     [
-      ((r', [ ], [ ], Type (SizedString.t/0)),
+      ((r', [ ], [ ], Type (SizedString.t)),
         Record
-          (10, None,
-            (SizedString.name/0, Some Constant (10, String("haha"))),
-            (SizedString.size/0, Some Constant (10, Int(4)))))
+          (10, None, (SizedString.name, Some Constant (10, String("haha"))),
+            (SizedString.size, Some Constant (10, Int(4)))))
     ])
 
 11
 Value
   (non_rec, @.,
     [
-      ((r'', [ ], [ ], Type (SizedString.t/0)),
+      ((r'', [ ], [ ], Type (SizedString.t)),
         Record
-          (11, Some Variable (11, r/0),
-            (SizedString.name/0, Some Constant (11, String("GRE"))),
-            (SizedString.size/0,
-              Some Field (?, Variable (11, r/0), SizedString.size/0))))
+          (11, Some Variable (11, r),
+            (SizedString.name, Some Constant (11, String("GRE"))),
+            (SizedString.size,
+              Some Field (?, Variable (11, r), SizedString.size))))
     ])
 
 13
 Value
   (non_rec, @.,
     [
-      ((s, [ ], [ ], Type (Z/3)),
+      ((s, [ ], [ ], Type (Z)),
         Apply
-          (13, Variable (13, Z.add/3),
+          (13, Variable (13, Z.add),
             [
-              Field (13, Variable (13, r/0), SizedString.size/0);
-              Field (13, Variable (13, r'/0), SizedString.size/0)
+              Field (13, Variable (13, r), SizedString.size);
+              Field (13, Variable (13, r'), SizedString.size)
             ]))
     ])
 
@@ -53,13 +52,13 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ (x, Type (SizedString.t/0)) ], Type (bool/3)),
+      ((f, [ ], [ (x, Type (SizedString.t)) ], Type (bool)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
-              (Record ((SizedString.size/0, Int(3))),
-                Constructor (16, true/3));
-              (Any, Constructor (17, false/3))
+              (Record ((SizedString.size, Int(3))),
+                Constructor (16, true));
+              (Any, Constructor (17, false))
             ]))
     ])
 
@@ -67,55 +66,53 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (bool/3)),
-        Apply (19, Variable (19, f/0), [ Variable (19, r/0) ]))
+      ((b, [ ], [ ], Type (bool)),
+        Apply (19, Variable (19, f), [ Variable (19, r) ]))
     ])
 
 20
 Value
   (non_rec, @.,
     [
-      ((b', [ ], [ ], Type (bool/3)),
-        Apply (20, Variable (20, f/0), [ Variable (20, r'/0) ]))
+      ((b', [ ], [ ], Type (bool)),
+        Apply (20, Variable (20, f), [ Variable (20, r') ]))
     ])
 
 21
 Value
   (non_rec, @.,
     [
-      ((b'', [ ], [ ], Type (bool/3)),
-        Apply (21, Variable (21, f/0), [ Variable (21, r''/0) ]))
+      ((b'', [ ], [ ], Type (bool)),
+        Apply (21, Variable (21, f), [ Variable (21, r'') ]))
     ])
 
 23 Module Point:
   24
   Record t:
-    [ (x, Type (Z/4)); (y, Type (Z/4)); (z, Type (Z/4)) ]
+    [ (x, Type (Z)); (y, Type (Z)); (z, Type (Z)) ]
   
   29
   Value
     (non_rec, @.,
       [
-        ((p, [ ], [ ], Type (t/0)),
+        ((p, [ ], [ ], Type (Point/t)),
           Record
-            (29, None, (x/0, Some Constant (29, Int(5))),
-              (y/0, Some Constant (29, Int(-3))),
-              (z/0, Some Constant (29, Int(1)))))
+            (29, None, (Point/x, Some Constant (29, Int(5))),
+              (Point/y, Some Constant (29, Int(-3))),
+              (Point/z, Some Constant (29, Int(1)))))
       ])
   
   31
   Value
     (non_rec, @.,
       [
-        ((b, [ ], [ ], Type (bool/4)),
+        ((b, [ ], [ ], Type (bool)),
           Match
-            (31, Variable (31, p/0),
+            (31, Variable (31, Point/p),
               [
-                (Record ((x/0, Int(5)), (z/0, Int(1))),
-                  Constructor
-                    (32,
-                      true/4));
-                (Any, Constructor (33, false/4))
+                (Record ((Point/x, Int(5)), (Point/z, Int(1))),
+                  Constructor (32, true));
+                (Any, Constructor (33, false))
               ]))
       ])
   
@@ -123,22 +120,24 @@ Value
   Value
     (non_rec, @.,
       [
-        ((move_right, [ ], [ (p, Type (t/0)) ], Type (t/0)),
+        ((move_right, [ ], [ (p, Type (Point/t)) ], Type (Point/t)),
           Record
-            (35, Some Variable (35, p/0),
-              (x/0,
+            (35, Some Variable (35, Point/p),
+              (Point/x,
                 Some
                   Apply
-                    (35, Variable (35, Z.add/4),
+                    (35, Variable (35, Z.add),
                       [
                         Field
                           (35,
                             Variable
                               (35,
-                                p/0),
-                            x/0);
+                                Point/p),
+                            Point/x);
                         Constant (35, Int(1))
                       ])),
-              (y/0, Some Field (?, Variable (35, p/0), y/0)),
-              (z/0, Some Field (?, Variable (35, p/0), z/0))))
+              (Point/y,
+                Some Field (?, Variable (35, Point/p), Point/y)),
+              (Point/z,
+                Some Field (?, Variable (35, Point/p), Point/z))))
       ])

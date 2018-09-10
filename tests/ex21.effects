@@ -4,22 +4,21 @@ Value
     [
       ((f, [ A; B; C ], [ (x, A) ], (B -> C)),
         Sequence
-          ((4, Effect ([ IO/3 ], . -[ OCaml.Failure/3 ]-> .)),
+          ((4, Effect ([ IO ], . -[ OCaml.Failure ]-> .)),
             Apply
-              ((4, Effect ([ IO/3 ], .)),
+              ((4, Effect ([ IO ], .)),
                 Variable
-                  ((4, Effect ([ ], . -[ IO/3 ]-> .)),
-                    OCaml.Pervasives.print_string/3),
+                  ((4, Effect ([ ], . -[ IO ]-> .)),
+                    OCaml.Pervasives.print_string),
                 [ Constant ((4, Effect ([ ], .)), String("Hi")) ]),
             Function
-              ((5, Effect ([ ], . -[ OCaml.Failure/3 ]-> .)), y,
+              ((5, Effect ([ ], . -[ OCaml.Failure ]-> .)), y,
                 Apply
-                  ((5, Effect ([ OCaml.Failure/3 ], .)),
+                  ((5, Effect ([ OCaml.Failure ], .)),
                     Variable
                       ((5,
-                        Effect
-                          ([ ], . -[ OCaml.Failure/3 ]-> .)),
-                        OCaml.Pervasives.failwith/3),
+                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                        OCaml.Pervasives.failwith),
                     [
                       Constant
                         ((5,
@@ -37,27 +36,27 @@ Value
     [
       ((r, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ IO/3; OCaml.Failure/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ IO; OCaml.Failure ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
                   ((7,
                     Effect
                       ([
-                        IO/3;
-                        OCaml.Failure/3
+                        IO;
+                        OCaml.Failure
                       ],
                         .)),
                     Apply
                       ((7,
                         Effect
                           ([
-                            IO/3
+                            IO
                           ],
                             .
                               -[
-                                OCaml.Failure/3
+                                OCaml.Failure
                               ]->
                               .)),
                         Variable
@@ -67,14 +66,14 @@ Value
                               ],
                                 .
                                   -[
-                                    IO/3
+                                    IO
                                   ]->
                                   .
                                     -[
-                                      OCaml.Failure/3
+                                      OCaml.Failure
                                     ]->
                                     .)),
-                            f/0),
+                            f),
                         [
                           Constant
                             ((7,

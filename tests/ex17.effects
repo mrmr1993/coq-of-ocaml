@@ -6,32 +6,32 @@ Value
     [
       ((f, [ A; B ], [ (x, A) ], B),
         Apply
-          ((5, Effect ([ Outside/0 ], .)),
+          ((5, Effect ([ Outside ], .)),
             Variable
-              ((5, Effect ([ ], . -[ Outside/0 ]-> .)), raise_Outside/0),
+              ((5, Effect ([ ], . -[ Outside ]-> .)), raise_Outside),
             [ Tuple ((?, Effect ([ ], .))) ]))
     ])
 
 7 Module G:
-  8 Exception (Inside, raise_Inside, (Type (Z/4) * Type (string/4)))
+  8 Exception (Inside, raise_Inside, (Type (Z) * Type (string)))
   
   10
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/4)) ], A),
+        ((g, [ A ], [ (b, Type (bool)) ], A),
           IfThenElse
-            ((11, Effect ([ Outside/1; Inside/0 ], .)),
-              Variable ((11, Effect ([ ], .)), b/0),
+            ((11, Effect ([ Outside; G/Inside ], .)),
+              Variable ((11, Effect ([ ], .)), G/b),
               Apply
-                ((12, Effect ([ Inside/0 ], .)),
+                ((12, Effect ([ G/Inside ], .)),
                   Variable
                     ((12,
                       Effect
                         ([ ],
-                          . -[ Inside/0 ]->
+                          . -[ G/Inside ]->
                             .)),
-                      raise_Inside/0),
+                      G/raise_Inside),
                   [
                     Tuple
                       ((?,
@@ -55,14 +55,12 @@ Value
                             String("no")))
                   ]),
               Apply
-                ((14, Effect ([ Outside/1 ], .)),
+                ((14, Effect ([ Outside ], .)),
                   Variable
                     ((14,
                       Effect
-                        ([ ],
-                          . -[ Outside/1 ]->
-                            .)),
-                      raise_Outside/1),
+                        ([ ], . -[ Outside ]-> .)),
+                      raise_Outside),
                   [ Tuple ((?, Effect ([ ], .))) ])))
       ])
 
@@ -70,17 +68,17 @@ Value
 Value
   (rec, @.,
     [
-      ((h_rec, [ A; B ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ], B),
+      ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ], B),
         Match
-          ((?, Effect ([ IO/3; NonTermination/3; Outside/0; G.Inside/0 ], .)),
-            Variable ((?, Effect ([ ], .)), counter/0),
+          ((?, Effect ([ IO; NonTermination; Outside; G.Inside ], .)),
+            Variable ((?, Effect ([ ], .)), counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination/3
+                        NonTermination
                       ],
                         .)),
                     Variable
@@ -90,10 +88,10 @@ Value
                           ],
                             .
                               -[
-                                NonTermination/3
+                                NonTermination
                               ]->
                               .)),
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         ((?,
@@ -102,15 +100,15 @@ Value
                             ],
                               .)))
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
                   ((18,
                     Effect
                       ([
-                        IO/3;
-                        NonTermination/3;
-                        Outside/0;
-                        G.Inside/0
+                        IO;
+                        NonTermination;
+                        Outside;
+                        G.Inside
                       ],
                         .)),
                     Variable
@@ -119,24 +117,24 @@ Value
                           ([
                           ],
                             .)),
-                        l/0),
+                        l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Sequence
                           ((19,
                             Effect
                               ([
-                                IO/3;
-                                Outside/0;
-                                G.Inside/0
+                                IO;
+                                Outside;
+                                G.Inside
                               ],
                                 .)),
                             Apply
                               ((19,
                                 Effect
                                   ([
-                                    IO/3
+                                    IO
                                   ],
                                     .)),
                                 Variable
@@ -146,10 +144,10 @@ Value
                                       ],
                                         .
                                           -[
-                                            IO/3
+                                            IO
                                           ]->
                                           .)),
-                                    OCaml.Pervasives.print_string/3),
+                                    OCaml.Pervasives.print_string),
                                 [
                                   Constant
                                     ((19,
@@ -163,8 +161,8 @@ Value
                               ((19,
                                 Effect
                                   ([
-                                    Outside/0;
-                                    G.Inside/0
+                                    Outside;
+                                    G.Inside
                                   ],
                                     .)),
                                 Variable
@@ -174,11 +172,11 @@ Value
                                       ],
                                         .
                                           -[
-                                            Outside/0;
-                                            G.Inside/0
+                                            Outside;
+                                            G.Inside
                                           ]->
                                           .)),
-                                    G.g/0),
+                                    G.g),
                                 [
                                   Constructor
                                     ((19,
@@ -186,18 +184,18 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      false/3)
+                                      false)
                                 ])));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           Constructor
-                            ([]/3)),
+                            ([])),
                         Apply
                           ((20,
                             Effect
                               ([
-                                G.Inside/0
+                                G.Inside
                               ],
                                 .)),
                             Variable
@@ -207,10 +205,10 @@ Value
                                   ],
                                     .
                                       -[
-                                        G.Inside/0
+                                        G.Inside
                                       ]->
                                       .)),
-                                G.raise_Inside/0),
+                                G.raise_Inside),
                             [
                               Tuple
                                 ((?,
@@ -234,17 +232,17 @@ Value
                                       String("gg")))
                             ]));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           Any,
                           xs),
                         Apply
                           ((21,
                             Effect
                               ([
-                                IO/3;
-                                NonTermination/3;
-                                Outside/0;
-                                G.Inside/0
+                                IO;
+                                NonTermination;
+                                Outside;
+                                G.Inside
                               ],
                                 .)),
                             Apply
@@ -254,10 +252,10 @@ Value
                                   ],
                                     .
                                       -[
-                                        IO/3;
-                                        NonTermination/3;
-                                        Outside/0;
-                                        G.Inside/0
+                                        IO;
+                                        NonTermination;
+                                        Outside;
+                                        G.Inside
                                       ]->
                                       .)),
                                 Variable
@@ -269,13 +267,13 @@ Value
                                           ->
                                           .
                                             -[
-                                              IO/3;
-                                              NonTermination/3;
-                                              Outside/0;
-                                              G.Inside/0
+                                              IO;
+                                              NonTermination;
+                                              Outside;
+                                              G.Inside
                                             ]->
                                             .)),
-                                    h_rec/0),
+                                    h_rec),
                                 [
                                   Variable
                                     ((?,
@@ -283,7 +281,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      counter/0)
+                                      counter)
                                 ]),
                             [
                               Variable
@@ -292,7 +290,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  xs/0)
+                                  xs)
                             ]))
                     ]))
             ]))
@@ -302,17 +300,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A; B ], [ (l, Type (list/3, A)) ], B),
+      ((h, [ A; B ], [ (l, Type (list, A)) ], B),
         Apply
           ((?,
-            Effect
-              ([
-                Counter/3;
-                IO/3;
-                NonTermination/3;
-                Outside/0;
-                G.Inside/0
-              ], .)),
+            Effect ([ Counter; IO; NonTermination; Outside; G.Inside ], .)),
             Variable
               ((?,
                 Effect
@@ -320,14 +311,14 @@ Value
                     . ->
                       .
                         -[
-                          IO/3;
-                          NonTermination/3;
-                          Outside/0;
-                          G.Inside/0
-                        ]-> .)), h_rec/0),
+                          IO;
+                          NonTermination;
+                          Outside;
+                          G.Inside
+                        ]-> .)), h_rec),
             [
               Apply
-                ((?, Effect ([ Counter/3 ], .)),
+                ((?, Effect ([ Counter ], .)),
                   Variable
                     ((?,
                       Effect
@@ -335,10 +326,10 @@ Value
                         ],
                           .
                             -[
-                              Counter/3
+                              Counter
                             ]->
                             .)),
-                      read_counter/3),
+                      read_counter),
                   [
                     Tuple
                       ((?,
@@ -347,6 +338,6 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), l/0)
+              Variable ((?, Effect ([ ], .)), l)
             ]))
     ])

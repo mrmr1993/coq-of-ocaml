@@ -4,21 +4,20 @@
 Value
   (non_rec, @.,
     [
-      ((x1, [ ], [ ], Type (Z/3)),
+      ((x1, [ ], [ ], Type (Z)),
         Match
           ((6, Effect ([ ], .)),
             Run
-              ((?, Effect ([ ], .)), Error/0, [ ],
+              ((?, Effect ([ ], .)), Error, [ ],
                 Apply
-                  ((6, Effect ([ Error/0 ], .)),
+                  ((6, Effect ([ Error ], .)),
                     Variable
-                      ((6, Effect ([ ], . -[ Error/0 ]-> .)),
-                        raise_Error/0),
+                      ((6, Effect ([ ], . -[ Error ]-> .)),
+                        raise_Error),
                     [ Tuple ((?, Effect ([ ], .))) ])),
             [
-              (Constructor (inl/3, x),
-                Variable ((?, Effect ([ ], .)), x/0));
-              (Constructor (inr/3, Tuple ()),
+              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
+              (Constructor (inr, Tuple ()),
                 Constant ((7, Effect ([ ], .)), Int(12)))
             ]))
     ])
@@ -29,15 +28,15 @@ Value
     [
       ((x2, [ A; B ], [ (x, A) ], B),
         Match
-          ((?, Effect ([ OCaml.Failure/3 ], .)),
-            Variable ((?, Effect ([ ], .)), x/0),
+          ((?, Effect ([ OCaml.Failure ], .)),
+            Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Match
                   ((10,
                     Effect
                       ([
-                        OCaml.Failure/3
+                        OCaml.Failure
                       ],
                         .)),
                     Run
@@ -46,14 +45,14 @@ Value
                           ([
                           ],
                             .)),
-                        Error/0,
+                        Error,
                         [
                         ],
                         Apply
                           ((10,
                             Effect
                               ([
-                                Error/0
+                                Error
                               ],
                                 .)),
                             Variable
@@ -63,10 +62,10 @@ Value
                                   ],
                                     .
                                       -[
-                                        Error/0
+                                        Error
                                       ]->
                                       .)),
-                                raise_Error/0),
+                                raise_Error),
                             [
                               Tuple
                                 ((?,
@@ -77,7 +76,7 @@ Value
                             ])),
                     [
                       (Constructor
-                        (inl/3,
+                        (inl,
                           x),
                         Variable
                           ((?,
@@ -85,16 +84,16 @@ Value
                               ([
                               ],
                                 .)),
-                            x/0));
+                            x));
                       (Constructor
-                        (inr/3,
+                        (inr,
                           Tuple
                             ()),
                         Apply
                           ((11,
                             Effect
                               ([
-                                OCaml.Failure/3
+                                OCaml.Failure
                               ],
                                 .)),
                             Variable
@@ -104,10 +103,10 @@ Value
                                   ],
                                     .
                                       -[
-                                        OCaml.Failure/3
+                                        OCaml.Failure
                                       ]->
                                       .)),
-                                OCaml.Pervasives.failwith/3),
+                                OCaml.Pervasives.failwith),
                             [
                               Constant
                                 ((11,
@@ -125,25 +124,23 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x3, [ ], [ (b, Type (bool/3)) ], Type (Z/3)),
+      ((x3, [ ], [ (b, Type (bool)) ], Type (Z)),
         Match
-          ((14, Effect ([ OCaml.Failure/3 ], .)),
+          ((14, Effect ([ OCaml.Failure ], .)),
             Run
-              ((?, Effect ([ OCaml.Failure/3 ], .)), Error/0, [ ],
+              ((?, Effect ([ OCaml.Failure ], .)), Error, [ ],
                 IfThenElse
-                  ((14, Effect ([ Error/0; OCaml.Failure/3 ], .)),
-                    Variable ((14, Effect ([ ], .)), b/0),
+                  ((14, Effect ([ Error; OCaml.Failure ], .)),
+                    Variable ((14, Effect ([ ], .)), b),
                     Apply
-                      ((14, Effect ([ OCaml.Failure/3 ], .)),
+                      ((14, Effect ([ OCaml.Failure ], .)),
                         Variable
                           ((14,
                             Effect
                               ([ ],
-                                .
-                                  -[
-                                    OCaml.Failure/3
-                                  ]-> .)),
-                            OCaml.Pervasives.failwith/3),
+                                . -[ OCaml.Failure ]->
+                                  .)),
+                            OCaml.Pervasives.failwith),
                         [
                           Constant
                             ((14,
@@ -154,17 +151,15 @@ Value
                               String("arg"))
                         ]),
                     Apply
-                      ((14, Effect ([ Error/0 ], .)),
+                      ((14, Effect ([ Error ], .)),
                         Variable
                           ((14,
-                            Effect
-                              ([ ], . -[ Error/0 ]-> .)),
-                            raise_Error/0),
+                            Effect ([ ], . -[ Error ]-> .)),
+                            raise_Error),
                         [ Tuple ((?, Effect ([ ], .))) ]))),
             [
-              (Constructor (inl/3, x),
-                Variable ((?, Effect ([ ], .)), x/0));
-              (Constructor (inr/3, Tuple ()),
+              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
+              (Constructor (inr, Tuple ()),
                 Constant
                   ((15, Effect ([ ], .)),
                     Int(12)))

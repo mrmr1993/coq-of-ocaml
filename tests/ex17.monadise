@@ -4,24 +4,24 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], Monad ([ Outside/0 ], B)),
-        Apply (5, Variable (5, raise_Outside/0), [ Tuple (?) ]))
+      ((f, [ A; B ], [ (x, A) ], Monad ([ Outside ], B)),
+        Apply (5, Variable (5, raise_Outside), [ Tuple (?) ]))
     ])
 
 7 Module G:
-  8 Exception (Inside, raise_Inside, (Type (Z/4) * Type (string/4)))
+  8 Exception (Inside, raise_Inside, (Type (Z) * Type (string)))
   
   10
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/4)) ], Monad ([ Outside/1; Inside/0 ], A)),
+        ((g, [ A ], [ (b, Type (bool)) ], Monad ([ Outside; G/Inside ], A)),
           IfThenElse
-            (11, Variable (11, b/0),
+            (11, Variable (11, G/b),
               Lift
-                (?, [ Inside/0 ], [ Outside/1; Inside/0 ],
+                (?, [ G/Inside ], [ Outside; G/Inside ],
                   Apply
-                    (12, Variable (12, raise_Inside/0),
+                    (12, Variable (12, G/raise_Inside),
                       [
                         Tuple
                           (?,
@@ -33,9 +33,9 @@ Value
                                 String("no")))
                       ])),
               Lift
-                (?, [ Outside/1 ], [ Outside/1; Inside/0 ],
+                (?, [ Outside ], [ Outside; G/Inside ],
                   Apply
-                    (14, Variable (14, raise_Outside/1),
+                    (14, Variable (14, raise_Outside),
                       [ Tuple (?) ]))))
       ])
 
@@ -43,71 +43,68 @@ Value
 Value
   (rec, @.,
     [
-      ((h_rec, [ A; B ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ],
-        Monad ([ IO/3; NonTermination/3; Outside/0; G.Inside/0 ], B)),
+      ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ],
+        Monad ([ IO; NonTermination; Outside; G.Inside ], B)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Lift
                   (?,
                     [
-                      NonTermination/3
+                      NonTermination
                     ],
                     [
-                      IO/3;
-                      NonTermination/3;
-                      Outside/0;
-                      G.Inside/0
+                      IO;
+                      NonTermination;
+                      Outside;
+                      G.Inside
                     ],
                     Apply
                       (?,
                         Variable
                           (?,
-                            not_terminated/3),
+                            not_terminated),
                         [
                           Tuple
                             (?)
                         ])));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (18,
-                    Variable
-                      (18,
-                        l/0),
+                  (18, Variable (18, l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Lift
                           (?,
                             [
-                              IO/3;
-                              Outside/0;
-                              G.Inside/0
+                              IO;
+                              Outside;
+                              G.Inside
                             ],
                             [
-                              IO/3;
-                              NonTermination/3;
-                              Outside/0;
-                              G.Inside/0
+                              IO;
+                              NonTermination;
+                              Outside;
+                              G.Inside
                             ],
                             Bind
                               (?,
                                 Lift
                                   (?,
                                     [
-                                      IO/3
+                                      IO
                                     ],
                                     [
-                                      IO/3;
-                                      Outside/0;
-                                      G.Inside/0
+                                      IO;
+                                      Outside;
+                                      G.Inside
                                     ],
                                     Apply
                                       (19,
                                         Variable
                                           (19,
-                                            OCaml.Pervasives.print_string/3),
+                                            OCaml.Pervasives.print_string),
                                         [
                                           Constant
                                             (19,
@@ -117,45 +114,45 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      Outside/0;
-                                      G.Inside/0
+                                      Outside;
+                                      G.Inside
                                     ],
                                     [
-                                      IO/3;
-                                      Outside/0;
-                                      G.Inside/0
+                                      IO;
+                                      Outside;
+                                      G.Inside
                                     ],
                                     Apply
                                       (19,
                                         Variable
                                           (19,
-                                            G.g/0),
+                                            G.g),
                                         [
                                           Constructor
                                             (19,
-                                              false/3)
+                                              false)
                                         ])))));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           Constructor
-                            ([]/3)),
+                            ([])),
                         Lift
                           (?,
                             [
-                              G.Inside/0
+                              G.Inside
                             ],
                             [
-                              IO/3;
-                              NonTermination/3;
-                              Outside/0;
-                              G.Inside/0
+                              IO;
+                              NonTermination;
+                              Outside;
+                              G.Inside
                             ],
                             Apply
                               (20,
                                 Variable
                                   (20,
-                                    G.raise_Inside/0),
+                                    G.raise_Inside),
                                 [
                                   Tuple
                                     (?,
@@ -167,7 +164,7 @@ Value
                                           String("gg")))
                                 ])));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           Any,
                           xs),
                         Apply
@@ -176,16 +173,16 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    h_rec/0),
+                                    h_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter/0)
+                                      counter)
                                 ]),
                             [
                               Variable
                                 (21,
-                                  xs/0)
+                                  xs)
                             ]))
                     ]))
             ]))
@@ -195,32 +192,19 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A; B ], [ (l, Type (list/3, A)) ],
-        Monad
-          ([ Counter/3; IO/3; NonTermination/3; Outside/0; G.Inside/0 ], B)),
+      ((h, [ A; B ], [ (l, Type (list, A)) ],
+        Monad ([ Counter; IO; NonTermination; Outside; G.Inside ], B)),
         Bind
           (?,
             Lift
-              (?, [ Counter/3 ],
-                [
-                  Counter/3;
-                  IO/3;
-                  NonTermination/3;
-                  Outside/0;
-                  G.Inside/0
-                ],
-                Apply (?, Variable (?, read_counter/3), [ Tuple (?) ])),
+              (?, [ Counter ],
+                [ Counter; IO; NonTermination; Outside; G.Inside ],
+                Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ IO/3; NonTermination/3; Outside/0; G.Inside/0 ],
-                [
-                  Counter/3;
-                  IO/3;
-                  NonTermination/3;
-                  Outside/0;
-                  G.Inside/0
-                ],
+              (?, [ IO; NonTermination; Outside; G.Inside ],
+                [ Counter; IO; NonTermination; Outside; G.Inside ],
                 Apply
-                  (?, Variable (?, h_rec/0),
-                    [ Variable (?, x/0); Variable (?, l/0) ]))))
+                  (?, Variable (?, h_rec),
+                    [ Variable (?, x); Variable (?, l) ]))))
     ])

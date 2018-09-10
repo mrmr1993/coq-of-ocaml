@@ -1,89 +1,86 @@
 3
 Inductive t1:
-  ([ ], [ (C1, [ Type (Z/3) ]); (C2, [ Type (bool/3); Type (Z/3) ]); (C3, [ ]) ])
+  ([ ], [ (C1, [ Type (Z) ]); (C2, [ Type (bool); Type (Z) ]); (C3, [ ]) ])
 
 8
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Type (t1/0)),
-        Constructor (8, C2/0, Constructor (8, false/3), Constant (8, Int(3))))
+      ((n, [ ], [ ], Type (t1)),
+        Constructor (8, C2, Constructor (8, false), Constant (8, Int(3))))
     ])
 
 10
 Value
   (non_rec, @.,
     [
-      ((m, [ ], [ ], Type (bool/3)),
+      ((m, [ ], [ ], Type (bool)),
         Match
-          (10, Variable (10, n/0),
+          (10, Variable (10, n),
             [
-              (Constructor (C2/0, b, Any), Variable (11, b/0));
-              (Any, Constructor (12, true/3))
+              (Constructor (C2, b, Any), Variable (11, b));
+              (Any, Constructor (12, true))
             ]))
     ])
 
 14
 Inductive t2:
-  ([ a ], [ (D1, [ ]); (D2, [ a; Type (t2/0, a) ]) ])
+  ([ a ], [ (D1, [ ]); (D2, [ a; Type (t2, a) ]) ])
 
 18
 Value
   (rec, @.,
     [
-      ((of_list_rec, [ A ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ],
-        Type (t2/0, A)),
+      ((of_list_rec, [ A ], [ (counter, Type (nat)); (l, Type (list, A)) ],
+        Type (t2, A)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (19,
-                    Variable
-                      (19,
-                        l/0),
+                  (19, Variable (19, l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Constructor
                           (20,
-                            D1/0));
+                            D1));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           xs),
                         Constructor
                           (21,
-                            D2/0,
+                            D2,
                             Variable
                               (21,
-                                x/0),
+                                x),
                             Apply
                               (21,
                                 Apply
                                   (?,
                                     Variable
                                       (?,
-                                        of_list_rec/0),
+                                        of_list_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter/0)
+                                          counter)
                                     ]),
                                 [
                                   Variable
                                     (21,
-                                      xs/0)
+                                      xs)
                                 ])))
                     ]))
             ]))
@@ -93,12 +90,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_list, [ A ], [ (l, Type (list/3, A)) ], Type (t2/0, A)),
+      ((of_list, [ A ], [ (l, Type (list, A)) ], Type (t2, A)),
         Apply
-          (?, Variable (?, of_list_rec/0),
+          (?, Variable (?, of_list_rec),
             [
-              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
-              Variable (?, l/0)
+              Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
+              Variable (?, l)
             ]))
     ])
 
@@ -106,62 +103,59 @@ Value
 Value
   (rec, @.,
     [
-      ((sum_rec, [ ], [ (counter, Type (nat/3)); (l, Type (t2/0, Type (Z/3))) ],
-        Type (Z/3)),
+      ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (t2, Type (Z))) ],
+        Type (Z)),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (24,
-                    Variable
-                      (24,
-                        l/0),
+                  (24, Variable (24, l),
                     [
                       (Constructor
-                        (D1/0),
+                        (D1),
                         Constant
                           (25,
                             Int(0)));
                       (Constructor
-                        (D2/0,
+                        (D2,
                           x,
                           xs),
                         Apply
                           (26,
                             Variable
                               (26,
-                                Z.add/3),
+                                Z.add),
                             [
                               Variable
                                 (26,
-                                  x/0);
+                                  x);
                               Apply
                                 (26,
                                   Apply
                                     (?,
                                       Variable
                                         (?,
-                                          sum_rec/0),
+                                          sum_rec),
                                       [
                                         Variable
                                           (?,
-                                            counter/0)
+                                            counter)
                                       ]),
                                   [
                                     Variable
                                       (26,
-                                        xs/0)
+                                        xs)
                                   ])
                             ]))
                     ]))
@@ -172,12 +166,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sum, [ ], [ (l, Type (t2/0, Type (Z/3))) ], Type (Z/3)),
+      ((sum (= sum_1), [ ], [ (l, Type (t2, Type (Z))) ], Type (Z)),
         Apply
-          (?, Variable (?, sum_rec/0),
+          (?, Variable (?, sum_rec),
             [
-              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
-              Variable (?, l/0)
+              Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
+              Variable (?, l)
             ]))
     ])
 
@@ -185,44 +179,44 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s, [ A ], [ (x, A) ], Type (Z/3)),
+      ((s, [ A ], [ (x, A) ], Type (Z)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (28,
                     Variable
                       (28,
-                        sum/0),
+                        sum_1),
                     [
                       Apply
                         (28,
                           Variable
                             (28,
-                              of_list/0),
+                              of_list),
                           [
                             Constructor
                               (28,
-                                cons/3,
+                                cons,
                                 Constant
                                   (28,
                                     Int(5)),
                                 Constructor
                                   (28,
-                                    cons/3,
+                                    cons,
                                     Constant
                                       (28,
                                         Int(7)),
                                     Constructor
                                       (28,
-                                        cons/3,
+                                        cons,
                                         Constant
                                           (28,
                                             Int(3)),
                                         Constructor
                                           (28,
-                                            []/3))))
+                                            []))))
                           ])
                     ]))
             ]))

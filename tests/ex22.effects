@@ -2,12 +2,12 @@
 Value
   (non_rec, @.,
     [
-      ((op_plus_plus_plus, [ ], [ (x, Type (Z/3)); (y, Type (Z/3)) ], Type (Z/3)),
+      ((op_plus_plus_plus, [ ], [ (x, Type (Z)); (y, Type (Z)) ], Type (Z)),
         Apply
-          ((3, Effect ([ ], .)), Variable ((3, Effect ([ ], .)), Z.add/3),
+          ((3, Effect ([ ], .)), Variable ((3, Effect ([ ], .)), Z.add),
             [
-              Variable ((3, Effect ([ ], .)), x/0);
-              Variable ((3, Effect ([ ], .)), y/0)
+              Variable ((3, Effect ([ ], .)), x);
+              Variable ((3, Effect ([ ], .)), y)
             ]))
     ])
 
@@ -15,20 +15,20 @@ Value
 Value
   (non_rec, @.,
     [
-      ((op_tilde_tilde, [ ], [ (x, Type (Z/3)) ], Type (Z/3)),
+      ((op_tilde_tilde, [ ], [ (x, Type (Z)) ], Type (Z)),
         Apply
-          ((4, Effect ([ ], .)), Variable ((4, Effect ([ ], .)), Z.opp/3),
-            [ Variable ((4, Effect ([ ], .)), x/0) ]))
+          ((4, Effect ([ ], .)), Variable ((4, Effect ([ ], .)), Z.opp),
+            [ Variable ((4, Effect ([ ], .)), x) ]))
     ])
 
 6
 Value
   (non_rec, @.,
     [
-      ((z, [ ], [ ], Type (Z/3)),
+      ((z, [ ], [ ], Type (Z)),
         Apply
           ((6, Effect ([ ], .)),
-            Variable ((6, Effect ([ ], . -> . -> .)), op_plus_plus_plus/0),
+            Variable ((6, Effect ([ ], . -> . -> .)), op_plus_plus_plus),
             [
               Apply
                 ((6, Effect ([ ], .)),
@@ -40,7 +40,7 @@ Value
                           .
                             ->
                             .)),
-                      op_tilde_tilde/0),
+                      op_tilde_tilde),
                   [
                     Constant
                       ((6,

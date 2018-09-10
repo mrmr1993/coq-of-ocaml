@@ -1,44 +1,44 @@
 3 Module List2:
   4
   Inductive t:
-    ([ a ], [ (Nil, [ ]); (Cons, [ a; Type (t/0, a) ]) ])
+    ([ a ], [ (Nil, [ ]); (Cons, [ a; Type (List2/t, a) ]) ])
   
   8
   Value
     (rec, @.,
       [
         ((sum_rec, [ ],
-          [ (counter, Type (nat/4)); (l, Type (t/0, Type (Z/4))) ],
-          Monad ([ NonTermination/4 ], Type (Z/4))),
+          [ (counter, Type (nat)); (l, Type (List2/t, Type (Z))) ],
+          Monad ([ NonTermination ], Type (Z))),
           Match
-            (?, Variable (?, counter/0),
+            (?, Variable (?, List2/counter),
               [
-                (Constructor (O/4),
+                (Constructor (O),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/4),
+                          not_terminated),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/4, counter),
+                (Constructor (S, counter),
                   Match
                     (9,
                       Variable
                         (9,
-                          l/0),
+                          List2/l),
                       [
                         (Constructor
-                          (Nil/0),
+                          (List2/Nil),
                           Return
                             (?,
                               Constant
                                 (10,
                                   Int(0))));
                         (Constructor
-                          (Cons/0,
+                          (List2/Cons,
                             x,
                             xs),
                           Bind
@@ -49,16 +49,16 @@
                                     (?,
                                       Variable
                                         (?,
-                                          sum_rec/0),
+                                          List2/sum_rec),
                                       [
                                         Variable
                                           (?,
-                                            counter/0)
+                                            List2/counter)
                                       ]),
                                   [
                                     Variable
                                       (11,
-                                        xs/0)
+                                        List2/xs)
                                   ]),
                               Some
                                 x_1,
@@ -68,14 +68,14 @@
                                     (11,
                                       Variable
                                         (11,
-                                          Z.add/4),
+                                          Z.add),
                                       [
                                         Variable
                                           (11,
-                                            x/0);
+                                            List2/x);
                                         Variable
                                           (?,
-                                            x_1/0)
+                                            List2/x_1)
                                       ]))))
                       ]))
               ]))
@@ -85,24 +85,23 @@
   Value
     (non_rec, @.,
       [
-        ((sum, [ ], [ (l, Type (t/0, Type (Z/4))) ],
-          Monad ([ Counter/4; NonTermination/4 ], Type (Z/4))),
+        ((sum, [ ], [ (l, Type (List2/t, Type (Z))) ],
+          Monad ([ Counter; NonTermination ], Type (Z))),
           Bind
             (?,
               Lift
-                (?, [ Counter/4 ],
-                  [ Counter/4; NonTermination/4 ],
+                (?, [ Counter ], [ Counter; NonTermination ],
                   Apply
-                    (?, Variable (?, read_counter/4),
+                    (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination/4 ],
-                  [ Counter/4; NonTermination/4 ],
+                (?, [ NonTermination ],
+                  [ Counter; NonTermination ],
                   Apply
-                    (?, Variable (?, sum_rec/0),
+                    (?, Variable (?, List2/sum_rec),
                       [
-                        Variable (?, x/0);
-                        Variable (?, l/0)
+                        Variable (?, List2/x);
+                        Variable (?, List2/l)
                       ]))))
       ])
   
@@ -110,38 +109,37 @@
   Value
     (rec, @.,
       [
-        ((of_list_rec, [ A ],
-          [ (counter, Type (nat/4)); (x, Type (list/4, A)) ],
-          Monad ([ NonTermination/4 ], Type (t/0, A))),
+        ((of_list_rec, [ A ], [ (counter, Type (nat)); (x, Type (list, A)) ],
+          Monad ([ NonTermination ], Type (List2/t, A))),
           Match
-            (?, Variable (?, counter/0),
+            (?, Variable (?, List2/counter),
               [
-                (Constructor (O/4),
+                (Constructor (O),
                   Apply
                     (?,
                       Variable
                         (?,
-                          not_terminated/4),
+                          not_terminated),
                       [
                         Tuple
                           (?)
                       ]));
-                (Constructor (S/4, counter),
+                (Constructor (S, counter),
                   Match
                     (?,
                       Variable
                         (?,
-                          x/0),
+                          List2/x),
                       [
                         (Constructor
-                          ([]/4),
+                          ([]),
                           Return
                             (?,
                               Constructor
                                 (14,
-                                  Nil/0)));
+                                  List2/Nil)));
                         (Constructor
-                          (cons/4,
+                          (cons,
                             x,
                             xs),
                           Bind
@@ -152,16 +150,16 @@
                                     (?,
                                       Variable
                                         (?,
-                                          of_list_rec/0),
+                                          List2/of_list_rec),
                                       [
                                         Variable
                                           (?,
-                                            counter/0)
+                                            List2/counter)
                                       ]),
                                   [
                                     Variable
                                       (15,
-                                        xs/0)
+                                        List2/xs)
                                   ]),
                               Some
                                 x_1,
@@ -169,13 +167,13 @@
                                 (?,
                                   Constructor
                                     (15,
-                                      Cons/0,
+                                      List2/Cons,
                                       Variable
                                         (15,
-                                          x/0),
+                                          List2/x),
                                       Variable
                                         (?,
-                                          x_1/0)))))
+                                          List2/x_1)))))
                       ]))
               ]))
       ])
@@ -184,39 +182,37 @@
   Value
     (non_rec, @.,
       [
-        ((of_list, [ A ], [ (x, Type (list/4, A)) ],
-          Monad ([ Counter/4; NonTermination/4 ], Type (t/0, A))),
+        ((of_list, [ A ], [ (x, Type (list, A)) ],
+          Monad ([ Counter; NonTermination ], Type (List2/t, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter/4 ],
-                  [ Counter/4; NonTermination/4 ],
+                (?, [ Counter ], [ Counter; NonTermination ],
                   Apply
-                    (?, Variable (?, read_counter/4),
+                    (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x_1,
               Lift
-                (?, [ NonTermination/4 ],
-                  [ Counter/4; NonTermination/4 ],
+                (?, [ NonTermination ],
+                  [ Counter; NonTermination ],
                   Apply
-                    (?, Variable (?, of_list_rec/0),
+                    (?, Variable (?, List2/of_list_rec),
                       [
-                        Variable (?, x_1/0);
-                        Variable (?, x/0)
+                        Variable (?, List2/x_1);
+                        Variable (?, List2/x)
                       ]))))
       ])
   
   17 Module Inside:
     18
-    Value (non_rec, @., [ ((x, [ ], [ ], Type (Z/5)), Constant (18, Int(12))) ])
+    Value (non_rec, @., [ ((x, [ ], [ ], Type (Z)), Constant (18, Int(12))) ])
 
 22
 Value
   (non_rec, @.,
     [
-      ((n, [ A ], [ (x, A) ],
-        Monad ([ Counter/3; NonTermination/3 ], Type (Z/3))),
+      ((n, [ A ], [ (x, A) ], Monad ([ Counter; NonTermination ], Type (Z))),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Bind
@@ -225,35 +221,35 @@ Value
                       (22,
                         Variable
                           (22,
-                            List2.of_list/0),
+                            List2.of_list),
                         [
                           Constructor
                             (22,
-                              cons/3,
+                              cons,
                               Constant
                                 (22,
                                   Int(5)),
                               Constructor
                                 (22,
-                                  cons/3,
+                                  cons,
                                   Constant
                                     (22,
                                       Int(7)),
                                   Constructor
                                     (22,
-                                      cons/3,
+                                      cons,
                                       Constant
                                         (22,
                                           Int(6)),
                                       Constructor
                                         (22,
-                                          cons/3,
+                                          cons,
                                           Variable
                                             (22,
-                                              List2.Inside.x/0),
+                                              List2.Inside.x),
                                           Constructor
                                             (22,
-                                              []/3)))))
+                                              [])))))
                         ]),
                     Some
                       x_1,
@@ -261,11 +257,11 @@ Value
                       (22,
                         Variable
                           (22,
-                            List2.sum/0),
+                            List2.sum),
                         [
                           Variable
                             (?,
-                              x_1/0)
+                              x_1)
                         ])))
             ]))
     ])

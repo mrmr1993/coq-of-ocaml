@@ -27,7 +27,7 @@ Module N.
   
   Definition y : unit :=
     match Exception.run 0 (M.f tt) tt with
-    | inl x => x
+    | inl x_1 => x_1
     | inr (_) => tt
     end.
 End N.
@@ -60,7 +60,7 @@ Module B.
   
   Import A.
   
-  Definition b {A B : Type} : A -> M [ OCaml.Assert_failure ] B := A.x.
+  Definition b {A B : Type} : A -> M [ OCaml.Assert_failure ] B := x.
   
   Definition x {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
     match x with

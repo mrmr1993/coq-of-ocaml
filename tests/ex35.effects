@@ -1,24 +1,23 @@
-3 Exception (Fail, raise_Fail, (Type (string/3)))
+3 Exception (Fail, raise_Fail, (Type (string)))
 
 5
 Value
   (non_rec, @.,
     [
-      ((div, [ ], [ (n, Type (Z/3)) ], Type (Z/3)),
+      ((div, [ ], [ (n, Type (Z)) ], Type (Z)),
         IfThenElse
-          ((6, Effect ([ Fail/0 ], .)),
+          ((6, Effect ([ Fail ], .)),
             Apply
               ((6, Effect ([ ], .)),
-                Variable ((6, Effect ([ ], .)), equiv_decb/3),
+                Variable ((6, Effect ([ ], .)), equiv_decb),
                 [
-                  Variable ((6, Effect ([ ], .)), n/0);
+                  Variable ((6, Effect ([ ], .)), n);
                   Constant ((6, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((7, Effect ([ Fail/0 ], .)),
+              ((7, Effect ([ Fail ], .)),
                 Variable
-                  ((7, Effect ([ ], . -[ Fail/0 ]-> .)),
-                    raise_Fail/0),
+                  ((7, Effect ([ ], . -[ Fail ]-> .)), raise_Fail),
                 [
                   Tuple
                     ((?, Effect ([ ], .)),
@@ -32,9 +31,9 @@ Value
                 ]),
             Apply
               ((9, Effect ([ ], .)),
-                Variable ((9, Effect ([ ], .)), Z.div/3),
+                Variable ((9, Effect ([ ], .)), Z.div),
                 [
                   Constant ((9, Effect ([ ], .)), Int(256));
-                  Variable ((9, Effect ([ ], .)), n/0)
+                  Variable ((9, Effect ([ ], .)), n)
                 ])))
     ])

@@ -2,13 +2,12 @@
 Value
   (non_rec, @.,
     [
-      ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list/3, A)) ],
-        Type (list/3, B)),
+      ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ], Type (list, B)),
         LetFun (4, Effect ([ ], .))
           (rec, @coq_rec,
             [
-              ((map_coq_rec, [ ], [ (l, Type (list/3, A)) ],
-                Type (list/3, B)),
+              ((map_coq_rec, [ ], [ (l, Type (list, A)) ],
+                Type (list, B)),
                 Match
                   ((5, Effect ([ ], .)),
                     Variable
@@ -17,19 +16,19 @@ Value
                           ([
                           ],
                             .)),
-                        l/0),
+                        l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Constructor
                           ((6,
                             Effect
                               ([
                               ],
                                 .)),
-                            []/3));
+                            []));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           l),
                         Constructor
@@ -38,7 +37,7 @@ Value
                               ([
                               ],
                                 .)),
-                            cons/3,
+                            cons,
                             Apply
                               ((7,
                                 Effect
@@ -51,7 +50,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    f/0),
+                                    f),
                                 [
                                   Variable
                                     ((7,
@@ -59,7 +58,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x/0)
+                                      x)
                                 ]),
                             Apply
                               ((7,
@@ -75,7 +74,7 @@ Value
                                         .
                                           ->
                                           .)),
-                                    map_coq_rec/0),
+                                    map_coq_rec),
                                 [
                                   Variable
                                     ((7,
@@ -83,28 +82,27 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      l/0)
+                                      l)
                                 ])))
                     ]))
             ]) in
         Apply
           ((8, Effect ([ ], .)),
-            Variable ((8, Effect ([ ], . -> .)), map_coq_rec/0),
-            [ Variable ((8, Effect ([ ], .)), l/0) ]))
+            Variable ((8, Effect ([ ], . -> .)), map_coq_rec),
+            [ Variable ((8, Effect ([ ], .)), l) ]))
     ])
 
 10
 Value
   (non_rec, @.,
     [
-      ((map2, [ A; B ], [ (f, (A -> B)); (l, Type (list/3, A)) ],
-        Type (list/3, B)),
+      ((map2, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ], Type (list, B)),
         LetFun (11, Effect ([ ], .))
           (rec, @coq_rec,
             [
               ((map2_coq_rec, [ C; D ],
-                [ (f, (C -> D)); (l, Type (list/3, C)) ],
-                Type (list/3, D)),
+                [ (f, (C -> D)); (l, Type (list, C)) ],
+                Type (list, D)),
                 Match
                   ((12, Effect ([ ], .)),
                     Variable
@@ -113,19 +111,19 @@ Value
                           ([
                           ],
                             .)),
-                        l/0),
+                        l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Constructor
                           ((13,
                             Effect
                               ([
                               ],
                                 .)),
-                            []/3));
+                            []));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           l),
                         Constructor
@@ -134,7 +132,7 @@ Value
                               ([
                               ],
                                 .)),
-                            cons/3,
+                            cons,
                             Apply
                               ((14,
                                 Effect
@@ -147,7 +145,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    f/0),
+                                    f),
                                 [
                                   Variable
                                     ((14,
@@ -155,7 +153,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x/0)
+                                      x)
                                 ]),
                             Apply
                               ((14,
@@ -173,7 +171,7 @@ Value
                                           .
                                             ->
                                             .)),
-                                    map2_coq_rec/0),
+                                    map2_coq_rec),
                                 [
                                   Variable
                                     ((14,
@@ -181,22 +179,22 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      f/0);
+                                      f);
                                   Variable
                                     ((14,
                                       Effect
                                         ([
                                         ],
                                           .)),
-                                      l/0)
+                                      l)
                                 ])))
                     ]))
             ]) in
         Apply
           ((15, Effect ([ ], .)),
-            Variable ((15, Effect ([ ], . -> . -> .)), map2_coq_rec/0),
+            Variable ((15, Effect ([ ], . -> . -> .)), map2_coq_rec),
             [
-              Variable ((15, Effect ([ ], .)), f/0);
-              Variable ((15, Effect ([ ], .)), l/0)
+              Variable ((15, Effect ([ ], .)), f);
+              Variable ((15, Effect ([ ], .)), l)
             ]))
     ])

@@ -2,45 +2,45 @@
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], Type (bool/3)),
+      ((b, [ ], [ ], Type (bool)),
         Apply
-          (3, Variable (3, orb/3),
+          (3, Variable (3, orb),
             [
               Apply
-                (3, Variable (3, equiv_decb/3),
+                (3, Variable (3, equiv_decb),
                   [
                     Constructor
                       (3,
-                        false/3);
+                        false);
                     Constructor
                       (3,
-                        true/3)
+                        true)
                   ]);
               Apply
-                (3, Variable (3, andb/3),
+                (3, Variable (3, andb),
                   [
                     Apply
                       (3,
                         Variable
                           (3,
-                            nequiv_decb/3),
+                            nequiv_decb),
                         [
                           Constructor
                             (3,
-                              tt/3);
+                              tt);
                           Constructor
                             (3,
-                              tt/3)
+                              tt)
                         ]);
                     Apply
                       (3,
                         Variable
                           (3,
-                            negb/3),
+                            negb),
                         [
                           Constructor
                             (3,
-                              true/3)
+                              true)
                         ])
                   ])
             ]))
@@ -50,13 +50,13 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n1, [ ], [ ], Type (Z/3)),
+      ((n1, [ ], [ ], Type (Z)),
         Apply
-          (5, Variable (5, Z.add/3),
+          (5, Variable (5, Z.add),
             [
               Constant (5, Int(1));
               Apply
-                (5, Variable (5, Z.mul/3),
+                (5, Variable (5, Z.mul),
                   [
                     Constant
                       (5,
@@ -72,18 +72,18 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n2, [ ], [ ], Type (Z/3)),
+      ((n2, [ ], [ ], Type (Z)),
         Apply
-          (7, Variable (7, Z.sub/3),
+          (7, Variable (7, Z.sub),
             [
               Apply
-                (7, Variable (7, Z.add/3),
+                (7, Variable (7, Z.add),
                   [
                     Apply
                       (7,
                         Variable
                           (7,
-                            Z.abs/3),
+                            Z.abs),
                         [
                           Constant
                             (7,
@@ -94,19 +94,19 @@ Value
                         Int(1))
                   ]);
               Apply
-                (7, Variable (7, Z.mul/3),
+                (7, Variable (7, Z.mul),
                   [
                     Apply
                       (7,
                         Variable
                           (7,
-                            Z.modulo/3),
+                            Z.modulo),
                         [
                           Apply
                             (7,
                               Variable
                                 (7,
-                                  Z.div/3),
+                                  Z.div),
                               [
                                 Constant
                                   (7,
@@ -130,36 +130,28 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n3, [ ], [ ], Type (Z/3)),
+      ((n3, [ ], [ ], Type (Z)),
         Apply
-          (9, Variable (9, Z.pred/3),
-            [
-              Apply
-                (9, Variable (9, Z.succ/3),
-                  [
-                    Constant
-                      (9,
-                        Int(12))
-                  ])
-            ]))
+          (9, Variable (9, Z.pred),
+            [ Apply (9, Variable (9, Z.succ), [ Constant (9, Int(12)) ]) ]))
     ])
 
 11
 Value
   (non_rec, @.,
     [
-      ((n4, [ ], [ ], Type (Z/3)),
+      ((n4, [ ], [ ], Type (Z)),
         Apply
-          (11, Variable (11, Z.lxor/3),
+          (11, Variable (11, Z.lxor),
             [
               Apply
-                (11, Variable (11, Z.lor/3),
+                (11, Variable (11, Z.lor),
                   [
                     Apply
                       (11,
                         Variable
                           (11,
-                            Z.land/3),
+                            Z.land),
                         [
                           Constant
                             (11,
@@ -180,12 +172,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n5, [ ], [ ], Type (Z/3)),
+      ((n5, [ ], [ ], Type (Z)),
         Apply
-          (13, Variable (13, Z.add/3),
+          (13, Variable (13, Z.add),
             [
               Apply
-                (13, Variable (13, Z.shiftl/3),
+                (13, Variable (13, Z.shiftl),
                   [
                     Constant
                       (13,
@@ -195,7 +187,7 @@ Value
                         Int(4))
                   ]);
               Apply
-                (13, Variable (13, Z.shiftr/3),
+                (13, Variable (13, Z.shiftr),
                   [
                     Constant
                       (13,
@@ -211,9 +203,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s, [ ], [ ], Type (string/3)),
+      ((s, [ ], [ ], Type (string)),
         Apply
-          (15, Variable (15, String.append/3),
+          (15, Variable (15, String.append),
             [ Constant (15, String("ghj")); Constant (15, String("klm")) ]))
     ])
 
@@ -221,28 +213,28 @@ Value
 Value
   (non_rec, @.,
     [
-      ((c, [ A ], [ (x, A) ], Type (ascii/3)),
+      ((c, [ A ], [ (x, A) ], Type (ascii)),
         Match
-          (?, Variable (?, x/0),
+          (?, Variable (?, x),
             [
               (Any,
                 Apply
                   (17,
                     Variable
                       (17,
-                        OCaml.Pervasives.char_of_int/3),
+                        OCaml.Pervasives.char_of_int),
                     [
                       Apply
                         (17,
                           Variable
                             (17,
-                              Z.add/3),
+                              Z.add),
                           [
                             Apply
                               (17,
                                 Variable
                                   (17,
-                                    OCaml.Pervasives.int_of_char/3),
+                                    OCaml.Pervasives.int_of_char),
                                 [
                                   Constant
                                     (17,
@@ -260,9 +252,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x, [ ], [ ], Type (unit/3)),
+      ((x, [ ], [ ], Type (unit)),
         Apply
-          (19, Variable (19, OCaml.Pervasives.ignore/3),
+          (19, Variable (19, OCaml.Pervasives.ignore),
             [ Constant (19, Int(23)) ]))
     ])
 
@@ -270,12 +262,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p, [ ], [ ], Type (Z/3)),
+      ((p, [ ], [ ], Type (Z)),
         Apply
-          (21, Variable (21, Z.add/3),
+          (21, Variable (21, Z.add),
             [
               Apply
-                (21, Variable (21, fst/3),
+                (21, Variable (21, fst),
                   [
                     Tuple
                       (21,
@@ -287,7 +279,7 @@ Value
                             Int(2)))
                   ]);
               Apply
-                (21, Variable (21, snd/3),
+                (21, Variable (21, snd),
                   [
                     Tuple
                       (21,
@@ -305,24 +297,24 @@ Value
 Value
   (non_rec, @.,
     [
-      ((l, [ ], [ ], Type (list/3, Type (Z/3))),
+      ((l, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (23, Variable (23, OCaml.Pervasives.app/3),
+          (23, Variable (23, OCaml.Pervasives.app),
             [
               Constructor
-                (23, cons/3, Constant (23, Int(1)),
+                (23, cons, Constant (23, Int(1)),
                   Constructor
                     (23,
-                      cons/3,
+                      cons,
                       Constant
                         (23,
                           Int(2)),
                       Constructor
                         (23,
-                          []/3)));
+                          [])));
               Constructor
-                (23, cons/3, Constant (23, Int(3)),
-                  Constructor (23, []/3))
+                (23, cons, Constant (23, Int(3)),
+                  Constructor (23, []))
             ]))
     ])
 
@@ -330,9 +322,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((y, [ ], [ ], Type (Z/3)),
+      ((y, [ ], [ ], Type (Z)),
         Apply
-          (25, Variable (25, apply/3),
+          (25, Variable (25, apply),
             [
               Function
                 (25, n,
@@ -340,11 +332,11 @@ Value
                     (25,
                       Variable
                         (25,
-                          Z.add/3),
+                          Z.add),
                       [
                         Variable
                           (25,
-                            n/0);
+                            n);
                         Constant
                           (25,
                             Int(1))

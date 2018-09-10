@@ -5,21 +5,21 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B ], [ (x, A) ], B),
-        Apply (5, Variable (5, raise_Outside/0), [ Tuple (?) ]))
+        Apply (5, Variable (5, raise_Outside), [ Tuple (?) ]))
     ])
 
 7 Module G:
-  8 Exception (Inside, raise_Inside, (Type (Z/4) * Type (string/4)))
+  8 Exception (Inside, raise_Inside, (Type (Z) * Type (string)))
   
   10
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool/4)) ], A),
+        ((g, [ A ], [ (b, Type (bool)) ], A),
           IfThenElse
-            (11, Variable (11, b/0),
+            (11, Variable (11, G/b),
               Apply
-                (12, Variable (12, raise_Inside/0),
+                (12, Variable (12, G/raise_Inside),
                   [
                     Tuple
                       (?,
@@ -31,44 +31,40 @@ Value
                             String("no")))
                   ]),
               Apply
-                (14, Variable (14, raise_Outside/1),
-                  [ Tuple (?) ])))
+                (14, Variable (14, raise_Outside), [ Tuple (?) ])))
       ])
 
 17
 Value
   (rec, @.,
     [
-      ((h_rec, [ A; B ], [ (counter, Type (nat/3)); (l, Type (list/3, A)) ], B),
+      ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ], B),
         Match
-          (?, Variable (?, counter/0),
+          (?, Variable (?, counter),
             [
-              (Constructor (O/3),
+              (Constructor (O),
                 Apply
                   (?,
                     Variable
                       (?,
-                        not_terminated/3),
+                        not_terminated),
                     [
                       Tuple
                         (?)
                     ]));
-              (Constructor (S/3, counter),
+              (Constructor (S, counter),
                 Match
-                  (18,
-                    Variable
-                      (18,
-                        l/0),
+                  (18, Variable (18, l),
                     [
                       (Constructor
-                        ([]/3),
+                        ([]),
                         Sequence
                           (19,
                             Apply
                               (19,
                                 Variable
                                   (19,
-                                    OCaml.Pervasives.print_string/3),
+                                    OCaml.Pervasives.print_string),
                                 [
                                   Constant
                                     (19,
@@ -78,22 +74,22 @@ Value
                               (19,
                                 Variable
                                   (19,
-                                    G.g/0),
+                                    G.g),
                                 [
                                   Constructor
                                     (19,
-                                      false/3)
+                                      false)
                                 ])));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           x,
                           Constructor
-                            ([]/3)),
+                            ([])),
                         Apply
                           (20,
                             Variable
                               (20,
-                                G.raise_Inside/0),
+                                G.raise_Inside),
                             [
                               Tuple
                                 (?,
@@ -105,7 +101,7 @@ Value
                                       String("gg")))
                             ]));
                       (Constructor
-                        (cons/3,
+                        (cons,
                           Any,
                           xs),
                         Apply
@@ -114,16 +110,16 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    h_rec/0),
+                                    h_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter/0)
+                                      counter)
                                 ]),
                             [
                               Variable
                                 (21,
-                                  xs/0)
+                                  xs)
                             ]))
                     ]))
             ]))
@@ -133,11 +129,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A; B ], [ (l, Type (list/3, A)) ], B),
+      ((h, [ A; B ], [ (l, Type (list, A)) ], B),
         Apply
-          (?, Variable (?, h_rec/0),
+          (?, Variable (?, h_rec),
             [
-              Apply (?, Variable (?, read_counter/3), [ Tuple (?) ]);
-              Variable (?, l/0)
+              Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
+              Variable (?, l)
             ]))
     ])
