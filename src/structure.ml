@@ -198,12 +198,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (env, Reference (loc, r))
     | Open (loc, o) -> (Open.update_env loc o env, Open (loc, o))
     | Include (loc, name) ->
-      (Include.update_env loc name env, Include (loc, name))
+      (Include.update_env_with_effects loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module (CoqName.Name name) env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.leave_module
-        (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env in
+      let env = FullEnvi.leave_module FullEnvi.localize_type env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->

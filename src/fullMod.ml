@@ -108,7 +108,3 @@ let localize (has_name : PathName.t -> Mod.t -> bool) (env : t)
   match name with
   | Some name -> name
   | None -> { x with BoundName.local_path = x.BoundName.full_path }
-
-let localize_type (has_name : PathName.t -> Mod.t -> bool) (env : t)
-  (typ : Effect.Type.t) : Effect.Type.t =
-  Effect.Type.map (localize has_name env) typ

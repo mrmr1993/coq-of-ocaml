@@ -108,8 +108,7 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module (CoqName.Name x) env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
-    FullEnvi.leave_module
-      (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env
+    FullEnvi.leave_module FullEnvi.localize_type env
 
 let load_interface (coq_prefix : Name.t) (interface : t)
   (env : Effect.Type.t FullEnvi.t) : Name.t * Effect.Type.t FullEnvi.t =
@@ -121,8 +120,7 @@ let load_interface (coq_prefix : Name.t) (interface : t)
     | Interface (_, defs) ->
       List.fold_left (fun env def -> to_full_envi def env) env defs
     | _ -> to_full_envi interface env in
-  (coq_name, FullEnvi.leave_module
-    (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env)
+  (coq_name, FullEnvi.leave_module FullEnvi.localize_type env)
 
 let rec to_json (interface : t) : json =
   match interface with

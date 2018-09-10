@@ -69,14 +69,28 @@ let join
   fields = f l1.fields l2.fields;
   modules = f l1.modules l2.modules }
 
-let fold (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a) : 'a =
+let fold_values (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a)
+  : 'a =
   let a = PathName.Map.fold f m.vars a in
   let a = PathName.Map.fold f m.typs a in
   let a = PathName.Map.fold f m.descriptors a in
   let a = PathName.Map.fold f m.constructors a in
   let a = PathName.Map.fold f m.fields a in
-  let a = PathName.Map.fold f m.modules a in
   a
+
+let fold_modules (f : PathName.t -> PathName.t -> 'a -> 'a) (m : t) (a : 'a)
+  : 'a =
+  PathName.Map.fold f m.modules a
+
+let map (f : PathName.t -> PathName.t) (m : t) : t =
+  { m with
+    vars = PathName.Map.map f m.vars;
+    typs = PathName.Map.map f m.typs;
+    descriptors = PathName.Map.map f m.descriptors;
+    constructors = PathName.Map.map f m.constructors;
+    fields = PathName.Map.map f m.fields;
+    modules = PathName.Map.map f m.modules;
+  }
 
 let pp (m : t) : SmartPrint.t =
   let pp_map map = PathName.Map.bindings map |> OCaml.list (fun (x, y) ->

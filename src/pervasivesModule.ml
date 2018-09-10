@@ -173,8 +173,7 @@ let env_with_effects : Effect.Type.t FullEnvi.t =
     (Effect.PureType.Arrow (Effect.PureType.Variable "0", state_type 0))
   (* Operations on format strings *)
   (* Program termination *)
-  |> fun env -> leave_module
-      (FullMod.localize_type (FullEnvi.Descriptor.has_name env)) env
+  |> leave_module localize_type
 
   (* List *)
   |> fun env ->

@@ -49,15 +49,22 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
-let localize (has_name : PathName.t -> Mod.t -> bool) (x : BoundName.t)
-  (env : 'a t) : BoundName.t =
+let localize (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
+  (x : BoundName.t) : BoundName.t =
   FullMod.localize has_name env.active_module x
+
+let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
+  let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
+  PathName.Map.mem x env.values
+
+let localize_type (env : 'a t) (typ : Effect.Type.t) : Effect.Type.t =
+  Effect.Type.map (localize (has_value env) env) typ
 
 let bound_name_opt (find : PathName.t -> Mod.t -> PathName.t option)
   (has_name : PathName.t -> Mod.t -> bool) (x : PathName.t) (env : 'a t)
   : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> Some (localize has_name name env)
+  | Some name -> Some (localize has_name env name)
   | None -> env.bound_external env.required_modules find has_name x
 
 let bound_name (find : PathName.t -> Mod.t -> PathName.t option)
@@ -85,8 +92,36 @@ let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
     active_module = FullMod.combine env1.active_module env2.active_module;
   }
 
-let include_module (x : Mod.t) (env : 'a t) : 'a t =
-  { env with active_module = FullMod.include_module x env.active_module }
+let import_module (f : PathName.t -> PathName.t) (g : 'a t -> 'a -> 'a)
+  (m : Mod.t) (env : 'a t) : Mod.t * 'a t =
+  let env = env |> Mod.fold_modules (fun _ x env ->
+    let m' = PathName.Map.find x env.modules in
+    { env with
+      modules = PathName.Map.add (f x) (Mod.map f m') env.modules
+    }) m in
+  let env = env |> Mod.fold_values (fun _ x env ->
+    let v = PathName.Map.find x env.values in
+    { env with
+      values = PathName.Map.add (f x) v env.values
+    }) m in
+  let m = Mod.map f m in
+  let env = env |> Mod.fold_values (fun _ x env ->
+    let v = PathName.Map.find x env.values in
+    { env with
+      values = PathName.Map.add x (Mod.Value.map (g env) v) env.values
+    }) m in
+  (m, env)
+
+let include_module (f : (PathName.t -> PathName.t) -> 'a t -> 'a -> 'a)
+  (m : Mod.t) (env : 'a t) : 'a t =
+  let module_path = m.Mod.coq_path in
+  let env_path = coq_path env in
+  let change_prefix name =
+    match strip_prefix module_path name.PathName.path with
+    | Some suffix -> { name with PathName.path = env_path @ suffix }
+    | None -> name in
+  let (m, env) = import_module change_prefix (f change_prefix) m env in
+  { env with active_module = FullMod.include_module m env.active_module }
 
 let find_free_name (path : Name.t list) (base_name : string) (env : 'a t)
   : Name.t =
@@ -121,15 +156,11 @@ module Carrier (M : Mod.Carrier) = struct
     | Some path -> path
     | None -> find_free_path x env
 
-  let has_name (env : 'a t) (x : PathName.t) (m : Mod.t) =
-    let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
-    PathName.Map.mem x env.values
-
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
-    bound_name_opt M.resolve_opt (has_name env) x env
+    bound_name_opt M.resolve_opt (has_value env) x env
 
   let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
-    bound_name M.resolve_opt (has_name env) loc x env
+    bound_name M.resolve_opt (has_value env) loc x env
 end
 
 module ValueCarrier (M : Mod.ValueCarrier) = struct
@@ -275,10 +306,11 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
   open_module loc (Module.bound loc path env) env
 
-let leave_module (localize : FullMod.t -> 'a -> 'a) (env : 'a t) : 'a t =
+let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
   let (m, active_module) = FullMod.leave_module env.active_module in
-  let values = Mod.fold (fun _ x -> PathName.Map.update x
-      (option_map (Mod.Value.map (localize active_module))))
+  let env = { env with active_module } in
+  let values = Mod.fold_values (fun _ x -> PathName.Map.update x
+      (option_map (Mod.Value.map (localize env))))
     m env.values in
   let env = { env with active_module; values } in
   let module_name = match option_map CoqName.ocaml_name m.Mod.name with
