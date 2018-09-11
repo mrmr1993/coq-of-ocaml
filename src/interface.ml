@@ -123,6 +123,45 @@ let load_interface (coq_prefix : Name.t) (interface : t)
     | _ -> to_full_envi interface env in
   (coq_name, FullEnvi.leave_module FullEnvi.localize_type env)
 
+module Version1 = struct
+  let rec to_json (interface : t) : json =
+    match interface with
+    | Var (x, shape) ->
+      `List [`String "Var"; Name.to_json x; Shape.to_json shape]
+    | Typ x -> `List [`String "Typ"; Name.to_json x]
+    | Descriptor x -> `List [`String "Descriptor"; Name.to_json x]
+    | Constructor x -> `List [`String "Constructor"; Name.to_json x]
+    | Field x -> `List [`String "Field"; Name.to_json x]
+    | Include x -> `List [`String "Include"; PathName.to_json x]
+    | Interface (x, defs) ->
+      `List [`String "Interface"; Name.to_json x; `List (List.map to_json defs)]
+
+  let rec of_json (json : json) : t =
+    match json with
+    | `List [`String "Var"; x; shape] ->
+      Var (Name.of_json x, Shape.of_json shape)
+    | `List [`String "Typ"; x] -> Typ (Name.of_json x)
+    | `List [`String "Descriptor"; x] -> Descriptor (Name.of_json x)
+    | `List [`String "Constructor"; x] -> Constructor (Name.of_json x)
+    | `List [`String "Field"; x] -> Field (Name.of_json x)
+    | `List [`String "Include"; x] -> Include (PathName.of_json x)
+    | `List [`String "Interface"; x; `List defs] ->
+        Interface (Name.of_json x, List.map of_json defs)
+    | _ -> raise (Error.Json
+      "Expected a Var, Typ, Descriptor, Constructor, Field or Interface field.")
+
+  let to_json_string (interface : t) : string =
+    let pretty = pretty_format ~std:true (`Assoc [
+      "version", `String "1";
+      "content", to_json interface]) in
+    let buffer = Buffer.create 0 in
+    let formatter = Format.formatter_of_buffer buffer in
+    Format.pp_set_margin formatter 120;
+    Easy_format.Pretty.to_formatter formatter pretty;
+    Format.pp_print_flush formatter ();
+    Buffer.contents buffer
+end
+
 let rec to_json (interface : t) : json =
   match interface with
   | Var (x, shape) ->
@@ -164,7 +203,8 @@ let of_json_string (json : string) : t =
   match from_string json with
   | `Assoc jsons ->
     (match List.assoc "version" jsons with
-    | `String "1" -> of_json @@ List.assoc "content" jsons
+    | `String "1" -> Version1.of_json @@ List.assoc "content" jsons
+    | `String "2" -> of_json @@ List.assoc "content" jsons
     | _ -> raise (Error.Json "Wrong interface version, expected 1."))
   | _ -> raise (Error.Json "Expected an object.")
 
