@@ -23,9 +23,7 @@ module Header = struct
     : 'a FullEnvi.t =
     (* NOTE: Don't include implicit arguments here: user code should not be
        able to refer to them. *)
-    List.fold_left (fun env (x, _) ->
-        let (name, coq_name) = CoqName.assoc_names x in
-        FullEnvi.Var.assoc [] name coq_name v env)
+    List.fold_left (fun env (x, _) -> FullEnvi.Var.assoc x v env)
       env header.args
 end
 
@@ -44,9 +42,7 @@ module Definition = struct
     List.map (fun (header, _) -> header.Header.name) def.cases
 
   let env_after_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-    List.fold_left (fun env x ->
-        let (name, coq_name) = CoqName.assoc_names x in
-        FullEnvi.Var.assoc [] name coq_name () env)
+    List.fold_left (fun env x -> FullEnvi.Var.assoc x () env)
       env (names def)
 
   let env_in_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
@@ -213,8 +209,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e1 = of_expression env typ_vars e1 in
     (match p with
     | Pattern.Variable x ->
-      let (name, coq_name) = CoqName.assoc_names x in
-      let env = FullEnvi.Var.assoc [] name coq_name () env in
+      let env = FullEnvi.Var.assoc x () env in
       let e2 = of_expression env typ_vars e2 in
       LetVar (a, x, e1, e2)
     | _ ->
@@ -228,10 +223,8 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_function { cases = [{c_lhs = {pat_desc = Tpat_var (x, _)}; c_rhs = e}] }
   | Texp_function { cases = [{c_lhs = { pat_desc = Tpat_alias
     ({ pat_desc = Tpat_any }, x, _)}; c_rhs = e}] } ->
-    let name = Name.of_ident x in
-    let coq_name = (FullEnvi.Var.resolve [] name env).base in
-    let x = CoqName.of_names name coq_name in
-    let env = FullEnvi.Var.assoc [] name coq_name () env in
+    let x = FullEnvi.Var.coq_name (Name.of_ident x) env in
+    let env = FullEnvi.Var.assoc x () env in
     Function (a, x, of_expression env typ_vars e)
   | Texp_function { cases = cases } ->
     let (x, e) = open_cases env typ_vars typ cases in
@@ -434,9 +427,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     | Pattern.Variable x -> (x, e, loc)
     | _ -> Error.raise loc "A variable name instead of a pattern was expected.") in
   let env_with_let =
-    List.fold_left (fun env (x, _, _) ->
-        let (name, coq_name) = CoqName.assoc_names x in
-        FullEnvi.Var.assoc [] name coq_name () env)
+    List.fold_left (fun env (x, _, _) -> FullEnvi.Var.assoc x () env)
       env cases in
   let env =
     if Recursivity.to_bool is_rec then
@@ -544,13 +535,11 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Apply (a, e_f, e_xs) ->
     Apply (a, monadise_let_rec env e_f, List.map (monadise_let_rec env) e_xs)
   | Function (a, x, e) ->
-    let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name () env in
+    let env = FullEnvi.Var.assoc x () env in
     Function (a, x, monadise_let_rec env e)
   | LetVar (a, x, e1, e2) ->
     let e1 = monadise_let_rec env e1 in
-    let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name () env in
+    let env = FullEnvi.Var.assoc x () env in
     let e2 = monadise_let_rec env e2 in
     LetVar (a, x, e1, e2)
   | LetFun (a, def, e2) ->
@@ -579,9 +568,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e1 = monadise_let_rec env e1 in
     let env = match x with
       | None -> env
-      | Some x ->
-        let (name, coq_name) = CoqName.assoc_names x in
-        FullEnvi.Var.assoc [] name coq_name () env in
+      | Some x -> FullEnvi.Var.assoc x () env in
     Bind (a, e1, x, monadise_let_rec env e2)
   | Lift (a, d1, d2, e) -> Lift (a, d1, d2, monadise_let_rec env e)
 
@@ -789,8 +776,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     else
       Error.raise l "Function arguments cannot have functional effects."
   | Function ((l, typ), x, e) ->
-    let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name Effect.Type.Pure env in
+    let env = FullEnvi.Var.assoc x Effect.Type.Pure env in
     let e = effects env e in
     let effect_e = snd (annotation e) in
     let effect = {
@@ -801,12 +787,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
     let effect1 = snd (annotation e1) in
-    let (name, coq_name) = CoqName.assoc_names x in
     let env = if Effect.has_type_vars effect1 then
       let typ = Type.pure_type typ in
-      FullEnvi.Function.assoc [] name coq_name effect1.Effect.typ typ env
+      FullEnvi.Function.assoc x effect1.Effect.typ typ env
     else
-      FullEnvi.Var.assoc [] name coq_name effect1.Effect.typ env in
+      FullEnvi.Var.assoc x effect1.Effect.typ env in
     let e2 = effects env e2 in
     let effect2 = snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [
@@ -899,13 +884,12 @@ and env_after_def_with_effects (env : Effect.Type.t FullEnvi.t)
   List.fold_left (fun env (header, e) ->
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
-    let (name, coq_name) = CoqName.assoc_names header.Header.name in
     if Effect.has_type_vars effect then
       let typ = Type.pure_type @@ List.fold_right (fun (_, arg_typ) typ ->
         Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
-      FullEnvi.Function.assoc [] name coq_name effect_typ typ env
+      FullEnvi.Function.assoc header.Header.name effect_typ typ env
     else
-      FullEnvi.Var.assoc [] name coq_name effect_typ env)
+      FullEnvi.Var.assoc header.Header.name effect_typ env)
     env def.Definition.cases
 
 and effects_of_def_step (env : Effect.Type.t FullEnvi.t)
@@ -931,8 +915,7 @@ and effects_of_def (env : Effect.Type.t FullEnvi.t)
   let env =
     if Recursivity.to_bool def.Definition.is_rec then
       List.fold_left (fun env (header, _) ->
-        let (name, coq_name) = CoqName.assoc_names header.Header.name in
-        FullEnvi.Var.assoc [] name coq_name Effect.Type.Pure env)
+        FullEnvi.Var.assoc header.Header.name Effect.Type.Pure env)
         env def.Definition.cases
     else
       env in
@@ -989,14 +972,12 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         lift return_descriptor d (Apply (l, e_f, e_xs))
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Function ((l, _), x, e) ->
-    let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name () env in
+    let env = FullEnvi.Var.assoc x () env in
     Function (l, x, monadise env e)
   | LetVar ((l, _), x, e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in
-    let (name, coq_name) = CoqName.assoc_names x in
-    let env = FullEnvi.Var.assoc [] name coq_name () env in
+    let env = FullEnvi.Var.assoc x () env in
     let e2 = monadise env e2 in
     bind d1 d2 d e1 (Some x) e2
   | LetFun ((l, _), def, e2) ->

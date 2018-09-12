@@ -192,6 +192,9 @@ module Carrier (M : Mod.Carrier) = struct
     | Some path -> path
     | None -> find_free_path x env
 
+  let coq_name (base : Name.t) (env : 'a t) : CoqName.t =
+    CoqName.of_names base (resolve [] base env).PathName.base
+
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt M.resolve_opt (has_value env) x env
 
@@ -209,10 +212,10 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
   let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) v env
 
-  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
-    (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base)
-      (PathName.of_name (coq_path env @ path) assoc_base) v env
+  let assoc (name : CoqName.t) (v : 'a) (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) v env
 
   let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a =
     M.unpack @@ find loc x env
@@ -240,10 +243,11 @@ module Function = struct
     (typ : Effect.PureType.t) (env : 'a t) : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) v typ env
 
-  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t) (v : 'a)
-    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base)
-      (PathName.of_name (coq_path env @ path) assoc_base) v typ env
+  let assoc (name : CoqName.t) (v : 'a) (typ : Effect.PureType.t)
+    (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) v typ env
 
   let find (loc : Loc.t) (x : BoundName.t) (env : 'a t)
     : Effect.PureType.t option =
@@ -266,10 +270,10 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) env
 
-  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-    (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base)
-      (PathName.of_name (coq_path env @ path) assoc_base) env
+  let assoc (name : CoqName.t) (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
@@ -308,11 +312,6 @@ module Module = struct
   let add (path : Name.t list) (base : Name.t) (v : Mod.t) (env : 'a t)
     : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) v env
-
-  let assoc (path : Name.t list) (base : Name.t) (assoc_base : Name.t)
-    (v : Mod.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base)
-      (PathName.of_name (coq_path env @ path) assoc_base) v env
 
   let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : Mod.t =
     let rec f : 'b. 'b t -> Mod.t = fun env ->
