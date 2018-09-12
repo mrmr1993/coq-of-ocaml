@@ -256,8 +256,8 @@ module Descriptor = struct
     let (unioned, simple) =
     match json with
     | `List [`List unioned; `List simple] -> (unioned, simple)
-    | `List [`List ((`List _ :: _) as unioned)] -> (unioned, [])
-    | `List [`List simple] -> ([], simple)
+    | `List ((`List _ :: _) as unioned) -> (unioned, [])
+    | `List simple -> ([], simple)
     | `List [] -> ([], [])
     | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
     let unioned = List.map Id.of_json unioned in
