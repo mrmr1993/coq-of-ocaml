@@ -192,6 +192,11 @@ module Carrier (M : Mod.Carrier) = struct
     | Some path -> path
     | None -> find_free_path x env
 
+  let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
+    let x = PathName.of_name path base in
+    let x = { BoundName.full_path = x; local_path = x } in
+    FullMod.localize (has_value env) env.active_module x
+
   let coq_name (base : Name.t) (env : 'a t) : CoqName.t =
     CoqName.of_names base (resolve [] base env).PathName.base
 
@@ -295,6 +300,11 @@ module Module = struct
   let has_name (env : 'a t) (x : PathName.t) (m : Mod.t) =
     let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
     PathName.Map.mem x env.modules
+
+  let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
+    let x = PathName.of_name path base in
+    let x = { BoundName.full_path = x; local_path = x } in
+    FullMod.localize (has_name env) env.active_module x
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt Mod.Modules.resolve_opt (has_name env) x env

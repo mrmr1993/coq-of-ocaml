@@ -279,12 +279,10 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           (index, (p, None, of_expression env typ_vars e) :: l)) (None, []) in
     begin match index with
     | Some _ ->
-      let string_t = Type.Apply
-        (FullEnvi.Typ.bound Loc.Unknown (PathName.of_name [] "string") env, []) in
-      let int_t = Type.Apply
-        (FullEnvi.Typ.bound Loc.Unknown (PathName.of_name [] "Z") env, []) in
-      let match_fail = FullEnvi.Var.bound Loc.Unknown
-        (PathName.of_name ["OCaml"] "raise_Match_failure") env in
+      let string_t = Type.Apply (FullEnvi.Typ.localize env [] "string", []) in
+      let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
+      let match_fail = FullEnvi.Var.localize env ["OCaml"]
+        "raise_Match_failure" in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any,
           Apply ((Loc.Unknown, typ), Variable ((Loc.Unknown, typ), match_fail),
@@ -362,14 +360,14 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let p = Pattern.Tuple (List.map (Pattern.of_pattern env) ps) in
     Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
-        FullEnvi.Constructor.bound l (PathName.of_name [] "inl") env,
+        FullEnvi.Constructor.localize env [] "inl",
         [Pattern.Variable
           (CoqName.of_names "x" (FullEnvi.Var.resolve [] "x" env).base)]) in
       let env = Pattern.add_to_env p env in
       let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
       (p, Variable ((Loc.Unknown, typ), x)));
       (let p = Pattern.Constructor (
-        FullEnvi.Constructor.bound l (PathName.of_name [] "inr") env,
+        FullEnvi.Constructor.localize env [] "inr",
         [p]) in
       let env = Pattern.add_to_env p env in
       let e2 = of_expression env typ_vars e2 in
@@ -379,8 +377,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_while _ -> Error.raise l "While loops not handled."
   | Texp_for _ -> Error.raise l "For loops not handled."
   | Texp_assert e ->
-    let assert_function =
-      FullEnvi.Var.bound l (PathName.of_name ["OCaml"] "assert") env in
+    let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
     Apply (a, Variable (a, assert_function), [of_expression env typ_vars e])
   | _ -> Error.raise l "Expression not handled."
 
@@ -590,8 +587,8 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
           (FullEnvi.Var.resolve [] name_rec env).base) in
         ({ header with Header.name = name_rec }, e)) } in
     let env_after_def' = Definition.env_in_def def' env in
-    let nat_type = Type.Apply (FullEnvi.Typ.bound Loc.Unknown
-      (PathName.of_name [] "nat") env_after_def', []) in
+    let nat_type = Type.Apply (FullEnvi.Typ.localize env_after_def' [] "nat",
+      []) in
     (* Add the argument "counter" and monadise the bodies. *)
     let def' = { def' with Definition.cases =
       def'.Definition.cases |> List.map (fun (header, e) ->
@@ -624,13 +621,11 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
       let nt_type = snd (annotation e_name_rec) in
       let e_name_rec = Match ((Loc.Unknown, nt_type),
         var (CoqName.ocaml_name counter) counter_typ env, [
-        (Pattern.Constructor (FullEnvi.Constructor.bound Loc.Unknown (PathName.of_name [] "O")
-          env, []),
+        (Pattern.Constructor (FullEnvi.Constructor.localize env [] "O", []),
           Apply ((Loc.Unknown, nt_type), var "not_terminated"
               (Type.Arrow (Type.Tuple [], nt_type)) env,
             [Tuple ((Loc.Unknown, Type.Tuple []), [])]));
-        (Pattern.Constructor (
-          FullEnvi.Constructor.bound Loc.Unknown (PathName.of_name [] "S") env,
+        (Pattern.Constructor (FullEnvi.Constructor.localize env [] "S",
           [Pattern.Variable counter]),
           e_name_rec)]) in
       (header, e_name_rec))
@@ -672,9 +667,8 @@ let rec function_type (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
 let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
   let type_effect typ = let open Effect.Descriptor in
-    singleton (FullEnvi.Descriptor.bound Loc.Unknown
-        (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env)
-      [typ] in
+    singleton (FullEnvi.Descriptor.localize env ["OCaml"; "Effect"; "State"]
+      "state") [typ] in
   let type_effect_of_exp e =
     let typ = snd @@ annotation e in
     if Type.is_function @@ typ ||
