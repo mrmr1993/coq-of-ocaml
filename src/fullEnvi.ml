@@ -226,9 +226,14 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
     M.unpack @@ find loc x env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (env : 'a t) : Name.t * 'a t =
+  let fresh (prefix : string) (v : 'a) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
     let name = find_free_name [] prefix env in
-    (name, add [] name v env)
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name v env)
 end
 
 module Var = ValueCarrier(Mod.Vars)
@@ -260,9 +265,13 @@ module Function = struct
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
   let fresh (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
-    : Name.t * 'a t =
+    : CoqName.t * BoundName.t * 'a t =
     let name = find_free_name [] prefix env in
-    (name, add [] name v typ env)
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name v typ env)
 end
 
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
@@ -281,9 +290,13 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
       (PathName.of_name (coq_path env) coq_name) env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (env : 'a t) : Name.t * 'a t =
+  let fresh (prefix : string) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
     let name = find_free_name [] prefix env in
-    (name, add [] name env)
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name env)
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)
@@ -336,7 +349,8 @@ module Module = struct
     f env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : Mod.t) (env : 'a t) : Name.t * 'a t =
+  let fresh (prefix : string) (v : Mod.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
     let path = coq_path env in
     let rec first_n (n : int) : Name.t =
       let name = if n = 0 then
@@ -347,7 +361,11 @@ module Module = struct
         first_n (n + 1)
       else name in
     let name = first_n 0 in
-    (name, add [] name v env)
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name v env)
 end
 
 let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
