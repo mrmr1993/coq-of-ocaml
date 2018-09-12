@@ -16,10 +16,10 @@ module Shape = struct
         x.BoundName.full_path) in
       ds :: of_effect_typ typ
 
-  let to_effect_typ (shape : t) (env : 'a FullEnvi.t) : Effect.Type.t =
+  let to_effect_typ (shape : t) : Effect.Type.t =
     let descriptor ds : Effect.Descriptor.t =
       let ds = ds |> List.map (fun d ->
-        let bound_descriptor = FullEnvi.Descriptor.bound Loc.Unknown d env in
+        let bound_descriptor = { BoundName.full_path = d; local_path = d } in
         Effect.Descriptor.singleton bound_descriptor []) in
       Effect.Descriptor.union ds in
     List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
@@ -37,7 +37,7 @@ module Shape = struct
 end
 
 type t =
-  | Var of CoqName.t * Shape.t
+  | Var of CoqName.t * Effect.Type.t
   | Typ of CoqName.t
   | Descriptor of CoqName.t
   | Constructor of CoqName.t
@@ -47,7 +47,8 @@ type t =
 
 let rec pp (interface : t) : SmartPrint.t =
   match interface with
-  | Var (x, shape) -> !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Shape.pp shape]
+  | Var (x, shape) ->
+    !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.Type.pp shape]
   | Typ x -> !^ "Typ" ^^ CoqName.pp x
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
   | Constructor x -> !^ "Constructor" ^^ CoqName.pp x
@@ -77,20 +78,26 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
       let name = header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
-      Var (name, Shape.of_effect_typ @@ Effect.Type.compress typ))
+      Var (name, Effect.Type.compress typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
-    [Var (prim.PrimitiveDeclaration.name, [])]
+    [Var (prim.PrimitiveDeclaration.name, Effect.Type.Pure)]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
     let name = exn.Exception.name in
-    let coq_name = snd @@ CoqName.assoc_names name in
     let raise_name = exn.Exception.raise_name in
-    [ Descriptor name; Var (raise_name, [[exn.Exception.effect_path]]) ]
+    let effect_path = {
+      BoundName.full_path = exn.Exception.effect_path;
+      local_path = exn.Exception.effect_path
+    } in
+    let effect_typ = Effect.Type.Arrow (
+      Effect.Descriptor.singleton effect_path [],
+      Effect.Type.Pure) in
+    [ Descriptor name; Var (raise_name, effect_typ) ]
   | Structure.Reference (_, r) ->
     let name = r.Reference.name in
     let state_name = r.Reference.state_name in
-    [ Var (name, []); Descriptor state_name ]
+    [ Var (name, Effect.Type.Pure); Descriptor state_name ]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) ->
@@ -99,7 +106,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
 let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
   match interface with
-  | Var (x, shape) -> FullEnvi.Var.assoc x (Shape.to_effect_typ shape env) env
+  | Var (x, typ) -> FullEnvi.Var.assoc x (FullEnvi.localize_type env typ) env
   | Typ x -> FullEnvi.Typ.assoc x Effect.Type.Pure env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
   | Constructor x -> FullEnvi.Constructor.assoc x env
@@ -129,6 +136,7 @@ module Version1 = struct
     match interface with
     | Var (x, shape) ->
       let x = CoqName.ocaml_name x in
+      let shape = Shape.of_effect_typ shape in
       `List [`String "Var"; Name.to_json x; Shape.to_json shape]
     | Typ x ->
       let x = CoqName.ocaml_name x in
@@ -150,7 +158,8 @@ module Version1 = struct
   let rec of_json (json : json) : t =
     match json with
     | `List [`String "Var"; x; shape] ->
-      Var (CoqName.Name (Name.of_json x), Shape.of_json shape)
+      Var (CoqName.Name (Name.of_json x),
+        Shape.to_effect_typ (Shape.of_json shape))
     | `List [`String "Typ"; x] -> Typ (CoqName.Name (Name.of_json x))
     | `List [`String "Descriptor"; x] ->
       Descriptor (CoqName.Name (Name.of_json x))
@@ -178,6 +187,7 @@ end
 let rec to_json (interface : t) : json =
   match interface with
   | Var (x, shape) ->
+    let shape = Shape.of_effect_typ shape in
     `List [`String "Var"; CoqName.to_json x; Shape.to_json shape]
   | Typ x -> `List [`String "Typ"; CoqName.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
@@ -190,7 +200,7 @@ let rec to_json (interface : t) : json =
 let rec of_json (json : json) : t =
   match json with
   | `List [`String "Var"; x; shape] ->
-    Var (CoqName.of_json x, Shape.of_json shape)
+    Var (CoqName.of_json x, Shape.to_effect_typ (Shape.of_json shape))
   | `List [`String "Typ"; x] -> Typ (CoqName.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
   | `List [`String "Constructor"; x] -> Constructor (CoqName.of_json x)
