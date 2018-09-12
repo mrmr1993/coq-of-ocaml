@@ -4,6 +4,7 @@ open SmartPrint
 type t = {
   name : CoqName.t;
   raise_name : CoqName.t;
+  effect_path : PathName.t;
   typ : Type.t }
 
 let pp (exn : t) : SmartPrint.t =
@@ -13,37 +14,30 @@ let pp (exn : t) : SmartPrint.t =
 let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   (exn : extension_constructor) : t =
   let name = Name.of_ident exn.ext_id in
-  let coq_name = (FullEnvi.Descriptor.resolve [] name env).base in
-  let raise_name = "raise_" ^ name in
-  let coq_raise_name = (FullEnvi.Var.resolve [] raise_name env).base in
   let typs =
     match exn.ext_type.Types.ext_args with
     | Types.Cstr_tuple typs -> typs
     | Types.Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
   let typ = Type.Tuple (typs |> List.map (fun typ -> Type.of_type_expr env loc typ)) in
-  { name = CoqName.of_names name coq_name;
-    raise_name = CoqName.of_names raise_name coq_raise_name;
-    typ = typ}
+  let (raise_name, _, _) = FullEnvi.Descriptor.fresh ("raise_" ^ name) env in
+  let (name, bound_name, _) = FullEnvi.Descriptor.fresh name env in
+  { name; effect_path = bound_name.full_path; raise_name; typ }
 
 let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  let (name, coq_name) = CoqName.assoc_names exn.name in
-  let (raise_name, coq_raise_name) = CoqName.assoc_names exn.raise_name in
   env
-  |> FullEnvi.Descriptor.assoc [] name coq_name
-  |> FullEnvi.Var.assoc [] raise_name coq_raise_name ()
+  |> FullEnvi.Descriptor.assoc exn.name
+  |> FullEnvi.Var.assoc exn.raise_name ()
 
 let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
-  let (name, coq_name) = CoqName.assoc_names exn.name in
-  let (raise_name, coq_raise_name) = CoqName.assoc_names exn.raise_name in
-  let env = FullEnvi.Descriptor.assoc [] name coq_name env in
+  let env = FullEnvi.Descriptor.assoc exn.name env in
   let bound_effect = FullEnvi.Descriptor.bound Loc.Unknown
-    (PathName.of_name [] name) env in
+    (PathName.of_name [] (CoqName.ocaml_name exn.name)) env in
   let effect_typ =
     Effect.Type.Arrow (
       Effect.Descriptor.singleton bound_effect [],
       Effect.Type.Pure) in
-  FullEnvi.Var.assoc [] raise_name coq_raise_name effect_typ env
+  FullEnvi.Var.assoc exn.raise_name effect_typ env
 
 let to_coq (exn : t) : SmartPrint.t =
   !^ "Definition" ^^ CoqName.to_coq exn.name ^^ !^ ":=" ^^

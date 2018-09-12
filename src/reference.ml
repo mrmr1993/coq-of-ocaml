@@ -38,21 +38,17 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
 
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
-  let (name, coq_name) = CoqName.assoc_names r.name in
-  let (state_name, coq_state_name) = CoqName.assoc_names r.state_name in
   let env = env
-  |> FullEnvi.Var.assoc [] name coq_name ()
-  |> FullEnvi.Descriptor.assoc [] state_name coq_state_name in
+  |> FullEnvi.Var.assoc r.name ()
+  |> FullEnvi.Descriptor.assoc r.state_name in
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
-  let (name, coq_name) = CoqName.assoc_names r.name in
-  let (state_name, coq_state_name) = CoqName.assoc_names r.state_name in
   let env = env
-  |> FullEnvi.Var.assoc [] name coq_name Effect.Type.Pure
-  |> FullEnvi.Descriptor.assoc [] state_name coq_state_name in
+  |> FullEnvi.Var.assoc r.name Effect.Type.Pure
+  |> FullEnvi.Descriptor.assoc r.state_name in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =
