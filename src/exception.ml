@@ -4,6 +4,7 @@ open SmartPrint
 type t = {
   name : CoqName.t;
   raise_name : CoqName.t;
+  effect_path : PathName.t;
   typ : Type.t }
 
 let pp (exn : t) : SmartPrint.t =
@@ -18,9 +19,9 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
     | Types.Cstr_tuple typs -> typs
     | Types.Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
   let typ = Type.Tuple (typs |> List.map (fun typ -> Type.of_type_expr env loc typ)) in
-  { name = FullEnvi.Descriptor.coq_name name env;
-    raise_name = FullEnvi.Descriptor.coq_name ("raise_" ^ name) env;
-    typ = typ}
+  let (raise_name, _, _) = FullEnvi.Descriptor.fresh ("raise_" ^ name) env in
+  let (name, bound_name, _) = FullEnvi.Descriptor.fresh name env in
+  { name; effect_path = bound_name.full_path; raise_name; typ }
 
 let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   env

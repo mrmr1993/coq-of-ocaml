@@ -86,7 +86,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     let name = exn.Exception.name in
     let coq_name = snd @@ CoqName.assoc_names name in
     let raise_name = exn.Exception.raise_name in
-    [ Descriptor name; Var (raise_name, [[PathName.of_name [] coq_name]]) ]
+    [ Descriptor name; Var (raise_name, [[exn.Exception.effect_path]]) ]
   | Structure.Reference (_, r) ->
     let name = r.Reference.name in
     let state_name = r.Reference.state_name in
