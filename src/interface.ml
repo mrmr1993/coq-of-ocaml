@@ -212,7 +212,7 @@ let rec of_json (json : json) : t =
 
 let to_json_string (interface : t) : string =
   let pretty = pretty_format ~std:true (`Assoc [
-    "version", `String "1";
+    "version", `String "2";
     "content", to_json interface]) in
   let buffer = Buffer.create 0 in
   let formatter = Format.formatter_of_buffer buffer in
