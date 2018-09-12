@@ -1,17 +1,21 @@
 {
-  "version": "1",
+  "version": "2",
   "content": [
     "Interface",
     "Ex18",
     [
       [ "Var", "r", [] ],
       [ "Descriptor", "r_state" ],
-      [ "Var", "plus_one", [ [ "r_state" ] ] ],
+      [ "Var", "plus_one", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ],
       [ "Var", "s", [] ],
       [ "Descriptor", "s_state" ],
-      [ "Var", "fail", [ [ "s_state", "OCaml.Failure" ] ] ],
-      [ "Var", "reset", [ [ "r_state" ] ] ],
-      [ "Var", "incr", [ [ "r_state" ] ] ]
+      [
+        "Var",
+        "fail",
+        [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ "s_state", "OCaml.Failure" ] ] ]
+      ],
+      [ "Var", "reset", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ],
+      [ "Var", "incr", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ]
     ]
   ]
 }
