@@ -16,7 +16,7 @@ let monadise (env : unit FullEnvi.t)
 
 let interface (module_name : string)
   (effects : (Loc.t * Effect.t) Structure.t list) : Interface.t =
-  Interface.Interface (module_name, Interface.of_structures effects)
+  Interface.Interface (CoqName.Name module_name, Interface.of_structures effects)
 
 let coq (monadise : Loc.t Structure.t list) : SmartPrint.t =
   concat (List.map (fun d -> d ^^ newline) [
