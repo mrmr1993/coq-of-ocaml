@@ -13,7 +13,7 @@ module Shape = struct
     | Effect.Type.Pure -> []
     | Effect.Type.Arrow (d, typ) ->
       let ds = Effect.Descriptor.elements d |> List.map (fun x ->
-        x.BoundName.local_path) in
+        x.BoundName.full_path) in
       ds :: of_effect_typ typ
 
   let to_effect_typ (shape : t) (env : 'a FullEnvi.t) : Effect.Type.t =
