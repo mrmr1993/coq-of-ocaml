@@ -1,5 +1,6 @@
 (** Types for the effects. *)
 open SmartPrint
+open Yojson.Basic
 open Utils
 
 module PureType = struct
@@ -59,6 +60,25 @@ let rec has_type_vars (typ : t) : bool =
   | Arrow (typ_x, typ_y) -> has_type_vars typ_x || has_type_vars typ_y
   | Tuple typs -> List.exists has_type_vars typs
   | Apply (_, typs) -> List.exists has_type_vars typs
+
+let rec to_json (typ : t) : json =
+  match typ with
+  | Variable x -> `List [`String "Variable"; Name.to_json x]
+  | Arrow (typ_x, typ_y) ->
+    `List [`String "Arrow"; to_json typ_x; to_json typ_y]
+  | Tuple typs -> `List (`String "Tuple" :: List.map to_json typs)
+  | Apply (path, typs) ->
+    `List (`String "Apply" :: BoundName.to_json path :: List.map to_json typs)
+
+let rec of_json (json : json) : t =
+  match json with
+  | `List [`String "Variable"; x] -> Variable (Name.of_json x)
+  | `List [`String "Arrow"; typ_x; typ_y] ->
+    Arrow (of_json typ_x, of_json typ_y)
+  | `List (`String "Tuple" :: typs) -> Tuple (List.map of_json typs)
+  | `List (`String "Apply" :: path :: typs) ->
+    Apply (BoundName.of_json path, List.map of_json typs)
+  | _ -> failwith "Invalid JSON for PureType."
 end
 
 
@@ -84,6 +104,18 @@ module Descriptor = struct
       | Type (a, ta), Type (b, tb) ->
         let cmp = BoundName.stable_compare a b in
         if cmp == 0 then compare ta tb else cmp
+
+    let to_puretype (x : t) : PureType.t =
+      match x with | Type (x, typs) -> PureType.Apply (x, typs)
+
+    let of_puretype (x : PureType.t) : t =
+      match x with
+      | PureType.Apply (x, typs) -> Type (x, typs)
+      | _ -> failwith "Could not convert PureType to Descriptor.Id."
+
+    let to_json (x : t) : json = PureType.to_json @@ to_puretype x
+
+    let of_json (json : json) : t = of_puretype @@ PureType.of_json json
   end
   module IdSet = Set.Make (struct
       type t = Id.t
@@ -210,6 +242,27 @@ module Descriptor = struct
   let has_type_vars (d : t) : bool =
      d.compound |> IdSet.exists (fun (Type (x, typs)) ->
       List.exists PureType.has_type_vars typs)
+
+  let to_json (d : t) : json =
+    let unioned = List.map Id.to_json d.unioned in
+    let simple = List.map BoundName.to_json @@ BnSet.elements d.simple in
+    match unioned, simple with
+    | [], [] -> `List []
+    | [], _ -> `List simple
+    | _, [] -> `List unioned
+    | _, _ -> `List [`List unioned; `List simple]
+
+  let of_json (json : json) : t =
+    let (unioned, simple) =
+    match json with
+    | `List [`List unioned; `List simple] -> (unioned, simple)
+    | `List [`List ((`List _ :: _) as unioned)] -> (unioned, [])
+    | `List [`List simple] -> ([], simple)
+    | `List [] -> ([], [])
+    | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
+    let unioned = List.map Id.of_json unioned in
+    let simple = BnSet.of_list @@ List.map BoundName.of_json simple in
+    { unioned_arg = None; unioned; simple; compound = IdSet.of_list unioned }
 end
 
 module Lift = struct
@@ -358,6 +411,22 @@ module Type = struct
         | (e_xs', d') :: e_xs -> ((e_x :: e_xs'), d') :: e_xs
       else
         ([e_x], d) :: e_xs
+
+  let to_json (typ : t) : json =
+    let rec to_json typ =
+      match typ with
+      | Pure -> []
+      | Arrow (d, typ) -> Descriptor.to_json d :: to_json typ in
+    `List (to_json typ)
+
+  let of_json (json : json) : t =
+    let rec of_json l =
+      match l with
+      | [] -> Pure
+      | json :: l -> Arrow (Descriptor.of_json json, of_json l) in
+    match json with
+    | `List jsons -> of_json jsons
+    | _ -> raise (Error.Json "List expected.")
 end
 
 type t = { descriptor : Descriptor.t; typ : Type.t }

@@ -1,4 +1,5 @@
 open SmartPrint
+open Yojson.Basic
 open Utils
 
 type t = {
@@ -22,3 +23,10 @@ let stable_compare (x : t) (y : t) : int =
 
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.local_path
+
+let to_json (x : t) : json =
+  PathName.to_json x.full_path
+
+let of_json (json : json) : t =
+  let x = PathName.of_json json in
+  { full_path = x; local_path = x }

@@ -186,9 +186,8 @@ end
 
 let rec to_json (interface : t) : json =
   match interface with
-  | Var (x, shape) ->
-    let shape = Shape.of_effect_typ shape in
-    `List [`String "Var"; CoqName.to_json x; Shape.to_json shape]
+  | Var (x, eff) ->
+    `List [`String "Var"; CoqName.to_json x; Effect.Type.to_json eff]
   | Typ x -> `List [`String "Typ"; CoqName.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
   | Constructor x -> `List [`String "Constructor"; CoqName.to_json x]
@@ -199,8 +198,8 @@ let rec to_json (interface : t) : json =
 
 let rec of_json (json : json) : t =
   match json with
-  | `List [`String "Var"; x; shape] ->
-    Var (CoqName.of_json x, Shape.to_effect_typ (Shape.of_json shape))
+  | `List [`String "Var"; x; eff] ->
+    Var (CoqName.of_json x, Effect.Type.of_json eff)
   | `List [`String "Typ"; x] -> Typ (CoqName.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
   | `List [`String "Constructor"; x] -> Constructor (CoqName.of_json x)
