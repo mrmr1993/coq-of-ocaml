@@ -72,6 +72,9 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
   let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
   PathName.Map.mem x env.values
 
+let has_global_value (env : 'a t) (x : PathName.t) =
+  PathName.Map.mem x env.values
+
 let localize_type (env : 'a t) (typ : Effect.Type.t) : Effect.Type.t =
   Effect.Type.map (localize (has_value env) env) typ
 

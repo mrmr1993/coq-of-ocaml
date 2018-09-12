@@ -103,10 +103,22 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Module (_, name, defs) ->
     [Interface (CoqName.of_names name name, of_structures defs)]
 
-let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
+let rec to_full_envi (top_name : Name.t option) (interface : t)
+  (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
   match interface with
-  | Var (x, typ) -> FullEnvi.Var.assoc x (FullEnvi.localize_type env typ) env
+  | Var (x, typ) ->
+    let typ = match top_name with
+      | None -> typ
+      | Some top_name ->
+        typ |> Effect.Type.map (fun ({full_path} as bound_path) ->
+          let full_path' = { full_path with
+            PathName.path = top_name :: full_path.PathName.path } in
+          let bound_path = if FullEnvi.has_global_value env full_path' then
+              { BoundName.full_path = full_path'; local_path = full_path' }
+            else bound_path in
+          FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
+    FullEnvi.Var.assoc x typ env
   | Typ x -> FullEnvi.Typ.assoc x Effect.Type.Pure env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
   | Constructor x -> FullEnvi.Constructor.assoc x env
@@ -114,7 +126,8 @@ let rec to_full_envi (interface : t) (env : Effect.Type.t FullEnvi.t)
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module x env in
-    let env = List.fold_left (fun env def -> to_full_envi def env) env defs in
+    let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
+      defs in
     FullEnvi.leave_module FullEnvi.localize_type env
 
 let load_interface (coq_prefix : Name.t) (interface : t)
@@ -127,8 +140,9 @@ let load_interface (coq_prefix : Name.t) (interface : t)
   let env = FullEnvi.enter_module (CoqName.of_names name coq_name) env in
   let env = match interface with
     | Interface (_, defs) ->
-      List.fold_left (fun env def -> to_full_envi def env) env defs
-    | _ -> to_full_envi interface env in
+      List.fold_left (fun env def -> to_full_envi (Some coq_name) def env) env
+        defs
+    | _ -> to_full_envi (Some coq_name) interface env in
   (coq_name, FullEnvi.leave_module FullEnvi.localize_type env)
 
 module Version1 = struct
