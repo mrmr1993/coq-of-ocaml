@@ -277,6 +277,41 @@ module Function = struct
     (CoqName.Name name, bound_name, add [] name v typ env)
 end
 
+module Reference = struct
+  include Carrier(Mod.Vars)
+
+  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a)
+    (state_name : PathName.t) (env : 'a t) : 'a t =
+    { env with
+      values = PathName.Map.add y (Mod.Reference.value v state_name) env.values;
+      active_module = FullMod.hd_mod_map (Mod.Reference.assoc x y)
+        env.active_module }
+
+  let add (path : Name.t list) (base : Name.t) (v : 'a)
+    (state_name : PathName.t) (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) v state_name
+      env
+
+  let assoc (name : CoqName.t) (v : 'a) (state_name : PathName.t) (env : 'a t)
+    : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) v state_name env
+
+  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : PathName.t option =
+    Mod.Reference.unpack @@ find loc x env
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (v : 'a) (state_name : PathName.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name v state_name env)
+end
+
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let raw_add (x : PathName.t) (y : PathName.t) (env : 'a t) : 'a t =

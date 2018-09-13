@@ -5,6 +5,7 @@ module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
+    | Reference of 'a * PathName.t
     | Type of 'a
     | Descriptor
     | Constructor
@@ -14,6 +15,7 @@ module Value = struct
     match v with
     | Variable a -> Variable (f a)
     | Function (a, typ) -> Function (f a, typ)
+    | Reference (a, state_name) -> Reference (f a, state_name)
     | Type a -> Type (f a)
     | Descriptor -> Descriptor
     | Constructor -> Constructor
@@ -23,6 +25,7 @@ module Value = struct
     match v with
     | Variable _ -> "variable"
     | Function _ -> "function"
+    | Reference _ -> "reference"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
     | Constructor -> "constructor"
@@ -141,6 +144,7 @@ module Vars = struct
     match v with
     | Variable a -> a
     | Function (a, _) -> a
+    | Reference (a, _) -> a
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Function = struct
@@ -153,6 +157,21 @@ module Function = struct
     match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ
+    | Reference _ -> None
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
+end
+module Reference = struct
+  let value (v : 'a) (state_name : PathName.t) : 'a Value.t =
+    Reference (v, state_name)
+
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with vars = PathName.Map.add x y m.vars }
+
+  let unpack (v : 'a Value.t) : PathName.t option =
+    match v with
+    | Variable _ -> None
+    | Function _ -> None
+    | Reference (_, state_name) -> Some state_name
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Typs = struct
