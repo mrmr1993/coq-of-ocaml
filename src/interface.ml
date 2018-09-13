@@ -38,8 +38,10 @@ end
 
 type t =
   | Var of CoqName.t * Effect.Type.t
+  | Reference of CoqName.t * CoqName.t
   | Typ of CoqName.t
   | Descriptor of CoqName.t
+  | Exception of CoqName.t * CoqName.t
   | Constructor of CoqName.t
   | Field of CoqName.t
   | Include of PathName.t
@@ -49,8 +51,12 @@ let rec pp (interface : t) : SmartPrint.t =
   match interface with
   | Var (x, shape) ->
     !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.Type.pp shape]
+  | Reference (x, state_name) ->
+    !^ "Reference" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp state_name]
   | Typ x -> !^ "Typ" ^^ CoqName.pp x
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
+  | Exception (x, raise_name) ->
+    !^ "Exception" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp raise_name]
   | Constructor x -> !^ "Constructor" ^^ CoqName.pp x
   | Field x -> !^ "Field" ^^ CoqName.pp x
   | Include x -> !^ "Include" ^^ PathName.pp x
@@ -84,20 +90,9 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [Var (prim.PrimitiveDeclaration.name, Effect.Type.Pure)]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
-    let name = exn.Exception.name in
-    let raise_name = exn.Exception.raise_name in
-    let effect_path = {
-      BoundName.full_path = exn.Exception.effect_path;
-      local_path = exn.Exception.effect_path
-    } in
-    let effect_typ = Effect.Type.Arrow (
-      Effect.Descriptor.singleton effect_path [],
-      Effect.Type.Pure) in
-    [ Descriptor name; Var (raise_name, effect_typ) ]
+    [Exception (exn.Exception.name, exn.Exception.raise_name)]
   | Structure.Reference (_, r) ->
-    let name = r.Reference.name in
-    let state_name = r.Reference.state_name in
-    [ Var (name, Effect.Type.Pure); Descriptor state_name ]
+    [Reference (r.Reference.name, r.Reference.state_name)]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) ->
@@ -119,8 +114,16 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
             else bound_path in
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
     FullEnvi.Var.assoc x typ env
+  | Reference (name, state_name) ->
+    env |> Reference.update_env_with_effects
+        { Reference.name; state_name; typ = Type.Variable "_";
+          expr = Exp.Tuple ((Loc.Unknown, Type.Variable "_"), []) }
+      |> fst
   | Typ x -> FullEnvi.Typ.assoc x Effect.Type.Pure env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
+  | Exception (name, raise_name) ->
+    env |> Exception.update_env_with_effects
+      { Exception.name; raise_name; typ = Type.Variable "_" }
   | Constructor x -> FullEnvi.Constructor.assoc x env
   | Field x -> FullEnvi.Field.assoc x env
   | Include x -> Include.of_interface x env
@@ -152,12 +155,16 @@ module Version1 = struct
       let x = CoqName.ocaml_name x in
       let shape = Shape.of_effect_typ shape in
       `List [`String "Var"; Name.to_json x; Shape.to_json shape]
+    | Reference (name, state_name) ->
+      failwith "Cannot output references in V1 interfaces. Please use a newer version."
     | Typ x ->
       let x = CoqName.ocaml_name x in
       `List [`String "Typ"; Name.to_json x]
     | Descriptor x ->
       let x = CoqName.ocaml_name x in
       `List [`String "Descriptor"; Name.to_json x]
+    | Exception (name, raise_name) ->
+      failwith "Cannot output exceptions in V1 interfaces. Please use a newer version."
     | Constructor x ->
       let x = CoqName.ocaml_name x in
       `List [`String "Constructor"; Name.to_json x]
@@ -202,8 +209,12 @@ let rec to_json (interface : t) : json =
   match interface with
   | Var (x, eff) ->
     `List [`String "Var"; CoqName.to_json x; Effect.Type.to_json eff]
+  | Reference (name, state_name) ->
+    `List [`String "Reference"; CoqName.to_json name; CoqName.to_json state_name]
   | Typ x -> `List [`String "Typ"; CoqName.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
+  | Exception (name, raise_name) ->
+    `List [`String "Exception"; CoqName.to_json name; CoqName.to_json raise_name]
   | Constructor x -> `List [`String "Constructor"; CoqName.to_json x]
   | Field x -> `List [`String "Field"; CoqName.to_json x]
   | Include x -> `List [`String "Include"; PathName.to_json x]
@@ -214,8 +225,12 @@ let rec of_json (json : json) : t =
   match json with
   | `List [`String "Var"; x; eff] ->
     Var (CoqName.of_json x, Effect.Type.of_json eff)
+  | `List [`String "Reference"; name; state_name] ->
+    Reference (CoqName.of_json name, CoqName.of_json state_name)
   | `List [`String "Typ"; x] -> Typ (CoqName.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
+  | `List [`String "Exception"; name; raise_name] ->
+    Exception (CoqName.of_json name, CoqName.of_json raise_name)
   | `List [`String "Constructor"; x] -> Constructor (CoqName.of_json x)
   | `List [`String "Field"; x] -> Field (CoqName.of_json x)
   | `List [`String "Include"; x] -> Include (PathName.of_json x)

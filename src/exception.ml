@@ -4,7 +4,6 @@ open SmartPrint
 type t = {
   name : CoqName.t;
   raise_name : CoqName.t;
-  effect_path : PathName.t;
   typ : Type.t }
 
 let pp (exn : t) : SmartPrint.t =
@@ -21,9 +20,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   let typ = Type.Tuple (typs |> List.map (fun typ -> Type.of_type_expr env loc typ)) in
   let (raise_name, _, _) = FullEnvi.Descriptor.fresh ("raise_" ^ name) env in
   let name = FullEnvi.Descriptor.coq_name name env in
-  let path_name = PathName.of_name (FullEnvi.coq_path env) @@ snd @@
-    CoqName.assoc_names name in
-  { name; effect_path = path_name; raise_name; typ }
+  { name; raise_name; typ }
 
 let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   let raise_path = {PathName.path = FullEnvi.coq_path env;
