@@ -47,7 +47,7 @@ type 'a t =
   | Reference of Loc.t * 'a Reference.t
   | Open of Loc.t * Open.t
   | Include of Loc.t * Include.t
-  | Module of Loc.t * Name.t * 'a t list
+  | Module of Loc.t * CoqName.t * 'a t list
 
 let rec pps (pp_a : 'a -> SmartPrint.t) (defs : 'a t list) : SmartPrint.t =
   separate (newline ^^ newline) (List.map (pp pp_a) defs)
@@ -67,7 +67,7 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
   | Include (loc, name) -> group (Loc.pp loc ^^ Include.pp name)
   | Module (loc, name, defs) ->
     nest (
-      Loc.pp loc ^^ !^ "Module" ^^ Name.pp name ^-^ !^ ":" ^^ newline ^^
+      Loc.pp loc ^^ !^ "Module" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
       indent (pps pp_a defs))
 
 (** Import an OCaml structure. *)
@@ -83,7 +83,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       (env, Reference (loc, r))
     | Tstr_value (is_rec, cases) ->
       let (env, def) =
-        Exp.import_let_fun env loc Name.Map.empty is_rec cases in
+        Exp.import_let_fun true env loc Name.Map.empty is_rec cases in
       (env, Value (loc, def))
     | Tstr_type (_, typs) ->
       let def = TypeDefinition.of_ocaml env loc typs in
@@ -108,7 +108,8 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       mb_expr = { mod_desc =
         Tmod_constraint ({ mod_desc = Tmod_structure structure }, _, _, _) }} ->
       let name = Name.of_ident name in
-      let env = FullEnvi.enter_module (CoqName.Name name) env in
+      let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
+      let env = FullEnvi.enter_module name env in
       let (env, structures) = of_structure env structure in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
@@ -162,7 +163,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     | Include (loc, name) ->
       (Include.update_env loc name env, [def])
     | Module (loc, name, defs) ->
-      let env = FullEnvi.enter_module (CoqName.Name name) env in
+      let env = FullEnvi.enter_module name env in
       let (env, defs) = monadise_let_rec env defs in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, [Module (loc, name, defs)]) in
@@ -200,7 +201,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Include (loc, name) ->
       (Include.update_env_with_effects loc name env, Include (loc, name))
     | Module (loc, name, defs) ->
-      let env = FullEnvi.enter_module (CoqName.Name name) env in
+      let env = FullEnvi.enter_module name env in
       let (env, defs) = effects env defs in
       let env = FullEnvi.leave_module FullEnvi.localize_type env in
       (env, Module (loc, name, defs)) in
@@ -246,7 +247,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Include (loc, name) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
-      let (env, defs) = monadise (FullEnvi.enter_module (CoqName.Name name) env) defs in
+      let (env, defs) = monadise (FullEnvi.enter_module name env) defs in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, Module (loc, name, defs)) in
   let (env, defs) =
@@ -271,7 +272,7 @@ let rec to_coq (defs : 'a t list) : SmartPrint.t =
     | Include (_, incl) -> Include.to_coq incl
     | Module (_, name, defs) ->
       nest (
-        !^ "Module" ^^ Name.to_coq name ^-^ !^ "." ^^ newline ^^
+        !^ "Module" ^^ CoqName.to_coq name ^-^ !^ "." ^^ newline ^^
         indent (to_coq defs) ^^ newline ^^
-        !^ "End" ^^ Name.to_coq name ^-^ !^ ".") in
+        !^ "End" ^^ CoqName.to_coq name ^-^ !^ ".") in
   separate (newline ^^ newline) (List.map to_coq_one defs)

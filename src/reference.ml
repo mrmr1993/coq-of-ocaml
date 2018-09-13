@@ -28,8 +28,8 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     let name = Name.of_ident x in
     let state_name = name ^ "_state" in
-    let name = FullEnvi.Var.coq_name name env in
-    let (state_name, _, _) = FullEnvi.Descriptor.fresh state_name env in
+    let (name, _, env) = FullEnvi.Var.create name () env in
+    let (state_name, _, env) = FullEnvi.Descriptor.fresh state_name env in
     { name = name;
       state_name = state_name;
       typ = Type.of_type_expr env loc typ;

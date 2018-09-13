@@ -96,7 +96,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) ->
-    [Interface (CoqName.of_names name name, of_structures defs)]
+    [Interface (name, of_structures defs)]
 
 let rec to_full_envi (top_name : Name.t option) (interface : t)
   (env : Effect.Type.t FullEnvi.t)

@@ -205,7 +205,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     when (match e1.exp_desc with
     | Texp_function _ -> false
     | _ -> true) ->
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern false env p in
     let e1 = of_expression env typ_vars e1 in
     (match p with
     | Pattern.Variable x ->
@@ -217,7 +217,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let e2 = of_expression env typ_vars e2 in
       Match (a, e1, [p, e2]))
   | Texp_let (is_rec, cases, e) ->
-    let (env, def) = import_let_fun env l typ_vars is_rec cases in
+    let (env, def) = import_let_fun false env l typ_vars is_rec cases in
     let e = of_expression env typ_vars e in
     LetFun (a, def, e)
   | Texp_function { cases = [{c_lhs = {pat_desc = Tpat_var (x, _)}; c_rhs = e}] }
@@ -267,7 +267,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e = of_expression env typ_vars e in
     let (index, rev_cases) = cases |>
       List.fold_left (fun (index, l) {c_lhs = p; c_guard = g; c_rhs = e} ->
-        let p = Pattern.of_pattern env p in
+        let p = Pattern.of_pattern false env p in
         let env = Pattern.add_to_env p env in
         match g with
         | Some g ->
@@ -358,7 +358,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
     let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
-    let p = Pattern.Tuple (List.map (Pattern.of_pattern env) ps) in
+    let p = Pattern.Tuple (List.map (Pattern.of_pattern false env) ps) in
     Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
         FullEnvi.Constructor.localize env [] "inl",
@@ -389,7 +389,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   let (x, bound_x, env) = FullEnvi.Var.fresh "x" () env in
   let p1 = (List.hd cases).c_lhs in
   let cases = cases |> List.map (fun {c_lhs = p; c_rhs = e} ->
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern false env p in
     let env = Pattern.add_to_env p env in
     (p, of_expression env typ_vars e)) in
   let l = Loc.of_location p1.pat_loc in
@@ -398,7 +398,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   (CoqName.ocaml_name x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
-and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
+and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
   (cases : value_binding list)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t =
@@ -408,7 +408,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     let l = Loc.of_location loc in
     let attr = Attribute.of_attributes l attrs in
     (* The attribute @coq_rec is added if the name finishes by "_coq_rec": *)
-    match Pattern.of_pattern env p with
+    match Pattern.of_pattern new_names env p with
     | Pattern.Variable x ->
       let x = CoqName.ocaml_name x in
       if Str.string_match (Str.regexp ".*_coq_rec$") x 0 then
@@ -419,7 +419,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
   let attr = List.fold_left (Attribute.combine loc) Attribute.None attrs in
   let cases = cases |> List.map (fun { vb_pat = p; vb_expr = e } ->
     let loc = Loc.of_location p.pat_loc in
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern new_names env p in
     match p with
     | Pattern.Variable x -> (x, e, loc)
     | _ -> Error.raise loc "A variable name instead of a pattern was expected.") in

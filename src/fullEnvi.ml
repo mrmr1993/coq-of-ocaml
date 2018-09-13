@@ -237,6 +237,16 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
       local_path = { PathName.path = []; base = name };
     } in
     (CoqName.Name name, bound_name, add [] name v env)
+
+  let create (prefix : Name.t) (v : 'a) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name v env)
 end
 
 module Var = ValueCarrier(Mod.Vars)
@@ -275,6 +285,16 @@ module Function = struct
       local_path = { PathName.path = []; base = name };
     } in
     (CoqName.Name name, bound_name, add [] name v typ env)
+
+  let create (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name v typ env)
 end
 
 module Reference = struct
@@ -310,6 +330,16 @@ module Reference = struct
       local_path = { PathName.path = []; base = name };
     } in
     (CoqName.Name name, bound_name, add [] name v state_name env)
+
+  let create (prefix : string) (v : 'a) (state_name : PathName.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name v state_name env)
 end
 
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
@@ -335,6 +365,15 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
       local_path = { PathName.path = []; base = name };
     } in
     (CoqName.Name name, bound_name, add [] name env)
+
+  let create (prefix : string) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name env)
 end
 
 module Descriptor = EmptyCarrier(Mod.Descriptors)
@@ -407,6 +446,11 @@ module Module = struct
     : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) v env
 
+  let assoc (name : CoqName.t) (v : Mod.t) (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) v env
+
   let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : Mod.t =
     let rec f : 'b. 'b t -> Mod.t = fun env ->
       match PathName.Map.find_opt x.full_path env.modules with
@@ -437,6 +481,16 @@ module Module = struct
       local_path = { PathName.path = []; base = name };
     } in
     (CoqName.Name name, bound_name, add [] name v env)
+
+  let create (prefix : string) (v : Mod.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name v env)
 end
 
 let open_module (loc : Loc.t) (module_name : BoundName.t) (env : 'a t) : 'a t =
