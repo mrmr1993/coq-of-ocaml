@@ -27,11 +27,11 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
     vb_expr = { exp_type = {Types.desc = Types.Tconstr (_, [typ], _) };
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     let name = Name.of_ident x in
-    let coq_name = (FullEnvi.Var.resolve [] name env).base in
     let state_name = name ^ "_state" in
-    let coq_state_name = (FullEnvi.Descriptor.resolve [] state_name env).base in
-    { name = CoqName.of_names name coq_name;
-      state_name = CoqName.of_names state_name coq_state_name;
+    let name = FullEnvi.Var.coq_name name env in
+    let (state_name, _, _) = FullEnvi.Descriptor.fresh state_name env in
+    { name = name;
+      state_name = state_name;
       typ = Type.of_type_expr env loc typ;
       expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
