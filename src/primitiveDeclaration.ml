@@ -28,11 +28,8 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (desc : value_description)
     let type_expr = desc.val_val.val_type in
     let (typ, _, new_typ_vars) =
       Type.of_type_expr_new_typ_vars env loc Name.Map.empty type_expr in
-    let name = Name.of_ident desc.val_id in
-    let coq_name = (FullEnvi.Var.resolve [] name env).base in
-    { name = CoqName.of_names name coq_name;
-      typ_args = Name.Set.elements new_typ_vars;
-      typ }
+    let (name, _, _) = FullEnvi.Var.create (Name.of_ident desc.val_id) () env in
+    { name; typ_args = Name.Set.elements new_typ_vars; typ }
 
 let update_env (prim : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   FullEnvi.Var.assoc prim.name () env

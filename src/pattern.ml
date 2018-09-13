@@ -27,28 +27,33 @@ let rec pp (p : t) : SmartPrint.t =
   | Or (p1, p2) -> nest (!^ "Or" ^^ OCaml.tuple [pp p1; pp p2])
 
 (** Import an OCaml pattern. *)
-let rec of_pattern (env : 'a FullEnvi.t) (p : pattern) : t =
+let rec of_pattern (new_names : bool) (env : unit FullEnvi.t) (p : pattern) : t =
   let l = Loc.of_location p.pat_loc in
   match p.pat_desc with
   | Tpat_any -> Any
   | Tpat_var (x, _) ->
-      let x = Name.of_ident x in
-      let x = CoqName.of_names x (FullEnvi.Var.resolve [] x env).base in
-      Variable x
-  | Tpat_tuple ps -> Tuple (List.map (of_pattern env) ps)
+    let x = Name.of_ident x in
+    let x = if new_names then
+        let (x, _, _) = FullEnvi.Var.create x () env in x
+      else FullEnvi.Var.coq_name x env in
+    Variable x
+  | Tpat_tuple ps -> Tuple (List.map (of_pattern new_names env) ps)
   | Tpat_construct (x, _, ps) ->
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
-    Constructor (x, List.map (of_pattern env) ps)
+    Constructor (x, List.map (of_pattern new_names env) ps)
   | Tpat_alias (p, x, _) ->
     let x = Name.of_ident x in
-    let x = CoqName.of_names x (FullEnvi.Var.resolve [] x env).base in
-    Alias (of_pattern env p, x)
+    let x = if new_names then
+        let (x, _, _) = FullEnvi.Var.create x () env in x
+      else FullEnvi.Var.coq_name x env in
+    Alias (of_pattern new_names env p, x)
   | Tpat_constant c -> Constant (Constant.of_constant l c)
   | Tpat_record (fields, _) ->
     Record (fields |> List.map (fun (x, _, p) ->
       let x = FullEnvi.Field.bound l (PathName.of_loc x) env in
-      (x, of_pattern env p)))
-  | Tpat_or (p1, p2, _) -> Or (of_pattern env p1, of_pattern env p2)
+      (x, of_pattern new_names env p)))
+  | Tpat_or (p1, p2, _) ->
+    Or (of_pattern new_names env p1, of_pattern new_names env p2)
   | _ -> Error.raise l "Unhandled pattern."
 
 (** Free variables in a pattern. *)

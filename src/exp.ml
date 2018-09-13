@@ -205,7 +205,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     when (match e1.exp_desc with
     | Texp_function _ -> false
     | _ -> true) ->
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern false env p in
     let e1 = of_expression env typ_vars e1 in
     (match p with
     | Pattern.Variable x ->
@@ -217,7 +217,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let e2 = of_expression env typ_vars e2 in
       Match (a, e1, [p, e2]))
   | Texp_let (is_rec, cases, e) ->
-    let (env, def) = import_let_fun env l typ_vars is_rec cases in
+    let (env, def) = import_let_fun false env l typ_vars is_rec cases in
     let e = of_expression env typ_vars e in
     LetFun (a, def, e)
   | Texp_function { cases = [{c_lhs = {pat_desc = Tpat_var (x, _)}; c_rhs = e}] }
@@ -242,14 +242,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let (t_exn, typ_vars, _) =
             Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
           let x = PathName.of_loc x in
-          let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
-          let x = FullEnvi.Var.bound l_exn x env in
+          let x = FullEnvi.Exception.bound l_exn x env in
+          let raise_path = FullEnvi.Exception.find l_exn x env in
+          let raise_dsc = FullEnvi.localize (FullEnvi.has_value env) env
+            { BoundName.full_path = raise_path; local_path = raise_path } in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
             t_arg) es in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_exn, t_exn), x),
+          Apply (a, Variable ((l_exn, t_exn), raise_dsc),
             [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")
@@ -265,7 +267,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e = of_expression env typ_vars e in
     let (index, rev_cases) = cases |>
       List.fold_left (fun (index, l) {c_lhs = p; c_guard = g; c_rhs = e} ->
-        let p = Pattern.of_pattern env p in
+        let p = Pattern.of_pattern false env p in
         let env = Pattern.add_to_env p env in
         match g with
         | Some g ->
@@ -356,7 +358,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
     let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
-    let p = Pattern.Tuple (List.map (Pattern.of_pattern env) ps) in
+    let p = Pattern.Tuple (List.map (Pattern.of_pattern false env) ps) in
     Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
         FullEnvi.Constructor.localize env [] "inl",
@@ -387,7 +389,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   let (x, bound_x, env) = FullEnvi.Var.fresh "x" () env in
   let p1 = (List.hd cases).c_lhs in
   let cases = cases |> List.map (fun {c_lhs = p; c_rhs = e} ->
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern false env p in
     let env = Pattern.add_to_env p env in
     (p, of_expression env typ_vars e)) in
   let l = Loc.of_location p1.pat_loc in
@@ -396,7 +398,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   (CoqName.ocaml_name x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
-and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
+and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
   (cases : value_binding list)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t =
@@ -406,7 +408,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
     let l = Loc.of_location loc in
     let attr = Attribute.of_attributes l attrs in
     (* The attribute @coq_rec is added if the name finishes by "_coq_rec": *)
-    match Pattern.of_pattern env p with
+    match Pattern.of_pattern new_names env p with
     | Pattern.Variable x ->
       let x = CoqName.ocaml_name x in
       if Str.string_match (Str.regexp ".*_coq_rec$") x 0 then
@@ -417,7 +419,7 @@ and import_let_fun (env : unit FullEnvi.t) (loc : Loc.t)
   let attr = List.fold_left (Attribute.combine loc) Attribute.None attrs in
   let cases = cases |> List.map (fun { vb_pat = p; vb_expr = e } ->
     let loc = Loc.of_location p.pat_loc in
-    let p = Pattern.of_pattern env p in
+    let p = Pattern.of_pattern new_names env p in
     match p with
     | Pattern.Variable x -> (x, e, loc)
     | _ -> Error.raise loc "A variable name instead of a pattern was expected.") in
@@ -669,10 +671,10 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let typ = snd @@ annotation e in
     if Type.is_function @@ typ ||
         Effect.Type.is_pure @@ Type.type_effects env typ
-    then None
+    then failwith "Unable to get type effect."
     else
       let typ = Effect.PureType.first_param @@ Type.pure_type typ in
-      Some (Effect.Type.Arrow (type_effect typ, Effect.Type.Pure)) in
+      Effect.Type.Arrow (type_effect typ, Effect.Type.Pure) in
   let compound (es : (Loc.t * Type.t) t list)
   : (Loc.t * Effect.t) t list * Effect.t =
     let es = List.map (effects env) es in
@@ -685,7 +687,33 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   match e with
   | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
   | Variable ((l, typ), x) ->
-    let normal_variable () = (try
+    begin match FullEnvi.Reference.find l x env with
+    | Some state_path ->
+      let state_dsc = FullEnvi.localize (FullEnvi.has_value env) env
+        { BoundName.full_path = state_path; local_path = state_path } in
+      let typ_eff = type_effect_of_exp e in
+      let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
+      (* This variable is a global reference. Since it can be used
+      anywhere a regular reference can be, we carry the actual value on
+      the normal stack for its type, and only record its position in that
+      stack in its dedicated state. *)
+      let u = Loc.Unknown in
+      let get_var p b =
+        FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
+      let var a path base = Variable (a, get_var path base) in
+      let state_dsc_eff = Effect.Descriptor.singleton state_dsc [] in
+      let open Effect.Type in let open Effect.Descriptor in
+      let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
+      Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
+        var (u, mk pure (Arrow (pure, Arrow (state_dsc_eff, Pure))))
+          ["OCaml"; "Effect"; "State"] "global",
+        [Variable ((l, mk pure Pure), x);
+        Apply ((u, mk typ_eff Pure),
+          var (u, mk pure (Arrow (typ_eff, Pure)))
+            ["OCaml"; "Effect"; "State"] "peekstate",
+          [Tuple ((u, mk pure Pure), [])])])
+    | None ->
+      try
         let effect =
           { Effect.descriptor = Effect.Descriptor.pure;
             typ = FullEnvi.Var.find l x env } in
@@ -695,40 +723,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         Error.warn l (SmartPrint.to_string 80 2 message);
         Variable ((l, {
           Effect.descriptor = Effect.Descriptor.pure;
-          typ = Effect.Type.Pure }), x)) in
-    let state_dsc = { x.BoundName.full_path with PathName.base =
-        x.BoundName.full_path.PathName.base ^ "_state" } in
-    begin match FullEnvi.Descriptor.bound_opt state_dsc env with
-    | Some state_dsc ->
-      begin match type_effect_of_exp e with
-      | Some typ_eff ->
-        let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
-        (* This variable is a global reference. Since it can be used
-        anywhere a regular reference can be, we carry the actual value on
-        the normal stack for its type, and only record its position in that
-        stack in its dedicated state. *)
-        let u = Loc.Unknown in
-        let get_var p b =
-          FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
-        let var a path base = Variable (a, get_var path base) in
-        let state_dsc_eff = Effect.Descriptor.singleton state_dsc [] in
-        let open Effect.Type in let open Effect.Descriptor in
-        let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
-        Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
-          var (u, mk pure (Arrow (pure, Arrow (state_dsc_eff, Pure))))
-            ["OCaml"; "Effect"; "State"] "global",
-          [Variable ((l, mk pure Pure), x);
-          Apply ((u, mk typ_eff Pure),
-            var (u, mk pure (Arrow (typ_eff, Pure)))
-              ["OCaml"; "Effect"; "State"] "peekstate",
-            [Tuple ((u, mk pure Pure), [])])])
-      | None ->
-        (* FIXME: This case shouldn't happen, but may be hit if a immutable
-           local variable has been given the same name as a mutable global
-           variable. *)
-        normal_variable ()
-      end
-    | None -> normal_variable ()
+          typ = Effect.Type.Pure }), x)
     end
   | Tuple ((l, typ), es) ->
     let (es, effect) = compound es in

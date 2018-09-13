@@ -63,3 +63,11 @@ let rec drop (n : int) (l : 'a list) : 'a list =
     match l with
     | [] -> l
     | a :: l -> drop (n-1) l
+
+let rec map_with_acc (f : 'a -> 'b -> 'a * 'c) (a : 'a) (l : 'b list)
+  : 'c list =
+  match l with
+  | [] -> []
+  | x :: l ->
+    let (a, x) = f a x in
+    x :: map_with_acc f a l

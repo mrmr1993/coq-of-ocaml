@@ -5,8 +5,10 @@ module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
+    | Reference of 'a * PathName.t
     | Type of 'a
     | Descriptor
+    | Exception of PathName.t
     | Constructor
     | Field
 
@@ -14,8 +16,10 @@ module Value = struct
     match v with
     | Variable a -> Variable (f a)
     | Function (a, typ) -> Function (f a, typ)
+    | Reference (a, state_name) -> Reference (f a, state_name)
     | Type a -> Type (f a)
     | Descriptor -> Descriptor
+    | Exception raise_name -> Exception raise_name
     | Constructor -> Constructor
     | Field -> Field
 
@@ -23,8 +27,10 @@ module Value = struct
     match v with
     | Variable _ -> "variable"
     | Function _ -> "function"
+    | Reference _ -> "reference"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
+    | Exception _ -> "exception"
     | Constructor -> "constructor"
     | Field -> "field"
 end
@@ -141,6 +147,7 @@ module Vars = struct
     match v with
     | Variable a -> a
     | Function (a, _) -> a
+    | Reference (a, _) -> a
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Function = struct
@@ -153,6 +160,21 @@ module Function = struct
     match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ
+    | Reference _ -> None
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
+end
+module Reference = struct
+  let value (v : 'a) (state_name : PathName.t) : 'a Value.t =
+    Reference (v, state_name)
+
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with vars = PathName.Map.add x y m.vars }
+
+  let unpack (v : 'a Value.t) : PathName.t option =
+    match v with
+    | Variable _ -> None
+    | Function _ -> None
+    | Reference (_, state_name) -> Some state_name
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Typs = struct
@@ -177,6 +199,18 @@ module Descriptors = struct
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with descriptors = PathName.Map.add x y m.descriptors }
+end
+module Exception = struct
+  let value (raise_name : PathName.t) : 'a Value.t =
+    Exception raise_name
+
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with descriptors = PathName.Map.add x y m.descriptors }
+
+  let unpack (v : 'a Value.t) : PathName.t =
+    match v with
+    | Exception raise_name -> raise_name
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as an exception."
 end
 module Constructors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =

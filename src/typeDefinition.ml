@@ -1,6 +1,7 @@
 open Types
 open Typedtree
 open SmartPrint
+open Utils
 
 type t =
   | Inductive of CoqName.t * Name.t list * (CoqName.t * Type.t list) list
@@ -32,29 +33,27 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   match typs with
   | [] -> Error.raise loc "Unexpected type definition with no case."
   | [{typ_id = name; typ_type = typ}] ->
-    let x = FullEnvi.Typ.coq_name (Name.of_ident name) env in
+    let (x, _, env) = FullEnvi.Typ.create (Name.of_ident name) () env in
     let typ_args =
       List.map (Type.of_type_expr_variable loc) typ.type_params in
     (match typ.type_kind with
     | Type_variant cases ->
-      let constructors =
-        let env = FullEnvi.Typ.assoc x () env in
-        cases |> List.map (fun { Types.cd_id = constr; cd_args = args } ->
+      let constructors = cases |> (env |>
+        map_with_acc (fun env { Types.cd_id = constr; cd_args = args } ->
           let typs =
             match args with
             | Cstr_tuple typs -> typs
             | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
           let constr = Name.of_ident constr in
-          let coq_constr = (FullEnvi.Constructor.resolve [] constr env).base in
-          let constr_name = CoqName.of_names constr coq_constr in
-          (constr_name, typs |> List.map (fun typ ->
-            Type.of_type_expr env loc typ))) in
+          let (constr, _, env) = FullEnvi.Constructor.create constr env in
+          (env, (constr, typs |> List.map (fun typ ->
+            Type.of_type_expr env loc typ))))) in
       Inductive (x, typ_args, constructors)
     | Type_record (fields, _) ->
-      let fields =
-        fields |> List.map (fun { Types.ld_id = x; ld_type = typ } ->
+      let fields = fields |> (env |>
+        map_with_acc (fun env { Types.ld_id = x; ld_type = typ } ->
           let field_name = FullEnvi.Field.coq_name (Name.of_ident x) env in
-          (field_name, Type.of_type_expr env loc typ)) in
+          (env, (field_name, Type.of_type_expr env loc typ)))) in
       Record (x, fields)
     | Type_abstract ->
       (match typ.type_manifest with

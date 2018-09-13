@@ -1,0 +1,53 @@
+3 Reference (a, a_state, Type (Z), Constant (3, Int(15)))
+
+4
+Value
+  (non_rec, @.,
+    [
+      ((b, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (Z))),
+        Match (?, Variable (?, x), [ (Constructor (tt), Variable (4, a)) ]))
+    ])
+
+5 Reference (a (= a_1), a_state_1, Type (string), Constant (5, String("test")))
+
+6
+Value
+  (non_rec, @.,
+    [
+      ((c, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (string))),
+        Match (?, Variable (?, x), [ (Constructor (tt), Variable (6, a_1)) ]))
+    ])
+
+8 Value (non_rec, @., [ ((d, [ ], [ ], Type (Z)), Constant (8, Int(15))) ])
+
+9 Value (non_rec, @., [ ((e, [ ], [ ], Type (Z)), Variable (9, d)) ])
+
+10
+Value
+  (non_rec, @.,
+    [ ((d (= d_1), [ ], [ ], Type (string)), Constant (10, String("test"))) ])
+
+11 Value (non_rec, @., [ ((f, [ ], [ ], Type (string)), Variable (11, d_1)) ])
+
+13 Primitive (op_eq, [ A ], (A -> (A -> Type (bool))))
+
+14
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ (x, A); (y, A) ], Type (bool)),
+        Apply
+          (14, Variable (14, op_eq), [ Variable (14, x); Variable (14, y) ]))
+    ])
+
+15 Primitive (op_eq (= op_eq_1), [ A ], (A -> (A -> Type (bool))))
+
+16
+Value
+  (non_rec, @.,
+    [
+      ((h, [ A ], [ (x, A); (y, A) ], Type (bool)),
+        Apply
+          (16, Variable (16, op_eq_1),
+            [ Variable (16, x); Variable (16, y) ]))
+    ])

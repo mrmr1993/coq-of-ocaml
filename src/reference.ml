@@ -27,28 +27,32 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
     vb_expr = { exp_type = {Types.desc = Types.Tconstr (_, [typ], _) };
                 exp_desc = Texp_apply (_, [(_, Some expr)]) }}] ->
     let name = Name.of_ident x in
-    let coq_name = (FullEnvi.Var.resolve [] name env).base in
     let state_name = name ^ "_state" in
-    let coq_state_name = (FullEnvi.Descriptor.resolve [] state_name env).base in
-    { name = CoqName.of_names name coq_name;
-      state_name = CoqName.of_names state_name coq_state_name;
+    let (name, _, env) = FullEnvi.Var.create name () env in
+    let (state_name, _, env) = FullEnvi.Descriptor.fresh state_name env in
+    { name = name;
+      state_name = state_name;
       typ = Type.of_type_expr env loc typ;
       expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
+  let state_path = {PathName.path = FullEnvi.coq_path env;
+    base = snd (CoqName.assoc_names r.state_name)} in
   let env = env
-  |> FullEnvi.Var.assoc r.name ()
-  |> FullEnvi.Descriptor.assoc r.state_name in
+    |> FullEnvi.Descriptor.assoc r.state_name
+    |> FullEnvi.Reference.assoc r.name () state_path in
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
+  let state_path = {PathName.path = FullEnvi.coq_path env;
+    base = snd (CoqName.assoc_names r.state_name)} in
   let env = env
-  |> FullEnvi.Var.assoc r.name Effect.Type.Pure
-  |> FullEnvi.Descriptor.assoc r.state_name in
+    |> FullEnvi.Descriptor.assoc r.state_name
+    |> FullEnvi.Reference.assoc r.name Effect.Type.Pure state_path in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =
