@@ -8,6 +8,7 @@ module Value = struct
     | Reference of 'a * PathName.t
     | Type of 'a
     | Descriptor
+    | Exception of PathName.t
     | Constructor
     | Field
 
@@ -18,6 +19,7 @@ module Value = struct
     | Reference (a, state_name) -> Reference (f a, state_name)
     | Type a -> Type (f a)
     | Descriptor -> Descriptor
+    | Exception raise_name -> Exception raise_name
     | Constructor -> Constructor
     | Field -> Field
 
@@ -28,6 +30,7 @@ module Value = struct
     | Reference _ -> "reference"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
+    | Exception _ -> "exception"
     | Constructor -> "constructor"
     | Field -> "field"
 end
@@ -196,6 +199,18 @@ module Descriptors = struct
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with descriptors = PathName.Map.add x y m.descriptors }
+end
+module Exception = struct
+  let value (raise_name : PathName.t) : 'a Value.t =
+    Exception raise_name
+
+  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
+    { m with descriptors = PathName.Map.add x y m.descriptors }
+
+  let unpack (v : 'a Value.t) : PathName.t =
+    match v with
+    | Exception raise_name -> raise_name
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as an exception."
 end
 module Constructors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =

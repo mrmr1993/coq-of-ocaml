@@ -242,14 +242,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let (t_exn, typ_vars, _) =
             Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
           let x = PathName.of_loc x in
-          let x = { x with PathName.base = "raise_" ^ x.PathName.base } in
-          let x = FullEnvi.Var.bound l_exn x env in
+          let x = FullEnvi.Exception.bound l_exn x env in
+          let raise_path = FullEnvi.Exception.find l_exn x env in
+          let raise_dsc = FullEnvi.localize (FullEnvi.has_value env) env
+            { BoundName.full_path = raise_path; local_path = raise_path } in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
             t_arg) es in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_exn, t_exn), x),
+          Apply (a, Variable ((l_exn, t_exn), raise_dsc),
             [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")

@@ -26,13 +26,17 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   { name; effect_path = path_name; raise_name; typ }
 
 let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
+  let raise_path = {PathName.path = FullEnvi.coq_path env;
+    base = snd (CoqName.assoc_names exn.raise_name)} in
   env
-  |> FullEnvi.Descriptor.assoc exn.name
+  |> FullEnvi.Exception.assoc exn.name raise_path
   |> FullEnvi.Var.assoc exn.raise_name ()
 
 let update_env_with_effects (exn : t) (env : Effect.Type.t FullEnvi.t)
   : Effect.Type.t FullEnvi.t =
-  let env = FullEnvi.Descriptor.assoc exn.name env in
+  let raise_path = {PathName.path = FullEnvi.coq_path env;
+    base = snd (CoqName.assoc_names exn.raise_name)} in
+  let env = FullEnvi.Exception.assoc exn.name raise_path env in
   let bound_effect = FullEnvi.Descriptor.bound Loc.Unknown
     (PathName.of_name [] (CoqName.ocaml_name exn.name)) env in
   let effect_typ =

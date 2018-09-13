@@ -341,6 +341,39 @@ module Descriptor = EmptyCarrier(Mod.Descriptors)
 module Constructor = EmptyCarrier(Mod.Constructors)
 module Field = EmptyCarrier(Mod.Fields)
 
+module Exception = struct
+  include EmptyCarrier(Mod.Descriptors)
+
+  let raw_add (x : PathName.t) (y : PathName.t) (raise_name : PathName.t)
+    (env : 'a t) : 'a t =
+    { env with
+      values = PathName.Map.add y (Mod.Exception.value raise_name) env.values;
+      active_module = FullMod.hd_mod_map (Mod.Exception.assoc x y)
+        env.active_module }
+
+  let add (path : Name.t list) (base : Name.t) (raise_name : PathName.t)
+    (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) raise_name env
+
+  let assoc (name : CoqName.t) (raise_name : PathName.t) (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) raise_name env
+
+  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : PathName.t =
+    Mod.Exception.unpack @@ find loc x env
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (raise_name : PathName.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name raise_name env)
+end
+
 module Module = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
     let x = PathName.of_name path base in
@@ -428,13 +461,17 @@ let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
     (PathName.of_name_list m.coq_path) m env
 
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
+  let raise_path = {PathName.path = coq_path env @ path;
+    base = "raise_" ^ base} in
   env
-  |> Descriptor.add path base
+  |> Exception.add path base raise_path
   |> Var.add path ("raise_" ^ base) ()
 
 let add_exception_with_effects (path : Name.t list) (base : Name.t)
   (env : Effect.Type.t t) : Effect.Type.t t =
-  let env = Descriptor.add path base env in
+  let raise_path = {PathName.path = coq_path env @ path;
+    base = "raise_" ^ base} in
+  let env = Exception.add path base raise_path env in
   let descriptor = PathName.of_name path base in
   let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
   let effect_typ =
