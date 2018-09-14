@@ -37,6 +37,138 @@ module Value = struct
         !^ " :=" ^^ Exp.to_coq false e))) ^-^ !^ "."
 end
 
+module Signature = struct
+  open Types
+  type t =
+  | Value of Loc.t * CoqName.t * Name.t list * Type.t
+  | TypeDefinition of Loc.t * TypeDefinition.t
+  | Module of Loc.t * CoqName.t * t list
+  | ModType of Loc.t * CoqName.t * t list
+
+  let rec pps (decls : t list) : SmartPrint.t =
+    separate (newline ^^ newline) (List.map pp decls)
+
+  and pp (decl : t) : SmartPrint.t =
+    match decl with
+    | Value (loc, name, typ_vars, typ) ->
+      group (Loc.pp loc ^^ !^ "Value" ^^ OCaml.tuple
+        [CoqName.pp name; OCaml.list Name.pp typ_vars; Type.pp typ])
+    | TypeDefinition (loc, typ_def) ->
+      group (Loc.pp loc ^^ TypeDefinition.pp typ_def)
+    | Module (loc, name, decls) ->
+      nest (
+        Loc.pp loc ^^ !^ "Module" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
+        indent (pps decls))
+    | ModType (loc, name, decls) ->
+      nest (
+        Loc.pp loc ^^ !^ "Module Type" ^^ CoqName.pp name ^-^ !^ ":" ^^
+        newline ^^ indent (pps decls))
+
+  let rec of_ocaml (env : unit FullEnvi.t) (signature : signature)
+    : unit FullEnvi.t * t list =
+    let of_signature_item (env : unit FullEnvi.t) (item : signature_item)
+      : unit FullEnvi.t * t =
+      match item with
+      | Sig_value (name, { val_type = typ; val_loc = loc }) ->
+        let loc = Loc.of_location loc in
+        let (name, _, env) = FullEnvi.Var.create (Name.of_ident name) () env in
+        let (typ, _, new_typ_vars) =
+          Type.of_type_expr_new_typ_vars env loc Name.Map.empty typ in
+        (env, Value (loc, name, Name.Set.elements new_typ_vars, typ))
+      | Sig_type (name, typ, _) ->
+        let loc = Loc.of_location typ.type_loc in
+        let typ = TypeDefinition.of_declaration env loc name typ in
+        let env = TypeDefinition.update_env typ () env in
+        (env, TypeDefinition (loc, typ))
+      | Sig_module (name, { md_type = Mty_signature signature; md_loc = loc }, _) ->
+        let loc = Loc.of_location loc in
+        let name = Name.of_ident name in
+        let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
+        let env = FullEnvi.enter_module name env in
+        let (env, signatures) = of_ocaml env signature in
+        let env = FullEnvi.leave_module (fun _ _ -> ()) env in
+        (env, Module (loc, name, signatures))
+      | Sig_module (name, { md_loc = loc }, _) ->
+        let loc = Loc.of_location loc in
+        Error.raise loc "This kind of module is not handled."
+      | Sig_modtype (name, {mtd_type = Some (Mty_signature signature);
+          mtd_loc = loc }) ->
+        let loc = Loc.of_location loc in
+        let name = Name.of_ident name in
+        let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
+        let env = FullEnvi.enter_module name env in
+        let (env, signatures) = of_ocaml env signature in
+        let env = FullEnvi.leave_signature env in
+        (env, ModType (loc, name, signatures))
+      | Sig_modtype (name, { mtd_loc = loc }) ->
+        let loc = Loc.of_location loc in
+        Error.raise loc "This kind of module type is not handled."
+      | Sig_typext (_, { ext_loc = loc }, _) ->
+        let loc = Loc.of_location loc in
+        Error.raise loc "Signature item `typext` not handled."
+      | Sig_class (_, { cty_loc = loc }, _) ->
+        let loc = Loc.of_location loc in
+        Error.raise loc "Signature item `class` not handled."
+      | Sig_class_type (_, { clty_loc = loc}, _) ->
+        let loc = Loc.of_location loc in
+         Error.raise loc "Signature item `class_type` not handled." in
+    let (env, decls) =
+      List.fold_left (fun (env, decls) item ->
+        let (env, decl) = of_signature_item env item in
+        (env, decl :: decls))
+      (env, []) signature in
+    let decls = List.rev decls in
+    (env, decls)
+
+  let rec update_env (decls : t list) (a : 'a) (env : 'a FullEnvi.t)
+    : 'a FullEnvi.t =
+    let rec update_env_one (env : 'a FullEnvi.t) (decl : t) =
+      match decl with
+      | Value (loc, name, typ_vars, typ) -> FullEnvi.Var.assoc name a env
+      | TypeDefinition (loc, typ_def) ->
+        TypeDefinition.update_env typ_def a env
+      | Module (loc, name, decls) ->
+        env |> FullEnvi.enter_module name
+          |> update_env decls a
+          |> FullEnvi.leave_module (fun _ v -> v)
+      | ModType (loc, name, decls) ->
+        env |> FullEnvi.enter_module name
+          |> update_env decls a
+          |> FullEnvi.leave_signature in
+    List.fold_left update_env_one env decls
+
+  let rec to_coq (decls : t list) : SmartPrint.t =
+    let to_coq_one (decl : t) : SmartPrint.t =
+      match decl with
+      | Value (_, name, typ_vars, typ) ->
+        group (!^ "Parameter" ^^ CoqName.to_coq name ^^ !^ ":"  ^^
+        (match typ_vars with
+        | [] -> empty
+        | _ :: _ -> !^ "forall" ^^
+          braces (group (separate space (List.map Name.to_coq typ_vars) ^^
+          !^ ":" ^^ !^ "Type")) ^-^ !^ ",") ^^
+        Type.to_coq false typ ^-^ !^ ".") ^^
+        begin match typ_vars with
+        | [] -> empty
+        | _ :: _ -> newline ^^ !^ "Arguments" ^^ CoqName.to_coq name ^^
+          group (separate space
+            (List.map (fun name -> braces @@ Name.to_coq name) typ_vars)) ^-^
+          !^ "."
+        end
+      | TypeDefinition (_, typ_def) -> TypeDefinition.to_coq typ_def
+      | Module (_, name, decls) ->
+        nest (
+          !^ "Module" ^^ CoqName.to_coq name ^-^ !^ "." ^^ newline ^^
+          indent (to_coq decls) ^^ newline ^^
+          !^ "End" ^^ CoqName.to_coq name ^-^ !^ ".")
+      | ModType (_, name, decls) ->
+        nest (
+          !^ "Module Type" ^^ CoqName.to_coq name ^-^ !^ "." ^^ newline ^^
+          indent (to_coq decls) ^^ newline ^^
+          !^ "End" ^^ CoqName.to_coq name ^-^ !^ ".") in
+    separate (newline ^^ newline) (List.map to_coq_one decls)
+end
+
 (** A structure. *)
 type 'a t =
   | Require of Name.t list (* These should begin the structure to satisfy Coq. *)
@@ -48,6 +180,7 @@ type 'a t =
   | Open of Loc.t * Open.t
   | Include of Loc.t * Include.t
   | Module of Loc.t * CoqName.t * 'a t list
+  | Signature of Loc.t * CoqName.t * Signature.t list
 
 let rec pps (pp_a : 'a -> SmartPrint.t) (defs : 'a t list) : SmartPrint.t =
   separate (newline ^^ newline) (List.map (pp pp_a) defs)
@@ -69,6 +202,10 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
     nest (
       Loc.pp loc ^^ !^ "Module" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
       indent (pps pp_a defs))
+  | Signature (loc, name, signature) ->
+    nest (
+      Loc.pp loc ^^ !^ "Module Type" ^^ CoqName.pp name ^-^ !^ ":" ^^ newline ^^
+      indent (Signature.pps signature))
 
 (** Import an OCaml structure. *)
 let rec of_structure (env : unit FullEnvi.t) (structure : structure)
@@ -113,10 +250,18 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let (env, structures) = of_structure env structure in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
       (env, Module (loc, name, structures))
-    | Tstr_modtype _ -> Error.raise loc "Signatures not handled."
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
       Error.raise loc "Functors not handled."
     | Tstr_module _ -> Error.raise loc "This kind of module is not handled."
+    | Tstr_modtype {mtd_id = name; mtd_type =
+      Some { mty_type = Mty_signature signature  }} ->
+      let name = Name.of_ident name in
+      let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
+      let env = FullEnvi.enter_module name env in
+      let (env, signature) = Signature.of_ocaml env signature in
+      let env = FullEnvi.leave_signature env in
+      (env, Signature (loc, name, signature))
+    | Tstr_modtype _ -> Error.raise loc "This kind of module type is not handled."
     | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_primitive val_desc ->
       let prim = PrimitiveDeclaration.of_ocaml env loc val_desc in
@@ -166,7 +311,12 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
       let env = FullEnvi.enter_module name env in
       let (env, defs) = monadise_let_rec env defs in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
-      (env, [Module (loc, name, defs)]) in
+      (env, [Module (loc, name, defs)])
+    | Signature (loc, name, decls) ->
+      let env = env |> FullEnvi.enter_module name
+        |> Signature.update_env decls ()
+        |> FullEnvi.leave_signature in
+      (env, [Signature (loc, name, decls)]) in
   let (env, defs) = List.fold_left (fun (env, defs) def ->
     let (env, defs') = monadise_let_rec_one env def in
     (env, defs' @ defs))
@@ -204,7 +354,12 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       let env = FullEnvi.enter_module name env in
       let (env, defs) = effects env defs in
       let env = FullEnvi.leave_module FullEnvi.localize_type env in
-      (env, Module (loc, name, defs)) in
+      (env, Module (loc, name, defs))
+    | Signature (loc, name, decls) ->
+      let env = env |> FullEnvi.enter_module name
+        |> Signature.update_env decls Effect.Type.Pure
+        |> FullEnvi.leave_signature in
+      (env, Signature (loc, name, decls)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
       let (env, def) =
@@ -249,7 +404,12 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module name env) defs in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
-      (env, Module (loc, name, defs)) in
+      (env, Module (loc, name, defs))
+    | Signature (loc, name, decls) ->
+      let env = env |> FullEnvi.enter_module name
+        |> Signature.update_env decls ()
+        |> FullEnvi.leave_signature in
+      (env, Signature (loc, name, decls)) in
   let (env, defs) =
     List.fold_left (fun (env, defs) def ->
       let (env_units, def) = monadise_one env def in
@@ -274,5 +434,10 @@ let rec to_coq (defs : 'a t list) : SmartPrint.t =
       nest (
         !^ "Module" ^^ CoqName.to_coq name ^-^ !^ "." ^^ newline ^^
         indent (to_coq defs) ^^ newline ^^
+        !^ "End" ^^ CoqName.to_coq name ^-^ !^ ".")
+    | Signature (_, name, decls) ->
+      nest (
+        !^ "Module Type" ^^ CoqName.to_coq name ^-^ !^ "." ^^ newline ^^
+        indent (Signature.to_coq decls) ^^ newline ^^
         !^ "End" ^^ CoqName.to_coq name ^-^ !^ ".") in
   separate (newline ^^ newline) (List.map to_coq_one defs)

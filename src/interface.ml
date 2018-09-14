@@ -46,6 +46,7 @@ type t =
   | Field of CoqName.t
   | Include of PathName.t
   | Interface of CoqName.t * t list
+  | Signature of CoqName.t * t list
 
 let rec pp (interface : t) : SmartPrint.t =
   match interface with
@@ -63,6 +64,9 @@ let rec pp (interface : t) : SmartPrint.t =
   | Interface (x, defs) ->
     !^ "Interface" ^^ CoqName.pp x ^^ !^ "=" ^^ newline ^^ indent
       (separate newline (List.map pp defs))
+  | Signature (x, defs) ->
+    !^ "Signature" ^^ CoqName.pp x ^^ !^ "=" ^^ newline ^^ indent
+      (separate newline (List.map pp defs))
 
 let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   match typ_def with
@@ -72,6 +76,20 @@ let of_typ_definition (typ_def : TypeDefinition.t) : t list =
     Typ name :: List.map (fun (x, _) -> Field x) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
     [Typ name]
+
+let rec of_signatures (decls : Structure.Signature.t list) : t list =
+  List.flatten (List.map of_signature decls)
+
+and of_signature (decl : Structure.Signature.t) : t list =
+  match decl with
+  | Structure.Signature.Value (_, name, typ_vars, typ) ->
+    [Var (name, Effect.Type.Pure)]
+  | Structure.Signature.TypeDefinition (_, typ_def) ->
+    of_typ_definition typ_def
+  | Structure.Signature.Module (_, name, decls) ->
+    [Interface (name, of_signatures decls)]
+  | Structure.Signature.ModType (_, name, decls) ->
+    [Signature (name, of_signatures decls)]
 
 let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
   List.flatten (List.map of_structure defs)
@@ -97,6 +115,8 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) ->
     [Interface (name, of_structures defs)]
+  | Structure.Signature (_, name, decls) ->
+    [Signature (name, of_signatures decls)]
 
 let rec to_full_envi (top_name : Name.t option) (interface : t)
   (env : Effect.Type.t FullEnvi.t)
@@ -132,6 +152,12 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
       defs in
     FullEnvi.leave_module FullEnvi.localize_type env
+  | Signature (x, decls) ->
+    let env = FullEnvi.enter_module x env in
+    let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
+      decls in
+    FullEnvi.leave_signature env
+
 
 let load_interface (coq_prefix : Name.t) (interface : t)
   (env : Effect.Type.t FullEnvi.t) : Name.t * Effect.Type.t FullEnvi.t =
@@ -175,6 +201,8 @@ module Version1 = struct
     | Interface (x, defs) ->
       let x = CoqName.ocaml_name x in
       `List [`String "Interface"; Name.to_json x; `List (List.map to_json defs)]
+    | Signature _ ->
+      failwith "Cannot output signatures in V1 interfaces. Please use a newer version."
 
   let rec of_json (json : json) : t =
     match json with
@@ -220,6 +248,8 @@ let rec to_json (interface : t) : json =
   | Include x -> `List [`String "Include"; PathName.to_json x]
   | Interface (x, defs) ->
     `List [`String "Interface"; CoqName.to_json x; `List (List.map to_json defs)]
+  | Signature (x, defs) ->
+    `List [`String "Signature"; CoqName.to_json x; `List (List.map to_json defs)]
 
 let rec of_json (json : json) : t =
   match json with
@@ -236,6 +266,8 @@ let rec of_json (json : json) : t =
   | `List [`String "Include"; x] -> Include (PathName.of_json x)
   | `List [`String "Interface"; x; `List defs] ->
       Interface (CoqName.of_json x, List.map of_json defs)
+  | `List [`String "Signature"; x; `List defs] ->
+      Signature (CoqName.of_json x, List.map of_json defs)
   | _ -> raise (Error.Json
     "Expected a Var, Typ, Descriptor, Constructor, Field or Interface field.")
 

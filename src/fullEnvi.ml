@@ -514,6 +514,15 @@ let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
   Module.raw_add (PathName.of_name [] module_name)
     (PathName.of_name_list m.coq_path) m env
 
+let leave_signature (env : 'a t) : 'a t =
+  let (m, active_module) = FullMod.leave_module env.active_module in
+  let env = { env with active_module } in
+  let module_name = match option_map CoqName.ocaml_name m.Mod.name with
+    | Some module_name -> module_name
+    | None -> failwith "Leaving a module signature with no name." in
+  Module.raw_add (PathName.of_name [] module_name)
+    (PathName.of_name_list m.coq_path) m env
+
 let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   let raise_path = {PathName.path = coq_path env @ path;
     base = "raise_" ^ base} in
