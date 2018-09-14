@@ -9,6 +9,8 @@ module type S = sig
   | Inductive3 of bool
 
   type 'a u = ('a * t) list
+
+  type v
   
   module X : sig
     val x : bool

@@ -19,6 +19,8 @@ Module Type S_1.
   
   Definition u a := list (a * t).
   
+  Parameter v : Type.
+  
   Module X.
     Parameter x : bool.
     
