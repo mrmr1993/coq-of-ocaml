@@ -77,18 +77,16 @@ let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
     [Typ name]
 
-let rec of_signatures (decls : Structure.Signature.t list) : t list =
+let rec of_signatures (decls : Signature.t list) : t list =
   List.flatten (List.map of_signature decls)
 
-and of_signature (decl : Structure.Signature.t) : t list =
+and of_signature (decl : Signature.t) : t list =
   match decl with
-  | Structure.Signature.Value (_, name, typ_vars, typ) ->
-    [Var (name, Effect.Type.Pure)]
-  | Structure.Signature.TypeDefinition (_, typ_def) ->
-    of_typ_definition typ_def
-  | Structure.Signature.Module (_, name, decls) ->
+  | Signature.Value (_, name, typ_vars, typ) -> [Var (name, Effect.Type.Pure)]
+  | Signature.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
+  | Signature.Module (_, name, decls) ->
     [Interface (name, of_signatures decls)]
-  | Structure.Signature.ModType (_, name, decls) ->
+  | Signature.ModType (_, name, decls) ->
     [Signature (name, of_signatures decls)]
 
 let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
