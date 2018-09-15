@@ -48,17 +48,25 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
 let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Effect.t FullEnvi.t)
   : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
-  let state_path = {PathName.path = FullEnvi.coq_path env;
-    base = snd (CoqName.assoc_names r.state_name)} in
-  let env = env
-    |> FullEnvi.Descriptor.assoc r.state_name
-    |> FullEnvi.Reference.assoc r.name Effect.pure state_path in
+  let env = FullEnvi.Descriptor.assoc r.state_name env in
+  let global_state = FullEnvi.Descriptor.bound Loc.Unknown
+    (PathName.of_name [] @@ CoqName.ocaml_name r.state_name) env in
+  let state = FullEnvi.Descriptor.bound Loc.Unknown
+    (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
+  let descriptor = Effect.Descriptor.union [
+    Effect.Descriptor.singleton state [Type.pure_type r.typ];
+    Effect.Descriptor.singleton global_state [];
+  ] in
+  let effect = { Effect.typ = Effect.Type.Pure; descriptor } in
+  let env = FullEnvi.Var.assoc r.name effect env in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =
-  nest (!^ "Definition" ^^ CoqName.to_coq r.name ^^
-    !^ ":" ^^ !^ "OCaml.Effect.State.t" ^^ Type.to_coq true r.typ ^^ !^ ":=" ^^
-    !^ "OCaml.Effect.State.init" ^^ Exp.to_coq true r.expr ^-^ !^ ".")
-  ^^ newline ^^
   nest (!^ "Definition" ^^ CoqName.to_coq r.state_name ^^ !^ ":=" ^^
-    !^ "OCaml.Effect.State.state nat" ^-^ !^ ".")
+    !^ "OCaml.Effect.State.global_state" ^-^ !^ ".")
+  ^^ newline ^^
+  nest (!^ "Definition" ^^ CoqName.to_coq r.name ^^
+    !^ ": M [ OCaml.Effect.State.state" ^^ Type.to_coq true r.typ ^-^ !^ ";" ^^
+      CoqName.to_coq r.state_name ^^ !^ "]" ^^
+    group (!^ "(OCaml.Effect.State.t" ^^ Type.to_coq true r.typ ^-^ !^ ") :=") ^^
+    !^ "OCaml.Effect.State.global" ^^ Exp.to_coq true r.expr ^-^ !^ ".")
