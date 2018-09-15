@@ -747,12 +747,6 @@ Module State.
           default_value := x
         |}, (x :: l, tt)).
 
-  Definition init {A : Type} (x : A) : t A :=
-    {| pos := 0; default_value := x |}.
-
-  Definition peekstate {A : Type} (x : unit) : M [ state A ] (list A) :=
-    fun s => (inl (fst s), s).
-
   Definition global_state : Effect.t :=
     {| Effect.S := option nat; Effect.E := Empty_set |}.
 

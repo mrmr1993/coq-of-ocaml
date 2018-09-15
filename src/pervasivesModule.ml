@@ -109,7 +109,6 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* State *)
   |> Descriptor.add ["Effect"; "State"] "state"
   |> Typ.add ["Effect"; "State"] "t"
-  |> Var.add ["Effect"; "State"] "peekstate" pure
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"
     (arrow (typ_d 0) Pure)
