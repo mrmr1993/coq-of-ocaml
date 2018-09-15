@@ -54,19 +54,16 @@ Definition new_ref (x : unit)
   : M [ OCaml.Effect.State.state Z ] (OCaml.Effect.State.t Z) :=
   OCaml.Pervasives.ref 15.
 
-Definition r : OCaml.Effect.State.t Z := OCaml.Effect.State.init 18.
-Definition r_state := OCaml.Effect.State.state nat.
+Definition r_state := OCaml.Effect.State.global_state.
+Definition r : M [ OCaml.Effect.State.state Z; r_state ]
+  (OCaml.Effect.State.t Z) := OCaml.Effect.State.global 18.
 
 Definition set_r (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] unit :=
-  let! x_1 :=
-    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-    lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+  let! x_1 := r in
   lift [_;_] "10" (set_ref x_1).
 
 Definition get_r (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] Z :=
-  let! x_1 :=
-    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-    lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+  let! x_1 := r in
   lift [_;_] "10" (get_ref x_1).
 
 Definition r_add_15 (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] Z :=
@@ -74,13 +71,9 @@ Definition r_add_15 (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] Z :=
   let! _ := set_r tt in
   let! j := get_r tt in
   let! _ :=
-    let! x_1 :=
-      let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-      lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+    let! x_1 := r in
     lift [_;_] "10" (OCaml.Effect.State.write x_1 (Z.add i j)) in
-  let! x_1 :=
-    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-    lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+  let! x_1 := r in
   lift [_;_] "10" (OCaml.Effect.State.read x_1).
 
 Definition mixed_type {es_in : list Effect.t} (x : unit)
@@ -136,9 +129,7 @@ Definition mixed_type {es_in : list Effect.t} (x : unit)
     in
   let! x_3 :=
     @Union.lift _ _ _ [_;_;_] 0
-      (let! x_3 :=
-        let! x_3 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-        lift [_;_] "01" (OCaml.Effect.State.global r x_3) in
+      (let! x_3 := r in
       lift [_;_] "10" (OCaml.Effect.State.read x_3)) in
   ret (x_1, x_2, x_3).
 
@@ -157,9 +148,7 @@ Definition partials_test {es_in : list Effect.t} (x : unit)
       ret x in
     let! f1_test :=
       @Union.lift _ _ _ [_;_] 0
-        (let! x_1 :=
-          let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-          lift [_;_] "01" (OCaml.Effect.State.global r x_1) in
+        (let! x_1 := r in
         ret (f1 x_1)) in
     lift [_;_] "10"
       (let! f1_test := @Union.lift _ _ _ [_;_] 0 (f1_test 15) in

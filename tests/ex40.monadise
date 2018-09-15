@@ -8,58 +8,7 @@ Value
         Monad
           ([ (OCaml.Effect.State.state, Z); a_state ],
             Type (OCaml.Effect.State.t, Type (Z)))),
-        Match
-          (?, Variable (?, x),
-            [
-              (Constructor (tt),
-                Bind
-                  (?,
-                    Lift
-                      (?,
-                        [
-                          (OCaml.Effect.State.state,
-                            Z)
-                        ],
-                        [
-                          (OCaml.Effect.State.state,
-                            Z);
-                          a_state
-                        ],
-                        Apply
-                          (?,
-                            Variable
-                              (?,
-                                OCaml.Effect.State.peekstate),
-                            [
-                              Tuple
-                                (?)
-                            ])),
-                    Some
-                      x_1,
-                    Lift
-                      (?,
-                        [
-                          a_state
-                        ],
-                        [
-                          (OCaml.Effect.State.state,
-                            Z);
-                          a_state
-                        ],
-                        Apply
-                          (?,
-                            Variable
-                              (?,
-                                OCaml.Effect.State.global),
-                            [
-                              Variable
-                                (4,
-                                  a);
-                              Variable
-                                (?,
-                                  x_1)
-                            ]))))
-            ]))
+        Match (?, Variable (?, x), [ (Constructor (tt), Variable (4, a)) ]))
     ])
 
 5 Reference (a (= a_1), a_state_1, Type (string), Constant (5, String("test")))
@@ -72,58 +21,7 @@ Value
         Monad
           ([ (OCaml.Effect.State.state, string); a_state_1 ],
             Type (OCaml.Effect.State.t, Type (string)))),
-        Match
-          (?, Variable (?, x),
-            [
-              (Constructor (tt),
-                Bind
-                  (?,
-                    Lift
-                      (?,
-                        [
-                          (OCaml.Effect.State.state,
-                            string)
-                        ],
-                        [
-                          (OCaml.Effect.State.state,
-                            string);
-                          a_state_1
-                        ],
-                        Apply
-                          (?,
-                            Variable
-                              (?,
-                                OCaml.Effect.State.peekstate),
-                            [
-                              Tuple
-                                (?)
-                            ])),
-                    Some
-                      x_1,
-                    Lift
-                      (?,
-                        [
-                          a_state_1
-                        ],
-                        [
-                          (OCaml.Effect.State.state,
-                            string);
-                          a_state_1
-                        ],
-                        Apply
-                          (?,
-                            Variable
-                              (?,
-                                OCaml.Effect.State.global),
-                            [
-                              Variable
-                                (6,
-                                  a_1);
-                              Variable
-                                (?,
-                                  x_1)
-                            ]))))
-            ]))
+        Match (?, Variable (?, x), [ (Constructor (tt), Variable (6, a_1)) ]))
     ])
 
 8 Value (non_rec, @., [ ((d, [ ], [ ], Type (Z)), Constant (8, Int(15))) ])

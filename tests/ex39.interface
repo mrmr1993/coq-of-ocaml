@@ -4,28 +4,35 @@
     "Interface",
     "Ex39",
     [
-      [ "Var", "get_local_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "set_local_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "add_multiple_by_refs", [ [], [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "set_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "get_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "update_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Var", "new_ref", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
-      [ "Reference", "r", "r_state" ],
-      [ "Var", "set_r", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ],
-      [ "Var", "get_r", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ],
-      [ "Var", "r_add_15", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ],
+      [ "Var", "get_local_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Var", "set_local_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [
+        "Var",
+        "add_multiple_by_refs",
+        [ [ [], [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ]
+      ],
+      [ "Var", "set_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Var", "get_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Var", "update_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Var", "new_ref", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Descriptor", "r_state" ],
+      [ "Var", "r", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ], [] ] ],
+      [ "Var", "set_r", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ],
+      [ "Var", "get_r", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ],
+      [ "Var", "r_add_15", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ],
       [
         "Var",
         "mixed_type",
         [
           [
             [
-              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ],
-              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "bool" ] ],
-              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ]
-            ],
-            [ "r_state" ]
+              [
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ],
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "bool" ] ],
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ]
+              ],
+              [ "r_state" ]
+            ]
           ]
         ]
       ],
@@ -35,42 +42,48 @@
         [
           [
             [
-              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ],
-              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "Z" ] ] ]
-            ],
-            [ "r_state" ]
+              [
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ],
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "Z" ] ] ]
+              ],
+              [ "r_state" ]
+            ]
           ]
         ]
       ],
-      [ "Var", "multiple_returns_test", [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ],
+      [ "Var", "multiple_returns_test", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
       [
         "Var",
         "type_vars_test",
         [
-          [],
-          [],
-          [],
           [
-            [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ],
-            [ "Apply", "OCaml.Effect.State.state", [ "Variable", "B" ] ]
+            [],
+            [],
+            [],
+            [
+              [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ],
+              [ "Apply", "OCaml.Effect.State.state", [ "Variable", "B" ] ]
+            ]
           ]
         ]
       ],
-      [ "Var", "resolves_test1", [ [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ] ] ] ],
+      [ "Var", "resolves_test1", [ [ [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ] ] ] ] ],
       [
         "Var",
         "resolves_test2",
         [
-          [],
-          [],
-          [],
           [
-            [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ],
-            [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ]
+            [],
+            [],
+            [],
+            [
+              [ "Apply", "OCaml.Effect.State.state", [ "Variable", "A" ] ],
+              [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ]
+            ]
           ]
         ]
       ],
-      [ "Var", "resolves_test3", [ [], [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ]
+      [ "Var", "resolves_test3", [ [ [], [], [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ]
     ]
   ]
 }
