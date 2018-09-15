@@ -1,0 +1,587 @@
+2
+Value
+  (non_rec, @.,
+    [
+      ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ], Type (Z)),
+        LetVar (3, Effect ([ (OCaml.Effect.State.state, Z) ], .)) y =
+          Apply
+            ((3, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+              Variable
+                ((3,
+                  Effect
+                    ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
+                  OCaml.Pervasives.ref),
+              [ Constant ((3, Effect ([ ], .)), Int(0)) ]) in
+        Sequence
+          ((4, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+            For
+              ((4, Effect ([ (OCaml.Effect.State.state, Z) ], .)), i,
+                true, Variable ((4, Effect ([ ], .)), a),
+                Variable ((4, Effect ([ ], .)), b),
+                Apply
+                  ((5, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+                    Variable
+                      ((5,
+                        Effect
+                          ([ ],
+                            . ->
+                              .
+                                -[
+                                  (OCaml.Effect.State.state,
+                                    Z)
+                                ]-> .)),
+                        OCaml.Effect.State.write),
+                    [
+                      Variable ((5, Effect ([ ], .)), y);
+                      Apply
+                        ((5,
+                          Effect
+                            ([
+                              (OCaml.Effect.State.state,
+                                Z)
+                            ],
+                              .)),
+                          Variable
+                            ((5,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              Z.add),
+                          [
+                            Apply
+                              ((5,
+                                Effect
+                                  ([
+                                    (OCaml.Effect.State.state,
+                                      Z)
+                                  ],
+                                    .)),
+                                Variable
+                                  ((5,
+                                    Effect
+                                      ([
+                                      ],
+                                        .
+                                          -[
+                                            (OCaml.Effect.State.state,
+                                              Z)
+                                          ]->
+                                          .)),
+                                    OCaml.Effect.State.read),
+                                [
+                                  Variable
+                                    ((5,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      y)
+                                ]);
+                            Constant
+                              ((5,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                Int(1))
+                          ])
+                    ])),
+            Apply
+              ((7, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+                Variable
+                  ((7,
+                    Effect
+                      ([ ],
+                        . -[ (OCaml.Effect.State.state, Z) ]->
+                          .)), OCaml.Effect.State.read),
+                [ Variable ((7, Effect ([ ], .)), y) ])))
+    ])
+
+9
+Value
+  (non_rec, @.,
+    [
+      ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ], Type (list, Type (bool))),
+        LetVar (10, Effect ([ (OCaml.Effect.State.state, (list, bool)) ], .))
+          a =
+          Apply
+            ((10, Effect ([ (OCaml.Effect.State.state, (list, bool)) ], .)),
+              Variable
+                ((10,
+                  Effect
+                    ([ ],
+                      .
+                        -[
+                          (OCaml.Effect.State.state,
+                            (list,
+                              bool))
+                        ]-> .)), OCaml.Pervasives.ref),
+              [ Constructor ((10, Effect ([ ], .)), []) ]) in
+        Sequence
+          ((11, Effect ([ (OCaml.Effect.State.state, (list, bool)) ], .)),
+            For
+              ((11,
+                Effect
+                  ([ (OCaml.Effect.State.state, (list, bool)) ], .)),
+                i, true, Constant ((11, Effect ([ ], .)), Int(0)),
+                Variable ((11, Effect ([ ], .)), x),
+                Sequence
+                  ((12,
+                    Effect
+                      ([
+                        (OCaml.Effect.State.state,
+                          (list,
+                            bool))
+                      ], .)),
+                    For
+                      ((12,
+                        Effect
+                          ([
+                            (OCaml.Effect.State.state,
+                              (list,
+                                bool))
+                          ], .)), j, true,
+                        Constant
+                          ((12, Effect ([ ], .)), Int(0)),
+                        Variable ((12, Effect ([ ], .)), y),
+                        Apply
+                          ((13,
+                            Effect
+                              ([
+                                (OCaml.Effect.State.state,
+                                  (list,
+                                    bool))
+                              ], .)),
+                            Variable
+                              ((13,
+                                Effect
+                                  ([ ],
+                                    . ->
+                                      .
+                                        -[
+                                          (OCaml.Effect.State.state,
+                                            (list,
+                                              bool))
+                                        ]-> .)),
+                                OCaml.Effect.State.write),
+                            [
+                              Variable
+                                ((13,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  a);
+                              Constructor
+                                ((13,
+                                  Effect
+                                    ([
+                                      (OCaml.Effect.State.state,
+                                        (list,
+                                          bool))
+                                    ],
+                                      .)),
+                                  cons,
+                                  Constructor
+                                    ((13,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      true),
+                                  Apply
+                                    ((13,
+                                      Effect
+                                        ([
+                                          (OCaml.Effect.State.state,
+                                            (list,
+                                              bool))
+                                        ],
+                                          .)),
+                                      Variable
+                                        ((13,
+                                          Effect
+                                            ([
+                                            ],
+                                              .
+                                                -[
+                                                  (OCaml.Effect.State.state,
+                                                    (list,
+                                                      bool))
+                                                ]->
+                                                .)),
+                                          OCaml.Effect.State.read),
+                                      [
+                                        Variable
+                                          ((13,
+                                            Effect
+                                              ([
+                                              ],
+                                                .)),
+                                            a)
+                                      ]))
+                            ])),
+                    Apply
+                      ((15,
+                        Effect
+                          ([
+                            (OCaml.Effect.State.state,
+                              (list,
+                                bool))
+                          ], .)),
+                        Variable
+                          ((15,
+                            Effect
+                              ([ ],
+                                . ->
+                                  .
+                                    -[
+                                      (OCaml.Effect.State.state,
+                                        (list,
+                                          bool))
+                                    ]-> .)),
+                            OCaml.Effect.State.write),
+                        [
+                          Variable
+                            ((15,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              a);
+                          Constructor
+                            ((15,
+                              Effect
+                                ([
+                                  (OCaml.Effect.State.state,
+                                    (list,
+                                      bool))
+                                ],
+                                  .)),
+                              cons,
+                              Constructor
+                                ((15,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  false),
+                              Apply
+                                ((15,
+                                  Effect
+                                    ([
+                                      (OCaml.Effect.State.state,
+                                        (list,
+                                          bool))
+                                    ],
+                                      .)),
+                                  Variable
+                                    ((15,
+                                      Effect
+                                        ([
+                                        ],
+                                          .
+                                            -[
+                                              (OCaml.Effect.State.state,
+                                                (list,
+                                                  bool))
+                                            ]->
+                                            .)),
+                                      OCaml.Effect.State.read),
+                                  [
+                                    Variable
+                                      ((15,
+                                        Effect
+                                          ([
+                                          ],
+                                            .)),
+                                        a)
+                                  ]))
+                        ]))),
+            Apply
+              ((17,
+                Effect
+                  ([ (OCaml.Effect.State.state, (list, bool)) ], .)),
+                Variable
+                  ((17,
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            (OCaml.Effect.State.state,
+                              (list,
+                                bool))
+                          ]-> .)), OCaml.Effect.State.read),
+                [ Variable ((17, Effect ([ ], .)), a) ])))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((raises, [ ], [ (x, Type (Z)) ], Type (unit)),
+        For
+          ((20, Effect ([ OCaml.Failure ], .)), i, true,
+            Constant ((20, Effect ([ ], .)), Int(0)),
+            Variable ((20, Effect ([ ], .)), x),
+            Apply
+              ((21, Effect ([ OCaml.Failure ], .)),
+                Variable
+                  ((21, Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                    OCaml.Pervasives.failwith),
+                [
+                  Constant
+                    ((21, Effect ([ ], .)),
+                      String("x is not less than 0"))
+                ])))
+    ])
+
+24
+Value
+  (non_rec, @.,
+    [
+      ((argument_effects, [ ],
+        [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
+        Type (Z)),
+        LetVar (25, Effect ([ (OCaml.Effect.State.state, Z) ], .)) y =
+          Apply
+            ((25, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+              Variable
+                ((25,
+                  Effect
+                    ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
+                  OCaml.Pervasives.ref),
+              [ Variable ((25, Effect ([ ], .)), y) ]) in
+        LetVar (26, Effect ([ (OCaml.Effect.State.state, Z) ], .)) z =
+          Apply
+            ((26, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+              Variable
+                ((26,
+                  Effect
+                    ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
+                  OCaml.Pervasives.ref),
+              [ Constant ((26, Effect ([ ], .)), Int(0)) ]) in
+        Sequence
+          ((27, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+            For
+              ((27, Effect ([ (OCaml.Effect.State.state, Z) ], .)), i,
+                true, Constant ((27, Effect ([ ], .)), Int(0)),
+                Apply
+                  ((27,
+                    Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+                    Variable
+                      ((27,
+                        Effect
+                          ([ ],
+                            .
+                              -[
+                                (OCaml.Effect.State.state,
+                                  Z)
+                              ]-> .)),
+                        OCaml.Effect.State.read),
+                    [ Variable ((27, Effect ([ ], .)), x) ]),
+                Sequence
+                  ((28,
+                    Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+                    For
+                      ((28,
+                        Effect
+                          ([ (OCaml.Effect.State.state, Z) ],
+                            .)), j, true,
+                        Constant
+                          ((28, Effect ([ ], .)), Int(0)),
+                        Apply
+                          ((28,
+                            Effect
+                              ([
+                                (OCaml.Effect.State.state,
+                                  Z)
+                              ], .)),
+                            Variable
+                              ((28,
+                                Effect
+                                  ([ ],
+                                    .
+                                      -[
+                                        (OCaml.Effect.State.state,
+                                          Z)
+                                      ]-> .)),
+                                OCaml.Effect.State.read),
+                            [
+                              Variable
+                                ((28,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  y)
+                            ]),
+                        Apply
+                          ((29,
+                            Effect
+                              ([
+                                (OCaml.Effect.State.state,
+                                  Z)
+                              ], .)),
+                            Variable
+                              ((29,
+                                Effect
+                                  ([ ],
+                                    . ->
+                                      .
+                                        -[
+                                          (OCaml.Effect.State.state,
+                                            Z)
+                                        ]-> .)),
+                                OCaml.Effect.State.write),
+                            [
+                              Variable
+                                ((29,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  z);
+                              Apply
+                                ((29,
+                                  Effect
+                                    ([
+                                      (OCaml.Effect.State.state,
+                                        Z)
+                                    ],
+                                      .)),
+                                  Variable
+                                    ((29,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Z.add),
+                                  [
+                                    Apply
+                                      ((29,
+                                        Effect
+                                          ([
+                                            (OCaml.Effect.State.state,
+                                              Z)
+                                          ],
+                                            .)),
+                                        Variable
+                                          ((29,
+                                            Effect
+                                              ([
+                                              ],
+                                                .
+                                                  -[
+                                                    (OCaml.Effect.State.state,
+                                                      Z)
+                                                  ]->
+                                                  .)),
+                                            OCaml.Effect.State.read),
+                                        [
+                                          Variable
+                                            ((29,
+                                              Effect
+                                                ([
+                                                ],
+                                                  .)),
+                                              z)
+                                        ]);
+                                    Constant
+                                      ((29,
+                                        Effect
+                                          ([
+                                          ],
+                                            .)),
+                                        Int(1))
+                                  ])
+                            ])),
+                    Apply
+                      ((31,
+                        Effect
+                          ([ (OCaml.Effect.State.state, Z) ],
+                            .)),
+                        Variable
+                          ((31,
+                            Effect
+                              ([ ],
+                                . ->
+                                  .
+                                    -[
+                                      (OCaml.Effect.State.state,
+                                        Z)
+                                    ]-> .)),
+                            OCaml.Effect.State.write),
+                        [
+                          Variable
+                            ((31,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              y);
+                          Apply
+                            ((31,
+                              Effect
+                                ([
+                                  (OCaml.Effect.State.state,
+                                    Z)
+                                ],
+                                  .)),
+                              Variable
+                                ((31,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  Z.sub),
+                              [
+                                Apply
+                                  ((31,
+                                    Effect
+                                      ([
+                                        (OCaml.Effect.State.state,
+                                          Z)
+                                      ],
+                                        .)),
+                                    Variable
+                                      ((31,
+                                        Effect
+                                          ([
+                                          ],
+                                            .
+                                              -[
+                                                (OCaml.Effect.State.state,
+                                                  Z)
+                                              ]->
+                                              .)),
+                                        OCaml.Effect.State.read),
+                                    [
+                                      Variable
+                                        ((31,
+                                          Effect
+                                            ([
+                                            ],
+                                              .)),
+                                          y)
+                                    ]);
+                                Constant
+                                  ((31,
+                                    Effect
+                                      ([
+                                      ],
+                                        .)),
+                                    Int(1))
+                              ])
+                        ]))),
+            Apply
+              ((33, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+                Variable
+                  ((33,
+                    Effect
+                      ([ ],
+                        . -[ (OCaml.Effect.State.state, Z) ]->
+                          .)), OCaml.Effect.State.read),
+                [ Variable ((33, Effect ([ ], .)), z) ])))
+    ])

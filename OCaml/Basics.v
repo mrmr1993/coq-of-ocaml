@@ -134,6 +134,34 @@ Definition raise_Undefined_recursive_module {A : Type} (x : string * Z * Z)
 Definition assert {A : Type} (b : bool) : M [Assert_failure] A :=
   raise_Assert_failure ("coq" % string, 0, 0).
 
+Definition for_to {es : list Effect.t} (start_value end_value : Z)
+  (f : Z -> M es unit) : M es unit :=
+  let fix for_to (n : nat) (value : Z) : M es unit :=
+    match n with
+    | O => f value
+    | S n => let! _ := f value in for_to n (value + 1)
+    end in
+  let difference := end_value - start_value in
+  match difference with
+  | Zneg _ => Effect.of_raw (fun s => (inl tt, s))
+  | Z0 => f start_value
+  | Zpos pos => for_to (Pos.to_nat pos) start_value
+  end.
+
+Definition for_downto {es : list Effect.t} (start_value end_value : Z)
+  (f : Z -> M es unit) : M es unit :=
+  let fix for_to (n : nat) (value : Z) : M es unit :=
+    match n with
+    | O => f value
+    | S n => let! _ := f value in for_to n (value - 1)
+    end in
+  let difference := start_value - end_value in
+  match difference with
+  | Zneg _ => Effect.of_raw (fun s => (inl tt, s))
+  | Z0 => f end_value
+  | Zpos pos => for_to (Pos.to_nat pos) end_value
+  end.
+
 (** OCaml functions are converted to their Coq's counter parts when it is
     possible. *)
 Module Pervasives.
