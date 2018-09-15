@@ -40,6 +40,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Pure)
   |> Descriptor.add [] "NonTermination"
   |> Var.add [] "not_terminated" (arrow (d [[], [], "NonTermination"]) Pure)
+  |> Var.add ["OCaml"; "Basics"] "for_to" pure
+  |> Var.add ["OCaml"; "Basics"] "for_downto" pure
 
   (* The core library *)
   (* Built-in types *)

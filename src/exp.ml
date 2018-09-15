@@ -73,6 +73,7 @@ type 'a t =
     (** Construct a record giving an expression for each field. *)
   | Field of 'a * 'a t * BoundName.t (** Access to a field of a record. *)
   | IfThenElse of 'a * 'a t * 'a t * 'a t (** The "else" part may be unit. *)
+  | For of 'a * CoqName.t * bool * 'a t * 'a t * 'a t (** For loop. *)
   | Sequence of 'a * 'a t * 'a t (** A sequence of two expressions. *)
   | Return of 'a * 'a t (** Monadic return. *)
   | Bind of 'a * 'a t * CoqName.t option * 'a t (** Monadic bind. *)
@@ -116,6 +117,9 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
     nest (!^ "Field" ^^ OCaml.tuple [pp_a a; pp e; BoundName.pp x])
   | IfThenElse (a, e1, e2, e3) ->
     nest (!^ "IfThenElse" ^^ OCaml.tuple [pp_a a; pp e1; pp e2; pp e3])
+  | For (a, name, down, e1, e2, e) ->
+    nest (!^ "For" ^^ OCaml.tuple
+      [pp_a a; CoqName.pp name; OCaml.bool down; pp e1; pp e2; pp e])
   | Sequence (a, e1, e2) ->
     nest (!^ "Sequence" ^^ OCaml.tuple [pp_a a; pp e1; pp e2])
   | Return (a, e) -> nest (!^ "Return" ^^ OCaml.tuple [pp_a a; pp e])
@@ -133,8 +137,8 @@ let annotation (e : 'a t) : 'a =
   | Constant (a, _) | Variable (a, _) | Tuple (a, _) | Constructor (a, _, _)
   | Apply (a, _, _) | Function (a, _, _) | LetVar (a, _, _, _)
   | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
-  | IfThenElse (a, _, _, _) | Sequence (a, _, _) | Return (a, _)
-  | Bind (a, _, _, _) | Lift (a, _, _, _) | Run (a, _, _, _) -> a
+  | IfThenElse (a, _, _, _) | For (a, _, _, _, _, _) | Sequence (a, _, _)
+  | Return (a, _) | Bind (a, _, _, _) | Lift (a, _, _, _) | Run (a, _, _, _) -> a
 
 let update_annotation (f : 'a -> 'a) (e : 'a t) : 'a t =
   match e with
@@ -150,6 +154,7 @@ let update_annotation (f : 'a -> 'a) (e : 'a t) : 'a t =
   | Record (a, fields, base) -> Record (f a, fields, base)
   | Field (a, e, x) -> Field (f a, e, x)
   | IfThenElse (a, e1, e2, e3) -> IfThenElse (f a, e1, e2, e3)
+  | For (a, name, down, e1, e2, e) -> For (f a, name, down, e1, e2, e)
   | Sequence (a, e1, e2) -> Sequence (f a, e1, e2)
   | Return (a, e) -> Return (f a, e)
   | Bind (a, e1, x, e2) -> Bind (f a, e1, x, e2)
@@ -174,6 +179,8 @@ let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
   | Field (a, e, x) -> Field (f a, map f e, x)
   | IfThenElse (a, e1, e2, e3) ->
     IfThenElse (f a, map f e1, map f e2, map f e3)
+  | For (a, name, down, e1, e2, e) ->
+    For (f a, name, down, map f e1, map f e2, map f e)
   | Sequence (a, e1, e2) -> Sequence (f a, map f e1, map f e2)
   | Return (a, e) -> Return (f a, map f e)
   | Bind (a, e1, x, e2) -> Bind (f a, map f e1, x, map f e2)
@@ -373,10 +380,22 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let env = Pattern.add_to_env p env in
       let e2 = of_expression env typ_vars e2 in
       (p, e2))])
+  | Texp_for (_, p, e1, e2, dir, e) ->
+    let down = match dir with
+      | Asttypes.Upto -> true
+      | Asttypes.Downto -> false in
+    let name = env |> FullEnvi.Var.coq_name @@ match p.Parsetree.ppat_desc with
+    | Parsetree.Ppat_var x -> x.Asttypes.txt
+    | Parsetree.Ppat_any -> "_"
+    | _ -> Error.raise l "A variable name instead of a pattern was expected." in
+    let env = FullEnvi.Var.assoc name () env in
+    let e1 = of_expression env typ_vars e1 in
+    let e2 = of_expression env typ_vars e2 in
+    let e = of_expression env typ_vars e in
+    For (a, name, down, e1, e2, e)
   | Texp_setfield _ -> Error.raise l "Set field not handled."
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_while _ -> Error.raise l "While loops not handled."
-  | Texp_for _ -> Error.raise l "For loops not handled."
   | Texp_assert e ->
     let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
     Apply (a, Variable (a, assert_function), [of_expression env typ_vars e])
@@ -504,6 +523,10 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
   | Field (a, e, y) -> Field (a, substitute x e' e, y)
   | IfThenElse (a, e1, e2, e3) ->
     IfThenElse (a, substitute x e' e1, substitute x e' e2, substitute x e' e3)
+  | For (a, name, down, e1, e2, e) ->
+    For (a, name, down, substitute x e' e1,
+      substitute x e' e2,
+      substitute x e' e)
   | Sequence (a, e1, e2) ->
     Sequence (a, substitute x e' e1, substitute x e' e2)
   | Run (a, y, n, e) -> Run (a, y, n, substitute x e' e)
@@ -556,6 +579,10 @@ let rec monadise_let_rec (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t)
     IfThenElse (a, monadise_let_rec env e1,
       monadise_let_rec env e2,
       monadise_let_rec env e3)
+  | For (a, name, down, e1, e2, e) ->
+    For (a, name, down, monadise_let_rec env e1,
+      monadise_let_rec env e2,
+      monadise_let_rec env e)
   | Sequence (a, e1, e2) ->
     Sequence (a, monadise_let_rec env e1,
       monadise_let_rec env e2)
@@ -803,6 +830,13 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       IfThenElse ((l, effect), e1, e2, e3)
     else
       Error.raise l "Cannot do an if on a value with functional effects."
+  | For ((l, typ), name, down, e1, e2, e) ->
+    let e1 = effects env e1 in
+    let e2 = effects env e2 in
+    let e = effects env e in
+    let effect = Effect.union ([e1; e2; e] |> List.map (fun e ->
+      snd (annotation e))) in
+    For ((l, effect), name, down, e1, e2, e)
   | Sequence ((l, typ), e1, e2) ->
     let e1 = effects env e1 in
     let effect_e1 = snd (annotation e1) in
@@ -975,6 +1009,16 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         let e3 = lift d3 d (monadise env e3) in
         IfThenElse (l, e1, e2, e3)
       | _ -> failwith "Wrong answer from 'monadise_list'.")
+  | For ((l, _), name, down, e1, e2, e) ->
+    monadise_list env [e1; e2] d [] (fun es' ->
+      match es' with
+      | [e1; e2] ->
+        let e = lift (descriptor e) d (monadise env e) in
+        let for_name = if down then "for_to" else "for_downto" in
+        let bound_for = FullEnvi.Var.localize env ["OCaml"; "Basics"] for_name in
+        Apply (l, Variable (Loc.Unknown, bound_for),
+          [e1; e2; Function (Loc.Unknown, name, e)])
+      | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in
@@ -1050,6 +1094,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       indent (to_coq false e2) ^^ newline ^^
       !^ "else" ^^ newline ^^
       indent (to_coq false e3))
+  | For _ -> failwith "Cannot output for statement: should have already been converted."
   | Sequence (_, e1, e2) ->
     nest (to_coq true e1 ^-^ !^ ";" ^^ newline ^^ to_coq false e2)
   | Run (_, x, d, e) ->
