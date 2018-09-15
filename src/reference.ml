@@ -4,6 +4,7 @@ open SmartPrint
 type 'a t = {
   name : CoqName.t;
   state_name : CoqName.t;
+  effect : Effect.t;
   typ : Type.t;
   expr : 'a Exp.t }
 
@@ -29,36 +30,36 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
     let name = Name.of_ident x in
     let state_name = name ^ "_state" in
     let (name, _, env) = FullEnvi.Var.create name () env in
-    let (state_name, _, env) = FullEnvi.Descriptor.fresh state_name env in
+    let (state_name, bound_state, env) =
+      FullEnvi.Descriptor.fresh state_name env in
+    let state = FullEnvi.Descriptor.bound loc
+      (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
+    let typ = Type.of_type_expr env loc typ in
+    let descriptor = Effect.Descriptor.union [
+      Effect.Descriptor.singleton state [Type.pure_type typ];
+      Effect.Descriptor.singleton bound_state [];
+    ] in
+    let effect = { Effect.typ = Effect.Type.Pure; descriptor } in
     { name = name;
       state_name = state_name;
-      typ = Type.of_type_expr env loc typ;
+      effect;
+      typ = typ;
       expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
-  let state_path = {PathName.path = FullEnvi.coq_path env;
-    base = snd (CoqName.assoc_names r.state_name)} in
   let env = env
     |> FullEnvi.Descriptor.assoc r.state_name
-    |> FullEnvi.Reference.assoc r.name () state_path in
+    |> FullEnvi.Var.assoc r.name () in
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Effect.t FullEnvi.t)
   : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
-  let env = FullEnvi.Descriptor.assoc r.state_name env in
-  let global_state = FullEnvi.Descriptor.bound Loc.Unknown
-    (PathName.of_name [] @@ CoqName.ocaml_name r.state_name) env in
-  let state = FullEnvi.Descriptor.bound Loc.Unknown
-    (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
-  let descriptor = Effect.Descriptor.union [
-    Effect.Descriptor.singleton state [Type.pure_type r.typ];
-    Effect.Descriptor.singleton global_state [];
-  ] in
-  let effect = { Effect.typ = Effect.Type.Pure; descriptor } in
-  let env = FullEnvi.Var.assoc r.name effect env in
+  let env = env
+    |> FullEnvi.Descriptor.assoc r.state_name
+    |> FullEnvi.Var.assoc r.name r.effect in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =

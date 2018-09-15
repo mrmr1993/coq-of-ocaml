@@ -38,7 +38,6 @@ end
 
 type t =
   | Var of CoqName.t * Effect.t
-  | Reference of CoqName.t * CoqName.t
   | Typ of CoqName.t
   | Descriptor of CoqName.t
   | Exception of CoqName.t * CoqName.t
@@ -52,8 +51,6 @@ let rec pp (interface : t) : SmartPrint.t =
   match interface with
   | Var (x, shape) ->
     !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.pp shape]
-  | Reference (x, state_name) ->
-    !^ "Reference" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp state_name]
   | Typ x -> !^ "Typ" ^^ CoqName.pp x
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
   | Exception (x, raise_name) ->
@@ -108,7 +105,8 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
   | Structure.Exception (_, exn) ->
     [Exception (exn.Exception.name, exn.Exception.raise_name)]
   | Structure.Reference (_, r) ->
-    [Reference (r.Reference.name, r.Reference.state_name)]
+    [Descriptor r.Reference.state_name;
+     Var (r.Reference.name, r.Reference.effect)]
   | Structure.Open _ -> []
   | Structure.Include (_, name) -> [Include name.local_path]
   | Structure.Module (_, name, defs) ->
@@ -131,11 +129,6 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
             else bound_path in
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
     FullEnvi.Var.assoc x effect env
-  | Reference (name, state_name) ->
-    env |> Reference.update_env_with_effects
-        { Reference.name; state_name; typ = Type.Variable "_";
-          expr = Exp.Tuple ((Loc.Unknown, Type.Variable "_"), []) }
-      |> fst
   | Typ x -> FullEnvi.Typ.assoc x Effect.pure env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
   | Exception (name, raise_name) ->
@@ -178,8 +171,6 @@ module Version1 = struct
       let x = CoqName.ocaml_name x in
       let shape = Shape.of_effect_typ shape.Effect.typ in
       `List [`String "Var"; Name.to_json x; Shape.to_json shape]
-    | Reference (name, state_name) ->
-      failwith "Cannot output references in V1 interfaces. Please use a newer version."
     | Typ x ->
       let x = CoqName.ocaml_name x in
       `List [`String "Typ"; Name.to_json x]
@@ -234,8 +225,6 @@ let rec to_json (interface : t) : json =
   match interface with
   | Var (x, eff) ->
     `List [`String "Var"; CoqName.to_json x; Effect.to_json eff]
-  | Reference (name, state_name) ->
-    `List [`String "Reference"; CoqName.to_json name; CoqName.to_json state_name]
   | Typ x -> `List [`String "Typ"; CoqName.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
   | Exception (name, raise_name) ->
@@ -252,8 +241,6 @@ let rec of_json (json : json) : t =
   match json with
   | `List [`String "Var"; x; eff] ->
     Var (CoqName.of_json x, Effect.of_json eff)
-  | `List [`String "Reference"; name; state_name] ->
-    Reference (CoqName.of_json name, CoqName.of_json state_name)
   | `List [`String "Typ"; x] -> Typ (CoqName.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
   | `List [`String "Exception"; name; raise_name] ->
