@@ -5,10 +5,10 @@ type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
   active_module : FullMod.t;
-  load_module : Name.t -> Effect.Type.t t -> Effect.Type.t t;
+  load_module : Name.t -> Effect.t t -> Effect.t t;
   run_in_external :
-    'b. (Effect.Type.t t -> 'b * Effect.Type.t t) -> 'a t -> 'b option;
-  convert : Effect.Type.t -> 'a;
+    'b. (Effect.t t -> 'b * Effect.t t) -> 'a t -> 'b option;
+  convert : Effect.t -> 'a;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref;
@@ -75,8 +75,8 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
 let has_global_value (env : 'a t) (x : PathName.t) =
   PathName.Map.mem x env.values
 
-let localize_type (env : 'a t) (typ : Effect.Type.t) : Effect.Type.t =
-  Effect.Type.map (localize (has_value env) env) typ
+let localize_effects (env : 'a t) (typ : Effect.t) : Effect.t =
+  Effect.map (localize (has_value env) env) typ
 
 let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
   env1.required_modules := Name.Set.union !(env1.required_modules)
@@ -250,7 +250,6 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
 end
 
 module Var = ValueCarrier(Mod.Vars)
-module Typ = ValueCarrier(Mod.Typs)
 
 module Function = struct
   include Carrier(Mod.Vars)
@@ -297,51 +296,6 @@ module Function = struct
     (coq_name, bound_name, assoc coq_name v typ env)
 end
 
-module Reference = struct
-  include Carrier(Mod.Vars)
-
-  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a)
-    (state_name : PathName.t) (env : 'a t) : 'a t =
-    { env with
-      values = PathName.Map.add y (Mod.Reference.value v state_name) env.values;
-      active_module = FullMod.hd_mod_map (Mod.Reference.assoc x y)
-        env.active_module }
-
-  let add (path : Name.t list) (base : Name.t) (v : 'a)
-    (state_name : PathName.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) v state_name
-      env
-
-  let assoc (name : CoqName.t) (v : 'a) (state_name : PathName.t) (env : 'a t)
-    : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) v state_name env
-
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : PathName.t option =
-    Mod.Reference.unpack @@ find loc x env
-
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (state_name : PathName.t) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name v state_name env)
-
-  let create (prefix : string) (v : 'a) (state_name : PathName.t) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    let coq_name = CoqName.of_names prefix name in
-    (coq_name, bound_name, assoc coq_name v state_name env)
-end
-
 module EmptyCarrier (M : Mod.EmptyCarrier) = struct
   include Carrier(M)
   let raw_add (x : PathName.t) (y : PathName.t) (env : 'a t) : 'a t =
@@ -376,6 +330,7 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
     (coq_name, bound_name, assoc coq_name env)
 end
 
+module Typ = EmptyCarrier(Mod.Typs)
 module Descriptor = EmptyCarrier(Mod.Descriptors)
 module Constructor = EmptyCarrier(Mod.Constructors)
 module Field = EmptyCarrier(Mod.Fields)
@@ -531,14 +486,14 @@ let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   |> Var.add path ("raise_" ^ base) ()
 
 let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (env : Effect.Type.t t) : Effect.Type.t t =
+  (env : Effect.t t) : Effect.t t =
   let raise_path = {PathName.path = coq_path env @ path;
     base = "raise_" ^ base} in
   let env = Exception.add path base raise_path env in
   let descriptor = PathName.of_name path base in
   let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
-  let effect_typ =
-    Effect.Type.Arrow (
+  let effect =
+    Effect.eff @@ Effect.Type.Arrow (
       Effect.Descriptor.singleton bound_descriptor [],
       Effect.Type.Pure) in
-  Var.add path ("raise_" ^ base) effect_typ env
+  Var.add path ("raise_" ^ base) effect env

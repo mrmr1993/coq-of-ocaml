@@ -35,6 +35,6 @@ let update_env (prim : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   FullEnvi.Var.assoc prim.name () env
 
 (* TODO: Update to reflect that primitives are not usually pure. *)
-let update_env_with_effects (prim : t) (env : Effect.Type.t FullEnvi.t)
-  : Effect.Type.t FullEnvi.t =
-  FullEnvi.Var.assoc prim.name Effect.Type.Pure env
+let update_env_with_effects (prim : t) (env : Effect.t FullEnvi.t)
+  : Effect.t FullEnvi.t =
+  FullEnvi.Var.assoc prim.name Effect.pure env

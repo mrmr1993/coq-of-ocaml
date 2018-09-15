@@ -40,7 +40,7 @@ let rec of_ocaml (env : unit FullEnvi.t) (signature : signature)
     | Sig_type (name, typ, _) ->
       let loc = Loc.of_location typ.type_loc in
       let typ = TypeDefinition.of_declaration env loc name typ in
-      let env = TypeDefinition.update_env typ () env in
+      let env = TypeDefinition.update_env typ env in
       (env, TypeDefinition (loc, typ))
     | Sig_module (name, { md_type = Mty_signature signature; md_loc = loc }, _) ->
       let loc = Loc.of_location loc in
@@ -87,8 +87,7 @@ let rec update_env (decls : t list) (a : 'a) (env : 'a FullEnvi.t)
   let rec update_env_one (env : 'a FullEnvi.t) (decl : t) =
     match decl with
     | Value (loc, name, typ_vars, typ) -> FullEnvi.Var.assoc name a env
-    | TypeDefinition (loc, typ_def) ->
-      TypeDefinition.update_env typ_def a env
+    | TypeDefinition (loc, typ_def) -> TypeDefinition.update_env typ_def env
     | Module (loc, name, decls) ->
       env |> FullEnvi.enter_module name
         |> update_env decls a

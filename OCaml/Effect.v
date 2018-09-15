@@ -747,17 +747,18 @@ Module State.
           default_value := x
         |}, (x :: l, tt)).
 
-  Definition init {A : Type} (x : A) : t A :=
-    {| pos := 0; default_value := x |}.
+  Definition global_state : Effect.t :=
+    {| Effect.S := option nat; Effect.E := Empty_set |}.
 
-  Definition peekstate {A : Type} (x : unit) : M [ state A ] (list A) :=
-    fun s => (inl (fst s), s).
-
-  Definition global {A : Type} (x : t A) (l : list A)
-    : M [ state nat] (t A) :=
+  Definition global {A : Type} (x : A) : M [ state A; global_state ] (t A) :=
     fun s =>
-      let n := match fst s with | [n] => n | _ => length l end in
-      (inl {| pos := n; default_value := default_value x |}, ([n], tt)).
+      let (l, s) := s in
+      let (s, _) := s in
+      let (l, n) := match s with
+        | Some n => (l, n)
+        | None => (x :: l, length l)
+        end in
+      (inl {| pos := n; default_value := x |}, (l, (Some n, tt))).
 
   Set Implicit Arguments.
 End State.

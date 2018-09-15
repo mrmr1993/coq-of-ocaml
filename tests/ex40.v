@@ -4,28 +4,25 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition a : OCaml.Effect.State.t Z := OCaml.Effect.State.init 15.
-Definition a_state := OCaml.Effect.State.state nat.
+Definition a_state := OCaml.Effect.State.global_state.
+Definition a : M [ OCaml.Effect.State.state Z; a_state ]
+  (OCaml.Effect.State.t Z) := OCaml.Effect.State.global 15.
 
 Definition b (x : unit)
   : M [ OCaml.Effect.State.state Z; a_state ] (OCaml.Effect.State.t Z) :=
   match x with
-  | tt =>
-    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-    lift [_;_] "01" (OCaml.Effect.State.global a x_1)
+  | tt => a
   end.
 
-Definition a_1 : OCaml.Effect.State.t string := OCaml.Effect.State.init
-  "test" % string.
-Definition a_state_1 := OCaml.Effect.State.state nat.
+Definition a_state_1 := OCaml.Effect.State.global_state.
+Definition a_1 : M [ OCaml.Effect.State.state string; a_state_1 ]
+  (OCaml.Effect.State.t string) := OCaml.Effect.State.global "test" % string.
 
 Definition c (x : unit)
   : M [ OCaml.Effect.State.state string; a_state_1 ]
     (OCaml.Effect.State.t string) :=
   match x with
-  | tt =>
-    let! x_1 := lift [_;_] "10" (OCaml.Effect.State.peekstate tt) in
-    lift [_;_] "01" (OCaml.Effect.State.global a_1 x_1)
+  | tt => a_1
   end.
 
 Definition d : Z := 15.

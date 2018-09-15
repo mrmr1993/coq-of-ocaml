@@ -5,8 +5,7 @@ module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
-    | Reference of 'a * PathName.t
-    | Type of 'a
+    | Type
     | Descriptor
     | Exception of PathName.t
     | Constructor
@@ -16,8 +15,7 @@ module Value = struct
     match v with
     | Variable a -> Variable (f a)
     | Function (a, typ) -> Function (f a, typ)
-    | Reference (a, state_name) -> Reference (f a, state_name)
-    | Type a -> Type (f a)
+    | Type -> Type
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
     | Constructor -> Constructor
@@ -27,8 +25,7 @@ module Value = struct
     match v with
     | Variable _ -> "variable"
     | Function _ -> "function"
-    | Reference _ -> "reference"
-    | Type _ -> "type"
+    | Type -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
     | Constructor -> "constructor"
@@ -147,7 +144,6 @@ module Vars = struct
     match v with
     | Variable a -> a
     | Function (a, _) -> a
-    | Reference (a, _) -> a
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Function = struct
@@ -160,36 +156,16 @@ module Function = struct
     match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ
-    | Reference _ -> None
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
-end
-module Reference = struct
-  let value (v : 'a) (state_name : PathName.t) : 'a Value.t =
-    Reference (v, state_name)
-
-  let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
-    { m with vars = PathName.Map.add x y m.vars }
-
-  let unpack (v : 'a Value.t) : PathName.t option =
-    match v with
-    | Variable _ -> None
-    | Function _ -> None
-    | Reference (_, state_name) -> Some state_name
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end
 module Typs = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.typs
 
-  let value (v : 'a) : 'a Value.t = Type v
+  let value : 'a Value.t = Type
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with typs = PathName.Map.add x y m.typs }
-
-  let unpack (v : 'a Value.t) : 'a =
-    match v with
-    | Type a -> a
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."
 end
 module Descriptors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
