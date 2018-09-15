@@ -30,7 +30,7 @@ let pp (def : t) : SmartPrint.t =
 
 let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
   (name : Ident.t) (typ : Types.type_declaration) : t =
-  let (x, _, env) = FullEnvi.Typ.create (Name.of_ident name) () env in
+  let (x, _, env) = FullEnvi.Typ.create (Name.of_ident name) env in
   let typ_args =
     List.map (Type.of_type_expr_variable loc) typ.type_params in
   (match typ.type_kind with
@@ -65,19 +65,19 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   | [{typ_id = name; typ_type = typ}] -> of_declaration env loc name typ
   | typ :: _ :: _ -> Error.raise loc "Type definition with 'and' not handled."
 
-let update_env (def : t) (v : 'a) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
+let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   match def with
   | Inductive (name, _, constructors) ->
-    let env = FullEnvi.Typ.assoc name v env in
+    let env = FullEnvi.Typ.assoc name env in
     List.fold_left (fun env (x, _) ->
       FullEnvi.Constructor.assoc x env)
       env constructors
   | Record (name, fields) ->
-    let env = FullEnvi.Typ.assoc name v env in
+    let env = FullEnvi.Typ.assoc name env in
     List.fold_left (fun env (x, _) -> FullEnvi.Field.assoc x env)
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
-    FullEnvi.Typ.assoc name v env
+    FullEnvi.Typ.assoc name env
 
 let to_coq (def : t) : SmartPrint.t =
   match def with

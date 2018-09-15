@@ -92,7 +92,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       (env, Value (loc, def))
     | Tstr_type (_, typs) ->
       let def = TypeDefinition.of_ocaml env loc typs in
-      let env = TypeDefinition.update_env def () env in
+      let env = TypeDefinition.update_env def env in
       (env, TypeDefinition (loc, def))
     | Tstr_exception exn ->
       let exn = Exception.of_ocaml env loc exn in
@@ -167,7 +167,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     | Primitive (loc, prim) ->
       (PrimitiveDeclaration.update_env prim env, [def])
     | TypeDefinition (loc, typ_def) ->
-      (TypeDefinition.update_env typ_def () env, [def])
+      (TypeDefinition.update_env typ_def env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
     | Reference (loc, r) ->
       let (env, r) = Reference.update_env Exp.monadise_let_rec r env in
@@ -208,8 +208,7 @@ let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Primitive (loc, prim) ->
       (PrimitiveDeclaration.update_env_with_effects prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
-      (TypeDefinition.update_env typ_def Effect.pure env,
-       TypeDefinition (loc, typ_def))
+      (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
       (Exception.update_env_with_effects exn env, Exception (loc, exn))
     | Reference (loc, r) ->
@@ -259,7 +258,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
     | Primitive (loc, prim) ->
       (PrimitiveDeclaration.update_env prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
-      (TypeDefinition.update_env typ_def () env, TypeDefinition (loc, typ_def))
+      (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) ->

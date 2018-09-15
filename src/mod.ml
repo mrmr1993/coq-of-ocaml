@@ -5,7 +5,7 @@ module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
-    | Type of 'a
+    | Type
     | Descriptor
     | Exception of PathName.t
     | Constructor
@@ -15,7 +15,7 @@ module Value = struct
     match v with
     | Variable a -> Variable (f a)
     | Function (a, typ) -> Function (f a, typ)
-    | Type a -> Type (f a)
+    | Type -> Type
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
     | Constructor -> Constructor
@@ -25,7 +25,7 @@ module Value = struct
     match v with
     | Variable _ -> "variable"
     | Function _ -> "function"
-    | Type _ -> "type"
+    | Type -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
     | Constructor -> "constructor"
@@ -162,15 +162,10 @@ module Typs = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.typs
 
-  let value (v : 'a) : 'a Value.t = Type v
+  let value : 'a Value.t = Type
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with typs = PathName.Map.add x y m.typs }
-
-  let unpack (v : 'a Value.t) : 'a =
-    match v with
-    | Type a -> a
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."
 end
 module Descriptors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =

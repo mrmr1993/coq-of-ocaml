@@ -29,10 +29,10 @@ let env_with_effects (interfaces : (Name.t * string) list)
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
-  |> Typ.add [] "nat" pure
+  |> Typ.add [] "nat"
   |> Constructor.add [] "O"
   |> Constructor.add [] "S"
-  |> Typ.add [] "sum" pure
+  |> Typ.add [] "sum"
   |> Constructor.add [] "inl"
   |> Constructor.add [] "inr"
   |> Descriptor.add [] "IO"
@@ -43,18 +43,18 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   (* The core library *)
   (* Built-in types *)
-  |> Typ.add [] "Z" pure
-  |> Typ.add [] "ascii" pure
-  |> Typ.add [] "string" pure
-  |> Typ.add [] "bool" pure
+  |> Typ.add [] "Z"
+  |> Typ.add [] "ascii"
+  |> Typ.add [] "string"
+  |> Typ.add [] "bool"
   |> Constructor.add [] "false"
   |> Constructor.add [] "true"
-  |> Typ.add [] "unit" pure
+  |> Typ.add [] "unit"
   |> Constructor.add [] "tt"
-  |> Typ.add [] "list" pure
+  |> Typ.add [] "list"
   |> Constructor.add [] "[]"
   |> Constructor.add [] "cons"
-  |> Typ.add [] "option" pure
+  |> Typ.add [] "option"
   |> Constructor.add [] "None"
   |> Constructor.add [] "Some"
   (* Comparisons *)
@@ -93,7 +93,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Values specific to the translation to Coq *)
   |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Pure)
   (* Predefined exceptions *)
-  |> Typ.add [] "exn" pure
+  |> Typ.add [] "exn"
   |> add_exn [] "Match_failure"
   |> add_exn [] "Assert_failure"
   |> add_exn [] "Invalid_argument"
@@ -108,7 +108,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> add_exn [] "Undefined_recursive_module"
   (* State *)
   |> Descriptor.add ["Effect"; "State"] "state"
-  |> Typ.add ["Effect"; "State"] "t" (arrow (d [["OCaml"; "Effect"; "State"], ["Effect"; "State"], "state"]) Pure)
+  |> Typ.add ["Effect"; "State"] "t"
   |> Var.add ["Effect"; "State"] "peekstate" pure
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"

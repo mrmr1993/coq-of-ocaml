@@ -94,18 +94,6 @@ let of_type_expr_variable (loc : Loc.t) (typ : Types.type_expr) : Name.t =
     Error.warn loc "The type parameter was expected to be a variable.";
     "expected_a_type_variable"
 
-let rec type_effects (env : Effect.t FullEnvi.t) (typ : t)
-  : Effect.t =
-  match typ with
-  | Variable x -> Effect.pure
-  | Arrow (typ1, typ2) ->
-    Effect.union (List.map (type_effects env) [typ1; typ2])
-  | Tuple typs -> Effect.union (List.map (type_effects env) typs)
-  | Apply (x, typs) ->
-    Effect.union (FullEnvi.Typ.find Loc.Unknown x env ::
-      List.map (type_effects env) typs)
-  | Monad (x, typ) -> type_effects env typ
-
 let is_function (typ : t) : bool =
   match typ with
   | Arrow _ -> true

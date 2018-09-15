@@ -250,7 +250,6 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
 end
 
 module Var = ValueCarrier(Mod.Vars)
-module Typ = ValueCarrier(Mod.Typs)
 
 module Function = struct
   include Carrier(Mod.Vars)
@@ -331,6 +330,7 @@ module EmptyCarrier (M : Mod.EmptyCarrier) = struct
     (coq_name, bound_name, assoc coq_name env)
 end
 
+module Typ = EmptyCarrier(Mod.Typs)
 module Descriptor = EmptyCarrier(Mod.Descriptors)
 module Constructor = EmptyCarrier(Mod.Constructors)
 module Field = EmptyCarrier(Mod.Fields)

@@ -129,7 +129,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
             else bound_path in
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
     FullEnvi.Var.assoc x effect env
-  | Typ x -> FullEnvi.Typ.assoc x Effect.pure env
+  | Typ x -> FullEnvi.Typ.assoc x env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
   | Exception (name, raise_name) ->
     env |> Exception.update_env_with_effects
