@@ -191,10 +191,10 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     (env, []) defs in
   (env, List.rev defs)
 
-let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
-  : Effect.Type.t FullEnvi.t * ('a * Effect.t) t list =
-  let effects_one (env : Effect.Type.t FullEnvi.t) (def : ('a * Type.t) t)
-    : Effect.Type.t FullEnvi.t * ('a * Effect.t) t =
+let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
+  : Effect.t FullEnvi.t * ('a * Effect.t) t list =
+  let effects_one (env : Effect.t FullEnvi.t) (def : ('a * Type.t) t)
+    : Effect.t FullEnvi.t * ('a * Effect.t) t =
     match def with
     | Require names -> (env, Require names)
     | Value (loc, def) ->
@@ -208,7 +208,7 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Primitive (loc, prim) ->
       (PrimitiveDeclaration.update_env_with_effects prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
-      (TypeDefinition.update_env typ_def Effect.Type.Pure env,
+      (TypeDefinition.update_env typ_def Effect.pure env,
        TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
       (Exception.update_env_with_effects exn env, Exception (loc, exn))
@@ -221,11 +221,11 @@ let rec effects (env : Effect.Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module name env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.leave_module FullEnvi.localize_type env in
+      let env = FullEnvi.leave_module FullEnvi.localize_effects env in
       (env, Module (loc, name, defs))
     | Signature (loc, name, decls) ->
       let env = env |> FullEnvi.enter_module name
-        |> Signature.update_env decls Effect.Type.Pure
+        |> Signature.update_env decls Effect.pure
         |> FullEnvi.leave_signature in
       (env, Signature (loc, name, decls)) in
   let (env, defs) =

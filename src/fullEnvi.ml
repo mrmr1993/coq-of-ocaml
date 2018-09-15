@@ -5,10 +5,10 @@ type 'a t = {
   values : 'a Mod.Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
   active_module : FullMod.t;
-  load_module : Name.t -> Effect.Type.t t -> Effect.Type.t t;
+  load_module : Name.t -> Effect.t t -> Effect.t t;
   run_in_external :
-    'b. (Effect.Type.t t -> 'b * Effect.Type.t t) -> 'a t -> 'b option;
-  convert : Effect.Type.t -> 'a;
+    'b. (Effect.t t -> 'b * Effect.t t) -> 'a t -> 'b option;
+  convert : Effect.t -> 'a;
   (* TODO: Move away from using a reference here by updating and passing env
      explicitly, possibly as a monad. *)
   required_modules : Name.Set.t ref;
@@ -75,8 +75,8 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
 let has_global_value (env : 'a t) (x : PathName.t) =
   PathName.Map.mem x env.values
 
-let localize_type (env : 'a t) (typ : Effect.Type.t) : Effect.Type.t =
-  Effect.Type.map (localize (has_value env) env) typ
+let localize_effects (env : 'a t) (typ : Effect.t) : Effect.t =
+  Effect.map (localize (has_value env) env) typ
 
 let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
   env1.required_modules := Name.Set.union !(env1.required_modules)
@@ -531,14 +531,14 @@ let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
   |> Var.add path ("raise_" ^ base) ()
 
 let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (env : Effect.Type.t t) : Effect.Type.t t =
+  (env : Effect.t t) : Effect.t t =
   let raise_path = {PathName.path = coq_path env @ path;
     base = "raise_" ^ base} in
   let env = Exception.add path base raise_path env in
   let descriptor = PathName.of_name path base in
   let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
-  let effect_typ =
-    Effect.Type.Arrow (
+  let effect =
+    Effect.eff @@ Effect.Type.Arrow (
       Effect.Descriptor.singleton bound_descriptor [],
       Effect.Type.Pure) in
-  Var.add path ("raise_" ^ base) effect_typ env
+  Var.add path ("raise_" ^ base) effect env

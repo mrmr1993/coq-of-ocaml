@@ -46,13 +46,13 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
-  (env : Effect.Type.t FullEnvi.t)
-  : Effect.Type.t FullEnvi.t * (Loc.t * Effect.t) t =
+  (env : Effect.t FullEnvi.t)
+  : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
   let state_path = {PathName.path = FullEnvi.coq_path env;
     base = snd (CoqName.assoc_names r.state_name)} in
   let env = env
     |> FullEnvi.Descriptor.assoc r.state_name
-    |> FullEnvi.Reference.assoc r.name Effect.Type.Pure state_path in
+    |> FullEnvi.Reference.assoc r.name Effect.pure state_path in
   (env, {r with expr = Exp.effects env r.expr})
 
 let to_coq (r : 'a t) : SmartPrint.t =

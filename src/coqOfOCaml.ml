@@ -5,7 +5,7 @@ let exp  (env : unit FullEnvi.t) (structure : Typedtree.structure)
   let (_, defs) = Structure.of_structure env structure in
   snd @@ Structure.monadise_let_rec env defs
 
-let effects (env : Effect.Type.t FullEnvi.t)
+let effects (env : Effect.t FullEnvi.t)
   (exp : (Loc.t * Type.t) Structure.t list)
   : (Loc.t * Effect.t) Structure.t list =
   snd @@ Structure.effects env @@ exp

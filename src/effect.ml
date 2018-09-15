@@ -258,7 +258,6 @@ module Descriptor = struct
     | `List [`List unioned; `List simple] -> (unioned, simple)
     | `List ((`List _ :: _) as unioned) -> (unioned, [])
     | `List simple -> ([], simple)
-    | `List [] -> ([], [])
     | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
     let unioned = List.map Id.of_json unioned in
     let simple = BnSet.of_list @@ List.map BoundName.of_json simple in
@@ -435,24 +434,35 @@ let pp (effect : t) : SmartPrint.t =
   nest (!^ "Effect" ^^ OCaml.tuple [
     Descriptor.pp effect.descriptor; Type.pp effect.typ])
 
-let function_typ (args : 'a list) (body_effect : t) : Type.t =
+let function_typ (args : 'a list) (body_effect : t) : t =
   match args with
-  | [] -> body_effect.typ
+  | [] -> body_effect
   | _ :: args ->
-    List.fold_left (fun effect_typ _ ->
-      Type.Arrow (Descriptor.pure, effect_typ))
-      (Type.Arrow
-          (body_effect.descriptor, body_effect.typ))
-      args
+    { descriptor = Descriptor.pure;
+      typ =
+        args |> List.fold_left (fun effect_typ _ ->
+          Type.Arrow (Descriptor.pure, effect_typ))
+          (Type.Arrow
+              (body_effect.descriptor, body_effect.typ))
+    }
 
 let pure : t = {
   descriptor = Descriptor.pure;
   typ = Type.Pure }
 
+let is_pure (effect : t) : bool =
+  Descriptor.is_pure effect.descriptor && Type.is_pure effect.typ
+
+let eff (typ : Type.t) : t = { descriptor = Descriptor.pure; typ }
+
 let union (effects : t list) : t =
   { descriptor =
       Descriptor.union @@ List.map (fun effect -> effect.descriptor) effects;
     typ = Type.union (List.map (fun effect -> effect.typ) effects) }
+
+let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
+  { descriptor = Descriptor.map f effect.descriptor;
+    typ = Type.map f effect.typ }
 
 let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
   { descriptor = Descriptor.map_type_vars vars_map effect.descriptor;
@@ -460,3 +470,23 @@ let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
 
 let has_type_vars (effect : t) : bool =
   Descriptor.has_type_vars effect.descriptor || Type.has_type_vars effect.typ
+
+let compress (effect : t) : t =
+  { effect with typ = Type.compress effect.typ }
+
+let to_json (effect : t) : json =
+  if Descriptor.is_pure effect.descriptor then
+    if Type.is_pure effect.typ then
+      `List []
+    else
+      `List [Type.to_json effect.typ]
+  else
+    `List [Descriptor.to_json effect.descriptor; Type.to_json effect.typ]
+
+let of_json (json : json) : t =
+  let (descriptor, typ) = match json with
+    | `List [] -> (Descriptor.pure, Type.Pure)
+    | `List [typ] -> (Descriptor.pure, Type.of_json typ)
+    | `List [d; typ] -> (Descriptor.of_json d, Type.of_json typ)
+    | _ -> raise (Error.Json "List expected.") in
+  { descriptor; typ }

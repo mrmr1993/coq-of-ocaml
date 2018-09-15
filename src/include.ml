@@ -15,12 +15,12 @@ let update_env (loc : Loc.t) (incl : t) (env : unit FullEnvi.t)
   FullEnvi.include_module (fun _ _ _ -> ()) mod_body env
 
 let update_env_with_effects (loc : Loc.t) (incl : t)
-  (env : Effect.Type.t FullEnvi.t) : Effect.Type.t FullEnvi.t =
+  (env : Effect.t FullEnvi.t) : Effect.t FullEnvi.t =
   let mod_body = FullEnvi.Module.find loc incl env in
   let update_effects f env v =
-    let v = v |> Effect.Type.map (fun x ->
+    let v = v |> Effect.map (fun x ->
       { x with BoundName.full_path = f x.BoundName.full_path }) in
-    FullEnvi.localize_type env v in
+    FullEnvi.localize_effects env v in
   FullEnvi.include_module update_effects mod_body env
 
 let of_interface (path : PathName.t) (env : 'a FullEnvi.t) =

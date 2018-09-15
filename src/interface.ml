@@ -37,7 +37,7 @@ module Shape = struct
 end
 
 type t =
-  | Var of CoqName.t * Effect.Type.t
+  | Var of CoqName.t * Effect.t
   | Reference of CoqName.t * CoqName.t
   | Typ of CoqName.t
   | Descriptor of CoqName.t
@@ -51,7 +51,7 @@ type t =
 let rec pp (interface : t) : SmartPrint.t =
   match interface with
   | Var (x, shape) ->
-    !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.Type.pp shape]
+    !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.pp shape]
   | Reference (x, state_name) ->
     !^ "Reference" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp state_name]
   | Typ x -> !^ "Typ" ^^ CoqName.pp x
@@ -82,7 +82,7 @@ let rec of_signatures (decls : Signature.t list) : t list =
 
 and of_signature (decl : Signature.t) : t list =
   match decl with
-  | Signature.Value (_, name, typ_vars, typ) -> [Var (name, Effect.Type.Pure)]
+  | Signature.Value (_, name, typ_vars, typ) -> [Var (name, Effect.pure)]
   | Signature.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Signature.Module (_, name, decls) ->
     [Interface (name, of_signatures decls)]
@@ -100,10 +100,10 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
       let name = header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
-      Var (name, Effect.Type.compress typ))
+      Var (name, Effect.compress typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
-    [Var (prim.PrimitiveDeclaration.name, Effect.Type.Pure)]
+    [Var (prim.PrimitiveDeclaration.name, Effect.pure)]
   | Structure.TypeDefinition (_, typ_def) -> of_typ_definition typ_def
   | Structure.Exception (_, exn) ->
     [Exception (exn.Exception.name, exn.Exception.raise_name)]
@@ -117,27 +117,26 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [Signature (name, of_signatures decls)]
 
 let rec to_full_envi (top_name : Name.t option) (interface : t)
-  (env : Effect.Type.t FullEnvi.t)
-  : Effect.Type.t FullEnvi.t =
+  (env : Effect.t FullEnvi.t) : Effect.t FullEnvi.t =
   match interface with
-  | Var (x, typ) ->
-    let typ = match top_name with
-      | None -> typ
+  | Var (x, effect) ->
+    let effect = match top_name with
+      | None -> effect
       | Some top_name ->
-        typ |> Effect.Type.map (fun ({full_path} as bound_path) ->
+        effect |> Effect.map (fun ({full_path} as bound_path) ->
           let full_path' = { full_path with
             PathName.path = top_name :: full_path.PathName.path } in
           let bound_path = if FullEnvi.has_global_value env full_path' then
               { BoundName.full_path = full_path'; local_path = full_path' }
             else bound_path in
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
-    FullEnvi.Var.assoc x typ env
+    FullEnvi.Var.assoc x effect env
   | Reference (name, state_name) ->
     env |> Reference.update_env_with_effects
         { Reference.name; state_name; typ = Type.Variable "_";
           expr = Exp.Tuple ((Loc.Unknown, Type.Variable "_"), []) }
       |> fst
-  | Typ x -> FullEnvi.Typ.assoc x Effect.Type.Pure env
+  | Typ x -> FullEnvi.Typ.assoc x Effect.pure env
   | Descriptor x -> FullEnvi.Descriptor.assoc x env
   | Exception (name, raise_name) ->
     env |> Exception.update_env_with_effects
@@ -149,7 +148,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     let env = FullEnvi.enter_module x env in
     let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
       defs in
-    FullEnvi.leave_module FullEnvi.localize_type env
+    FullEnvi.leave_module FullEnvi.localize_effects env
   | Signature (x, decls) ->
     let env = FullEnvi.enter_module x env in
     let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
@@ -158,7 +157,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
 
 
 let load_interface (coq_prefix : Name.t) (interface : t)
-  (env : Effect.Type.t FullEnvi.t) : Name.t * Effect.Type.t FullEnvi.t =
+  (env : Effect.t FullEnvi.t) : Name.t * Effect.t FullEnvi.t =
   let name = match interface with
     | Interface (name, _) -> CoqName.ocaml_name name
     | _ -> "" in
@@ -170,14 +169,14 @@ let load_interface (coq_prefix : Name.t) (interface : t)
       List.fold_left (fun env def -> to_full_envi (Some coq_name) def env) env
         defs
     | _ -> to_full_envi (Some coq_name) interface env in
-  (coq_name, FullEnvi.leave_module FullEnvi.localize_type env)
+  (coq_name, FullEnvi.leave_module FullEnvi.localize_effects env)
 
 module Version1 = struct
   let rec to_json (interface : t) : json =
     match interface with
     | Var (x, shape) ->
       let x = CoqName.ocaml_name x in
-      let shape = Shape.of_effect_typ shape in
+      let shape = Shape.of_effect_typ shape.Effect.typ in
       `List [`String "Var"; Name.to_json x; Shape.to_json shape]
     | Reference (name, state_name) ->
       failwith "Cannot output references in V1 interfaces. Please use a newer version."
@@ -206,7 +205,7 @@ module Version1 = struct
     match json with
     | `List [`String "Var"; x; shape] ->
       Var (CoqName.Name (Name.of_json x),
-        Shape.to_effect_typ (Shape.of_json shape))
+        Effect.eff (Shape.to_effect_typ (Shape.of_json shape)))
     | `List [`String "Typ"; x] -> Typ (CoqName.Name (Name.of_json x))
     | `List [`String "Descriptor"; x] ->
       Descriptor (CoqName.Name (Name.of_json x))
@@ -234,7 +233,7 @@ end
 let rec to_json (interface : t) : json =
   match interface with
   | Var (x, eff) ->
-    `List [`String "Var"; CoqName.to_json x; Effect.Type.to_json eff]
+    `List [`String "Var"; CoqName.to_json x; Effect.to_json eff]
   | Reference (name, state_name) ->
     `List [`String "Reference"; CoqName.to_json name; CoqName.to_json state_name]
   | Typ x -> `List [`String "Typ"; CoqName.to_json x]
@@ -252,7 +251,7 @@ let rec to_json (interface : t) : json =
 let rec of_json (json : json) : t =
   match json with
   | `List [`String "Var"; x; eff] ->
-    Var (CoqName.of_json x, Effect.Type.of_json eff)
+    Var (CoqName.of_json x, Effect.of_json eff)
   | `List [`String "Reference"; name; state_name] ->
     Reference (CoqName.of_json name, CoqName.of_json state_name)
   | `List [`String "Typ"; x] -> Typ (CoqName.of_json x)
@@ -300,8 +299,8 @@ let of_file (file_name : string) : t =
   really_input file content 0 size;
   of_json_string (Bytes.to_string content)
 
-let load_module (module_name : Name.t) (env : Effect.Type.t FullEnvi.t)
-  : Effect.Type.t FullEnvi.t =
+let load_module (module_name : Name.t) (env : Effect.t FullEnvi.t)
+  : Effect.t FullEnvi.t =
     let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
     match find_first (fun (coq_prefix, dir) ->
         let file_name = Filename.concat dir (file_name ^ ".interface") in
