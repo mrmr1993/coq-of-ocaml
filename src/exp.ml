@@ -664,17 +664,6 @@ let rec function_type (env : 'a FullEnvi.t) (e : (Loc.t * Type.t) t)
 
 let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Effect.t) t =
-  let type_effect typ = let open Effect.Descriptor in
-    singleton (FullEnvi.Descriptor.localize env ["OCaml"; "Effect"; "State"]
-      "state") [typ] in
-  let type_effect_of_exp e =
-    let typ = snd @@ annotation e in
-    if Type.is_function @@ typ ||
-        Effect.is_pure @@ Type.type_effects env typ
-    then failwith "Unable to get type effect."
-    else
-      let typ = Effect.PureType.first_param @@ Type.pure_type typ in
-      Effect.Type.Arrow (type_effect typ, Effect.Type.Pure) in
   let compound (es : (Loc.t * Type.t) t list)
   : (Loc.t * Effect.t) t list * Effect.t =
     let es = List.map (effects env) es in
@@ -687,39 +676,13 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   match e with
   | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
   | Variable ((l, typ), x) ->
-    begin match FullEnvi.Reference.find l x env with
-    | Some state_path ->
-      let state_dsc = FullEnvi.localize (FullEnvi.has_value env) env
-        { BoundName.full_path = state_path; local_path = state_path } in
-      let typ_eff = type_effect_of_exp e in
-      let typ_eff = Effect.Type.return_descriptor typ_eff 1 in
-      (* This variable is a global reference. Since it can be used
-      anywhere a regular reference can be, we carry the actual value on
-      the normal stack for its type, and only record its position in that
-      stack in its dedicated state. *)
-      let u = Loc.Unknown in
-      let get_var p b =
-        FullEnvi.Var.bound Loc.Unknown (PathName.of_name p b) env in
-      let var a path base = Variable (a, get_var path base) in
-      let state_dsc_eff = Effect.Descriptor.singleton state_dsc [] in
-      let open Effect.Type in let open Effect.Descriptor in
-      let mk desc ty = { Effect.descriptor = desc; Effect.typ = ty } in
-      Apply ((u, mk (union [typ_eff; state_dsc_eff]) Pure),
-        var (u, mk pure (Arrow (pure, Arrow (state_dsc_eff, Pure))))
-          ["OCaml"; "Effect"; "State"] "global",
-        [Variable ((l, mk pure Pure), x);
-        Apply ((u, mk typ_eff Pure),
-          var (u, mk pure (Arrow (typ_eff, Pure)))
-            ["OCaml"; "Effect"; "State"] "peekstate",
-          [Tuple ((u, mk pure Pure), [])])])
-    | None ->
-      try
-        let effect = FullEnvi.Var.find l x env in
-        Variable ((l, effect), x)
-      with Not_found ->
-        let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
-        Error.warn l (SmartPrint.to_string 80 2 message);
-        Variable ((l, Effect.pure), x)
+    begin try
+      let effect = FullEnvi.Var.find l x env in
+      Variable ((l, effect), x)
+    with Not_found ->
+      let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
+      Error.warn l (SmartPrint.to_string 80 2 message);
+      Variable ((l, Effect.pure), x)
     end
   | Tuple ((l, typ), es) ->
     let (es, effect) = compound es in
