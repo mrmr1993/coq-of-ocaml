@@ -1,0 +1,39 @@
+{
+  "version": "2",
+  "content": [
+    "Interface",
+    "Ex43",
+    [
+      [
+        "Var",
+        "slow_div",
+        [ [ [], [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "Counter", "NonTermination" ] ] ] ]
+      ],
+      [
+        "Var",
+        "nested",
+        [
+          [
+            [
+              [
+                [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "Z" ] ] ],
+                [
+                  "Apply",
+                  "OCaml.Effect.State.state",
+                  [ "Apply", "list", [ "Apply", "OCaml.Effect.State.t", [ "Apply", "list", [ "Apply", "Z" ] ] ] ]
+                ]
+              ],
+              [ "Counter", "NonTermination" ]
+            ]
+          ]
+        ]
+      ],
+      [ "Var", "raises", [ [ [ "Counter", "NonTermination", "OCaml.Failure" ] ] ] ],
+      [
+        "Var",
+        "argument_effects",
+        [ [ [], [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "Counter", "NonTermination" ] ] ] ]
+      ]
+    ]
+  ]
+}
