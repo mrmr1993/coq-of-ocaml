@@ -1,0 +1,605 @@
+Require [ OCaml.List ]
+
+2
+Value
+  (non_rec, @.,
+    [
+      ((slow_div, [ ], [ (a, Type (Z)); (b, Type (Z)) ], Type (Z)),
+        LetVar 3 y =
+          Apply
+            (3, Variable (3, OCaml.Pervasives.ref),
+              [ Constant (3, Int(0)) ]) in
+        LetVar 4 c =
+          Apply
+            (4, Variable (4, OCaml.Pervasives.ref),
+              [ Constant (4, Int(0)) ]) in
+        Sequence
+          (5,
+            While
+              (5,
+                Apply
+                  (5, Variable (5, OCaml.Pervasives.le),
+                    [
+                      Apply
+                        (5,
+                          Variable
+                            (5,
+                              Z.add),
+                          [
+                            Apply
+                              (5,
+                                Variable
+                                  (5,
+                                    OCaml.Effect.State.read),
+                                [
+                                  Variable
+                                    (5,
+                                      y)
+                                ]);
+                            Variable
+                              (5,
+                                b)
+                          ]);
+                      Variable (5, a)
+                    ]),
+                Sequence
+                  (6,
+                    Apply
+                      (6,
+                        Variable (6, OCaml.Effect.State.write),
+                        [
+                          Variable (6, y);
+                          Apply
+                            (6,
+                              Variable
+                                (6,
+                                  Z.add),
+                              [
+                                Apply
+                                  (6,
+                                    Variable
+                                      (6,
+                                        OCaml.Effect.State.read),
+                                    [
+                                      Variable
+                                        (6,
+                                          y)
+                                    ]);
+                                Variable
+                                  (6,
+                                    b)
+                              ])
+                        ]),
+                    Apply
+                      (7,
+                        Variable (7, OCaml.Effect.State.write),
+                        [
+                          Variable (7, c);
+                          Apply
+                            (7,
+                              Variable
+                                (7,
+                                  Z.add),
+                              [
+                                Apply
+                                  (7,
+                                    Variable
+                                      (7,
+                                        OCaml.Effect.State.read),
+                                    [
+                                      Variable
+                                        (7,
+                                          c)
+                                    ]);
+                                Constant
+                                  (7,
+                                    Int(1))
+                              ])
+                        ]))),
+            Apply
+              (9, Variable (9, OCaml.Effect.State.read),
+                [ Variable (9, c) ])))
+    ])
+
+11
+Value
+  (non_rec, @.,
+    [
+      ((nested, [ ], [ (x, Type (unit)) ], Type (list, Type (Z))),
+        Match
+          (?, Variable (?, x),
+            [
+              (Constructor (tt),
+                LetVar 12 a =
+                  Apply
+                    (12,
+                      Variable
+                        (12,
+                          OCaml.Pervasives.ref),
+                      [
+                        Constructor
+                          (12,
+                            cons,
+                            Apply
+                              (12,
+                                Variable
+                                  (12,
+                                    OCaml.Pervasives.ref),
+                                [
+                                  Constructor
+                                    (12,
+                                      cons,
+                                      Constant
+                                        (12,
+                                          Int(1)),
+                                      Constructor
+                                        (12,
+                                          cons,
+                                          Constant
+                                            (12,
+                                              Int(2)),
+                                          Constructor
+                                            (12,
+                                              [])))
+                                ]),
+                            Constructor
+                              (12,
+                                cons,
+                                Apply
+                                  (12,
+                                    Variable
+                                      (12,
+                                        OCaml.Pervasives.ref),
+                                    [
+                                      Constructor
+                                        (12,
+                                          cons,
+                                          Constant
+                                            (12,
+                                              Int(3)),
+                                          Constructor
+                                            (12,
+                                              cons,
+                                              Constant
+                                                (12,
+                                                  Int(4)),
+                                              Constructor
+                                                (12,
+                                                  cons,
+                                                  Constant
+                                                    (12,
+                                                      Int(5)),
+                                                  Constructor
+                                                    (12,
+                                                      []))))
+                                    ]),
+                                Constructor
+                                  (12,
+                                    cons,
+                                    Apply
+                                      (12,
+                                        Variable
+                                          (12,
+                                            OCaml.Pervasives.ref),
+                                        [
+                                          Constructor
+                                            (12,
+                                              cons,
+                                              Constant
+                                                (12,
+                                                  Int(6)),
+                                              Constructor
+                                                (12,
+                                                  cons,
+                                                  Constant
+                                                    (12,
+                                                      Int(7)),
+                                                  Constructor
+                                                    (12,
+                                                      [])))
+                                        ]),
+                                    Constructor
+                                      (12,
+                                        []))))
+                      ])
+                  in
+                LetVar 13 b =
+                  Apply
+                    (13,
+                      Variable
+                        (13,
+                          OCaml.Pervasives.ref),
+                      [
+                        Constructor
+                          (13,
+                            [])
+                      ])
+                  in
+                Sequence
+                  (14,
+                    While
+                      (14,
+                        Apply
+                          (14,
+                            Variable
+                              (14,
+                                OCaml.Pervasives.gt),
+                            [
+                              Apply
+                                (14,
+                                  Variable
+                                    (14,
+                                      OCaml.List.length),
+                                  [
+                                    Apply
+                                      (14,
+                                        Variable
+                                          (14,
+                                            OCaml.Effect.State.read),
+                                        [
+                                          Variable
+                                            (14,
+                                              a)
+                                        ])
+                                  ]);
+                              Constant
+                                (14,
+                                  Int(0))
+                            ]),
+                        Match
+                          (15,
+                            Apply
+                              (15,
+                                Variable
+                                  (15,
+                                    OCaml.Effect.State.read),
+                                [
+                                  Variable
+                                    (15,
+                                      a)
+                                ]),
+                            [
+                              (Constructor
+                                ([]),
+                                Constructor
+                                  (16,
+                                    tt));
+                              (Constructor
+                                (cons,
+                                  x,
+                                  a'),
+                                Sequence
+                                  (18,
+                                    While
+                                      (18,
+                                        Apply
+                                          (18,
+                                            Variable
+                                              (18,
+                                                OCaml.Pervasives.gt),
+                                            [
+                                              Apply
+                                                (18,
+                                                  Variable
+                                                    (18,
+                                                      OCaml.List.length),
+                                                  [
+                                                    Apply
+                                                      (18,
+                                                        Variable
+                                                          (18,
+                                                            OCaml.Effect.State.read),
+                                                        [
+                                                          Variable
+                                                            (18,
+                                                              x)
+                                                        ])
+                                                  ]);
+                                              Constant
+                                                (18,
+                                                  Int(0))
+                                            ]),
+                                        Match
+                                          (19,
+                                            Apply
+                                              (19,
+                                                Variable
+                                                  (19,
+                                                    OCaml.Effect.State.read),
+                                                [
+                                                  Variable
+                                                    (19,
+                                                      x)
+                                                ]),
+                                            [
+                                              (Constructor
+                                                ([]),
+                                                Constructor
+                                                  (20,
+                                                    tt));
+                                              (Constructor
+                                                (cons,
+                                                  y,
+                                                  x'),
+                                                Sequence
+                                                  (22,
+                                                    Apply
+                                                      (22,
+                                                        Variable
+                                                          (22,
+                                                            OCaml.Effect.State.write),
+                                                        [
+                                                          Variable
+                                                            (22,
+                                                              b);
+                                                          Constructor
+                                                            (22,
+                                                              cons,
+                                                              Variable
+                                                                (22,
+                                                                  y),
+                                                              Apply
+                                                                (22,
+                                                                  Variable
+                                                                    (22,
+                                                                      OCaml.Effect.State.read),
+                                                                  [
+                                                                    Variable
+                                                                      (22,
+                                                                        b)
+                                                                  ]))
+                                                        ]),
+                                                    Apply
+                                                      (23,
+                                                        Variable
+                                                          (23,
+                                                            OCaml.Effect.State.write),
+                                                        [
+                                                          Variable
+                                                            (23,
+                                                              x);
+                                                          Variable
+                                                            (23,
+                                                              x')
+                                                        ])))
+                                            ])),
+                                    Apply
+                                      (25,
+                                        Variable
+                                          (25,
+                                            OCaml.Effect.State.write),
+                                        [
+                                          Variable
+                                            (25,
+                                              a);
+                                          Variable
+                                            (25,
+                                              a')
+                                        ])))
+                            ])),
+                    Apply
+                      (27,
+                        Variable
+                          (27,
+                            OCaml.Effect.State.read),
+                        [
+                          Variable
+                            (27,
+                              b)
+                        ])))
+            ]))
+    ])
+
+29
+Value
+  (non_rec, @.,
+    [
+      ((raises, [ ], [ (b, Type (bool)) ], Type (unit)),
+        While
+          (30, Variable (30, b),
+            Apply
+              (31, Variable (31, OCaml.Pervasives.failwith),
+                [ Constant (31, String("b is true")) ])))
+    ])
+
+34
+Value
+  (non_rec, @.,
+    [
+      ((argument_effects, [ ],
+        [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
+        Type (Z)),
+        LetVar 35 y =
+          Apply
+            (35, Variable (35, OCaml.Pervasives.ref), [ Variable (35, y) ])
+          in
+        LetVar 36 z =
+          Apply
+            (36, Variable (36, OCaml.Pervasives.ref),
+              [ Constant (36, Int(0)) ]) in
+        LetVar 37 i =
+          Apply
+            (37, Variable (37, OCaml.Pervasives.ref),
+              [ Constant (37, Int(0)) ]) in
+        Sequence
+          (38,
+            While
+              (38,
+                Apply
+                  (38, Variable (38, OCaml.Pervasives.le),
+                    [
+                      Apply
+                        (38,
+                          Variable
+                            (38,
+                              OCaml.Effect.State.read),
+                          [
+                            Variable
+                              (38,
+                                i)
+                          ]);
+                      Apply
+                        (38,
+                          Variable
+                            (38,
+                              OCaml.Effect.State.read),
+                          [
+                            Variable
+                              (38,
+                                x)
+                          ])
+                    ]),
+                LetVar 39 j =
+                  Apply
+                    (39, Variable (39, OCaml.Pervasives.ref),
+                      [ Constant (39, Int(0)) ]) in
+                Sequence
+                  (40,
+                    While
+                      (40,
+                        Apply
+                          (40,
+                            Variable
+                              (40, OCaml.Pervasives.le),
+                            [
+                              Apply
+                                (40,
+                                  Variable
+                                    (40,
+                                      OCaml.Effect.State.read),
+                                  [
+                                    Variable
+                                      (40,
+                                        j)
+                                  ]);
+                              Apply
+                                (40,
+                                  Variable
+                                    (40,
+                                      OCaml.Effect.State.read),
+                                  [
+                                    Variable
+                                      (40,
+                                        y)
+                                  ])
+                            ]),
+                        Sequence
+                          (41,
+                            Apply
+                              (41,
+                                Variable
+                                  (41,
+                                    OCaml.Effect.State.write),
+                                [
+                                  Variable (41, z);
+                                  Apply
+                                    (41,
+                                      Variable
+                                        (41,
+                                          Z.add),
+                                      [
+                                        Apply
+                                          (41,
+                                            Variable
+                                              (41,
+                                                OCaml.Effect.State.read),
+                                            [
+                                              Variable
+                                                (41,
+                                                  z)
+                                            ]);
+                                        Constant
+                                          (41,
+                                            Int(1))
+                                      ])
+                                ]),
+                            Apply
+                              (42,
+                                Variable
+                                  (42,
+                                    OCaml.Effect.State.write),
+                                [
+                                  Variable (42, j);
+                                  Apply
+                                    (42,
+                                      Variable
+                                        (42,
+                                          Z.add),
+                                      [
+                                        Apply
+                                          (42,
+                                            Variable
+                                              (42,
+                                                OCaml.Effect.State.read),
+                                            [
+                                              Variable
+                                                (42,
+                                                  j)
+                                            ]);
+                                        Constant
+                                          (42,
+                                            Int(1))
+                                      ])
+                                ]))),
+                    Sequence
+                      (44,
+                        Apply
+                          (44,
+                            Variable
+                              (44,
+                                OCaml.Effect.State.write),
+                            [
+                              Variable (44, y);
+                              Apply
+                                (44,
+                                  Variable
+                                    (44,
+                                      Z.sub),
+                                  [
+                                    Apply
+                                      (44,
+                                        Variable
+                                          (44,
+                                            OCaml.Effect.State.read),
+                                        [
+                                          Variable
+                                            (44,
+                                              y)
+                                        ]);
+                                    Constant
+                                      (44,
+                                        Int(1))
+                                  ])
+                            ]),
+                        Apply
+                          (45,
+                            Variable
+                              (45,
+                                OCaml.Effect.State.write),
+                            [
+                              Variable (45, i);
+                              Apply
+                                (45,
+                                  Variable
+                                    (45,
+                                      Z.add),
+                                  [
+                                    Apply
+                                      (45,
+                                        Variable
+                                          (45,
+                                            OCaml.Effect.State.read),
+                                        [
+                                          Variable
+                                            (45,
+                                              i)
+                                        ]);
+                                    Constant
+                                      (45,
+                                        Int(1))
+                                  ])
+                            ])))),
+            Apply
+              (47, Variable (47, OCaml.Effect.State.read),
+                [ Variable (47, z) ])))
+    ])
