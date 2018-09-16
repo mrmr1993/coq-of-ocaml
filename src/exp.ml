@@ -857,6 +857,11 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       snd (annotation e))) in
     For ((l, effect), name, down, e1, e2, e)
   | While ((l, typ), e1, e2) ->
+    let typ2 = snd @@ annotation e2 in
+    let e2 = match typ2 with
+    | Type.Variable _ -> (* Give Coq a concrete type, since it can't infer one. *)
+      Coerce ((Loc.Unknown, Type.Tuple []), e2, Type.Tuple [])
+    | _ -> e2 in
     let e1 = effects env e1 in
     let e2 = effects env e2 in
     let counter = FullEnvi.Descriptor.localize env [] "Counter" in
