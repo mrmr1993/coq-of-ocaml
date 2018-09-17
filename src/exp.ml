@@ -852,16 +852,21 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | For ((l, typ), name, down, e1, e2, e) ->
     let e1 = effects env e1 in
     let e2 = effects env e2 in
+    let typ_e = snd @@ annotation e in
+    let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e = if typ_e = typ_e' then e else
+      Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
     let e = effects env e in
     let effect = Effect.union ([e1; e2; e] |> List.map (fun e ->
       snd (annotation e))) in
     For ((l, effect), name, down, e1, e2, e)
   | While ((l, typ), e1, e2) ->
     let typ2 = snd @@ annotation e2 in
-    let e2 = match typ2 with
-    | Type.Variable _ -> (* Give Coq a concrete type, since it can't infer one. *)
-      Coerce ((Loc.Unknown, Type.Tuple []), e2, Type.Tuple [])
-    | _ -> e2 in
+    let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e2 = if typ2 = typ2' then e2 else
+      Coerce ((Loc.Unknown, typ2'), e2, typ2') in
     let e1 = effects env e1 in
     let e2 = effects env e2 in
     let counter = FullEnvi.Descriptor.localize env [] "Counter" in
