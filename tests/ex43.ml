@@ -31,6 +31,12 @@ let raises (b : bool) : unit =
     failwith "b is true"
   done
 
+let complex_raises (b : bool) : unit =
+  let f a = (a, 15, failwith "b is true") in
+  while b do
+    f true
+  done
+
 let argument_effects (x : int ref) (y : int) =
   let y = ref y in
   let z = ref 0 in

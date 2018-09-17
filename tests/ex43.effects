@@ -1182,55 +1182,128 @@ Value
 Value
   (non_rec, @.,
     [
+      ((complex_raises, [ ], [ (b, Type (bool)) ], Type (unit)),
+        LetFun (35, Effect ([ Counter; NonTermination; OCaml.Failure ], .))
+          (non_rec, @.,
+            [
+              ((f, [ A; B ], [ (a, A) ], (A * Type (Z) * B)),
+                Tuple
+                  ((35,
+                    Effect
+                      ([
+                        OCaml.Failure
+                      ],
+                        .)),
+                    Variable
+                      ((35,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        a),
+                    Constant
+                      ((35,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        Int(15)),
+                    Apply
+                      ((35,
+                        Effect
+                          ([
+                            OCaml.Failure
+                          ],
+                            .)),
+                        Variable
+                          ((35,
+                            Effect
+                              ([
+                              ],
+                                .
+                                  -[
+                                    OCaml.Failure
+                                  ]->
+                                  .)),
+                            OCaml.Pervasives.failwith),
+                        [
+                          Constant
+                            ((35,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              String("b is true"))
+                        ])))
+            ]) in
+        While
+          ((36, Effect ([ Counter; NonTermination; OCaml.Failure ], .)),
+            Variable ((36, Effect ([ ], .)), b),
+            Coerce
+              ((?, Effect ([ OCaml.Failure ], .)),
+                Apply
+                  ((37, Effect ([ OCaml.Failure ], .)),
+                    Variable
+                      ((37,
+                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                        f),
+                    [ Constructor ((37, Effect ([ ], .)), true) ]),
+                (Type (bool) * Type (Z) * ()))))
+    ])
+
+40
+Value
+  (non_rec, @.,
+    [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
         Type (Z)),
         LetVar
-          (35,
+          (41,
             Effect
               ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
                 .)) y =
           Apply
-            ((35, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+            ((41, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
               Variable
-                ((35,
+                ((41,
                   Effect
                     ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
                   OCaml.Pervasives.ref),
-              [ Variable ((35, Effect ([ ], .)), y) ]) in
+              [ Variable ((41, Effect ([ ], .)), y) ]) in
         LetVar
-          (36,
+          (42,
             Effect
               ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
                 .)) z =
           Apply
-            ((36, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+            ((42, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
               Variable
-                ((36,
+                ((42,
                   Effect
                     ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
                   OCaml.Pervasives.ref),
-              [ Constant ((36, Effect ([ ], .)), Int(0)) ]) in
+              [ Constant ((42, Effect ([ ], .)), Int(0)) ]) in
         LetVar
-          (37,
+          (43,
             Effect
               ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
                 .)) i =
           Apply
-            ((37, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+            ((43, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
               Variable
-                ((37,
+                ((43,
                   Effect
                     ([ ], . -[ (OCaml.Effect.State.state, Z) ]-> .)),
                   OCaml.Pervasives.ref),
-              [ Constant ((37, Effect ([ ], .)), Int(0)) ]) in
+              [ Constant ((43, Effect ([ ], .)), Int(0)) ]) in
         Sequence
-          ((38,
+          ((44,
             Effect
               ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
                 .)),
             While
-              ((38,
+              ((44,
                 Effect
                   ([
                     (OCaml.Effect.State.state, Z);
@@ -1238,14 +1311,14 @@ Value
                     NonTermination
                   ], .)),
                 Apply
-                  ((38,
+                  ((44,
                     Effect ([ (OCaml.Effect.State.state, Z) ], .)),
                     Variable
-                      ((38, Effect ([ ], .)),
+                      ((44, Effect ([ ], .)),
                         OCaml.Pervasives.le),
                     [
                       Apply
-                        ((38,
+                        ((44,
                           Effect
                             ([
                               (OCaml.Effect.State.state,
@@ -1253,7 +1326,7 @@ Value
                             ],
                               .)),
                           Variable
-                            ((38,
+                            ((44,
                               Effect
                                 ([
                                 ],
@@ -1266,7 +1339,7 @@ Value
                               OCaml.Effect.State.read),
                           [
                             Variable
-                              ((38,
+                              ((44,
                                 Effect
                                   ([
                                   ],
@@ -1274,7 +1347,7 @@ Value
                                 i)
                           ]);
                       Apply
-                        ((38,
+                        ((44,
                           Effect
                             ([
                               (OCaml.Effect.State.state,
@@ -1282,7 +1355,7 @@ Value
                             ],
                               .)),
                           Variable
-                            ((38,
+                            ((44,
                               Effect
                                 ([
                                 ],
@@ -1295,7 +1368,7 @@ Value
                               OCaml.Effect.State.read),
                           [
                             Variable
-                              ((38,
+                              ((44,
                                 Effect
                                   ([
                                   ],
@@ -1304,7 +1377,7 @@ Value
                           ])
                     ]),
                 LetVar
-                  (39,
+                  (45,
                     Effect
                       ([
                         (OCaml.Effect.State.state, Z);
@@ -1312,11 +1385,11 @@ Value
                         NonTermination
                       ], .)) j =
                   Apply
-                    ((39,
+                    ((45,
                       Effect
                         ([ (OCaml.Effect.State.state, Z) ], .)),
                       Variable
-                        ((39,
+                        ((45,
                           Effect
                             ([ ],
                               .
@@ -1327,7 +1400,7 @@ Value
                           OCaml.Pervasives.ref),
                       [
                         Constant
-                          ((39,
+                          ((45,
                             Effect
                               ([
                               ],
@@ -1335,7 +1408,7 @@ Value
                             Int(0))
                       ]) in
                 Sequence
-                  ((40,
+                  ((46,
                     Effect
                       ([
                         (OCaml.Effect.State.state, Z);
@@ -1343,7 +1416,7 @@ Value
                         NonTermination
                       ], .)),
                     While
-                      ((40,
+                      ((46,
                         Effect
                           ([
                             (OCaml.Effect.State.state, Z);
@@ -1351,18 +1424,18 @@ Value
                             NonTermination
                           ], .)),
                         Apply
-                          ((40,
+                          ((46,
                             Effect
                               ([
                                 (OCaml.Effect.State.state,
                                   Z)
                               ], .)),
                             Variable
-                              ((40, Effect ([ ], .)),
+                              ((46, Effect ([ ], .)),
                                 OCaml.Pervasives.le),
                             [
                               Apply
-                                ((40,
+                                ((46,
                                   Effect
                                     ([
                                       (OCaml.Effect.State.state,
@@ -1370,7 +1443,7 @@ Value
                                     ],
                                       .)),
                                   Variable
-                                    ((40,
+                                    ((46,
                                       Effect
                                         ([
                                         ],
@@ -1383,7 +1456,7 @@ Value
                                       OCaml.Effect.State.read),
                                   [
                                     Variable
-                                      ((40,
+                                      ((46,
                                         Effect
                                           ([
                                           ],
@@ -1391,7 +1464,7 @@ Value
                                         j)
                                   ]);
                               Apply
-                                ((40,
+                                ((46,
                                   Effect
                                     ([
                                       (OCaml.Effect.State.state,
@@ -1399,7 +1472,7 @@ Value
                                     ],
                                       .)),
                                   Variable
-                                    ((40,
+                                    ((46,
                                       Effect
                                         ([
                                         ],
@@ -1412,7 +1485,7 @@ Value
                                       OCaml.Effect.State.read),
                                   [
                                     Variable
-                                      ((40,
+                                      ((46,
                                         Effect
                                           ([
                                           ],
@@ -1421,21 +1494,21 @@ Value
                                   ])
                             ]),
                         Sequence
-                          ((41,
+                          ((47,
                             Effect
                               ([
                                 (OCaml.Effect.State.state,
                                   Z)
                               ], .)),
                             Apply
-                              ((41,
+                              ((47,
                                 Effect
                                   ([
                                     (OCaml.Effect.State.state,
                                       Z)
                                   ], .)),
                                 Variable
-                                  ((41,
+                                  ((47,
                                     Effect
                                       ([ ],
                                         . ->
@@ -1448,14 +1521,14 @@ Value
                                     OCaml.Effect.State.write),
                                 [
                                   Variable
-                                    ((41,
+                                    ((47,
                                       Effect
                                         ([
                                         ],
                                           .)),
                                       z);
                                   Apply
-                                    ((41,
+                                    ((47,
                                       Effect
                                         ([
                                           (OCaml.Effect.State.state,
@@ -1463,7 +1536,7 @@ Value
                                         ],
                                           .)),
                                       Variable
-                                        ((41,
+                                        ((47,
                                           Effect
                                             ([
                                             ],
@@ -1471,7 +1544,7 @@ Value
                                           Z.add),
                                       [
                                         Apply
-                                          ((41,
+                                          ((47,
                                             Effect
                                               ([
                                                 (OCaml.Effect.State.state,
@@ -1479,7 +1552,7 @@ Value
                                               ],
                                                 .)),
                                             Variable
-                                              ((41,
+                                              ((47,
                                                 Effect
                                                   ([
                                                   ],
@@ -1492,7 +1565,7 @@ Value
                                                 OCaml.Effect.State.read),
                                             [
                                               Variable
-                                                ((41,
+                                                ((47,
                                                   Effect
                                                     ([
                                                     ],
@@ -1500,7 +1573,7 @@ Value
                                                   z)
                                             ]);
                                         Constant
-                                          ((41,
+                                          ((47,
                                             Effect
                                               ([
                                               ],
@@ -1509,14 +1582,14 @@ Value
                                       ])
                                 ]),
                             Apply
-                              ((42,
+                              ((48,
                                 Effect
                                   ([
                                     (OCaml.Effect.State.state,
                                       Z)
                                   ], .)),
                                 Variable
-                                  ((42,
+                                  ((48,
                                     Effect
                                       ([ ],
                                         . ->
@@ -1529,14 +1602,14 @@ Value
                                     OCaml.Effect.State.write),
                                 [
                                   Variable
-                                    ((42,
+                                    ((48,
                                       Effect
                                         ([
                                         ],
                                           .)),
                                       j);
                                   Apply
-                                    ((42,
+                                    ((48,
                                       Effect
                                         ([
                                           (OCaml.Effect.State.state,
@@ -1544,7 +1617,7 @@ Value
                                         ],
                                           .)),
                                       Variable
-                                        ((42,
+                                        ((48,
                                           Effect
                                             ([
                                             ],
@@ -1552,7 +1625,7 @@ Value
                                           Z.add),
                                       [
                                         Apply
-                                          ((42,
+                                          ((48,
                                             Effect
                                               ([
                                                 (OCaml.Effect.State.state,
@@ -1560,7 +1633,7 @@ Value
                                               ],
                                                 .)),
                                             Variable
-                                              ((42,
+                                              ((48,
                                                 Effect
                                                   ([
                                                   ],
@@ -1573,7 +1646,7 @@ Value
                                                 OCaml.Effect.State.read),
                                             [
                                               Variable
-                                                ((42,
+                                                ((48,
                                                   Effect
                                                     ([
                                                     ],
@@ -1581,7 +1654,7 @@ Value
                                                   j)
                                             ]);
                                         Constant
-                                          ((42,
+                                          ((48,
                                             Effect
                                               ([
                                               ],
@@ -1590,19 +1663,19 @@ Value
                                       ])
                                 ]))),
                     Sequence
-                      ((44,
+                      ((50,
                         Effect
                           ([ (OCaml.Effect.State.state, Z) ],
                             .)),
                         Apply
-                          ((44,
+                          ((50,
                             Effect
                               ([
                                 (OCaml.Effect.State.state,
                                   Z)
                               ], .)),
                             Variable
-                              ((44,
+                              ((50,
                                 Effect
                                   ([ ],
                                     . ->
@@ -1614,14 +1687,14 @@ Value
                                 OCaml.Effect.State.write),
                             [
                               Variable
-                                ((44,
+                                ((50,
                                   Effect
                                     ([
                                     ],
                                       .)),
                                   y);
                               Apply
-                                ((44,
+                                ((50,
                                   Effect
                                     ([
                                       (OCaml.Effect.State.state,
@@ -1629,7 +1702,7 @@ Value
                                     ],
                                       .)),
                                   Variable
-                                    ((44,
+                                    ((50,
                                       Effect
                                         ([
                                         ],
@@ -1637,7 +1710,7 @@ Value
                                       Z.sub),
                                   [
                                     Apply
-                                      ((44,
+                                      ((50,
                                         Effect
                                           ([
                                             (OCaml.Effect.State.state,
@@ -1645,7 +1718,7 @@ Value
                                           ],
                                             .)),
                                         Variable
-                                          ((44,
+                                          ((50,
                                             Effect
                                               ([
                                               ],
@@ -1658,7 +1731,7 @@ Value
                                             OCaml.Effect.State.read),
                                         [
                                           Variable
-                                            ((44,
+                                            ((50,
                                               Effect
                                                 ([
                                                 ],
@@ -1666,7 +1739,7 @@ Value
                                               y)
                                         ]);
                                     Constant
-                                      ((44,
+                                      ((50,
                                         Effect
                                           ([
                                           ],
@@ -1675,14 +1748,14 @@ Value
                                   ])
                             ]),
                         Apply
-                          ((45,
+                          ((51,
                             Effect
                               ([
                                 (OCaml.Effect.State.state,
                                   Z)
                               ], .)),
                             Variable
-                              ((45,
+                              ((51,
                                 Effect
                                   ([ ],
                                     . ->
@@ -1694,14 +1767,14 @@ Value
                                 OCaml.Effect.State.write),
                             [
                               Variable
-                                ((45,
+                                ((51,
                                   Effect
                                     ([
                                     ],
                                       .)),
                                   i);
                               Apply
-                                ((45,
+                                ((51,
                                   Effect
                                     ([
                                       (OCaml.Effect.State.state,
@@ -1709,7 +1782,7 @@ Value
                                     ],
                                       .)),
                                   Variable
-                                    ((45,
+                                    ((51,
                                       Effect
                                         ([
                                         ],
@@ -1717,7 +1790,7 @@ Value
                                       Z.add),
                                   [
                                     Apply
-                                      ((45,
+                                      ((51,
                                         Effect
                                           ([
                                             (OCaml.Effect.State.state,
@@ -1725,7 +1798,7 @@ Value
                                           ],
                                             .)),
                                         Variable
-                                          ((45,
+                                          ((51,
                                             Effect
                                               ([
                                               ],
@@ -1738,7 +1811,7 @@ Value
                                             OCaml.Effect.State.read),
                                         [
                                           Variable
-                                            ((45,
+                                            ((51,
                                               Effect
                                                 ([
                                                 ],
@@ -1746,7 +1819,7 @@ Value
                                               i)
                                         ]);
                                     Constant
-                                      ((45,
+                                      ((51,
                                         Effect
                                           ([
                                           ],
@@ -1755,12 +1828,12 @@ Value
                                   ])
                             ])))),
             Apply
-              ((47, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
+              ((53, Effect ([ (OCaml.Effect.State.state, Z) ], .)),
                 Variable
-                  ((47,
+                  ((53,
                     Effect
                       ([ ],
                         . -[ (OCaml.Effect.State.state, Z) ]->
                           .)), OCaml.Effect.State.read),
-                [ Variable ((47, Effect ([ ], .)), z) ])))
+                [ Variable ((53, Effect ([ ], .)), z) ])))
     ])

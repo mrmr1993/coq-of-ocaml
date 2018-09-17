@@ -21,6 +21,12 @@ let raises (x : int) =
     failwith "x is not less than 0"
   done
 
+let complex_raises (x : int) =
+  let f a = (a, 15, failwith "x is not less than 0") in
+  for i = 0 to x do
+    f true
+  done
+
 let argument_effects (x : int ref) (y : int) =
   let y = ref y in
   let z = ref 0 in
