@@ -43,6 +43,17 @@ let run_in_env (f : 'a t -> 'b * 'a t) (env' : 'a t) (env : 'a t)
     let (x, env) = f env in
     (Some x, env)
 
+let import_content (env : 'a t) : 'a t =
+  let f env = ((env.values, env.modules), env) in
+  match env.run_in_external f env with
+  | Some (values, modules) ->
+    let values = PathName.Map.map (Mod.Value.map env.convert) values in
+    { env with
+      values = PathName.Map.union (fun _ a _ -> Some a) env.values values;
+      modules = PathName.Map.union (fun _ a _ -> Some a) env.modules modules;
+    }
+  | None -> env
+
 let module_required (module_name : Name.t) (env : 'a t) : unit =
   env.required_modules := Name.Set.add module_name !(env.required_modules)
 
@@ -152,6 +163,7 @@ let include_module (f : (PathName.t -> PathName.t) -> 'a t -> 'a -> 'a)
     match strip_prefix module_path name.PathName.path with
     | Some suffix -> { name with PathName.path = env_path @ suffix }
     | None -> name in
+  let env = import_content env in
   let (m, env) = import_module change_prefix (f change_prefix) m env in
   { env with active_module = FullMod.include_module m env.active_module }
 
