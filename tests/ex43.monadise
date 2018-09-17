@@ -1345,6 +1345,170 @@ Value
 Value
   (non_rec, @.,
     [
+      ((complex_raises, [ ], [ (b, Type (bool)) ],
+        Monad ([ Counter; NonTermination; OCaml.Failure ], Type (unit))),
+        LetFun 35
+          (non_rec, @.,
+            [
+              ((f, [ A; B ], [ (a, A) ],
+                Monad
+                  ([ OCaml.Failure ],
+                    (A *
+                      Type
+                        (Z)
+                      *
+                      B))),
+                Bind
+                  (?,
+                    Apply
+                      (35,
+                        Variable
+                          (35,
+                            OCaml.Pervasives.failwith),
+                        [
+                          Constant
+                            (35,
+                              String("b is true"))
+                        ]),
+                    Some
+                      x,
+                    Return
+                      (?,
+                        Tuple
+                          (35,
+                            Variable
+                              (35,
+                                a),
+                            Constant
+                              (35,
+                                Int(15)),
+                            Variable
+                              (?,
+                                x)))))
+            ]) in
+        LetFun 36
+          (rec, @.,
+            [
+              ((while, [ ], [ (counter, Type (nat)) ],
+                Monad
+                  ([
+                    NonTermination;
+                    OCaml.Failure
+                  ], ())),
+                Match
+                  (?,
+                    Variable
+                      (?,
+                        counter),
+                    [
+                      (Constructor
+                        (O),
+                        Lift
+                          (?,
+                            [
+                              NonTermination
+                            ],
+                            [
+                              NonTermination;
+                              OCaml.Failure
+                            ],
+                            Apply
+                              (?,
+                                Variable
+                                  (?,
+                                    not_terminated),
+                                [
+                                  Constructor
+                                    (?,
+                                      tt)
+                                ])));
+                      (Constructor
+                        (S,
+                          counter),
+                        LetVar
+                          ?
+                          check
+                          =
+                          Variable
+                            (36,
+                              b)
+                          in
+                        IfThenElse
+                          (?,
+                            Variable
+                              (?,
+                                check),
+                            Bind
+                              (?,
+                                Lift
+                                  (?,
+                                    [
+                                      OCaml.Failure
+                                    ],
+                                    [
+                                      NonTermination;
+                                      OCaml.Failure
+                                    ],
+                                    Coerce
+                                      (?,
+                                        Apply
+                                          (37,
+                                            Variable
+                                              (37,
+                                                f),
+                                            [
+                                              Constructor
+                                                (37,
+                                                  true)
+                                            ]),
+                                        Monad
+                                          ([
+                                            OCaml.Failure
+                                          ],
+                                            (Type
+                                              (bool)
+                                              *
+                                              Type
+                                                (Z)
+                                              *
+                                              ())))),
+                                None,
+                                Apply
+                                  (?,
+                                    Variable
+                                      (?,
+                                        while),
+                                    [
+                                      Variable
+                                        (?,
+                                          counter)
+                                    ])),
+                            Return
+                              (?,
+                                Constructor
+                                  (?,
+                                    tt))))
+                    ]))
+            ]) in
+        Bind
+          (?,
+            Lift
+              (?, [ Counter ],
+                [ Counter; NonTermination; OCaml.Failure ],
+                Apply
+                  (?, Variable (?, read_counter),
+                    [ Constructor (?, tt) ])), Some counter,
+            Lift
+              (?, [ NonTermination; OCaml.Failure ],
+                [ Counter; NonTermination; OCaml.Failure ],
+                Apply
+                  (?, Variable (?, while), [ Variable (?, counter) ]))))
+    ])
+
+40
+Value
+  (non_rec, @.,
+    [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
         Monad
@@ -1360,8 +1524,8 @@ Value
                   NonTermination
                 ],
                 Apply
-                  (35, Variable (35, OCaml.Pervasives.ref),
-                    [ Variable (35, y) ])), Some y,
+                  (41, Variable (41, OCaml.Pervasives.ref),
+                    [ Variable (41, y) ])), Some y,
             Bind
               (?,
                 Lift
@@ -1372,8 +1536,8 @@ Value
                       NonTermination
                     ],
                     Apply
-                      (36, Variable (36, OCaml.Pervasives.ref),
-                        [ Constant (36, Int(0)) ])), Some z,
+                      (42, Variable (42, OCaml.Pervasives.ref),
+                        [ Constant (42, Int(0)) ])), Some z,
                 Bind
                   (?,
                     Lift
@@ -1384,14 +1548,14 @@ Value
                           NonTermination
                         ],
                         Apply
-                          (37,
+                          (43,
                             Variable
-                              (37, OCaml.Pervasives.ref),
-                            [ Constant (37, Int(0)) ])),
+                              (43, OCaml.Pervasives.ref),
+                            [ Constant (43, Int(0)) ])),
                     Some i,
                     Bind
                       (?,
-                        LetFun 38
+                        LetFun 44
                           (rec, @.,
                             [
                               ((while, [ ],
@@ -1457,13 +1621,13 @@ Value
                                                 Bind
                                                   (?,
                                                     Apply
-                                                      (38,
+                                                      (44,
                                                         Variable
-                                                          (38,
+                                                          (44,
                                                             OCaml.Effect.State.read),
                                                         [
                                                           Variable
-                                                            (38,
+                                                            (44,
                                                               i)
                                                         ]),
                                                     Some
@@ -1471,13 +1635,13 @@ Value
                                                     Bind
                                                       (?,
                                                         Apply
-                                                          (38,
+                                                          (44,
                                                             Variable
-                                                              (38,
+                                                              (44,
                                                                 OCaml.Effect.State.read),
                                                             [
                                                               Variable
-                                                                (38,
+                                                                (44,
                                                                   x)
                                                             ]),
                                                         Some
@@ -1485,9 +1649,9 @@ Value
                                                         Return
                                                           (?,
                                                             Apply
-                                                              (38,
+                                                              (44,
                                                                 Variable
-                                                                  (38,
+                                                                  (44,
                                                                     OCaml.Pervasives.le),
                                                                 [
                                                                   Variable
@@ -1521,13 +1685,13 @@ Value
                                                               NonTermination
                                                             ],
                                                             Apply
-                                                              (39,
+                                                              (45,
                                                                 Variable
-                                                                  (39,
+                                                                  (45,
                                                                     OCaml.Pervasives.ref),
                                                                 [
                                                                   Constant
-                                                                    (39,
+                                                                    (45,
                                                                       Int(0))
                                                                 ])),
                                                         Some
@@ -1535,7 +1699,7 @@ Value
                                                         Bind
                                                           (?,
                                                             LetFun
-                                                              40
+                                                              46
                                                               (rec,
                                                                 @.,
                                                                 [
@@ -1601,13 +1765,13 @@ Value
                                                                                     Bind
                                                                                       (?,
                                                                                         Apply
-                                                                                          (40,
+                                                                                          (46,
                                                                                             Variable
-                                                                                              (40,
+                                                                                              (46,
                                                                                                 OCaml.Effect.State.read),
                                                                                             [
                                                                                               Variable
-                                                                                                (40,
+                                                                                                (46,
                                                                                                   j)
                                                                                             ]),
                                                                                         Some
@@ -1615,13 +1779,13 @@ Value
                                                                                         Bind
                                                                                           (?,
                                                                                             Apply
-                                                                                              (40,
+                                                                                              (46,
                                                                                                 Variable
-                                                                                                  (40,
+                                                                                                  (46,
                                                                                                     OCaml.Effect.State.read),
                                                                                                 [
                                                                                                   Variable
-                                                                                                    (40,
+                                                                                                    (46,
                                                                                                       y)
                                                                                                 ]),
                                                                                             Some
@@ -1629,9 +1793,9 @@ Value
                                                                                             Return
                                                                                               (?,
                                                                                                 Apply
-                                                                                                  (40,
+                                                                                                  (46,
                                                                                                     Variable
-                                                                                                      (40,
+                                                                                                      (46,
                                                                                                         OCaml.Pervasives.le),
                                                                                                     [
                                                                                                       Variable
@@ -1668,13 +1832,13 @@ Value
                                                                                                     Bind
                                                                                                       (?,
                                                                                                         Apply
-                                                                                                          (41,
+                                                                                                          (47,
                                                                                                             Variable
-                                                                                                              (41,
+                                                                                                              (47,
                                                                                                                 OCaml.Effect.State.read),
                                                                                                             [
                                                                                                               Variable
-                                                                                                                (41,
+                                                                                                                (47,
                                                                                                                   z)
                                                                                                             ]),
                                                                                                         Some
@@ -1682,28 +1846,28 @@ Value
                                                                                                         Return
                                                                                                           (?,
                                                                                                             Apply
-                                                                                                              (41,
+                                                                                                              (47,
                                                                                                                 Variable
-                                                                                                                  (41,
+                                                                                                                  (47,
                                                                                                                     Z.add),
                                                                                                                 [
                                                                                                                   Variable
                                                                                                                     (?,
                                                                                                                       x_1);
                                                                                                                   Constant
-                                                                                                                    (41,
+                                                                                                                    (47,
                                                                                                                       Int(1))
                                                                                                                 ]))),
                                                                                                     Some
                                                                                                       x_1,
                                                                                                     Apply
-                                                                                                      (41,
+                                                                                                      (47,
                                                                                                         Variable
-                                                                                                          (41,
+                                                                                                          (47,
                                                                                                             OCaml.Effect.State.write),
                                                                                                         [
                                                                                                           Variable
-                                                                                                            (41,
+                                                                                                            (47,
                                                                                                               z);
                                                                                                           Variable
                                                                                                             (?,
@@ -1715,13 +1879,13 @@ Value
                                                                                                     Bind
                                                                                                       (?,
                                                                                                         Apply
-                                                                                                          (42,
+                                                                                                          (48,
                                                                                                             Variable
-                                                                                                              (42,
+                                                                                                              (48,
                                                                                                                 OCaml.Effect.State.read),
                                                                                                             [
                                                                                                               Variable
-                                                                                                                (42,
+                                                                                                                (48,
                                                                                                                   j)
                                                                                                             ]),
                                                                                                         Some
@@ -1729,28 +1893,28 @@ Value
                                                                                                         Return
                                                                                                           (?,
                                                                                                             Apply
-                                                                                                              (42,
+                                                                                                              (48,
                                                                                                                 Variable
-                                                                                                                  (42,
+                                                                                                                  (48,
                                                                                                                     Z.add),
                                                                                                                 [
                                                                                                                   Variable
                                                                                                                     (?,
                                                                                                                       x_1);
                                                                                                                   Constant
-                                                                                                                    (42,
+                                                                                                                    (48,
                                                                                                                       Int(1))
                                                                                                                 ]))),
                                                                                                     Some
                                                                                                       x_1,
                                                                                                     Apply
-                                                                                                      (42,
+                                                                                                      (48,
                                                                                                         Variable
-                                                                                                          (42,
+                                                                                                          (48,
                                                                                                             OCaml.Effect.State.write),
                                                                                                         [
                                                                                                           Variable
-                                                                                                            (42,
+                                                                                                            (48,
                                                                                                               j);
                                                                                                           Variable
                                                                                                             (?,
@@ -1843,13 +2007,13 @@ Value
                                                                         Bind
                                                                           (?,
                                                                             Apply
-                                                                              (44,
+                                                                              (50,
                                                                                 Variable
-                                                                                  (44,
+                                                                                  (50,
                                                                                     OCaml.Effect.State.read),
                                                                                 [
                                                                                   Variable
-                                                                                    (44,
+                                                                                    (50,
                                                                                       y)
                                                                                 ]),
                                                                             Some
@@ -1857,28 +2021,28 @@ Value
                                                                             Return
                                                                               (?,
                                                                                 Apply
-                                                                                  (44,
+                                                                                  (50,
                                                                                     Variable
-                                                                                      (44,
+                                                                                      (50,
                                                                                         Z.sub),
                                                                                     [
                                                                                       Variable
                                                                                         (?,
                                                                                           x_1);
                                                                                       Constant
-                                                                                        (44,
+                                                                                        (50,
                                                                                           Int(1))
                                                                                     ]))),
                                                                         Some
                                                                           x_1,
                                                                         Apply
-                                                                          (44,
+                                                                          (50,
                                                                             Variable
-                                                                              (44,
+                                                                              (50,
                                                                                 OCaml.Effect.State.write),
                                                                             [
                                                                               Variable
-                                                                                (44,
+                                                                                (50,
                                                                                   y);
                                                                               Variable
                                                                                 (?,
@@ -1890,13 +2054,13 @@ Value
                                                                         Bind
                                                                           (?,
                                                                             Apply
-                                                                              (45,
+                                                                              (51,
                                                                                 Variable
-                                                                                  (45,
+                                                                                  (51,
                                                                                     OCaml.Effect.State.read),
                                                                                 [
                                                                                   Variable
-                                                                                    (45,
+                                                                                    (51,
                                                                                       i)
                                                                                 ]),
                                                                             Some
@@ -1904,28 +2068,28 @@ Value
                                                                             Return
                                                                               (?,
                                                                                 Apply
-                                                                                  (45,
+                                                                                  (51,
                                                                                     Variable
-                                                                                      (45,
+                                                                                      (51,
                                                                                         Z.add),
                                                                                     [
                                                                                       Variable
                                                                                         (?,
                                                                                           x_1);
                                                                                       Constant
-                                                                                        (45,
+                                                                                        (51,
                                                                                           Int(1))
                                                                                     ]))),
                                                                         Some
                                                                           x_1,
                                                                         Apply
-                                                                          (45,
+                                                                          (51,
                                                                             Variable
-                                                                              (45,
+                                                                              (51,
                                                                                 OCaml.Effect.State.write),
                                                                             [
                                                                               Variable
-                                                                                (45,
+                                                                                (51,
                                                                                   i);
                                                                               Variable
                                                                                 (?,
@@ -1990,9 +2154,9 @@ Value
                               NonTermination
                             ],
                             Apply
-                              (47,
+                              (53,
                                 Variable
-                                  (47,
+                                  (53,
                                     OCaml.Effect.State.read),
-                                [ Variable (47, z) ])))))))
+                                [ Variable (53, z) ])))))))
     ])

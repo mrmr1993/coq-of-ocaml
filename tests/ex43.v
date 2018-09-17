@@ -170,6 +170,26 @@ Definition raises (b : bool)
   let! counter := lift [_;_;_] "100" (read_counter tt) in
   lift [_;_;_] "011" (while counter).
 
+Definition complex_raises (b : bool)
+  : M [ Counter; NonTermination; OCaml.Failure ] unit :=
+  let f {A B : Type} (a : A) : M [ OCaml.Failure ] (A * Z * B) :=
+    let! x := OCaml.Pervasives.failwith "b is true" % string in
+    ret (a, 15, x) in
+  let fix while (counter : nat) : M [ NonTermination; OCaml.Failure ] unit :=
+    match counter with
+    | O => lift [_;_] "10" (not_terminated tt)
+    | S counter =>
+      let check := b in
+      if check then
+        let! _ :=
+          lift [_;_] "01" ((f true) : M [ OCaml.Failure ] (bool * Z * unit)) in
+        while counter
+      else
+        ret tt
+    end in
+  let! counter := lift [_;_;_] "100" (read_counter tt) in
+  lift [_;_;_] "011" (while counter).
+
 Definition argument_effects (x : OCaml.Effect.State.t Z) (y : Z)
   : M [ OCaml.Effect.State.state Z; Counter; NonTermination ] Z :=
   let! y := lift [_;_;_] "100" (OCaml.Pervasives.ref y) in

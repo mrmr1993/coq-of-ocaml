@@ -127,6 +127,14 @@ let rec unify (ptyp : Effect.PureType.t) (typ : t)
       Name.Map.empty ptyps typs
   | _, _ -> failwith "Could not unify types"
 
+let rec map_vars (f : Name.t -> t) (typ : t) : t =
+  match typ with
+  | Variable x -> f x
+  | Arrow (typ1, typ2) -> Arrow (map_vars f typ1, map_vars f typ2)
+  | Tuple typs -> Tuple (List.map (map_vars f) typs)
+  | Apply (x, typs) -> Apply (x, List.map (map_vars f) typs)
+  | Monad (x, typ) -> Monad (x, map_vars f typ)
+
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with
   | Variable x -> Name.Set.singleton x

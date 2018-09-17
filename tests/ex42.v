@@ -36,7 +36,16 @@ Definition nested (x : Z) (y : Z)
 
 Definition raises (x : Z) : M [ OCaml.Failure ] unit :=
   OCaml.Basics.for_to 0 x
-    (fun i => OCaml.Pervasives.failwith "x is not less than 0" % string).
+    (fun i =>
+      (OCaml.Pervasives.failwith "x is not less than 0" % string) :
+        M [ OCaml.Failure ] unit).
+
+Definition complex_raises (x : Z) : M [ OCaml.Failure ] unit :=
+  let f {A B : Type} (a : A) : M [ OCaml.Failure ] (A * Z * B) :=
+    let! x_1 := OCaml.Pervasives.failwith "x is not less than 0" % string in
+    ret (a, 15, x_1) in
+  OCaml.Basics.for_to 0 x
+    (fun i => (f true) : M [ OCaml.Failure ] (bool * Z * unit)).
 
 Definition argument_effects (x : OCaml.Effect.State.t Z) (y : Z)
   : M [ OCaml.Effect.State.state Z ] Z :=

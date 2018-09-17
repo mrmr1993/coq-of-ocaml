@@ -127,90 +127,120 @@ Value
 Value
   (non_rec, @.,
     [
+      ((complex_raises, [ ], [ (x, Type (Z)) ], Type (unit)),
+        LetFun 25
+          (non_rec, @.,
+            [
+              ((f, [ A; B ], [ (a, A) ], (A * Type (Z) * B)),
+                Tuple
+                  (25, Variable (25, a),
+                    Constant
+                      (25,
+                        Int(15)),
+                    Apply
+                      (25,
+                        Variable
+                          (25,
+                            OCaml.Pervasives.failwith),
+                        [
+                          Constant
+                            (25,
+                              String("x is not less than 0"))
+                        ])))
+            ]) in
+        For
+          (26, i, true, Constant (26, Int(0)), Variable (26, x),
+            Apply (27, Variable (27, f), [ Constructor (27, true) ])))
+    ])
+
+30
+Value
+  (non_rec, @.,
+    [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
         Type (Z)),
-        LetVar 25 y =
+        LetVar 31 y =
           Apply
-            (25, Variable (25, OCaml.Pervasives.ref), [ Variable (25, y) ])
+            (31, Variable (31, OCaml.Pervasives.ref), [ Variable (31, y) ])
           in
-        LetVar 26 z =
+        LetVar 32 z =
           Apply
-            (26, Variable (26, OCaml.Pervasives.ref),
-              [ Constant (26, Int(0)) ]) in
+            (32, Variable (32, OCaml.Pervasives.ref),
+              [ Constant (32, Int(0)) ]) in
         Sequence
-          (27,
+          (33,
             For
-              (27, i, true, Constant (27, Int(0)),
+              (33, i, true, Constant (33, Int(0)),
                 Apply
-                  (27, Variable (27, OCaml.Effect.State.read),
-                    [ Variable (27, x) ]),
+                  (33, Variable (33, OCaml.Effect.State.read),
+                    [ Variable (33, x) ]),
                 Sequence
-                  (28,
+                  (34,
                     For
-                      (28, j, true, Constant (28, Int(0)),
+                      (34, j, true, Constant (34, Int(0)),
                         Apply
-                          (28,
+                          (34,
                             Variable
-                              (28,
+                              (34,
                                 OCaml.Effect.State.read),
-                            [ Variable (28, y) ]),
+                            [ Variable (34, y) ]),
                         Apply
-                          (29,
+                          (35,
                             Variable
-                              (29,
+                              (35,
                                 OCaml.Effect.State.write),
                             [
-                              Variable (29, z);
+                              Variable (35, z);
                               Apply
-                                (29,
+                                (35,
                                   Variable
-                                    (29,
+                                    (35,
                                       Z.add),
                                   [
                                     Apply
-                                      (29,
+                                      (35,
                                         Variable
-                                          (29,
+                                          (35,
                                             OCaml.Effect.State.read),
                                         [
                                           Variable
-                                            (29,
+                                            (35,
                                               z)
                                         ]);
                                     Constant
-                                      (29,
+                                      (35,
                                         Int(1))
                                   ])
                             ])),
                     Apply
-                      (31,
+                      (37,
                         Variable
-                          (31, OCaml.Effect.State.write),
+                          (37, OCaml.Effect.State.write),
                         [
-                          Variable (31, y);
+                          Variable (37, y);
                           Apply
-                            (31,
+                            (37,
                               Variable
-                                (31,
+                                (37,
                                   Z.sub),
                               [
                                 Apply
-                                  (31,
+                                  (37,
                                     Variable
-                                      (31,
+                                      (37,
                                         OCaml.Effect.State.read),
                                     [
                                       Variable
-                                        (31,
+                                        (37,
                                           y)
                                     ]);
                                 Constant
-                                  (31,
+                                  (37,
                                     Int(1))
                               ])
                         ]))),
             Apply
-              (33, Variable (33, OCaml.Effect.State.read),
-                [ Variable (33, z) ])))
+              (39, Variable (39, OCaml.Effect.State.read),
+                [ Variable (39, z) ])))
     ])
