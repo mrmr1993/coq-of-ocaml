@@ -137,10 +137,6 @@ let convert (x : t) : t =
   (* Operations on format strings *)
   (* Program termination *)
 
-  (* List *)
-  | { path = ["List"]; base = "exists" } -> { path = ["List"]; base = "_exists" }
-  | { path = ["List"]; base = "exists2" } -> { path = ["List"]; base = "_exists2" }
-
   | { path = path; base = base } -> { path = path; base = Name.convert base }
 
 let convert_type (x : t) : t =
