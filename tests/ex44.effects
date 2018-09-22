@@ -1,0 +1,101 @@
+3
+Value
+  (non_rec, @.,
+    [
+      ((temp, [ ], [ ], Type (unit)),
+        Apply
+          ((3, Effect ([ ], .)),
+            Variable ((3, Effect ([ ], .)), OCaml.Pervasives.ignore),
+            [
+              Apply
+                ((3, Effect ([ ], .)),
+                  Variable
+                    ((3,
+                      Effect
+                        ([
+                        ],
+                          .)),
+                      Z.add),
+                  [
+                    Constant
+                      ((3,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        Int(1));
+                    Constant
+                      ((3,
+                        Effect
+                          ([
+                          ],
+                            .)),
+                        Int(1))
+                  ])
+            ]))
+    ])
+
+5
+Value
+  (non_rec, @.,
+    [
+      ((temp_1, [ ], [ ], (Type (Z) * Type (string))),
+        Tuple
+          ((5, Effect ([ ], .)), Constant ((5, Effect ([ ], .)), Int(15)),
+            Constant ((5, Effect ([ ], .)), String("hi"))))
+    ])
+
+5
+Value
+  (non_rec, @.,
+    [
+      ((a, [ ], [ ], _),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
+            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), a)) ]))
+    ])
+
+5
+Value
+  (non_rec, @.,
+    [
+      ((b, [ ], [ ], _),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
+            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), b)) ]))
+    ])
+
+7
+Inductive a (= a_1):
+  ([ ], [ (A, [ Type (Z); Type (bool) ]) ])
+
+9
+Value
+  (non_rec, @.,
+    [
+      ((temp_2, [ ], [ ], Type (a_1)),
+        Constructor
+          ((9, Effect ([ ], .)), A,
+            Constant ((9, Effect ([ ], .)), Int(15)),
+            Constructor ((9, Effect ([ ], .)), true)))
+    ])
+
+9
+Value
+  (non_rec, @.,
+    [
+      ((i, [ ], [ ], _),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
+            [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), i)) ]))
+    ])
+
+9
+Value
+  (non_rec, @.,
+    [
+      ((j, [ ], [ ], _),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
+            [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), j)) ]))
+    ])
