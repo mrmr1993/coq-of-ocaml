@@ -14,7 +14,7 @@ module Value = struct
     let firt_case = ref true in
     separate (newline ^^ newline) (value.Exp.Definition.cases |> List.map (fun (header, e) ->
       nest (
-        (if !firt_case then (
+        (if !firt_case || not (Recursivity.to_bool value.Exp.Definition.is_rec) then (
           firt_case := false;
           if Recursivity.to_bool value.Exp.Definition.is_rec then
             !^ "Fixpoint"
@@ -34,7 +34,11 @@ module Value = struct
         group (separate space (header.Exp.Header.args |> List.map (fun (x, t) ->
           parens @@ nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
-        !^ " :=" ^^ Exp.to_coq false e))) ^-^ !^ "."
+        !^ " :=" ^^ Exp.to_coq false e ^-^
+        if Recursivity.to_bool value.Exp.Definition.is_rec then empty
+        else !^ "."))) ^-^
+      if Recursivity.to_bool value.Exp.Definition.is_rec then !^ "."
+      else empty
 end
 
 (** A structure. *)
