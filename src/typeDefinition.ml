@@ -42,9 +42,10 @@ let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
           | Cstr_tuple typs -> typs
           | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
         let constr = Name.of_ident constr in
-        let (constr, _, env) = FullEnvi.Constructor.create constr env in
-        (env, (constr, typs |> List.map (fun typ ->
-          Type.of_type_expr env loc typ))))) in
+        let typs = List.map (fun typ -> Type.of_type_expr env loc typ) typs in
+        let (constr, _, env) = FullEnvi.Constructor.create constr
+          (List.map Type.pure_type typs) env in
+        (env, (constr, typs)))) in
     Inductive (x, typ_args, constructors)
   | Type_record (fields, _) ->
     let fields = fields |> (env |>
@@ -69,8 +70,8 @@ let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   match def with
   | Inductive (name, _, constructors) ->
     let env = FullEnvi.Typ.assoc name env in
-    List.fold_left (fun env (x, _) ->
-      FullEnvi.Constructor.assoc x env)
+    List.fold_left (fun env (x, typs) ->
+      FullEnvi.Constructor.assoc x (List.map Type.pure_type typs) env)
       env constructors
   | Record (name, fields) ->
     let env = FullEnvi.Typ.assoc name env in

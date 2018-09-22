@@ -8,7 +8,7 @@ module Value = struct
     | Type
     | Descriptor
     | Exception of PathName.t
-    | Constructor
+    | Constructor of Effect.PureType.t list
     | Field of Effect.PureType.t
 
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
@@ -18,7 +18,7 @@ module Value = struct
     | Type -> Type
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
-    | Constructor -> Constructor
+    | Constructor typs -> Constructor typs
     | Field typ -> Field typ
 
   let to_string (v : 'a t) : string =
@@ -28,7 +28,7 @@ module Value = struct
     | Type -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
-    | Constructor -> "constructor"
+    | Constructor _ -> "constructor"
     | Field _ -> "field"
 end
 open Value
@@ -192,7 +192,12 @@ module Constructors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.constructors
 
-  let value : 'a Value.t = Constructor
+  let value (typs : Effect.PureType.t list) : 'a Value.t = Constructor typs
+
+  let unpack (v : 'a Value.t) : Effect.PureType.t list =
+    match v with
+    | Constructor typs -> typs
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a constructor."
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with constructors = PathName.Map.add x y m.constructors }

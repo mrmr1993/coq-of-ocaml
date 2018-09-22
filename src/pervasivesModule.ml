@@ -30,11 +30,11 @@ let env_with_effects (interfaces : (Name.t * string) list)
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
   |> Typ.add [] "nat"
-  |> Constructor.add [] "O"
-  |> Constructor.add [] "S"
+  |> Constructor.add [] "O" []
+  |> Constructor.add [] "S" [Effect.PureType.Apply (bound_name [] [] "nat", [])]
   |> Typ.add [] "sum"
-  |> Constructor.add [] "inl"
-  |> Constructor.add [] "inr"
+  |> Constructor.add [] "inl" [Effect.PureType.Variable "A"]
+  |> Constructor.add [] "inr" [Effect.PureType.Variable "A"]
   |> Descriptor.add [] "IO"
   |> Descriptor.add [] "Counter"
   |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Pure)
@@ -49,16 +49,16 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Typ.add [] "ascii"
   |> Typ.add [] "string"
   |> Typ.add [] "bool"
-  |> Constructor.add [] "false"
-  |> Constructor.add [] "true"
+  |> Constructor.add [] "false" []
+  |> Constructor.add [] "true" []
   |> Typ.add [] "unit"
-  |> Constructor.add [] "tt"
+  |> Constructor.add [] "tt" []
   |> Typ.add [] "list"
-  |> Constructor.add [] "[]"
-  |> Constructor.add [] "cons"
+  |> Constructor.add [] "[]" []
+  |> Constructor.add [] "cons" [Effect.PureType.Variable "A"; Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "A"])]
   |> Typ.add [] "option"
-  |> Constructor.add [] "None"
-  |> Constructor.add [] "Some"
+  |> Constructor.add [] "None" []
+  |> Constructor.add [] "Some" [Effect.PureType.Variable "A"]
   (* Comparisons *)
   |> Var.add [] "equiv_decb" pure
   |> Var.add [] "nequiv_decb" pure
