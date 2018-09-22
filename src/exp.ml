@@ -526,7 +526,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     let e = substitute x e' e in
     let cases = cases |> List.map (fun (p, e) ->
       let ys = Pattern.free_variables p in
-      if Name.Set.exists (fun y -> y = x) ys then
+      if CoqName.Set.exists (fun y -> CoqName.ocaml_name y = x) ys then
         (p, e)
       else
         (p, substitute x e' e)) in
@@ -802,8 +802,8 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     if Effect.Type.is_pure effect_e.Effect.typ then
       let cases = cases |> List.map (fun (p, e) ->
         let pattern_vars = Pattern.free_variables p in
-        let env = Name.Set.fold (fun x env ->
-          FullEnvi.Var.add [] x Effect.pure env)
+        let env = CoqName.Set.fold (fun x env ->
+          FullEnvi.Var.assoc x Effect.pure env)
           pattern_vars env in
         (p, effects env e)) in
       let effect = Effect.union (cases |> List.map (fun (_, e) ->
@@ -1021,7 +1021,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       match es' with
       | [e] ->
         let cases = cases |> List.map (fun (p, e)->
-          let env = Name.Set.fold (fun x env -> FullEnvi.Var.add [] x () env)
+          let env = CoqName.Set.fold (fun x env -> FullEnvi.Var.assoc x () env)
             (Pattern.free_variables p) env in
           (p, lift (descriptor e) d (monadise env e))) in
         Match (l, e, cases)

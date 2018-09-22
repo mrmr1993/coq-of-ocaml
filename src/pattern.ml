@@ -57,22 +57,22 @@ let rec of_pattern (new_names : bool) (env : unit FullEnvi.t) (p : pattern) : t 
   | _ -> Error.raise l "Unhandled pattern."
 
 (** Free variables in a pattern. *)
-let rec free_variables (p : t) : Name.Set.t =
+let rec free_variables (p : t) : CoqName.Set.t =
   let aux ps =
-    List.fold_left (fun s p -> Name.Set.union s (free_variables p))
-    Name.Set.empty ps in
+    List.fold_left (fun s p -> CoqName.Set.union s (free_variables p))
+    CoqName.Set.empty ps in
   match p with
-  | Any | Constant _ -> Name.Set.empty
-  | Variable x -> Name.Set.singleton (CoqName.ocaml_name x)
+  | Any | Constant _ -> CoqName.Set.empty
+  | Variable x -> CoqName.Set.singleton x
   | Tuple ps | Constructor (_, ps) -> aux ps
   | Alias (p, x) ->
-    Name.Set.union (Name.Set.singleton (CoqName.ocaml_name x))
+    CoqName.Set.union (CoqName.Set.singleton x)
       (free_variables p)
   | Record fields -> aux (List.map snd fields)
-  | Or (p1, p2) -> Name.Set.inter (free_variables p1) (free_variables p2)
+  | Or (p1, p2) -> CoqName.Set.inter (free_variables p1) (free_variables p2)
 
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  Name.Set.fold (fun x env -> FullEnvi.Var.add [] x () env)
+  CoqName.Set.fold (fun x env -> FullEnvi.Var.assoc x () env)
     (free_variables p) env
 
 (** Pretty-print a pattern to Coq (inside parenthesis if the [paren] flag is set). *)
