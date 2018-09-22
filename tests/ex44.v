@@ -63,20 +63,49 @@ Definition hey_1 : bool :=
   | {| second := hey_1; third := hello |} => hey_1
   end.
 
-Definition temp_6 : b_1 := {| first := hi; second := hey_1; third := hello |}.
+Definition temp_6 : b_1 := b_val.
+
+Definition temp_7 : b_1 := b_val.
+
+Definition number1b : Z :=
+  match b_val with
+  | {| first := number1b |} => number1b
+  end.
+
+Definition number1a : Z :=
+  match temp_6 with
+  | {| first := number1a; second := number2a |} => number1a
+  end.
+
+Definition number2a : bool :=
+  match temp_6 with
+  | {| first := number1a; second := number2a |} => number2a
+  end.
+
+Definition number2b : bool :=
+  match temp_7 with
+  | {| second := number2b; third := number3 |} => number2b
+  end.
+
+Definition number3 : string :=
+  match temp_7 with
+  | {| second := number2b; third := number3 |} => number3
+  end.
+
+Definition temp_9 : b_1 := {| first := hi; second := hey_1; third := hello |}.
 
 Definition first_1 : Z :=
-  match temp_6 with
+  match temp_9 with
   | {| first := first_1; second := second_1; third := third_1 |} => first_1
   end.
 
 Definition second_1 : bool :=
-  match temp_6 with
+  match temp_9 with
   | {| first := first_1; second := second_1; third := third_1 |} => second_1
   end.
 
 Definition third_1 : string :=
-  match temp_6 with
+  match temp_9 with
   | {| first := first_1; second := second_1; third := third_1 |} => third_1
   end.
 

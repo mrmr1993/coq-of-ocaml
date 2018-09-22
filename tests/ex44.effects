@@ -178,21 +178,96 @@ Value
 Value
   (non_rec, @.,
     [
-      ((temp_6, [ ], [ ], Type (b_1)),
-        Record
-          ((20, Effect ([ ], .)), None,
-            (first, Some Variable ((20, Effect ([ ], .)), hi)),
-            (second, Some Variable ((20, Effect ([ ], .)), hey_1)),
-            (third, Some Variable ((20, Effect ([ ], .)), hello))))
+      ((temp_6, [ ], [ ], Type (b_1)), Variable ((19, Effect ([ ], .)), b_val));
+      ((temp_7, [ ], [ ], Type (b_1)), Variable ((20, Effect ([ ], .)), b_val));
+      ((number1b, [ ], [ ], Type (Z)),
+        Match
+          ((21, Effect ([ ], .)), Variable ((21, Effect ([ ], .)), b_val),
+            [
+              (Record ((first, number1b)),
+                Variable
+                  ((21, Effect ([ ], .)),
+                    number1b))
+            ]))
     ])
 
 19
 Value
   (non_rec, @.,
     [
-      ((first (= first_1), [ ], [ ], Type (Z)),
+      ((number1a, [ ], [ ], Type (Z)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+            [
+              (Record ((first, number1a), (second, number2a)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    number1a))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number2a, [ ], [ ], Type (bool)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+            [
+              (Record ((first, number1a), (second, number2a)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    number2a))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number2b, [ ], [ ], Type (bool)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_7),
+            [
+              (Record ((second, number2b), (third, number3)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    number2b))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number3, [ ], [ ], Type (string)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_7),
+            [
+              (Record ((second, number2b), (third, number3)),
+                Variable ((?, Effect ([ ], .)), number3))
+            ]))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((temp_9, [ ], [ ], Type (b_1)),
+        Record
+          ((24, Effect ([ ], .)), None,
+            (first, Some Variable ((24, Effect ([ ], .)), hi)),
+            (second, Some Variable ((24, Effect ([ ], .)), hey_1)),
+            (third, Some Variable ((24, Effect ([ ], .)), hello))))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((first (= first_1), [ ], [ ], Type (Z)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -208,13 +283,13 @@ Value
             ]))
     ])
 
-19
+23
 Value
   (non_rec, @.,
     [
       ((second (= second_1), [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -232,13 +307,13 @@ Value
             ]))
     ])
 
-19
+23
 Value
   (non_rec, @.,
     [
       ((third (= third_1), [ ], [ ], Type (string)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -254,28 +329,28 @@ Value
             ]))
     ])
 
-22
+26
 Record c:
   ([ a ], [ (f, (a -> Type (Z))) ])
 
-24
+28
 Value
   (non_rec, @.,
     [
       ((c_val, [ A ], [ ], Type (c, A)),
         Record
-          ((24, Effect ([ ], .)), None,
+          ((28, Effect ([ ], .)), None,
             (f,
               Some
                 Function
-                  ((24, Effect ([ ], . -> .)), x,
+                  ((28, Effect ([ ], . -> .)), x,
                     Match
                       ((?, Effect ([ ], .)),
                         Variable ((?, Effect ([ ], .)), x),
                         [
                           (Any,
                             Constant
-                              ((24,
+                              ((28,
                                 Effect
                                   ([
                                   ],
@@ -284,39 +359,39 @@ Value
                         ])))))
     ])
 
-26
+30
 Value
   (non_rec, @.,
     [
       ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
         Match
-          ((26, Effect ([ ], .)), Variable ((26, Effect ([ ], .)), c_val),
+          ((30, Effect ([ ], .)), Variable ((30, Effect ([ ], .)), c_val),
             [
               (Record ((f, f (= f_1))),
-                Variable ((26, Effect ([ ], .)), f_1))
+                Variable ((30, Effect ([ ], .)), f_1))
             ]))
     ])
 
-28
+32
 Inductive d:
   ([ a ], [ (F, [ (a -> Type (Z)) ]) ])
 
-30
+34
 Value
   (non_rec, @.,
     [
       ((d_val, [ A ], [ ], Type (d, A)),
         Constructor
-          ((30, Effect ([ ], .)), F,
+          ((34, Effect ([ ], .)), F,
             Function
-              ((30, Effect ([ ], . -> .)), x,
+              ((34, Effect ([ ], . -> .)), x,
                 Match
                   ((?, Effect ([ ], .)),
                     Variable ((?, Effect ([ ], .)), x),
                     [
                       (Any,
                         Constant
-                          ((30,
+                          ((34,
                             Effect
                               ([
                               ],
@@ -325,12 +400,12 @@ Value
                     ]))))
     ])
 
-32
+36
 Value
   (non_rec, @.,
     [
       ((g, [ A ], [ ], (A -> Type (Z))),
         Match
-          ((32, Effect ([ ], .)), Variable ((32, Effect ([ ], .)), d_val),
-            [ (Constructor (F, g), Variable ((32, Effect ([ ], .)), g)) ]))
+          ((36, Effect ([ ], .)), Variable ((36, Effect ([ ], .)), d_val),
+            [ (Constructor (F, g), Variable ((36, Effect ([ ], .)), g)) ]))
     ])

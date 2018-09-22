@@ -16,6 +16,10 @@ let { first = hi } = b_val
 let { second = hey } = b_val
 let { second = hey; third = hello } = b_val
 
+let { first = number1a; second = number2a } = b_val
+and { second = number2b; third = number3 } = b_val
+and { first = number1b } = b_val
+
 let { first = first; second = second; third = third } =
   { first = hi; second = hey; third = hello }
 

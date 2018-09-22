@@ -143,20 +143,84 @@ Value
 Value
   (non_rec, @.,
     [
-      ((temp_6, [ ], [ ], Type (b_1)),
-        Record
-          (20, None, (first, Some Variable (20, hi)),
-            (second, Some Variable (20, hey_1)),
-            (third, Some Variable (20, hello))))
+      ((temp_6, [ ], [ ], Type (b_1)), Variable (19, b_val));
+      ((temp_7, [ ], [ ], Type (b_1)), Variable (20, b_val));
+      ((number1b, [ ], [ ], Type (Z)),
+        Match
+          (21, Variable (21, b_val),
+            [ (Record ((first, number1b)), Variable (21, number1b)) ]))
     ])
 
 19
 Value
   (non_rec, @.,
     [
-      ((first (= first_1), [ ], [ ], Type (Z)),
+      ((number1a, [ ], [ ], Type (Z)),
         Match
           (?, Variable (?, temp_6),
+            [
+              (Record ((first, number1a), (second, number2a)),
+                Variable (?, number1a))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number2a, [ ], [ ], Type (bool)),
+        Match
+          (?, Variable (?, temp_6),
+            [
+              (Record ((first, number1a), (second, number2a)),
+                Variable (?, number2a))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number2b, [ ], [ ], Type (bool)),
+        Match
+          (?, Variable (?, temp_7),
+            [
+              (Record ((second, number2b), (third, number3)),
+                Variable (?, number2b))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((number3, [ ], [ ], Type (string)),
+        Match
+          (?, Variable (?, temp_7),
+            [
+              (Record ((second, number2b), (third, number3)),
+                Variable (?, number3))
+            ]))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((temp_9, [ ], [ ], Type (b_1)),
+        Record
+          (24, None, (first, Some Variable (24, hi)),
+            (second, Some Variable (24, hey_1)),
+            (third, Some Variable (24, hello))))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((first (= first_1), [ ], [ ], Type (Z)),
+        Match
+          (?, Variable (?, temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -172,13 +236,13 @@ Value
             ]))
     ])
 
-19
+23
 Value
   (non_rec, @.,
     [
       ((second (= second_1), [ ], [ ], Type (bool)),
         Match
-          (?, Variable (?, temp_6),
+          (?, Variable (?, temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -194,13 +258,13 @@ Value
             ]))
     ])
 
-19
+23
 Value
   (non_rec, @.,
     [
       ((third (= third_1), [ ], [ ], Type (string)),
         Match
-          (?, Variable (?, temp_6),
+          (?, Variable (?, temp_9),
             [
               (Record
                 ((first, first (= first_1)),
@@ -216,60 +280,60 @@ Value
             ]))
     ])
 
-22
+26
 Record c:
   ([ a ], [ (f, (a -> Type (Z))) ])
 
-24
+28
 Value
   (non_rec, @.,
     [
       ((c_val, [ A ], [ ], Type (c, A)),
         Record
-          (24, None,
+          (28, None,
             (f,
               Some
                 Function
-                  (24, x,
+                  (28, x,
                     Match
                       (?, Variable (?, x),
-                        [ (Any, Constant (24, Int(12))) ])))))
+                        [ (Any, Constant (28, Int(12))) ])))))
     ])
-
-26
-Value
-  (non_rec, @.,
-    [
-      ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
-        Match
-          (26, Variable (26, c_val),
-            [ (Record ((f, f (= f_1))), Variable (26, f_1)) ]))
-    ])
-
-28
-Inductive d:
-  ([ a ], [ (F, [ (a -> Type (Z)) ]) ])
 
 30
 Value
   (non_rec, @.,
     [
-      ((d_val, [ A ], [ ], Type (d, A)),
-        Constructor
-          (30, F,
-            Function
-              (30, x,
-                Match
-                  (?, Variable (?, x),
-                    [ (Any, Constant (30, Int(12))) ]))))
+      ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
+        Match
+          (30, Variable (30, c_val),
+            [ (Record ((f, f (= f_1))), Variable (30, f_1)) ]))
     ])
 
 32
+Inductive d:
+  ([ a ], [ (F, [ (a -> Type (Z)) ]) ])
+
+34
+Value
+  (non_rec, @.,
+    [
+      ((d_val, [ A ], [ ], Type (d, A)),
+        Constructor
+          (34, F,
+            Function
+              (34, x,
+                Match
+                  (?, Variable (?, x),
+                    [ (Any, Constant (34, Int(12))) ]))))
+    ])
+
+36
 Value
   (non_rec, @.,
     [
       ((g, [ A ], [ ], (A -> Type (Z))),
         Match
-          (32, Variable (32, d_val),
-            [ (Constructor (F, g), Variable (32, g)) ]))
+          (36, Variable (36, d_val),
+            [ (Constructor (F, g), Variable (36, g)) ]))
     ])
