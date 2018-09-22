@@ -5,7 +5,7 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Module SizedString.
-  Record t := {
+  Record t : Type := {
     name : string;
     size : Z }.
 End SizedString.
@@ -35,7 +35,7 @@ Definition b' : bool := f r'.
 Definition b'' : bool := f r''.
 
 Module Point.
-  Record t := {
+  Record t : Type := {
     x : Z;
     y : Z;
     z : Z }.

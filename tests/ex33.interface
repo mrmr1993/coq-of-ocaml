@@ -7,8 +7,18 @@
       [ "Interface", "Ord", [ [ "Typ", "t" ], [ "Var", "compare", [] ] ] ],
       [ "Typ", "key" ],
       [ "Typ", "t" ],
-      [ "Constructor", "Empty" ],
-      [ "Constructor", "Node" ],
+      [ "Constructor", "Empty", [] ],
+      [
+        "Constructor",
+        "Node",
+        [
+          [ "Apply", "t", [ "Variable", "a" ] ],
+          [ "Apply", "key" ],
+          [ "Variable", "a" ],
+          [ "Apply", "t", [ "Variable", "a" ] ],
+          [ "Apply", "Z" ]
+        ]
+      ],
       [ "Var", "height", [] ],
       [ "Var", "create", [] ],
       [ "Var", "singleton", [] ],
@@ -66,8 +76,17 @@
       [ "Var", "filter", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
       [ "Var", "partition", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
       [ "Typ", "enumeration" ],
-      [ "Constructor", "End" ],
-      [ "Constructor", "More" ],
+      [ "Constructor", "End", [] ],
+      [
+        "Constructor",
+        "More",
+        [
+          [ "Apply", "key" ],
+          [ "Variable", "a" ],
+          [ "Apply", "t", [ "Variable", "a" ] ],
+          [ "Apply", "enumeration", [ "Variable", "a" ] ]
+        ]
+      ],
       [ "Var", "cons_enum", [] ],
       [ "Var", "compare", [ [ [], [], [ "Counter", "NonTermination" ] ] ] ],
       [ "Var", "equal", [ [ [], [], [ "Counter", "NonTermination" ] ] ] ],
