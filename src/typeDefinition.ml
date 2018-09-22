@@ -74,7 +74,8 @@ let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
       env constructors
   | Record (name, fields) ->
     let env = FullEnvi.Typ.assoc name env in
-    List.fold_left (fun env (x, _) -> FullEnvi.Field.assoc x env)
+    List.fold_left (fun env (x, typ) ->
+      FullEnvi.Field.assoc x (Type.pure_type typ) env)
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     FullEnvi.Typ.assoc name env

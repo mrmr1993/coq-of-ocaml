@@ -345,7 +345,45 @@ end
 module Typ = EmptyCarrier(Mod.Typs)
 module Descriptor = EmptyCarrier(Mod.Descriptors)
 module Constructor = EmptyCarrier(Mod.Constructors)
-module Field = EmptyCarrier(Mod.Fields)
+
+module Field = struct
+  include Carrier(Mod.Fields)
+  let raw_add (x : PathName.t) (y : PathName.t) (typ : Effect.PureType.t)
+    (env : 'a t) : 'a t =
+    { env with
+      values = PathName.Map.add y (Mod.Fields.value typ) env.values;
+      active_module =
+        FullMod.hd_mod_map (Mod.Fields.assoc x y) env.active_module }
+
+  let add (path : Name.t list) (base : Name.t) (typ : Effect.PureType.t)
+    (env : 'a t) : 'a t =
+    raw_add (PathName.of_name path base) (resolve path base env) typ env
+
+  let assoc (name : CoqName.t) (typ : Effect.PureType.t) (env : 'a t) : 'a t =
+    let (ocaml_name, coq_name) = CoqName.assoc_names name in
+    raw_add (PathName.of_name [] ocaml_name)
+      (PathName.of_name (coq_path env) coq_name) typ env
+
+  (** Add a fresh local name beginning with [prefix] in [env]. *)
+  let fresh (prefix : string) (typ : Effect.PureType.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    (CoqName.Name name, bound_name, add [] name typ env)
+
+  let create (prefix : string) (typ : Effect.PureType.t) (env : 'a t)
+    : CoqName.t * BoundName.t * 'a t =
+    let name = find_free_name [] prefix env in
+    let bound_name = {
+      BoundName.full_path = { PathName.path = coq_path env; base = name };
+      local_path = { PathName.path = []; base = name };
+    } in
+    let coq_name = CoqName.of_names prefix name in
+    (coq_name, bound_name, assoc coq_name typ env)
+end
 
 module Exception = struct
   include EmptyCarrier(Mod.Descriptors)

@@ -9,7 +9,7 @@ module Value = struct
     | Descriptor
     | Exception of PathName.t
     | Constructor
-    | Field
+    | Field of Effect.PureType.t
 
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
     match v with
@@ -19,7 +19,7 @@ module Value = struct
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
     | Constructor -> Constructor
-    | Field -> Field
+    | Field typ -> Field typ
 
   let to_string (v : 'a t) : string =
     match v with
@@ -29,7 +29,7 @@ module Value = struct
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
     | Constructor -> "constructor"
-    | Field -> "field"
+    | Field _ -> "field"
 end
 open Value
 
@@ -201,7 +201,12 @@ module Fields = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.fields
 
-  let value : 'a Value.t = Field
+  let value (typ : Effect.PureType.t) : 'a Value.t = Field typ
+
+  let unpack (v : 'a Value.t) : Effect.PureType.t =
+    match v with
+    | Field typ -> typ
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a field."
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with fields = PathName.Map.add x y m.fields }
