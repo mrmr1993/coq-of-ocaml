@@ -73,7 +73,7 @@ let of_typ_definition (typ_def : TypeDefinition.t) : t list =
     Typ name ::
     List.map (fun (x, typs) -> Constructor (x, List.map Type.pure_type typs))
       constructors
-  | TypeDefinition.Record (name, fields) ->
+  | TypeDefinition.Record (name, _, fields) ->
     Typ name :: List.map (fun (x, typ) -> Field (x, Type.pure_type typ)) fields
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
     [Typ name]
