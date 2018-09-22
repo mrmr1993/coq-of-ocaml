@@ -215,3 +215,61 @@ Value
                 Variable (?, third_1))
             ]))
     ])
+
+22
+Record c:
+  ([ a ], [ (f, (a -> Type (Z))) ])
+
+24
+Value
+  (non_rec, @.,
+    [
+      ((c_val, [ A ], [ ], Type (c, A)),
+        Record
+          (24, None,
+            (f,
+              Some
+                Function
+                  (24, x,
+                    Match
+                      (?, Variable (?, x),
+                        [ (Any, Constant (24, Int(12))) ])))))
+    ])
+
+26
+Value
+  (non_rec, @.,
+    [
+      ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
+        Match
+          (26, Variable (26, c_val),
+            [ (Record ((f, f (= f_1))), Variable (26, f_1)) ]))
+    ])
+
+28
+Inductive d:
+  ([ a ], [ (F, [ (a -> Type (Z)) ]) ])
+
+30
+Value
+  (non_rec, @.,
+    [
+      ((d_val, [ A ], [ ], Type (d, A)),
+        Constructor
+          (30, F,
+            Function
+              (30, x,
+                Match
+                  (?, Variable (?, x),
+                    [ (Any, Constant (30, Int(12))) ]))))
+    ])
+
+32
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ ], (A -> Type (Z))),
+        Match
+          (32, Variable (32, d_val),
+            [ (Constructor (F, g), Variable (32, g)) ]))
+    ])

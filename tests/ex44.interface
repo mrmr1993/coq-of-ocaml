@@ -9,14 +9,14 @@
       [ "Var", "a", [] ],
       [ "Var", "b", [] ],
       [ "Typ", [ "a", "a_1" ] ],
-      [ "Constructor", "A", [ [ "Apply", "Z" ], [ "Apply", "bool" ] ] ],
+      [ "Constructor", "A", [ "a", "a_1" ], [], [ [ "Apply", "Z" ], [ "Apply", "bool" ] ] ],
       [ "Var", "temp_2", [] ],
       [ "Var", "i", [] ],
       [ "Var", "j", [] ],
       [ "Typ", [ "b", "b_1" ] ],
-      [ "Field", "first", [ "Apply", "Z" ] ],
-      [ "Field", "second", [ "Apply", "bool" ] ],
-      [ "Field", "third", [ "Apply", "string" ] ],
+      [ "Field", "first", [ "b", "b_1" ], [], [ "Apply", "Z" ] ],
+      [ "Field", "second", [ "b", "b_1" ], [], [ "Apply", "bool" ] ],
+      [ "Field", "third", [ "b", "b_1" ], [], [ "Apply", "string" ] ],
       [ "Var", "b_val", [] ],
       [ "Var", "hi", [] ],
       [ "Var", "hey", [] ],
@@ -26,7 +26,15 @@
       [ "Var", "temp_6", [] ],
       [ "Var", [ "first", "first_1" ], [] ],
       [ "Var", [ "second", "second_1" ], [] ],
-      [ "Var", [ "third", "third_1" ], [] ]
+      [ "Var", [ "third", "third_1" ], [] ],
+      [ "Typ", "c" ],
+      [ "Field", "f", "c", [ "a" ], [ "Arrow", [ "Variable", "a" ], [ "Apply", "Z" ] ] ],
+      [ "Var", "c_val", [] ],
+      [ "Var", [ "f", "f_1" ], [] ],
+      [ "Typ", "d" ],
+      [ "Constructor", "F", "d", [ "a" ], [ [ "Arrow", [ "Variable", "a" ], [ "Apply", "Z" ] ] ] ],
+      [ "Var", "d_val", [] ],
+      [ "Var", "g", [] ]
     ]
   ]
 }

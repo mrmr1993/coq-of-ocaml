@@ -79,3 +79,36 @@ Definition third_1 : string :=
   match temp_6 with
   | {| first := first_1; second := second_1; third := third_1 |} => third_1
   end.
+
+Record c (a : Type) : Type := {
+  f : a -> Z }.
+Arguments f {a} _.
+
+Definition c_val {A : Type} : c A :=
+  {|
+    f :=
+      fun x =>
+        match x with
+        | _ => 12
+        end |}.
+
+Definition f_1 {A : Type} : A -> Z :=
+  match c_val with
+  | {| f := f_1 |} => f_1
+  end.
+
+Inductive d (a : Type) : Type :=
+| F : (a -> Z) -> d a.
+Arguments F {a} _.
+
+Definition d_val {A : Type} : d A :=
+  F
+    (fun x =>
+      match x with
+      | _ => 12
+      end).
+
+Definition g {A : Type} : A -> Z :=
+  match d_val with
+  | F g => g
+  end.

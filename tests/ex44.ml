@@ -18,3 +18,15 @@ let { second = hey; third = hello } = b_val
 
 let { first = first; second = second; third = third } =
   { first = hi; second = hey; third = hello }
+
+type 'a c = { f : 'a -> int }
+
+let c_val = { f = fun _ -> 12 }
+
+let { f = f } = c_val
+
+type 'a d = F of ('a -> int)
+
+let d_val = F (fun _ -> 12)
+
+let F g = d_val

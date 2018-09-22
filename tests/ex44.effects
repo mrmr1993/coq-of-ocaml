@@ -253,3 +253,84 @@ Value
                 Variable ((?, Effect ([ ], .)), third_1))
             ]))
     ])
+
+22
+Record c:
+  ([ a ], [ (f, (a -> Type (Z))) ])
+
+24
+Value
+  (non_rec, @.,
+    [
+      ((c_val, [ A ], [ ], Type (c, A)),
+        Record
+          ((24, Effect ([ ], .)), None,
+            (f,
+              Some
+                Function
+                  ((24, Effect ([ ], . -> .)), x,
+                    Match
+                      ((?, Effect ([ ], .)),
+                        Variable ((?, Effect ([ ], .)), x),
+                        [
+                          (Any,
+                            Constant
+                              ((24,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                Int(12)))
+                        ])))))
+    ])
+
+26
+Value
+  (non_rec, @.,
+    [
+      ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
+        Match
+          ((26, Effect ([ ], .)), Variable ((26, Effect ([ ], .)), c_val),
+            [
+              (Record ((f, f (= f_1))),
+                Variable ((26, Effect ([ ], .)), f_1))
+            ]))
+    ])
+
+28
+Inductive d:
+  ([ a ], [ (F, [ (a -> Type (Z)) ]) ])
+
+30
+Value
+  (non_rec, @.,
+    [
+      ((d_val, [ A ], [ ], Type (d, A)),
+        Constructor
+          ((30, Effect ([ ], .)), F,
+            Function
+              ((30, Effect ([ ], . -> .)), x,
+                Match
+                  ((?, Effect ([ ], .)),
+                    Variable ((?, Effect ([ ], .)), x),
+                    [
+                      (Any,
+                        Constant
+                          ((30,
+                            Effect
+                              ([
+                              ],
+                                .)),
+                            Int(12)))
+                    ]))))
+    ])
+
+32
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ ], (A -> Type (Z))),
+        Match
+          ((32, Effect ([ ], .)), Variable ((32, Effect ([ ], .)), d_val),
+            [ (Constructor (F, g), Variable ((32, Effect ([ ], .)), g)) ]))
+    ])
