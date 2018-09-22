@@ -49,7 +49,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((a, [ ], [ ], _),
+      ((a, [ ], [ ], Type (Z)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
             [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), a)) ]))
@@ -59,7 +59,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ ], _),
+      ((b, [ ], [ ], Type (string)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
             [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), b)) ]))
@@ -84,7 +84,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((i, [ ], [ ], _),
+      ((i, [ ], [ ], Type (Z)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
             [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), i)) ]))
@@ -94,8 +94,162 @@ Value
 Value
   (non_rec, @.,
     [
-      ((j, [ ], [ ], _),
+      ((j, [ ], [ ], Type (bool)),
         Match
           ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
             [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), j)) ]))
+    ])
+
+11
+Record b (= b_1):
+  ([ ], [ (first, Type (Z)); (second, Type (bool)); (third, Type (string)) ])
+
+13
+Value
+  (non_rec, @.,
+    [
+      ((b_val, [ ], [ ], Type (b_1)),
+        Record
+          ((13, Effect ([ ], .)), None,
+            (first, Some Constant ((13, Effect ([ ], .)), Int(12))),
+            (second, Some Constructor ((13, Effect ([ ], .)), false)),
+            (third,
+              Some Constant ((13, Effect ([ ], .)), String("hello")))))
+    ])
+
+15
+Value
+  (non_rec, @.,
+    [
+      ((hi, [ ], [ ], Type (Z)),
+        Match
+          ((15, Effect ([ ], .)), Variable ((15, Effect ([ ], .)), b_val),
+            [
+              (Record ((first, hi)),
+                Variable ((15, Effect ([ ], .)), hi))
+            ]))
+    ])
+
+16
+Value
+  (non_rec, @.,
+    [
+      ((hey, [ ], [ ], Type (bool)),
+        Match
+          ((16, Effect ([ ], .)), Variable ((16, Effect ([ ], .)), b_val),
+            [
+              (Record ((second, hey)),
+                Variable ((16, Effect ([ ], .)), hey))
+            ]))
+    ])
+
+17
+Value
+  (non_rec, @.,
+    [ ((temp_5, [ ], [ ], Type (b_1)), Variable ((17, Effect ([ ], .)), b_val)) ])
+
+17
+Value
+  (non_rec, @.,
+    [
+      ((hello, [ ], [ ], Type (string)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_5),
+            [
+              (Record ((second, hey (= hey_1)), (third, hello)),
+                Variable ((?, Effect ([ ], .)), hello))
+            ]))
+    ])
+
+17
+Value
+  (non_rec, @.,
+    [
+      ((hey (= hey_1), [ ], [ ], Type (bool)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_5),
+            [
+              (Record ((second, hey (= hey_1)), (third, hello)),
+                Variable ((?, Effect ([ ], .)), hey_1))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((temp_6, [ ], [ ], Type (b_1)),
+        Record
+          ((20, Effect ([ ], .)), None,
+            (first, Some Variable ((20, Effect ([ ], .)), hi)),
+            (second, Some Variable ((20, Effect ([ ], .)), hey_1)),
+            (third, Some Variable ((20, Effect ([ ], .)), hello))))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((first (= first_1), [ ], [ ], Type (Z)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+            [
+              (Record
+                ((first, first (= first_1)),
+                  (second,
+                    second
+                    (=
+                    second_1)),
+                  (third,
+                    third
+                    (=
+                    third_1))),
+                Variable ((?, Effect ([ ], .)), first_1))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((second (= second_1), [ ], [ ], Type (bool)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+            [
+              (Record
+                ((first, first (= first_1)),
+                  (second,
+                    second
+                    (=
+                    second_1)),
+                  (third,
+                    third
+                    (=
+                    third_1))),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    second_1))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((third (= third_1), [ ], [ ], Type (string)),
+        Match
+          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+            [
+              (Record
+                ((first, first (= first_1)),
+                  (second,
+                    second
+                    (=
+                    second_1)),
+                  (third,
+                    third
+                    (=
+                    third_1))),
+                Variable ((?, Effect ([ ], .)), third_1))
+            ]))
     ])
