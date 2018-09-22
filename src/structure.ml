@@ -79,33 +79,33 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
 let rec of_structure (env : unit FullEnvi.t) (structure : structure)
   : unit FullEnvi.t * (Loc.t * Type.t) t list =
   let of_structure_item (env : unit FullEnvi.t) (item : structure_item)
-    : unit FullEnvi.t * (Loc.t * Type.t) t =
+    : unit FullEnvi.t * (Loc.t * Type.t) t list =
     let loc = Loc.of_location item.str_loc in
     match item.str_desc with
     | Tstr_value (_, cases) when Reference.is_reference loc cases ->
       let r = Reference.of_ocaml env loc cases in
       let (env, r) = Reference.update_env (fun _ exp -> exp) r env in
-      (env, Reference (loc, r))
+      (env, [Reference (loc, r)])
     | Tstr_value (is_rec, cases) ->
-      let (env, def) =
+      let (env, defs) =
         Exp.import_let_fun true env loc Name.Map.empty is_rec cases in
-      (env, Value (loc, def))
+      (env, List.map (fun def -> Value (loc, def)) defs)
     | Tstr_type (_, typs) ->
       let def = TypeDefinition.of_ocaml env loc typs in
       let env = TypeDefinition.update_env def env in
-      (env, TypeDefinition (loc, def))
+      (env, [TypeDefinition (loc, def)])
     | Tstr_exception exn ->
       let exn = Exception.of_ocaml env loc exn in
       let env = Exception.update_env exn env in
-      (env, Exception (loc, exn))
+      (env, [Exception (loc, exn)])
     | Tstr_open { open_path = path } ->
       let o = Open.of_ocaml env loc path in
       let env = Open.update_env loc o env in
-      (env, Open (loc, o))
+      (env, [Open (loc, o)])
     | Tstr_include { incl_mod = { mod_desc = Tmod_ident (path, _) } } ->
       let incl = Include.of_ocaml env loc path in
       let env = Include.update_env loc incl env in
-      (env, Include (loc, incl))
+      (env, [Include (loc, incl)])
     | Tstr_include _ -> Error.raise loc "This kind of include is not handled"
     | Tstr_module {mb_id = name;
       mb_expr = { mod_desc = Tmod_structure structure }}
@@ -117,7 +117,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let env = FullEnvi.enter_module name env in
       let (env, structures) = of_structure env structure in
       let env = FullEnvi.leave_module (fun _ _ -> ()) env in
-      (env, Module (loc, name, structures))
+      (env, [Module (loc, name, structures)])
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
       Error.raise loc "Functors not handled."
     | Tstr_module _ -> Error.raise loc "This kind of module is not handled."
@@ -128,13 +128,13 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let env = FullEnvi.enter_module name env in
       let (env, signature) = Signature.of_ocaml env signature in
       let env = FullEnvi.leave_signature env in
-      (env, Signature (loc, name, signature))
+      (env, [Signature (loc, name, signature)])
     | Tstr_modtype _ -> Error.raise loc "This kind of module type is not handled."
     | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_primitive val_desc ->
       let prim = PrimitiveDeclaration.of_ocaml env loc val_desc in
       let env = PrimitiveDeclaration.update_env prim env in
-      (env, Primitive (loc, prim))
+      (env, [Primitive (loc, prim)])
     | Tstr_typext _ -> Error.raise loc "Structure item `typext` not handled."
     | Tstr_recmodule _ -> Error.raise loc "Structure item `recmodule` not handled."
     | Tstr_class _ -> Error.raise loc "Structure item `class` not handled."
@@ -147,7 +147,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       | Tstr_attribute _ -> (env, defs)
       | _ ->
         let (env, def) = of_structure_item env item in
-        (env, def :: defs))
+        (env, List.rev def @ defs))
     (env, []) structure.str_items in
   let requires = FullEnvi.requires env in
   let defs = List.rev defs in

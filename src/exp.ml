@@ -235,7 +235,11 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let e2 = of_expression env typ_vars e2 in
       Match (a, e1, [p, e2]))
   | Texp_let (is_rec, cases, e) ->
-    let (env, def) = import_let_fun false env l typ_vars is_rec cases in
+    let (env, defs) = import_let_fun false env l typ_vars is_rec cases in
+    let def = match defs with
+    | [def] -> def
+    | _ ->
+      Error.raise l "Found a destructuring definition where a function was expected." in
     let e = of_expression env typ_vars e in
     LetFun (a, def, e)
   | Texp_function { cases = [{c_lhs = {pat_desc = Tpat_var (x, _)}; c_rhs = e}] }
@@ -434,7 +438,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
 and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
   (cases : value_binding list)
-  : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t =
+  : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
   let is_rec = Recursivity.of_rec_flag is_rec in
   let attrs = cases |> List.map (fun { vb_attributes = attrs; vb_expr = e; vb_pat = p } ->
     let { exp_loc = loc } = e in
@@ -450,39 +454,88 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         attr
     | _ -> attr (* This branch should not be reached. *)) in
   let attr = List.fold_left (Attribute.combine loc) Attribute.None attrs in
-  let cases = cases |> List.map (fun { vb_pat = p; vb_expr = e } ->
+  let cases = cases |> (env |> map_with_acc (fun env { vb_pat = p; vb_expr = e } ->
     let loc = Loc.of_location p.pat_loc in
     let p = Pattern.of_pattern new_names env p in
     match p with
-    | Pattern.Variable x -> (x, e, loc)
-    | _ -> Error.raise loc "A variable name instead of a pattern was expected.") in
-  let env_with_let =
-    List.fold_left (fun env (x, _, _) -> FullEnvi.Var.assoc x () env)
-      env cases in
+    | Pattern.Variable x ->
+      (FullEnvi.Var.assoc x () env, (None, [x], e, loc))
+    | _ ->
+      if Recursivity.to_bool is_rec then
+        Error.raise loc "Only variables are allowed as a left-hand side of let rec";
+      let free_vars = CoqName.Set.elements @@ Pattern.free_variables p in
+      let env = List.fold_left (fun env x ->
+        FullEnvi.Var.assoc x () env) env free_vars in
+      let (x, x_bound, env) = FullEnvi.Var.fresh "temp" () env in
+      (env, (Some (x, x_bound, p), free_vars, e, loc)))) in
+  let env_with_let = List.fold_left (fun env (bound, xs, _, _) ->
+      let env = match bound with
+        | Some (x, _, _) -> FullEnvi.Var.assoc x () env
+        | None -> env in
+      List.fold_left (fun env x -> FullEnvi.Var.assoc x () env) env xs)
+    env cases in
   let env =
     if Recursivity.to_bool is_rec then
       env_with_let
     else
       env in
-  let cases = cases |> List.map (fun (x, e, loc) ->
+  let cases' = cases |> List.map (fun (bound, xs, e, loc) ->
     let (e_typ, typ_vars, new_typ_vars) =
       Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
     let e = of_expression env typ_vars e in
     let (args_names, e_body) = open_function e in
     let (args_typs, e_body_typ) =
       Type.open_type e_typ (List.length args_names) in
-    let header = {
-      Header.name = x;
-      typ_vars = Name.Set.elements new_typ_vars;
-      implicit_args = [];
-      args = List.combine args_names args_typs;
-      typ = e_body_typ } in
-    (header, e_body)) in
+    match bound with
+    | None ->
+      xs |> List.map (fun x ->
+        let header = {
+          Header.name = x;
+          typ_vars = Name.Set.elements new_typ_vars;
+          implicit_args = [];
+          args = List.combine args_names args_typs;
+          typ = e_body_typ } in
+        (header, e_body))
+    | Some (x, x_bound, p) ->
+      if List.compare_length_with args_names 0 > 0 then
+        Error.raise loc "Could not match against a function.";
+      [({
+        Header.name = x;
+        typ_vars = Name.Set.elements new_typ_vars;
+        implicit_args = [];
+        args = List.combine args_names args_typs;
+        typ = e_body_typ }, e_body)]
+    ) |> List.concat in
   let def = {
     Definition.is_rec = is_rec;
     attribute = attr;
-    cases = cases } in
-  (env_with_let, def)
+    cases = cases' } in
+  if Recursivity.to_bool is_rec then
+    (env_with_let, [def])
+  else
+    let defs = cases |> List.map (fun (bound, xs, e, loc) ->
+      match bound with
+      | None -> []
+      | Some (x, x_bound, p) ->
+        let (e_typ, _, new_typ_vars) =
+          Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
+        xs |> List.map (fun y ->
+          let header = {
+            Header.name = y;
+            typ_vars = Name.Set.elements new_typ_vars;
+            implicit_args = [];
+            args = [];
+            typ = Type.Variable "_" } in
+          let y_bound = FullEnvi.Var.bound loc
+            (PathName.of_name [] (CoqName.ocaml_name y)) env_with_let in
+          let case = (header, Match ((Loc.Unknown, Type.Variable "_"),
+            Variable ((Loc.Unknown, e_typ), x_bound),
+            [(p, Variable ((Loc.Unknown, Type.Variable "_"), y_bound))])) in
+          { Definition.is_rec = is_rec;
+            attribute = Attribute.None;
+            cases = [case] }))
+      |> List.concat in
+    (env_with_let, def :: defs)
 
 (** Substitute the name [x] used as a variable (not as a constructor for
     example) in [e] by [e']. *)
