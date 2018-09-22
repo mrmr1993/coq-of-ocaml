@@ -32,7 +32,7 @@ let pp (def : t) : SmartPrint.t =
 
 let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
   (name : Ident.t) (typ : Types.type_declaration) : t =
-  let (x, _, env) = FullEnvi.Typ.create (Name.of_ident name) env in
+  let (x, x_bound, env) = FullEnvi.Typ.create (Name.of_ident name) env in
   let typ_args =
     List.map (Type.of_type_expr_variable loc) typ.type_params in
   (match typ.type_kind with
@@ -44,9 +44,11 @@ let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
           | Cstr_tuple typs -> typs
           | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
         let constr = Name.of_ident constr in
+        let typ = Effect.PureType.Apply (x_bound,
+          List.map (fun x -> Effect.PureType.Variable x) typ_args) in
         let typs = List.map (fun typ -> Type.of_type_expr env loc typ) typs in
         let (constr, _, env) = FullEnvi.Constructor.create constr
-          (List.map Type.pure_type typs) env in
+          typ (List.map Type.pure_type typs) env in
         (env, (constr, typs)))) in
     Inductive (x, typ_args, constructors)
   | Type_record (fields, _) ->
@@ -70,15 +72,23 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
 
 let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   match def with
-  | Inductive (name, _, constructors) ->
+  | Inductive (name, typ_args, constructors) ->
     let env = FullEnvi.Typ.assoc name env in
+    let path = { PathName.path = []; base = CoqName.ocaml_name name } in
+    let bound = FullEnvi.Typ.bound Loc.Unknown path env in
+    let typ = Effect.PureType.Apply (bound,
+      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
     List.fold_left (fun env (x, typs) ->
-      FullEnvi.Constructor.assoc x (List.map Type.pure_type typs) env)
+      FullEnvi.Constructor.assoc x typ (List.map Type.pure_type typs) env)
       env constructors
   | Record (name, typ_args, fields) ->
     let env = FullEnvi.Typ.assoc name env in
+    let path = { PathName.path = []; base = CoqName.ocaml_name name } in
+    let bound = FullEnvi.Typ.bound Loc.Unknown path env in
+    let record_typ = Effect.PureType.Apply (bound,
+      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
     List.fold_left (fun env (x, typ) ->
-      FullEnvi.Field.assoc x (Type.pure_type typ) env)
+      FullEnvi.Field.assoc x record_typ (Type.pure_type typ) env)
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     FullEnvi.Typ.assoc name env

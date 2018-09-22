@@ -41,8 +41,8 @@ type t =
   | Typ of CoqName.t
   | Descriptor of CoqName.t
   | Exception of CoqName.t * CoqName.t
-  | Constructor of CoqName.t * Effect.PureType.t list
-  | Field of CoqName.t * Effect.PureType.t
+  | Constructor of CoqName.t * CoqName.t * Name.t list * Effect.PureType.t list
+  | Field of CoqName.t * CoqName.t * Name.t list * Effect.PureType.t
   | Include of PathName.t
   | Interface of CoqName.t * t list
   | Signature of CoqName.t * t list
@@ -55,10 +55,12 @@ let rec pp (interface : t) : SmartPrint.t =
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
   | Exception (x, raise_name) ->
     !^ "Exception" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp raise_name]
-  | Constructor (x, typ) ->
-    !^ "Constructor" ^^ CoqName.pp x ^^ OCaml.list Effect.PureType.pp typ
-  | Field (x, typ) ->
-    !^ "Field" ^^ CoqName.pp x ^^ !^ ":" ^^ Effect.PureType.pp typ
+  | Constructor (x, typ, typ_vars, typs) ->
+    !^ "Constructor" ^^ CoqName.pp x ^^ OCaml.list Effect.PureType.pp typs ^^
+    !^ ":" ^^ CoqName.pp typ ^^ OCaml.list Name.pp typ_vars
+  | Field (x, record_typ, typ_vars, typ) ->
+    !^ "Field" ^^ CoqName.pp x ^^ !^ "of" ^^ Effect.PureType.pp typ ^^
+    !^ ":" ^^ CoqName.pp record_typ ^^ OCaml.list Name.pp typ_vars
   | Include x -> !^ "Include" ^^ PathName.pp x
   | Interface (x, defs) ->
     !^ "Interface" ^^ CoqName.pp x ^^ !^ "=" ^^ newline ^^ indent
@@ -69,12 +71,13 @@ let rec pp (interface : t) : SmartPrint.t =
 
 let of_typ_definition (typ_def : TypeDefinition.t) : t list =
   match typ_def with
-  | TypeDefinition.Inductive (name, _, constructors) ->
+  | TypeDefinition.Inductive (name, typ_vars, constructors) ->
     Typ name ::
-    List.map (fun (x, typs) -> Constructor (x, List.map Type.pure_type typs))
-      constructors
-  | TypeDefinition.Record (name, _, fields) ->
-    Typ name :: List.map (fun (x, typ) -> Field (x, Type.pure_type typ)) fields
+    (constructors |> List.map (fun (x, typs) ->
+      Constructor (x, name, typ_vars, List.map Type.pure_type typs)))
+  | TypeDefinition.Record (name, typ_vars, fields) ->
+    Typ name :: (fields |> List.map (fun (x, typ) ->
+      Field (x, name, typ_vars, Type.pure_type typ)))
   | TypeDefinition.Synonym (name, _, _) | TypeDefinition.Abstract (name, _) ->
     [Typ name]
 
@@ -138,8 +141,18 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
   | Exception (name, raise_name) ->
     env |> Exception.update_env_with_effects
       { Exception.name; raise_name; typ = Type.Variable "_" }
-  | Constructor (x, typs) -> FullEnvi.Constructor.assoc x typs env
-  | Field (x, typ) -> FullEnvi.Field.assoc x typ env
+  | Constructor (x, name, typ_args, typs) ->
+    let path = { PathName.path = []; base = CoqName.ocaml_name name } in
+    let bound = FullEnvi.Typ.bound Loc.Unknown path env in
+    let typ = Effect.PureType.Apply (bound,
+      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
+    FullEnvi.Constructor.assoc x typ typs env
+  | Field (x, name, typ_args, typ) ->
+    let path = { PathName.path = []; base = CoqName.ocaml_name name } in
+    let bound = FullEnvi.Typ.bound Loc.Unknown path env in
+    let record_typ = Effect.PureType.Apply (bound,
+      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
+    FullEnvi.Field.assoc x record_typ typ env
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module x env in
@@ -151,7 +164,6 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
       decls in
     FullEnvi.leave_signature env
-
 
 let load_interface (coq_prefix : Name.t) (interface : t)
   (env : Effect.t FullEnvi.t) : Name.t * Effect.t FullEnvi.t =
@@ -183,10 +195,10 @@ module Version1 = struct
       `List [`String "Descriptor"; Name.to_json x]
     | Exception (name, raise_name) ->
       failwith "Cannot output exceptions in V1 interfaces. Please use a newer version."
-    | Constructor (x, typs) ->
+    | Constructor (x, _, _, typs) ->
       let x = CoqName.ocaml_name x in
       `List [`String "Constructor"; Name.to_json x]
-    | Field (x, typ) ->
+    | Field (x, _, _, typ) ->
       let x = CoqName.ocaml_name x in
       `List [`String "Field"; Name.to_json x]
     | Include x -> `List [`String "Include"; PathName.to_json x]
@@ -205,9 +217,10 @@ module Version1 = struct
     | `List [`String "Descriptor"; x] ->
       Descriptor (CoqName.Name (Name.of_json x))
     | `List [`String "Constructor"; x] ->
-      Constructor (CoqName.Name (Name.of_json x), [])
+      Constructor (CoqName.Name (Name.of_json x), CoqName.Name "_", [], [])
     | `List [`String "Field"; x] ->
-      Field (CoqName.Name (Name.of_json x), Effect.PureType.Variable "_")
+      Field (CoqName.Name (Name.of_json x), CoqName.Name "_", [],
+        Effect.PureType.Variable "_")
     | `List [`String "Include"; x] -> Include (PathName.of_json x)
     | `List [`String "Interface"; x; `List defs] ->
         Interface (CoqName.Name (Name.of_json x), List.map of_json defs)
@@ -234,11 +247,14 @@ let rec to_json (interface : t) : json =
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
   | Exception (name, raise_name) ->
     `List [`String "Exception"; CoqName.to_json name; CoqName.to_json raise_name]
-  | Constructor (x, typs) ->
-    `List [`String "Constructor"; CoqName.to_json x;
+  | Constructor (x, name, typ_args, typs) ->
+    `List [`String "Constructor"; CoqName.to_json x; CoqName.to_json name;
+      `List (List.map (fun x -> `String x) typ_args);
       `List (List.map Effect.PureType.to_json typs)]
-  | Field (x, typ) ->
-    `List [`String "Field"; CoqName.to_json x; Effect.PureType.to_json typ]
+  | Field (x, name, typ_args, typ) ->
+    `List [`String "Field"; CoqName.to_json x; CoqName.to_json name;
+      `List (List.map (fun x -> `String x) typ_args);
+      Effect.PureType.to_json typ]
   | Include x -> `List [`String "Include"; PathName.to_json x]
   | Interface (x, defs) ->
     `List [`String "Interface"; CoqName.to_json x; `List (List.map to_json defs)]
@@ -253,10 +269,20 @@ let rec of_json (json : json) : t =
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
   | `List [`String "Exception"; name; raise_name] ->
     Exception (CoqName.of_json name, CoqName.of_json raise_name)
-  | `List [`String "Constructor"; x; `List typs] ->
-    Constructor (CoqName.of_json x, List.map Effect.PureType.of_json typs)
-  | `List [`String "Field"; x; typ] ->
-    Field (CoqName.of_json x, Effect.PureType.of_json typ)
+  | `List [`String "Constructor"; x; name; `List typ_args; `List typs] ->
+    Constructor (CoqName.of_json x, CoqName.of_json name,
+      List.map (fun x ->
+        match x with
+        | `String x -> x
+        | _ -> raise (Error.Json "Expected a type argument")) typ_args,
+      List.map Effect.PureType.of_json typs)
+  | `List [`String "Field"; x; name; `List typ_args; typ] ->
+    Field (CoqName.of_json x, CoqName.of_json name,
+      List.map (fun x ->
+        match x with
+        | `String x -> x
+        | _ -> raise (Error.Json "Expected a type argument")) typ_args,
+      Effect.PureType.of_json typ)
   | `List [`String "Include"; x] -> Include (PathName.of_json x)
   | `List [`String "Interface"; x; `List defs] ->
       Interface (CoqName.of_json x, List.map of_json defs)

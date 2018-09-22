@@ -507,9 +507,11 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
       | [_] ->
         begin match CoqName.Map.bindings @@
           Pattern.free_typed_variables (fun x ->
-            Type.of_pure_type @@ FullEnvi.Field.find loc x env)
+            let (record_typ, typ) = FullEnvi.Field.find loc x env in
+            (Type.of_pure_type record_typ, Type.of_pure_type typ))
           (fun x ->
-            List.map Type.of_pure_type @@ FullEnvi.Constructor.find loc x env)
+            let (typ, typs) = FullEnvi.Constructor.find loc x env in
+            (Type.of_pure_type typ, List.map Type.of_pure_type typs))
           e_body_typ p with
         | [(y, typ)] ->
           let typ_vars = Type.typ_args typ in
@@ -550,9 +552,11 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
           Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
         let free_vars = CoqName.Map.bindings @@
           Pattern.free_typed_variables (fun x ->
-            Type.of_pure_type @@ FullEnvi.Field.find loc x env)
+            let (record_typ, typ) = FullEnvi.Field.find loc x env in
+            (Type.of_pure_type record_typ, Type.of_pure_type typ))
           (fun x ->
-            List.map Type.of_pure_type @@ FullEnvi.Constructor.find loc x env)
+            let (typ, typs) = FullEnvi.Constructor.find loc x env in
+            (Type.of_pure_type typ, List.map Type.of_pure_type typs))
           e_typ p in
         free_vars |> List.map (fun (y, typ) ->
           let typ_vars = Type.typ_args typ in
@@ -828,7 +832,7 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
     let vars_map = match function_type env e_f with
-      | Some ptyp_f -> Type.unify ptyp_f (snd (annotation e_f))
+      | Some ptyp_f -> Type.unify_pure ptyp_f (snd (annotation e_f))
       | None -> Name.Map.empty in
     let e_f = e_f
       |> effects env
