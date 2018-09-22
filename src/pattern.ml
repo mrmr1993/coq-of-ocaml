@@ -71,6 +71,33 @@ let rec free_variables (p : t) : CoqName.Set.t =
   | Record fields -> aux (List.map snd fields)
   | Or (p1, p2) -> CoqName.Set.inter (free_variables p1) (free_variables p2)
 
+let rec free_typed_variables (field_type : BoundName.t -> Type.t)
+  (constructor_types : BoundName.t -> Type.t list) (typ : Type.t) (p : t)
+  : Type.t CoqName.Map.t =
+  let free_typed_variables = free_typed_variables field_type constructor_types in
+  let union = CoqName.Map.union (fun _ a _ -> Some a) in
+  let inter = CoqName.Map.merge (fun _ a b ->
+    match a, b with
+    | Some _, Some _ -> a
+    | _, _ -> None) in
+  let aux typs ps =
+    List.fold_left2 (fun s typ p -> union s (free_typed_variables typ p))
+    CoqName.Map.empty typs ps in
+  match typ, p with
+  | _, Any | _, Constant _ -> CoqName.Map.empty
+  | _, Variable x -> CoqName.Map.singleton x typ
+  | Type.Tuple typs, Tuple ps -> aux typs ps
+  | _, Constructor (c, ps) ->
+    aux (constructor_types c) ps
+  | _, Alias (p, x) ->
+    union (CoqName.Map.singleton x typ) (free_typed_variables typ p)
+  | _, Record fields ->
+    let typs = List.map (fun (field_name, _) -> field_type field_name) fields in
+    aux typs (List.map snd fields)
+  | _, Or (p1, p2) ->
+    inter (free_typed_variables typ p1) (free_typed_variables typ p2)
+  | _, _ -> failwith "Pattern is incompatable with the associated type."
+
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   CoqName.Set.fold (fun x env -> FullEnvi.Var.assoc x () env)
     (free_variables p) env

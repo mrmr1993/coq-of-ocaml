@@ -8,6 +8,7 @@ type t =
 
 type t' = t
 module Set = Set.Make (struct type t = t' let compare = compare end)
+module Map = Map.Make (struct type t = t' let compare = compare end)
 
 let of_names (name : Name.t) (coq_name : Name.t) : t =
   if name = coq_name then

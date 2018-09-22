@@ -108,6 +108,14 @@ let rec pure_type (typ : t) : Effect.PureType.t =
   | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
   | Monad (x, typ) -> pure_type typ
 
+let rec of_pure_type (typ : Effect.PureType.t) : t =
+  match typ with
+  | Effect.PureType.Variable x -> Variable x
+  | Effect.PureType.Arrow (typ1, typ2) ->
+    Arrow (of_pure_type typ1, of_pure_type typ2)
+  | Effect.PureType.Tuple typs -> Tuple (List.map of_pure_type typs)
+  | Effect.PureType.Apply (x, typs) -> Apply (x, List.map of_pure_type typs)
+
 let rec unify (ptyp : Effect.PureType.t) (typ : t)
   : Effect.PureType.t Name.Map.t =
   match ptyp, typ with
