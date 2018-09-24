@@ -108,24 +108,33 @@ let rec pure_type (typ : t) : Effect.PureType.t =
   | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
   | Monad (x, typ) -> pure_type typ
 
-let rec unify (ptyp : Effect.PureType.t) (typ : t)
-  : Effect.PureType.t Name.Map.t =
-  match ptyp, typ with
-  | Effect.PureType.Variable x, _ ->
-    Name.Map.singleton x (pure_type typ)
-  | _, Monad (_, typ) -> unify ptyp typ
-  | Effect.PureType.Arrow (ptyp1, ptyp2), Arrow (typ1, typ2) ->
-    Name.Map.union (fun _ typ _ -> Some typ)
-      (unify ptyp1 typ1) (unify ptyp2 typ2)
-  | Effect.PureType.Tuple ptyps, Tuple typs ->
-    List.fold_left2 (fun var_map ptyp typ ->
-        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
-      Name.Map.empty ptyps typs
-  | Effect.PureType.Apply (px, ptyps), Apply (x, typs) ->
-    List.fold_left2 (fun var_map ptyp typ ->
-        Name.Map.union (fun _ typ _ -> Some typ) var_map (unify ptyp typ))
-      Name.Map.empty ptyps typs
+let rec of_pure_type (typ : Effect.PureType.t) : t =
+  match typ with
+  | Effect.PureType.Variable x -> Variable x
+  | Effect.PureType.Arrow (typ1, typ2) ->
+    Arrow (of_pure_type typ1, of_pure_type typ2)
+  | Effect.PureType.Tuple typs -> Tuple (List.map of_pure_type typs)
+  | Effect.PureType.Apply (x, typs) -> Apply (x, List.map of_pure_type typs)
+
+let rec unify (typ1 : t) (typ2 : t) : t Name.Map.t =
+  let union = Name.Map.union (fun _ typ _ -> Some typ) in
+  match typ1, typ2 with
+  | Variable x, _ -> Name.Map.singleton x typ2
+  | Monad (_, typ), _ -> unify typ typ2
+  | _, Monad (_, typ) -> unify typ1 typ
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    union (unify typ1a typ2a) (unify typ1b typ2b)
+  | Tuple typs1, Tuple typs2 ->
+    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
+  | Apply (x1, typs1), Apply (x2, typs2) ->
+    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
   | _, _ -> failwith "Could not unify types"
+
+let unify_pure (ptyp : Effect.PureType.t) (typ : t)
+  : Effect.PureType.t Name.Map.t =
+  Name.Map.map pure_type (unify (of_pure_type ptyp) typ)
 
 let rec map_vars (f : Name.t -> t) (typ : t) : t =
   match typ with

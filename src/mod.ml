@@ -8,8 +8,8 @@ module Value = struct
     | Type
     | Descriptor
     | Exception of PathName.t
-    | Constructor
-    | Field
+    | Constructor of Effect.PureType.t * Effect.PureType.t list
+    | Field of Effect.PureType.t * Effect.PureType.t
 
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
     match v with
@@ -18,8 +18,8 @@ module Value = struct
     | Type -> Type
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
-    | Constructor -> Constructor
-    | Field -> Field
+    | Constructor (typ, typs) -> Constructor (typ, typs)
+    | Field (record_typ, typ) -> Field (record_typ, typ)
 
   let to_string (v : 'a t) : string =
     match v with
@@ -28,8 +28,8 @@ module Value = struct
     | Type -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
-    | Constructor -> "constructor"
-    | Field -> "field"
+    | Constructor _ -> "constructor"
+    | Field _ -> "field"
 end
 open Value
 
@@ -192,7 +192,14 @@ module Constructors = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.constructors
 
-  let value : 'a Value.t = Constructor
+  let value (typ : Effect.PureType.t) (typs : Effect.PureType.t list)
+    : 'a Value.t =
+    Constructor (typ, typs)
+
+  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t list =
+    match v with
+    | Constructor (typ, typs) -> (typ, typs)
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a constructor."
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with constructors = PathName.Map.add x y m.constructors }
@@ -201,7 +208,14 @@ module Fields = struct
   let resolve_opt (x : PathName.t) (m : t) : PathName.t option =
     PathName.Map.find_opt x m.fields
 
-  let value : 'a Value.t = Field
+  let value (record_typ : Effect.PureType.t) (typ : Effect.PureType.t)
+    : 'a Value.t =
+    Field (record_typ, typ)
+
+  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t =
+    match v with
+    | Field (record_typ, typ) -> (record_typ, typ)
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a field."
 
   let assoc (x : PathName.t) (y : PathName.t) (m : t) : t =
     { m with fields = PathName.Map.add x y m.fields }
