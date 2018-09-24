@@ -8,9 +8,15 @@
         "Interface",
         "List2",
         [
-          [ "Typ", "t" ],
-          [ "Constructor", "Nil", "t", [ "a" ], [] ],
-          [ "Constructor", "Cons", "t", [ "a" ], [ [ "Variable", "a" ], [ "Apply", "List2.t", [ "Variable", "a" ] ] ] ],
+          [
+            "Typ",
+            [
+              "Inductive",
+              "t",
+              [ "a" ],
+              [ [ "Nil", [] ], [ "Cons", [ [ "Variable", "a" ], [ "Apply", "List2.t", [ "Variable", "a" ] ] ] ] ]
+            ]
+          ],
           [ "Var", "sum_rec", [ [ [], [ "NonTermination" ] ] ] ],
           [ "Var", "sum", [ [ [ "Counter", "NonTermination" ] ] ] ],
           [ "Var", "of_list_rec", [ [ [], [ "NonTermination" ] ] ] ],

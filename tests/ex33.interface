@@ -4,21 +4,27 @@
     "Interface",
     "Ex33",
     [
-      [ "Interface", "Ord", [ [ "Typ", "t" ], [ "Var", "compare", [] ] ] ],
-      [ "Typ", "key" ],
-      [ "Typ", "t" ],
-      [ "Constructor", "Empty", "t", [ "a" ], [] ],
+      [ "Interface", "Ord", [ [ "Typ", [ "Abstract", "t", [] ] ], [ "Var", "compare", [] ] ] ],
+      [ "Typ", [ "Synonym", "key", [], [ "Apply", "Ord.t" ] ] ],
       [
-        "Constructor",
-        "Node",
-        "t",
-        [ "a" ],
+        "Typ",
         [
-          [ "Apply", "t", [ "Variable", "a" ] ],
-          [ "Apply", "key" ],
-          [ "Variable", "a" ],
-          [ "Apply", "t", [ "Variable", "a" ] ],
-          [ "Apply", "Z" ]
+          "Inductive",
+          "t",
+          [ "a" ],
+          [
+            [ "Empty", [] ],
+            [
+              "Node",
+              [
+                [ "Apply", "t", [ "Variable", "a" ] ],
+                [ "Apply", "key" ],
+                [ "Variable", "a" ],
+                [ "Apply", "t", [ "Variable", "a" ] ],
+                [ "Apply", "Z" ]
+              ]
+            ]
+          ]
         ]
       ],
       [ "Var", "height", [] ],
@@ -77,18 +83,24 @@
       ],
       [ "Var", "filter", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
       [ "Var", "partition", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
-      [ "Typ", "enumeration" ],
-      [ "Constructor", "End", "enumeration", [ "a" ], [] ],
       [
-        "Constructor",
-        "More",
-        "enumeration",
-        [ "a" ],
+        "Typ",
         [
-          [ "Apply", "key" ],
-          [ "Variable", "a" ],
-          [ "Apply", "t", [ "Variable", "a" ] ],
-          [ "Apply", "enumeration", [ "Variable", "a" ] ]
+          "Inductive",
+          "enumeration",
+          [ "a" ],
+          [
+            [ "End", [] ],
+            [
+              "More",
+              [
+                [ "Apply", "key" ],
+                [ "Variable", "a" ],
+                [ "Apply", "t", [ "Variable", "a" ] ],
+                [ "Apply", "enumeration", [ "Variable", "a" ] ]
+              ]
+            ]
+          ]
         ]
       ],
       [ "Var", "cons_enum", [] ],
