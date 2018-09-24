@@ -1,8 +1,9 @@
 open SmartPrint
+open Kerneltypes
 open Utils
 
 type 'a t = {
-  values : 'a Mod.Value.t PathName.Map.t;
+  values : 'a Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
   active_module : FullMod.t;
   load_module : Name.t -> Effect.t t -> Effect.t t;
@@ -47,7 +48,7 @@ let import_content (env : 'a t) : 'a t =
   let f env = ((env.values, env.modules), env) in
   match env.run_in_external f env with
   | Some (values, modules) ->
-    let values = PathName.Map.map (Mod.Value.map env.convert) values in
+    let values = PathName.Map.map (Value.map env.convert) values in
     { env with
       values = PathName.Map.union (fun _ a _ -> Some a) env.values values;
       modules = PathName.Map.union (fun _ a _ -> Some a) env.modules modules;
@@ -130,7 +131,7 @@ let bound_name (find : PathName.t -> Mod.t -> PathName.t option)
 
 let map (f : 'a -> 'b) (env : 'a t) : 'b t =
   { env with
-    values = PathName.Map.map (Mod.Value.map f) env.values;
+    values = PathName.Map.map (Value.map f) env.values;
     run_in_external = (fun f _ -> env.run_in_external f (empty [] None));
     convert = (fun x -> f @@ env.convert x);
     }
@@ -151,7 +152,7 @@ let import_module (f : PathName.t -> PathName.t) (g : 'a t -> 'a -> 'a)
   let env = env |> Mod.fold_values (fun _ x env ->
     let v = PathName.Map.find x env.values in
     { env with
-      values = PathName.Map.add x (Mod.Value.map (g env) v) env.values
+      values = PathName.Map.add x (Value.map (g env) v) env.values
     }) m in
   (m, env)
 
@@ -188,13 +189,13 @@ let find_free_path (x : PathName.t) (env : 'a t) : PathName.t =
     base = find_free_name x.PathName.path x.PathName.base env
   }
 
-let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a Mod.Value.t =
-  let rec f : 'b. 'b t -> 'b Mod.Value.t = fun env ->
+let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a Value.t =
+  let rec f : 'b. 'b t -> 'b Value.t = fun env ->
     match PathName.Map.find_opt x.full_path env.values with
     | Some v -> v
     | None ->
       match env.run_in_external (fun env -> (f env, env)) env with
-      | Some v -> Mod.Value.map env.convert v
+      | Some v -> Value.map env.convert v
       | _ ->
         let message = BoundName.pp x ^^ !^ "not found." in
         Error.raise loc (SmartPrint.to_string 80 2 message) in
@@ -562,7 +563,7 @@ let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
   let (m, active_module) = FullMod.leave_module env.active_module in
   let env = { env with active_module } in
   let values = Mod.fold_values (fun _ x -> PathName.Map.update x
-      (option_map (Mod.Value.map (localize env))))
+      (option_map (Value.map (localize env))))
     m env.values in
   let env = { env with active_module; values } in
   let module_name = match option_map CoqName.ocaml_name m.Mod.name with
