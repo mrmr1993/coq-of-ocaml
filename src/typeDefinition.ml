@@ -1,6 +1,7 @@
 open Types
 open Typedtree
 open SmartPrint
+open Yojson.Basic
 open Utils
 
 include Kerneltypes.TypeDefinition
@@ -90,6 +91,48 @@ let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
       env fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     FullEnvi.Typ.assoc name def env
+
+let to_json (def : t) : json =
+  match def with
+  | Inductive (name, typ_args, constructors) ->
+    `List [`String "Inductive"; CoqName.to_json name;
+      `List (List.map Name.to_json typ_args);
+      `List (constructors |> List.map (fun (ctor, typs) ->
+        `List [CoqName.to_json ctor; `List (List.map (Type.to_json) typs)]))]
+  | Record (name, typ_args, fields) ->
+    `List [`String "Record"; CoqName.to_json name;
+      `List (List.map Name.to_json typ_args);
+      `List (fields |> List.map (fun (field, typ) ->
+        `List [CoqName.to_json field; Type.to_json typ]))]
+  | Synonym (name, typ_args, typ) ->
+    `List [`String "Synonym"; CoqName.to_json name;
+      `List (List.map Name.to_json typ_args);
+      Type.to_json typ]
+  | Abstract (name, typ_args) ->
+    `List [`String "Abstract"; CoqName.to_json name;
+      `List (List.map Name.to_json typ_args)]
+
+let of_json (json : json) : t =
+  match json with
+  | `List [`String "Inductive"; name; `List typ_args; `List constructors] ->
+    Inductive (CoqName.of_json name, List.map Name.of_json typ_args,
+      constructors |> List.map (fun ctor ->
+        match ctor with
+        | `List [name; `List typs] ->
+          (CoqName.of_json name, List.map Type.of_json typs)
+        | _ -> raise (Error.Json "Invalid JSON for Constructor.")))
+  | `List [`String "Record"; name; `List typ_args; `List fields] ->
+    Record (CoqName.of_json name, List.map Name.of_json typ_args,
+      fields |> List.map (fun field ->
+        match field with
+        | `List [name; typ] -> (CoqName.of_json name, Type.of_json typ)
+        | _ -> raise (Error.Json "Invalid JSON for Record.")))
+  | `List [`String "Synonym"; name; `List typ_args; typ] ->
+    Synonym (CoqName.of_json name, List.map Name.of_json typ_args,
+      Type.of_json typ)
+  | `List [`String "Abstract"; name; `List typ_args] ->
+    Abstract (CoqName.of_json name, List.map Name.of_json typ_args)
+  | _ -> raise (Error.Json "Invalid JSON for TypeDefinition.")
 
 let to_coq (def : t) : SmartPrint.t =
   match def with

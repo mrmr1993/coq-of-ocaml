@@ -1,6 +1,7 @@
 (** A type, with free type variables for polymorphic arguments. *)
 open Types
 open SmartPrint
+open Yojson.Basic
 
 include Kerneltypes.Type
 
@@ -182,6 +183,29 @@ let allocate_implicits_for_monad (implicit_args : (CoqName.t * 'a) list)
     else
       (implicit_args, Monad (d, typ))
   | _ -> (implicit_args, typ)
+
+let rec to_json (typ : t) : json =
+  match typ with
+  | Variable x -> `List [`String "Variable"; Name.to_json x]
+  | Arrow (typ_x, typ_y) ->
+    `List [`String "Arrow"; to_json typ_x; to_json typ_y]
+  | Tuple typs -> `List (`String "Tuple" :: List.map to_json typs)
+  | Apply (path, typs) ->
+    `List (`String "Apply" :: BoundName.to_json path :: List.map to_json typs)
+  | Monad (descriptor, typ) ->
+    `List [`String "Monad"; Effect.Descriptor.to_json descriptor; to_json typ]
+
+let rec of_json (json : json) : t =
+  match json with
+  | `List [`String "Variable"; x] -> Variable (Name.of_json x)
+  | `List [`String "Arrow"; typ_x; typ_y] ->
+    Arrow (of_json typ_x, of_json typ_y)
+  | `List (`String "Tuple" :: typs) -> Tuple (List.map of_json typs)
+  | `List (`String "Apply" :: path :: typs) ->
+    Apply (BoundName.of_json path, List.map of_json typs)
+  | `List [`String "Monad"; descriptor; typ] ->
+    Monad (Effect.Descriptor.of_json descriptor, of_json typ)
+  | _ -> failwith "Invalid JSON for Type."
 
 let monadise (typ : t) (effect : Effect.t) : t =
   let rec aux (typ : t) (effect_typ : Effect.Type.t) : t =
