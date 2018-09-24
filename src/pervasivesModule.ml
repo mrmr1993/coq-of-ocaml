@@ -29,55 +29,50 @@ let env_with_effects (interfaces : (Name.t * string) list)
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
-  |> Typ.add [] "nat"
-  |> Constructor.add [] "O"
-    (Effect.PureType.Apply (bound_name [] [] "nat", [])) []
-  |> Constructor.add [] "S"
-    (Effect.PureType.Apply (bound_name [] [] "nat", []))
-    [Effect.PureType.Apply (bound_name [] [] "nat", [])]
-  |> Typ.add [] "sum"
-  |> Constructor.add [] "inl"
-    (Effect.PureType.Apply (bound_name [] [] "sum",
-      [Effect.PureType.Variable "A"; Effect.PureType.Variable "_"]))
-    [Effect.PureType.Variable "A"]
-  |> Constructor.add [] "inr"
-    (Effect.PureType.Apply (bound_name [] [] "sum",
-      [Effect.PureType.Variable "_"; Effect.PureType.Variable "A"]))
-    [Effect.PureType.Variable "A"]
-  |> Descriptor.add [] "IO"
-  |> Descriptor.add [] "Counter"
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "nat", [], [
+      (CoqName.Name "O", []);
+      (CoqName.Name "S", [Type.Apply (bound_name [] [] "nat", [])])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "sum", ["A"; "B"], [
+      (CoqName.Name "inl", [Type.Variable "A"]);
+      (CoqName.Name "inr", [Type.Variable "B"])
+    ]))
+  |> Descriptor.add [] "IO" ()
+  |> Descriptor.add [] "Counter" ()
   |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Pure)
-  |> Descriptor.add [] "NonTermination"
+  |> Descriptor.add [] "NonTermination" ()
   |> Var.add [] "not_terminated" (arrow (d [[], [], "NonTermination"]) Pure)
   |> Var.add ["OCaml"; "Basics"] "for_to" pure
   |> Var.add ["OCaml"; "Basics"] "for_downto" pure
 
   (* The core library *)
   (* Built-in types *)
-  |> Typ.add [] "Z"
-  |> Typ.add [] "ascii"
-  |> Typ.add [] "string"
-  |> Typ.add [] "bool"
-  |> Constructor.add [] "false"
-    (Effect.PureType.Apply (bound_name [] [] "bool", [])) []
-  |> Constructor.add [] "true"
-    (Effect.PureType.Apply (bound_name [] [] "bool", [])) []
-  |> Typ.add [] "unit"
-  |> Constructor.add [] "tt"
-    (Effect.PureType.Apply (bound_name [] [] "unit", [])) []
-  |> Typ.add [] "list"
-  |> Constructor.add [] "[]"
-    (Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "_"])) []
-  |> Constructor.add [] "cons"
-    (Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "A"]))
-    [Effect.PureType.Variable "A";
-      Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "A"])]
-  |> Typ.add [] "option"
-  |> Constructor.add [] "None"
-    (Effect.PureType.Apply (bound_name [] [] "option", [Effect.PureType.Variable "_"])) []
-  |> Constructor.add [] "Some"
-    (Effect.PureType.Apply (bound_name [] [] "option", [Effect.PureType.Variable "A"]))
-    [Effect.PureType.Variable "A"]
+  |> Typ.add [] "Z" (TypeDefinition.Abstract (CoqName.Name "Z", []))
+  |> Typ.add [] "ascii" (TypeDefinition.Abstract (CoqName.Name "ascii", []))
+  |> Typ.add [] "string" (TypeDefinition.Abstract (CoqName.Name "string", []))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "bool", [], [
+      (CoqName.Name "false", []);
+      (CoqName.Name "true", [])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "unit", [], [
+      (CoqName.Name "tt", [])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "list", ["A"], [
+      (CoqName.Name "[]", []);
+      (CoqName.Name "cons",
+        [Type.Variable "A";
+        Type.Apply (bound_name [] [] "list", [Type.Variable "A"])])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "option", ["A"], [
+      (CoqName.Name "None", []);
+      (CoqName.Name "Some", [Type.Variable "A"])
+    ]))
   (* Comparisons *)
   |> Var.add [] "equiv_decb" pure
   |> Var.add [] "nequiv_decb" pure
@@ -114,7 +109,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Values specific to the translation to Coq *)
   |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Pure)
   (* Predefined exceptions *)
-  |> Typ.add [] "exn"
+  |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
   |> add_exn [] "Match_failure"
   |> add_exn [] "Assert_failure"
   |> add_exn [] "Invalid_argument"
@@ -128,16 +123,16 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> add_exn [] "Sys_blocked_io"
   |> add_exn [] "Undefined_recursive_module"
   (* State *)
-  |> Descriptor.add ["Effect"; "State"] "state"
-  |> Typ.add ["Effect"; "State"] "t"
+  |> Descriptor.add ["Effect"; "State"] "state" ()
+  |> Typ.add ["Effect"; "State"] "t" (TypeDefinition.Abstract (CoqName.Name "t", []))
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"
-    (arrow (typ_d 0) Pure)
-    (Effect.PureType.Arrow
+    (arrow (typ_d 0) Pure,
+    Effect.PureType.Arrow
       (state_type 0, Effect.PureType.Variable "0"))
   |> Function.add ["Effect"; "State"] "write"
-    (arrow (d []) (Arrow (typ_d 0, Pure)))
-    (Effect.PureType.Arrow
+    (arrow (d []) (Arrow (typ_d 0, Pure)),
+    Effect.PureType.Arrow
       (state_type 0,
         Effect.PureType.Arrow
           (Effect.PureType.Variable "0",
@@ -192,8 +187,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Operations on large files *)
   (* References *)
   |> Function.add ["Pervasives"] "ref"
-    (arrow (typ_d 0) Pure)
-    (Effect.PureType.Arrow (Effect.PureType.Variable "0", state_type 0))
+    (arrow (typ_d 0) Pure,
+    Effect.PureType.Arrow (Effect.PureType.Variable "0", state_type 0))
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module localize_effects

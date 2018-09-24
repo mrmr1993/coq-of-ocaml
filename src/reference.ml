@@ -31,7 +31,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
     let state_name = name ^ "_state" in
     let (name, _, env) = FullEnvi.Var.create name () env in
     let (state_name, bound_state, env) =
-      FullEnvi.Descriptor.fresh state_name env in
+      FullEnvi.Descriptor.fresh state_name () env in
     let state = FullEnvi.Descriptor.bound loc
       (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
     let typ = Type.of_type_expr env loc typ in
@@ -50,7 +50,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
 let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
   let env = env
-    |> FullEnvi.Descriptor.assoc r.state_name
+    |> FullEnvi.Descriptor.assoc r.state_name ()
     |> FullEnvi.Var.assoc r.name () in
   (env, {r with expr = update_exp env r.expr})
 
@@ -58,7 +58,7 @@ let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Effect.t FullEnvi.t)
   : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
   let env = env
-    |> FullEnvi.Descriptor.assoc r.state_name
+    |> FullEnvi.Descriptor.assoc r.state_name ()
     |> FullEnvi.Var.assoc r.name r.effect in
   (env, {r with expr = Exp.effects env r.expr})
 

@@ -11,12 +11,24 @@
           [ "Var", "x", [] ],
           [ "Var", "y", [] ],
           [ "Var", "z", [] ],
-          [ "Typ", "t" ],
-          [ "Constructor", "Inductive1", "t", [], [] ],
-          [ "Constructor", "Inductive2", "t", [], [ [ "Apply", "Z" ] ] ],
-          [ "Constructor", "Inductive3", "t", [], [ [ "Apply", "bool" ] ] ],
-          [ "Typ", "u" ],
-          [ "Typ", "v" ],
+          [
+            "Typ",
+            [
+              "Inductive",
+              "t",
+              [],
+              [
+                [ "Inductive1", [] ],
+                [ "Inductive2", [ [ "Apply", "Z" ] ] ],
+                [ "Inductive3", [ [ "Apply", "bool" ] ] ]
+              ]
+            ]
+          ],
+          [
+            "Typ",
+            [ "Synonym", "u", [ "a" ], [ "Apply", "list", [ "Tuple", [ "Variable", "a" ], [ "Apply", "S_1.t" ] ] ] ]
+          ],
+          [ "Typ", [ "Abstract", "v", [] ] ],
           [ "Interface", "X", [ [ "Var", "x", [] ], [ "Var", "y", [] ] ] ],
           [ "Signature", "S", [ [ "Var", "x", [] ], [ "Var", "y", [] ] ] ]
         ]

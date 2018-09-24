@@ -4,24 +4,34 @@
     "Interface",
     "Ex08",
     [
-      [ "Typ", "t1" ],
-      [ "Constructor", "C1", "t1", [], [ [ "Apply", "Z" ] ] ],
-      [ "Constructor", "C2", "t1", [], [ [ "Apply", "bool" ], [ "Apply", "Z" ] ] ],
-      [ "Constructor", "C3", "t1", [], [] ],
+      [
+        "Typ",
+        [
+          "Inductive",
+          "t1",
+          [],
+          [ [ "C1", [ [ "Apply", "Z" ] ] ], [ "C2", [ [ "Apply", "bool" ], [ "Apply", "Z" ] ] ], [ "C3", [] ] ]
+        ]
+      ],
       [ "Var", "n", [] ],
       [ "Var", "m", [] ],
-      [ "Typ", "t2" ],
-      [ "Constructor", "D1", "t2", [ "a" ], [] ],
-      [ "Constructor", "D2", "t2", [ "a" ], [ [ "Variable", "a" ], [ "Apply", "t2", [ "Variable", "a" ] ] ] ],
+      [
+        "Typ",
+        [
+          "Inductive",
+          "t2",
+          [ "a" ],
+          [ [ "D1", [] ], [ "D2", [ [ "Variable", "a" ], [ "Apply", "t2", [ "Variable", "a" ] ] ] ] ]
+        ]
+      ],
       [ "Var", "of_list_rec", [ [ [], [ "NonTermination" ] ] ] ],
       [ "Var", "of_list", [ [ [ "Counter", "NonTermination" ] ] ] ],
       [ "Var", "sum_rec", [ [ [], [ "NonTermination" ] ] ] ],
       [ "Var", [ "sum", "sum_1" ], [ [ [ "Counter", "NonTermination" ] ] ] ],
       [ "Var", "s", [ [ [ "Counter", "NonTermination" ] ] ] ],
-      [ "Typ", "t3" ],
-      [ "Typ", "t4" ],
-      [ "Typ", "t5" ],
-      [ "Constructor", "C", "t5", [], [] ]
+      [ "Typ", [ "Abstract", "t3", [] ] ],
+      [ "Typ", [ "Abstract", "t4", [ "a" ] ] ],
+      [ "Typ", [ "Inductive", "t5", [], [ [ "C", [] ] ] ] ]
     ]
   ]
 }

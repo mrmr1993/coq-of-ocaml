@@ -4,11 +4,17 @@
     "Interface",
     "Ex34",
     [
-      [ "Interface", "Ord", [ [ "Typ", "t" ], [ "Var", "compare", [] ] ] ],
-      [ "Typ", "elt" ],
-      [ "Typ", "t" ],
-      [ "Constructor", "Empty", "t", [], [] ],
-      [ "Constructor", "Node", "t", [], [ [ "Apply", "t" ], [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "Z" ] ] ],
+      [ "Interface", "Ord", [ [ "Typ", [ "Abstract", "t", [] ] ], [ "Var", "compare", [] ] ] ],
+      [ "Typ", [ "Synonym", "elt", [], [ "Apply", "Ord.t" ] ] ],
+      [
+        "Typ",
+        [
+          "Inductive",
+          "t",
+          [],
+          [ [ "Empty", [] ], [ "Node", [ [ "Apply", "t" ], [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "Z" ] ] ] ]
+        ]
+      ],
       [ "Var", "height", [] ],
       [ "Var", "create", [] ],
       [ "Var", "bal", [ [ [], [], [ "OCaml.Invalid_argument" ] ] ] ],
@@ -32,14 +38,14 @@
       [ "Var", "union", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument" ] ] ] ],
       [ "Var", "inter", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
       [ "Var", "diff", [ [ [], [ "Counter", "NonTermination", "OCaml.Invalid_argument", "OCaml.Not_found" ] ] ] ],
-      [ "Typ", "enumeration" ],
-      [ "Constructor", "End", "enumeration", [], [] ],
       [
-        "Constructor",
-        "More",
-        "enumeration",
-        [],
-        [ [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "enumeration" ] ]
+        "Typ",
+        [
+          "Inductive",
+          "enumeration",
+          [],
+          [ [ "End", [] ], [ "More", [ [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "enumeration" ] ] ] ]
+        ]
       ],
       [ "Var", "cons_enum", [] ],
       [ "Var", "compare_aux_rec", [ [ [], [], [ "NonTermination" ] ] ] ],
