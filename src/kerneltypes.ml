@@ -22,8 +22,8 @@ module Value = struct
     | Type of TypeDefinition.t
     | Descriptor
     | Exception of PathName.t
-    | Constructor of Effect.PureType.t * Effect.PureType.t list
-    | Field of Effect.PureType.t * Effect.PureType.t
+    | Constructor of PathName.t * int
+    | Field of PathName.t * int
 
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
     match v with
@@ -32,8 +32,8 @@ module Value = struct
     | Type def -> Type def
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
-    | Constructor (typ, typs) -> Constructor (typ, typs)
-    | Field (record_typ, typ) -> Field (record_typ, typ)
+    | Constructor (typ, index) -> Constructor (typ, index)
+    | Field (typ, index) -> Field (typ, index)
 
   let to_string (v : 'a t) : string =
     match v with

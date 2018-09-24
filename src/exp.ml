@@ -506,13 +506,8 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
       match xs with
       | [_] ->
         begin match CoqName.Map.bindings @@
-          Pattern.free_typed_variables (fun x ->
-            let (record_typ, typ) = FullEnvi.Field.find loc x env in
-            (Type.of_pure_type record_typ, Type.of_pure_type typ))
-          (fun x ->
-            let (typ, typs) = FullEnvi.Constructor.find loc x env in
-            (Type.of_pure_type typ, List.map Type.of_pure_type typs))
-          e_body_typ p with
+          Pattern.free_typed_variables (TypeDefinition.field_type loc env)
+            (TypeDefinition.constructor_type loc env) e_body_typ p with
         | [(y, typ)] ->
           let typ_vars = Type.typ_args typ in
           let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
@@ -551,13 +546,8 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         let (e_typ, _, new_typ_vars) =
           Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
         let free_vars = CoqName.Map.bindings @@
-          Pattern.free_typed_variables (fun x ->
-            let (record_typ, typ) = FullEnvi.Field.find loc x env in
-            (Type.of_pure_type record_typ, Type.of_pure_type typ))
-          (fun x ->
-            let (typ, typs) = FullEnvi.Constructor.find loc x env in
-            (Type.of_pure_type typ, List.map Type.of_pure_type typs))
-          e_typ p in
+          Pattern.free_typed_variables (TypeDefinition.field_type loc env)
+          (TypeDefinition.constructor_type loc env) e_typ p in
         free_vars |> List.map (fun (y, typ) ->
           let typ_vars = Type.typ_args typ in
           let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in

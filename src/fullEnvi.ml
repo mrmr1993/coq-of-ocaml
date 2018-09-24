@@ -366,16 +366,15 @@ module Constructor = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.constructors = PathName.Map.add x y m.Mod.constructors }
 
-  type 'a t = Effect.PureType.t * Effect.PureType.t list
-  type 'a t' = Effect.PureType.t * Effect.PureType.t list
+  type 'a t = PathName.t * int
+  type 'a t' = PathName.t * int
 
-  let value ((typ, typs) : Effect.PureType.t * Effect.PureType.t list)
-    : 'a Value.t =
-    Constructor (typ, typs)
+  let value ((typ, index) : PathName.t * int) : 'a Value.t =
+    Constructor (typ, index)
 
-  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t list =
+  let unpack (v : 'a Value.t) : PathName.t * int =
     match v with
-    | Constructor (typ, typs) -> (typ, typs)
+    | Constructor (typ, index) -> (typ, index)
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a constructor."
 end)
 
@@ -386,16 +385,15 @@ module Field = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.fields = PathName.Map.add x y m.Mod.fields }
 
-  type 'a t = Effect.PureType.t * Effect.PureType.t
-  type 'a t' = Effect.PureType.t * Effect.PureType.t
+  type 'a t = PathName.t * int
+  type 'a t' = PathName.t * int
 
-  let value ((record_typ, typ) : Effect.PureType.t * Effect.PureType.t)
-    : 'a Value.t =
-    Field (record_typ, typ)
+  let value ((typ, index) : PathName.t * int) : 'a Value.t =
+    Field (typ, index)
 
-  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t =
+  let unpack (v : 'a Value.t) : PathName.t * int =
     match v with
-    | Field (record_typ, typ) -> (record_typ, typ)
+    | Field (typ, index) -> (typ, index)
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a field."
 end)
 

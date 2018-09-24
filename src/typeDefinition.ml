@@ -36,19 +36,17 @@ let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
     List.map (Type.of_type_expr_variable loc) typ.type_params in
   match typ.type_kind with
   | Type_variant cases ->
-    let constructors = cases |> (env |>
-      map_with_acc (fun env { Types.cd_id = constr; cd_args = args } ->
+    let constructors = cases |> ((0, env) |>
+      map_with_acc (fun (index, env) { Types.cd_id = constr; cd_args = args } ->
         let typs =
           match args with
           | Cstr_tuple typs -> typs
           | Cstr_record _ -> Error.raise loc "Unhandled named constructor parameters." in
         let constr = Name.of_ident constr in
-        let typ = Effect.PureType.Apply (x_bound,
-          List.map (fun x -> Effect.PureType.Variable x) typ_args) in
         let typs = List.map (fun typ -> Type.of_type_expr env loc typ) typs in
         let (constr, _, env) = FullEnvi.Constructor.create constr
-          (typ, List.map Type.pure_type typs) env in
-        (env, (constr, typs)))) in
+          (x_bound.BoundName.full_path, index) env in
+        ((1 + index, env), (constr, typs)))) in
     Inductive (x, typ_args, constructors)
   | Type_record (fields, _) ->
     let fields = fields |> (env |>
@@ -75,22 +73,44 @@ let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
     let env = FullEnvi.Typ.assoc name def env in
     let path = { PathName.path = []; base = CoqName.ocaml_name name } in
     let bound = FullEnvi.Typ.bound Loc.Unknown path env in
-    let typ = Effect.PureType.Apply (bound,
-      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
-    List.fold_left (fun env (x, typs) ->
-      FullEnvi.Constructor.assoc x (typ, List.map Type.pure_type typs) env)
-      env constructors
+    snd @@ List.fold_left (fun (index, env) (x, typs) ->
+      (index + 1,
+      FullEnvi.Constructor.assoc x (bound.BoundName.full_path, index) env))
+      (0, env) constructors
   | Record (name, typ_args, fields) ->
     let env = FullEnvi.Typ.assoc name def env in
     let path = { PathName.path = []; base = CoqName.ocaml_name name } in
     let bound = FullEnvi.Typ.bound Loc.Unknown path env in
-    let record_typ = Effect.PureType.Apply (bound,
-      List.map (fun x -> Effect.PureType.Variable x) typ_args) in
-    List.fold_left (fun env (x, typ) ->
-      FullEnvi.Field.assoc x (record_typ, Type.pure_type typ) env)
-      env fields
+    snd @@ List.fold_left (fun (index, env) (x, typ) ->
+      (index + 1,
+      FullEnvi.Field.assoc x (bound.BoundName.full_path, index) env))
+      (0, env) fields
   | Synonym (name, _, _) | Abstract (name, _) ->
     FullEnvi.Typ.assoc name def env
+
+let field_type (loc : Loc.t) (env : 'a FullEnvi.t) (field : BoundName.t)
+  : Type.t * Type.t =
+  let (typ, index) = FullEnvi.Field.find loc field env in
+  let bound_typ = { BoundName.full_path = typ; local_path = typ } in
+  match FullEnvi.Typ.find loc bound_typ env with
+  | Record (name, typ_args, fields) ->
+    (Type.Apply (bound_typ, List.map (fun x -> Type.Variable x) typ_args),
+    snd (List.nth fields index))
+  | _ ->
+    Error.raise loc @@ SmartPrint.to_string 80 2 @@
+    !^ "The type containing field" ^^ BoundName.pp field ^^ !^ "is not a record type."
+
+let constructor_type (loc : Loc.t) (env : 'a FullEnvi.t) (ctor : BoundName.t)
+  : Type.t * Type.t list =
+  let (typ, index) = FullEnvi.Constructor.find loc ctor env in
+  let bound_typ = { BoundName.full_path = typ; local_path = typ } in
+  match FullEnvi.Typ.find loc bound_typ env with
+  | Inductive (name, typ_args, constructors) ->
+    (Type.Apply (bound_typ, List.map (fun x -> Type.Variable x) typ_args),
+    snd (List.nth constructors index))
+  | _ ->
+    Error.raise loc @@ SmartPrint.to_string 80 2 @@
+    !^ "The type containing field" ^^ BoundName.pp ctor ^^ !^ "is not an inductive type."
 
 let to_json (def : t) : json =
   match def with
