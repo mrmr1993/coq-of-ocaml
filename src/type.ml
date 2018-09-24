@@ -2,12 +2,7 @@
 open Types
 open SmartPrint
 
-type t =
-  | Variable of Name.t
-  | Arrow of t * t
-  | Tuple of t list
-  | Apply of BoundName.t * t list
-  | Monad of Effect.Descriptor.t * t
+include Kerneltypes.Type
 
 let rec pp (typ : t) : SmartPrint.t =
   match typ with

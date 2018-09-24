@@ -315,12 +315,15 @@ module Typ = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  type 'a t = unit
-  type 'a t' = unit
+  type 'a t = Kerneltypes.TypeDefinition.t
+  type 'a t' = Kerneltypes.TypeDefinition.t
 
-  let value () : 'a Value.t = Type
+  let value (def : Kerneltypes.TypeDefinition.t) : 'a Value.t = Type def
 
-  let unpack (v : 'a Value.t) : 'a t' = ()
+  let unpack (v : 'a Value.t) : Kerneltypes.TypeDefinition.t =
+    match v with
+    | Type def -> def
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."
 end)
 
 module Descriptor = ValueCarrier(struct

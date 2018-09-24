@@ -1,8 +1,25 @@
+module Type = struct
+  type t =
+    | Variable of Name.t
+    | Arrow of t * t
+    | Tuple of t list
+    | Apply of BoundName.t * t list
+    | Monad of Effect.Descriptor.t * t
+end
+
+module TypeDefinition = struct
+  type t =
+    | Inductive of CoqName.t * Name.t list * (CoqName.t * Type.t list) list
+    | Record of CoqName.t * Name.t list * (CoqName.t * Type.t) list
+    | Synonym of CoqName.t * Name.t list * Type.t
+    | Abstract of CoqName.t * Name.t list
+end
+
 module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
-    | Type
+    | Type of TypeDefinition.t
     | Descriptor
     | Exception of PathName.t
     | Constructor of Effect.PureType.t * Effect.PureType.t list
@@ -12,7 +29,7 @@ module Value = struct
     match v with
     | Variable a -> Variable (f a)
     | Function (a, typ) -> Function (f a, typ)
-    | Type -> Type
+    | Type def -> Type def
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
     | Constructor (typ, typs) -> Constructor (typ, typs)
@@ -22,7 +39,7 @@ module Value = struct
     match v with
     | Variable _ -> "variable"
     | Function _ -> "function"
-    | Type -> "type"
+    | Type _ -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
     | Constructor _ -> "constructor"

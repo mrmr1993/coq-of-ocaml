@@ -49,9 +49,9 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   (* The core library *)
   (* Built-in types *)
-  |> Typ.add [] "Z" ()
-  |> Typ.add [] "ascii" ()
-  |> Typ.add [] "string" ()
+  |> Typ.add [] "Z" (TypeDefinition.Abstract (CoqName.Name "Z", []))
+  |> Typ.add [] "ascii" (TypeDefinition.Abstract (CoqName.Name "ascii", []))
+  |> Typ.add [] "string" (TypeDefinition.Abstract (CoqName.Name "string", []))
   |> TypeDefinition.update_env
     (TypeDefinition.Inductive (CoqName.Name "bool", [], [
       (CoqName.Name "false", []);
@@ -109,7 +109,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Values specific to the translation to Coq *)
   |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Pure)
   (* Predefined exceptions *)
-  |> Typ.add [] "exn" ()
+  |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
   |> add_exn [] "Match_failure"
   |> add_exn [] "Assert_failure"
   |> add_exn [] "Invalid_argument"
@@ -124,7 +124,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> add_exn [] "Undefined_recursive_module"
   (* State *)
   |> Descriptor.add ["Effect"; "State"] "state" ()
-  |> Typ.add ["Effect"; "State"] "t" ()
+  |> Typ.add ["Effect"; "State"] "t" (TypeDefinition.Abstract (CoqName.Name "t", []))
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"
     (arrow (typ_d 0) Pure,
