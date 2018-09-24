@@ -136,8 +136,8 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
             else bound_path in
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
     FullEnvi.Var.assoc x effect env
-  | Typ x -> FullEnvi.Typ.assoc x env
-  | Descriptor x -> FullEnvi.Descriptor.assoc x env
+  | Typ x -> FullEnvi.Typ.assoc x () env
+  | Descriptor x -> FullEnvi.Descriptor.assoc x () env
   | Exception (name, raise_name) ->
     env |> Exception.update_env_with_effects
       { Exception.name; raise_name; typ = Type.Variable "_" }
@@ -146,13 +146,13 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     let bound = FullEnvi.Typ.bound Loc.Unknown path env in
     let typ = Effect.PureType.Apply (bound,
       List.map (fun x -> Effect.PureType.Variable x) typ_args) in
-    FullEnvi.Constructor.assoc x typ typs env
+    FullEnvi.Constructor.assoc x (typ, typs) env
   | Field (x, name, typ_args, typ) ->
     let path = { PathName.path = []; base = CoqName.ocaml_name name } in
     let bound = FullEnvi.Typ.bound Loc.Unknown path env in
     let record_typ = Effect.PureType.Apply (bound,
       List.map (fun x -> Effect.PureType.Variable x) typ_args) in
-    FullEnvi.Field.assoc x record_typ typ env
+    FullEnvi.Field.assoc x (record_typ, typ) env
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module x env in

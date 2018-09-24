@@ -201,7 +201,16 @@ let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a Value.t =
         Error.raise loc (SmartPrint.to_string 80 2 message) in
   f env
 
-module Carrier (M : Mod.Carrier) = struct
+module type Carrier = sig
+  val resolve_opt : PathName.t -> Mod.t -> PathName.t option
+  val assoc : PathName.t -> PathName.t -> Mod.t -> Mod.t
+  type 'a t
+  type 'a t'
+  val value : 'a t -> 'a Value.t
+  val unpack : 'a Value.t -> 'a t'
+end
+
+module ValueCarrier (M : Carrier) = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =
     let x = PathName.of_name path base in
     match FullMod.hd_map (M.resolve_opt x) env.active_module with
@@ -221,28 +230,27 @@ module Carrier (M : Mod.Carrier) = struct
 
   let bound (loc : Loc.t) (x : PathName.t) (env : 'a t) : BoundName.t =
     bound_name M.resolve_opt (has_value env) loc x env
-end
 
-module ValueCarrier (M : Mod.ValueCarrier) = struct
-  include Carrier(M)
-  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a) (env : 'a t) : 'a t =
+  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a M.t) (env : 'a t)
+    : 'a t =
     { env with
       values = PathName.Map.add y (M.value v) env.values;
       active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
 
-  let add (path : Name.t list) (base : Name.t) (v : 'a) (env : 'a t) : 'a t =
+  let add (path : Name.t list) (base : Name.t) (v : 'a M.t) (env : 'a t)
+    : 'a t =
     raw_add (PathName.of_name path base) (resolve path base env) v env
 
-  let assoc (name : CoqName.t) (v : 'a) (env : 'a t) : 'a t =
+  let assoc (name : CoqName.t) (v : 'a M.t) (env : 'a t) : 'a t =
     let (ocaml_name, coq_name) = CoqName.assoc_names name in
     raw_add (PathName.of_name [] ocaml_name)
       (PathName.of_name (coq_path env) coq_name) v env
 
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a =
+  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : 'a M.t' =
     M.unpack @@ find loc x env
 
   (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (env : 'a t)
+  let fresh (prefix : string) (v : 'a M.t) (env : 'a t)
     : CoqName.t * BoundName.t * 'a t =
     let name = find_free_name [] prefix env in
     let bound_name = {
@@ -251,7 +259,7 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
     } in
     (CoqName.Name name, bound_name, add [] name v env)
 
-  let create (prefix : Name.t) (v : 'a) (env : 'a t)
+  let create (prefix : Name.t) (v : 'a M.t) (env : 'a t)
     : CoqName.t * BoundName.t * 'a t =
     let name = find_free_name [] prefix env in
     let bound_name = {
@@ -262,214 +270,131 @@ module ValueCarrier (M : Mod.ValueCarrier) = struct
     (coq_name, bound_name, assoc coq_name v env)
 end
 
-module Var = ValueCarrier(Mod.Vars)
+module Var = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.vars
 
-module Function = struct
-  include Carrier(Mod.Vars)
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.vars = PathName.Map.add x y m.Mod.vars }
 
-  let raw_add (x : PathName.t) (y : PathName.t) (v : 'a)
-    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    { env with
-      values = PathName.Map.add y (Mod.Function.value v typ) env.values;
-      active_module = FullMod.hd_mod_map (Mod.Function.assoc x y)
-        env.active_module }
+  type 'a t = 'a
+  type 'a t' = 'a
 
-  let add (path : Name.t list) (base : Name.t) (v : 'a)
-    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) v typ env
+  let value (v : 'a) : 'a Value.t = Variable v
 
-  let assoc (name : CoqName.t) (v : 'a) (typ : Effect.PureType.t)
-    (env : 'a t) : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) v typ env
+  let unpack (v : 'a Value.t) : 'a =
+    match v with
+    | Variable a -> a
+    | Function (a, _) -> a
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
+end)
 
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t)
-    : Effect.PureType.t option =
-    Mod.Function.unpack @@ find loc x env
+module Function = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.vars
 
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name v typ env)
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.vars = PathName.Map.add x y m.Mod.vars }
 
-  let create (prefix : string) (v : 'a) (typ : Effect.PureType.t) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    let coq_name = CoqName.of_names prefix name in
-    (coq_name, bound_name, assoc coq_name v typ env)
-end
+  type 'a t = 'a * Effect.PureType.t
+  type 'a t' = Effect.PureType.t option
 
-module EmptyCarrier (M : Mod.EmptyCarrier) = struct
-  include Carrier(M)
-  let raw_add (x : PathName.t) (y : PathName.t) (env : 'a t) : 'a t =
-    { env with
-      values = PathName.Map.add y M.value env.values;
-      active_module = FullMod.hd_mod_map (M.assoc x y) env.active_module }
+  let value ((v, typ) : 'a * Effect.PureType.t) : 'a Value.t = Function (v, typ)
 
-  let add (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) env
+  let unpack (v : 'a Value.t) : Effect.PureType.t option =
+    match v with
+    | Variable _ -> None
+    | Function (_, typ) -> Some typ
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
+end)
 
-  let assoc (name : CoqName.t) (env : 'a t) : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) env
+module Typ = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.typs
 
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name env)
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  let create (prefix : string) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    let coq_name = CoqName.of_names prefix name in
-    (coq_name, bound_name, assoc coq_name env)
-end
+  type 'a t = unit
+  type 'a t' = unit
 
-module Typ = EmptyCarrier(Mod.Typs)
-module Descriptor = EmptyCarrier(Mod.Descriptors)
+  let value () : 'a Value.t = Type
 
-module Constructor = struct
-  include Carrier(Mod.Constructors)
-  let raw_add (x : PathName.t) (y : PathName.t) (typ : Effect.PureType.t)
-    (typs : Effect.PureType.t list) (env : 'a t) : 'a t =
-    { env with
-      values = PathName.Map.add y (Mod.Constructors.value typ typs) env.values;
-      active_module =
-        FullMod.hd_mod_map (Mod.Constructors.assoc x y) env.active_module }
+  let unpack (v : 'a Value.t) : 'a t' = ()
+end)
 
-  let add (path : Name.t list) (base : Name.t) (typ : Effect.PureType.t)
-    (typs : Effect.PureType.t list) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) typ typs env
+module Descriptor = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.descriptors
 
-  let assoc (name : CoqName.t) (typ : Effect.PureType.t)
-    (typs : Effect.PureType.t list) (env : 'a t) : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) typ typs env
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.descriptors = PathName.Map.add x y m.Mod.descriptors }
 
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t)
-    : Effect.PureType.t * Effect.PureType.t list =
-    Mod.Constructors.unpack @@ find loc x env
+  type 'a t = unit
+  type 'a t' = unit
 
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (typ : Effect.PureType.t)
-    (typs : Effect.PureType.t list) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name typ typs env)
+  let value () : 'a Value.t = Descriptor
 
-  let create (prefix : string) (typ : Effect.PureType.t)
-    (typs : Effect.PureType.t list) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    let coq_name = CoqName.of_names prefix name in
-    (coq_name, bound_name, assoc coq_name typ typs env)
-end
+  let unpack (v : 'a Value.t) : 'a t' = ()
+end)
 
-module Field = struct
-  include Carrier(Mod.Fields)
-  let raw_add (x : PathName.t) (y : PathName.t)
-    (record_typ : Effect.PureType.t) (typ : Effect.PureType.t) (env : 'a t)
-    : 'a t =
-    { env with
-      values = PathName.Map.add y (Mod.Fields.value record_typ typ) env.values;
-      active_module =
-        FullMod.hd_mod_map (Mod.Fields.assoc x y) env.active_module }
+module Exception = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.descriptors
 
-  let add (path : Name.t list) (base : Name.t) (record_typ : Effect.PureType.t)
-    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) record_typ typ
-      env
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.descriptors = PathName.Map.add x y m.Mod.descriptors }
 
-  let assoc (name : CoqName.t) (record_typ : Effect.PureType.t)
-    (typ : Effect.PureType.t) (env : 'a t) : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) record_typ typ env
+  type 'a t = PathName.t
+  type 'a t' = PathName.t
 
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t)
-    : Effect.PureType.t * Effect.PureType.t =
-    Mod.Fields.unpack @@ find loc x env
+  let value (raise_name : PathName.t) : 'a Value.t = Exception raise_name
 
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (record_typ : Effect.PureType.t)
-    (typ : Effect.PureType.t) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name record_typ typ env)
+  let unpack (v : 'a Value.t) : PathName.t =
+    match v with
+    | Exception raise_name -> raise_name
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as an exception."
+end)
 
-  let create (prefix : string) (record_typ : Effect.PureType.t)
-    (typ : Effect.PureType.t) (env : 'a t) : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    let coq_name = CoqName.of_names prefix name in
-    (coq_name, bound_name, assoc coq_name record_typ typ env)
-end
+module Constructor = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.constructors
 
-module Exception = struct
-  include EmptyCarrier(Mod.Descriptors)
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.constructors = PathName.Map.add x y m.Mod.constructors }
 
-  let raw_add (x : PathName.t) (y : PathName.t) (raise_name : PathName.t)
-    (env : 'a t) : 'a t =
-    { env with
-      values = PathName.Map.add y (Mod.Exception.value raise_name) env.values;
-      active_module = FullMod.hd_mod_map (Mod.Exception.assoc x y)
-        env.active_module }
+  type 'a t = Effect.PureType.t * Effect.PureType.t list
+  type 'a t' = Effect.PureType.t * Effect.PureType.t list
 
-  let add (path : Name.t list) (base : Name.t) (raise_name : PathName.t)
-    (env : 'a t) : 'a t =
-    raw_add (PathName.of_name path base) (resolve path base env) raise_name env
+  let value ((typ, typs) : Effect.PureType.t * Effect.PureType.t list)
+    : 'a Value.t =
+    Constructor (typ, typs)
 
-  let assoc (name : CoqName.t) (raise_name : PathName.t) (env : 'a t) : 'a t =
-    let (ocaml_name, coq_name) = CoqName.assoc_names name in
-    raw_add (PathName.of_name [] ocaml_name)
-      (PathName.of_name (coq_path env) coq_name) raise_name env
+  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t list =
+    match v with
+    | Constructor (typ, typs) -> (typ, typs)
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a constructor."
+end)
 
-  let find (loc : Loc.t) (x : BoundName.t) (env : 'a t) : PathName.t =
-    Mod.Exception.unpack @@ find loc x env
+module Field = ValueCarrier(struct
+  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
+    PathName.Map.find_opt x m.Mod.fields
 
-  (** Add a fresh local name beginning with [prefix] in [env]. *)
-  let fresh (prefix : string) (raise_name : PathName.t) (env : 'a t)
-    : CoqName.t * BoundName.t * 'a t =
-    let name = find_free_name [] prefix env in
-    let bound_name = {
-      BoundName.full_path = { PathName.path = coq_path env; base = name };
-      local_path = { PathName.path = []; base = name };
-    } in
-    (CoqName.Name name, bound_name, add [] name raise_name env)
-end
+  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
+    { m with Mod.fields = PathName.Map.add x y m.Mod.fields }
+
+  type 'a t = Effect.PureType.t * Effect.PureType.t
+  type 'a t' = Effect.PureType.t * Effect.PureType.t
+
+  let value ((record_typ, typ) : Effect.PureType.t * Effect.PureType.t)
+    : 'a Value.t =
+    Field (record_typ, typ)
+
+  let unpack (v : 'a Value.t) : Effect.PureType.t * Effect.PureType.t =
+    match v with
+    | Field (record_typ, typ) -> (record_typ, typ)
+    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a field."
+end)
 
 module Module = struct
   let resolve (path : Name.t list) (base : Name.t) (env : 'a t) : PathName.t =

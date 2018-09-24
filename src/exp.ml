@@ -873,7 +873,7 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let effect1 = snd (annotation e1) in
     let env = if Effect.has_type_vars effect1 then
       let typ = Type.pure_type typ in
-      FullEnvi.Function.assoc x (Effect.eff effect1.Effect.typ) typ env
+      FullEnvi.Function.assoc x (Effect.eff effect1.Effect.typ, typ) env
     else
       FullEnvi.Var.assoc x (Effect.eff effect1.Effect.typ) env in
     let e2 = effects env e2 in
@@ -1006,7 +1006,7 @@ and env_after_def_with_effects (env : Effect.t FullEnvi.t)
     if Effect.has_type_vars effect then
       let typ = Type.pure_type @@ List.fold_right (fun (_, arg_typ) typ ->
         Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
-      FullEnvi.Function.assoc header.Header.name effect_typ typ env
+      FullEnvi.Function.assoc header.Header.name (effect_typ, typ) env
     else
       FullEnvi.Var.assoc header.Header.name effect_typ env)
     env def.Definition.cases
