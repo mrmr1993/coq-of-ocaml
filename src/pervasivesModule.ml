@@ -29,21 +29,16 @@ let env_with_effects (interfaces : (Name.t * string) list)
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
-  |> Typ.add [] "nat" ()
-  |> Constructor.add [] "O"
-    (Effect.PureType.Apply (bound_name [] [] "nat", []), [])
-  |> Constructor.add [] "S"
-    (Effect.PureType.Apply (bound_name [] [] "nat", []),
-    [Effect.PureType.Apply (bound_name [] [] "nat", [])])
-  |> Typ.add [] "sum" ()
-  |> Constructor.add [] "inl"
-    (Effect.PureType.Apply (bound_name [] [] "sum",
-      [Effect.PureType.Variable "A"; Effect.PureType.Variable "_"]),
-    [Effect.PureType.Variable "A"])
-  |> Constructor.add [] "inr"
-    (Effect.PureType.Apply (bound_name [] [] "sum",
-      [Effect.PureType.Variable "_"; Effect.PureType.Variable "A"]),
-    [Effect.PureType.Variable "A"])
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "nat", [], [
+      (CoqName.Name "O", []);
+      (CoqName.Name "S", [Type.Apply (bound_name [] [] "nat", [])])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "sum", ["A"; "B"], [
+      (CoqName.Name "inl", [Type.Variable "A"]);
+      (CoqName.Name "inr", [Type.Variable "B"])
+    ]))
   |> Descriptor.add [] "IO" ()
   |> Descriptor.add [] "Counter" ()
   |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Pure)
@@ -57,27 +52,27 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Typ.add [] "Z" ()
   |> Typ.add [] "ascii" ()
   |> Typ.add [] "string" ()
-  |> Typ.add [] "bool" ()
-  |> Constructor.add [] "false"
-    (Effect.PureType.Apply (bound_name [] [] "bool", []), [])
-  |> Constructor.add [] "true"
-    (Effect.PureType.Apply (bound_name [] [] "bool", []), [])
-  |> Typ.add [] "unit" ()
-  |> Constructor.add [] "tt"
-    (Effect.PureType.Apply (bound_name [] [] "unit", []), [])
-  |> Typ.add [] "list" ()
-  |> Constructor.add [] "[]"
-    (Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "_"]), [])
-  |> Constructor.add [] "cons"
-    (Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "A"]),
-    [Effect.PureType.Variable "A";
-      Effect.PureType.Apply (bound_name [] [] "list", [Effect.PureType.Variable "A"])])
-  |> Typ.add [] "option" ()
-  |> Constructor.add [] "None"
-    (Effect.PureType.Apply (bound_name [] [] "option", [Effect.PureType.Variable "_"]), [])
-  |> Constructor.add [] "Some"
-    (Effect.PureType.Apply (bound_name [] [] "option", [Effect.PureType.Variable "A"]),
-    [Effect.PureType.Variable "A"])
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "bool", [], [
+      (CoqName.Name "false", []);
+      (CoqName.Name "true", [])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "unit", [], [
+      (CoqName.Name "tt", [])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "list", ["A"], [
+      (CoqName.Name "[]", []);
+      (CoqName.Name "cons",
+        [Type.Variable "A";
+        Type.Apply (bound_name [] [] "list", [Type.Variable "A"])])
+    ]))
+  |> TypeDefinition.update_env
+    (TypeDefinition.Inductive (CoqName.Name "option", ["A"], [
+      (CoqName.Name "None", []);
+      (CoqName.Name "Some", [Type.Variable "A"])
+    ]))
   (* Comparisons *)
   |> Var.add [] "equiv_decb" pure
   |> Var.add [] "nequiv_decb" pure
