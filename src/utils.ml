@@ -71,3 +71,13 @@ let rec map_with_acc (f : 'a -> 'b -> 'a * 'c) (a : 'a) (l : 'b list)
   | x :: l ->
     let (a, x) = f a x in
     x :: map_with_acc f a l
+
+let rec compare_list (compare : 'a -> 'a -> int) (l1 : 'a list) (l2 : 'a list)
+  : int =
+  match l1, l2 with
+  | [], [] -> 0
+  | [], _ -> -1
+  | _, [] -> 1
+  | a :: l1, b :: l2 ->
+    let cmp = compare a b in
+    if cmp = 0 then compare_list compare l1 l2 else cmp
