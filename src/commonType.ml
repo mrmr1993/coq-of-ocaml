@@ -23,6 +23,7 @@ module TypeDefinition = struct
     | Record of CoqName.t * Name.t list * (CoqName.t * typ) list
     | Synonym of CoqName.t * Name.t list * typ
     | Abstract of CoqName.t * Name.t list
+    | Open of CoqName.t
 end
 
 type t = typ
