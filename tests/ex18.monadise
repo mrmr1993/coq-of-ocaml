@@ -5,7 +5,8 @@ Value
   (non_rec, @.,
     [
       ((plus_one, [ A ], [ (x, A) ],
-        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (Z))),
+        Monad
+          ([ Type (OCaml.Effect.State.state, Type (Z)); r_state ], Type (Z))),
         Match
           (?, Variable (?, x),
             [
@@ -22,12 +23,16 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state,
-                                Z)
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z))
                             ],
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               r_state
                             ],
                             Apply
@@ -68,7 +73,11 @@ Value
     [
       ((fail, [ A; B ], [ (x, A) ],
         Monad
-          ([ (OCaml.Effect.State.state, string); s_state; OCaml.Failure ], B)),
+          ([
+            Type (OCaml.Effect.State.state, Type (string));
+            s_state;
+            OCaml.Failure
+          ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -78,13 +87,17 @@ Value
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state,
-                            string);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (string));
                           s_state
                         ],
                         [
-                          (OCaml.Effect.State.state,
-                            string);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (string));
                           s_state;
                           OCaml.Failure
                         ],
@@ -98,12 +111,16 @@ Value
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state,
-                                    string)
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (string))
                                 ],
                                 [
-                                  (OCaml.Effect.State.state,
-                                    string);
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (string));
                                   s_state
                                 ],
                                 Apply
@@ -124,8 +141,10 @@ Value
                           OCaml.Failure
                         ],
                         [
-                          (OCaml.Effect.State.state,
-                            string);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (string));
                           s_state;
                           OCaml.Failure
                         ],
@@ -147,7 +166,9 @@ Value
   (non_rec, @.,
     [
       ((reset, [ A ], [ (x, A) ],
-        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (unit))),
+        Monad
+          ([ Type (OCaml.Effect.State.state, Type (Z)); r_state ],
+            Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -159,12 +180,16 @@ Value
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state,
-                            Z)
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z))
                         ],
                         [
-                          (OCaml.Effect.State.state,
-                            Z);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z));
                           r_state
                         ],
                         Apply
@@ -188,7 +213,9 @@ Value
   (non_rec, @.,
     [
       ((incr, [ A ], [ (x, A) ],
-        Monad ([ (OCaml.Effect.State.state, Z); r_state ], Type (unit))),
+        Monad
+          ([ Type (OCaml.Effect.State.state, Type (Z)); r_state ],
+            Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -211,12 +238,16 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      (OCaml.Effect.State.state,
-                                        Z)
+                                      Type
+                                        (OCaml.Effect.State.state,
+                                          Type
+                                            (Z))
                                     ],
                                     [
-                                      (OCaml.Effect.State.state,
-                                        Z);
+                                      Type
+                                        (OCaml.Effect.State.state,
+                                          Type
+                                            (Z));
                                       r_state
                                     ],
                                     Apply
@@ -251,12 +282,16 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state,
-                                Z)
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z))
                             ],
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               r_state
                             ],
                             Apply

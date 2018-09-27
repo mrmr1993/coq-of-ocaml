@@ -6,14 +6,17 @@ Value
     [
       ((slow_div, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
         Monad
-          ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
-            Type (Z))),
+          ([
+            Type (OCaml.Effect.State.state, Type (Z));
+            Counter;
+            NonTermination
+          ], Type (Z))),
         Bind
           (?,
             Lift
-              (?, [ (OCaml.Effect.State.state, Z) ],
+              (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
                 [
-                  (OCaml.Effect.State.state, Z);
+                  Type (OCaml.Effect.State.state, Type (Z));
                   Counter;
                   NonTermination
                 ],
@@ -23,9 +26,9 @@ Value
             Bind
               (?,
                 Lift
-                  (?, [ (OCaml.Effect.State.state, Z) ],
+                  (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
                     [
-                      (OCaml.Effect.State.state, Z);
+                      Type (OCaml.Effect.State.state, Type (Z));
                       Counter;
                       NonTermination
                     ],
@@ -45,8 +48,10 @@ Value
                             ],
                             Monad
                               ([
-                                (OCaml.Effect.State.state,
-                                  Z);
+                                Type
+                                  (OCaml.Effect.State.state,
+                                    Type
+                                      (Z));
                                 NonTermination
                               ],
                                 ())),
@@ -64,8 +69,10 @@ Value
                                           NonTermination
                                         ],
                                         [
-                                          (OCaml.Effect.State.state,
-                                            Z);
+                                          Type
+                                            (OCaml.Effect.State.state,
+                                              Type
+                                                (Z));
                                           NonTermination
                                         ],
                                         Apply
@@ -86,12 +93,16 @@ Value
                                         Lift
                                           (?,
                                             [
-                                              (OCaml.Effect.State.state,
-                                                Z)
+                                              Type
+                                                (OCaml.Effect.State.state,
+                                                  Type
+                                                    (Z))
                                             ],
                                             [
-                                              (OCaml.Effect.State.state,
-                                                Z);
+                                              Type
+                                                (OCaml.Effect.State.state,
+                                                  Type
+                                                    (Z));
                                               NonTermination
                                             ],
                                             Bind
@@ -154,12 +165,16 @@ Value
                                                 Lift
                                                   (?,
                                                     [
-                                                      (OCaml.Effect.State.state,
-                                                        Z)
+                                                      Type
+                                                        (OCaml.Effect.State.state,
+                                                          Type
+                                                            (Z))
                                                     ],
                                                     [
-                                                      (OCaml.Effect.State.state,
-                                                        Z);
+                                                      Type
+                                                        (OCaml.Effect.State.state,
+                                                          Type
+                                                            (Z));
                                                       NonTermination
                                                     ],
                                                     Bind
@@ -280,8 +295,10 @@ Value
                         Lift
                           (?, [ Counter ],
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               Counter;
                               NonTermination
                             ],
@@ -294,13 +311,17 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               NonTermination
                             ],
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               Counter;
                               NonTermination
                             ],
@@ -312,9 +333,18 @@ Value
                                       counter)
                                 ]))), None,
                     Lift
-                      (?, [ (OCaml.Effect.State.state, Z) ],
+                      (?,
                         [
-                          (OCaml.Effect.State.state, Z);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z))
+                        ],
+                        [
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z));
                           Counter;
                           NonTermination
                         ],
@@ -333,9 +363,17 @@ Value
       ((nested, [ ], [ (es_in, list Effect.t); (x, Type (unit)) ],
         Monad
           ([
-            (OCaml.Effect.State.state, (list, Z));
-            (OCaml.Effect.State.state,
-              (list, (OCaml.Effect.State.t, (list, Z))));
+            Type (OCaml.Effect.State.state, Type (list, Type (Z)));
+            Type
+              (OCaml.Effect.State.state,
+                Type
+                  (list,
+                    Type
+                      (OCaml.Effect.State.t,
+                        Type
+                          (list,
+                            Type
+                              (Z)))));
             Counter;
             NonTermination
           ], Type (list, Type (Z)))),
@@ -348,24 +386,40 @@ Value
                     Lift
                       (?,
                         [
-                          (OCaml.Effect.State.state,
-                            (list,
-                              Z));
-                          (OCaml.Effect.State.state,
-                            (list,
-                              (OCaml.Effect.State.t,
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
                                 (list,
-                                  Z))))
+                                  Type
+                                    (Z)));
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (list,
+                                  Type
+                                    (OCaml.Effect.State.t,
+                                      Type
+                                        (list,
+                                          Type
+                                            (Z)))))
                         ],
                         [
-                          (OCaml.Effect.State.state,
-                            (list,
-                              Z));
-                          (OCaml.Effect.State.state,
-                            (list,
-                              (OCaml.Effect.State.t,
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
                                 (list,
-                                  Z))));
+                                  Type
+                                    (Z)));
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (list,
+                                  Type
+                                    (OCaml.Effect.State.t,
+                                      Type
+                                        (list,
+                                          Type
+                                            (Z)))));
                           Counter;
                           NonTermination
                         ],
@@ -374,19 +428,30 @@ Value
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      Z))
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (list,
+                                          Type
+                                            (Z)))
                                 ],
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      Z));
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      (OCaml.Effect.State.t,
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
                                         (list,
-                                          Z))))
+                                          Type
+                                            (Z)));
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (list,
+                                          Type
+                                            (OCaml.Effect.State.t,
+                                              Type
+                                                (list,
+                                                  Type
+                                                    (Z)))))
                                 ],
                                 Bind
                                   (?,
@@ -518,21 +583,34 @@ Value
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      (OCaml.Effect.State.t,
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
                                         (list,
-                                          Z))))
+                                          Type
+                                            (OCaml.Effect.State.t,
+                                              Type
+                                                (list,
+                                                  Type
+                                                    (Z)))))
                                 ],
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      Z));
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      (OCaml.Effect.State.t,
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
                                         (list,
-                                          Z))))
+                                          Type
+                                            (Z)));
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (list,
+                                          Type
+                                            (OCaml.Effect.State.t,
+                                              Type
+                                                (list,
+                                                  Type
+                                                    (Z)))))
                                 ],
                                 Apply
                                   (12,
@@ -551,19 +629,30 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state,
-                                (list,
-                                  Z))
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (list,
+                                      Type
+                                        (Z)))
                             ],
                             [
-                              (OCaml.Effect.State.state,
-                                (list,
-                                  Z));
-                              (OCaml.Effect.State.state,
-                                (list,
-                                  (OCaml.Effect.State.t,
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
                                     (list,
-                                      Z))));
+                                      Type
+                                        (Z)));
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (list,
+                                      Type
+                                        (OCaml.Effect.State.t,
+                                          Type
+                                            (list,
+                                              Type
+                                                (Z)))));
                               Counter;
                               NonTermination
                             ],
@@ -596,14 +685,22 @@ Value
                                     ],
                                     Monad
                                       ([
-                                        (OCaml.Effect.State.state,
-                                          (list,
-                                            Z));
-                                        (OCaml.Effect.State.state,
-                                          (list,
-                                            (OCaml.Effect.State.t,
+                                        Type
+                                          (OCaml.Effect.State.state,
+                                            Type
                                               (list,
-                                                Z))));
+                                                Type
+                                                  (Z)));
+                                        Type
+                                          (OCaml.Effect.State.state,
+                                            Type
+                                              (list,
+                                                Type
+                                                  (OCaml.Effect.State.t,
+                                                    Type
+                                                      (list,
+                                                        Type
+                                                          (Z)))));
                                         Counter;
                                         NonTermination
                                       ],
@@ -622,14 +719,22 @@ Value
                                                   NonTermination
                                                 ],
                                                 [
-                                                  (OCaml.Effect.State.state,
-                                                    (list,
-                                                      Z));
-                                                  (OCaml.Effect.State.state,
-                                                    (list,
-                                                      (OCaml.Effect.State.t,
+                                                  Type
+                                                    (OCaml.Effect.State.state,
+                                                      Type
                                                         (list,
-                                                          Z))));
+                                                          Type
+                                                            (Z)));
+                                                  Type
+                                                    (OCaml.Effect.State.state,
+                                                      Type
+                                                        (list,
+                                                          Type
+                                                            (OCaml.Effect.State.t,
+                                                              Type
+                                                                (list,
+                                                                  Type
+                                                                    (Z)))));
                                                   Counter;
                                                   NonTermination
                                                 ],
@@ -651,21 +756,34 @@ Value
                                                 Lift
                                                   (?,
                                                     [
-                                                      (OCaml.Effect.State.state,
-                                                        (list,
-                                                          (OCaml.Effect.State.t,
+                                                      Type
+                                                        (OCaml.Effect.State.state,
+                                                          Type
                                                             (list,
-                                                              Z))))
+                                                              Type
+                                                                (OCaml.Effect.State.t,
+                                                                  Type
+                                                                    (list,
+                                                                      Type
+                                                                        (Z)))))
                                                     ],
                                                     [
-                                                      (OCaml.Effect.State.state,
-                                                        (list,
-                                                          Z));
-                                                      (OCaml.Effect.State.state,
-                                                        (list,
-                                                          (OCaml.Effect.State.t,
+                                                      Type
+                                                        (OCaml.Effect.State.state,
+                                                          Type
                                                             (list,
-                                                              Z))));
+                                                              Type
+                                                                (Z)));
+                                                      Type
+                                                        (OCaml.Effect.State.state,
+                                                          Type
+                                                            (list,
+                                                              Type
+                                                                (OCaml.Effect.State.t,
+                                                                  Type
+                                                                    (list,
+                                                                      Type
+                                                                        (Z)))));
                                                       Counter;
                                                       NonTermination
                                                     ],
@@ -728,21 +846,34 @@ Value
                                                             Lift
                                                               (?,
                                                                 [
-                                                                  (OCaml.Effect.State.state,
-                                                                    (list,
-                                                                      (OCaml.Effect.State.t,
+                                                                  Type
+                                                                    (OCaml.Effect.State.state,
+                                                                      Type
                                                                         (list,
-                                                                          Z))))
+                                                                          Type
+                                                                            (OCaml.Effect.State.t,
+                                                                              Type
+                                                                                (list,
+                                                                                  Type
+                                                                                    (Z)))))
                                                                 ],
                                                                 [
-                                                                  (OCaml.Effect.State.state,
-                                                                    (list,
-                                                                      Z));
-                                                                  (OCaml.Effect.State.state,
-                                                                    (list,
-                                                                      (OCaml.Effect.State.t,
+                                                                  Type
+                                                                    (OCaml.Effect.State.state,
+                                                                      Type
                                                                         (list,
-                                                                          Z))));
+                                                                          Type
+                                                                            (Z)));
+                                                                  Type
+                                                                    (OCaml.Effect.State.state,
+                                                                      Type
+                                                                        (list,
+                                                                          Type
+                                                                            (OCaml.Effect.State.t,
+                                                                              Type
+                                                                                (list,
+                                                                                  Type
+                                                                                    (Z)))));
                                                                   Counter;
                                                                   NonTermination
                                                                 ],
@@ -780,21 +911,32 @@ Value
                                                                         Lift
                                                                           (?,
                                                                             [
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  Z));
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
+                                                                                    (list,
+                                                                                      Type
+                                                                                        (Z)));
                                                                               Counter;
                                                                               NonTermination
                                                                             ],
                                                                             [
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  Z));
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  (OCaml.Effect.State.t,
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
                                                                                     (list,
-                                                                                      Z))));
+                                                                                      Type
+                                                                                        (Z)));
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
+                                                                                    (list,
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.t,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)))));
                                                                               Counter;
                                                                               NonTermination
                                                                             ],
@@ -813,9 +955,12 @@ Value
                                                                                     ],
                                                                                     Monad
                                                                                       ([
-                                                                                        (OCaml.Effect.State.state,
-                                                                                          (list,
-                                                                                            Z));
+                                                                                        Type
+                                                                                          (OCaml.Effect.State.state,
+                                                                                            Type
+                                                                                              (list,
+                                                                                                Type
+                                                                                                  (Z)));
                                                                                         NonTermination
                                                                                       ],
                                                                                         ())),
@@ -833,9 +978,12 @@ Value
                                                                                                   NonTermination
                                                                                                 ],
                                                                                                 [
-                                                                                                  (OCaml.Effect.State.state,
-                                                                                                    (list,
-                                                                                                      Z));
+                                                                                                  Type
+                                                                                                    (OCaml.Effect.State.state,
+                                                                                                      Type
+                                                                                                        (list,
+                                                                                                          Type
+                                                                                                            (Z)));
                                                                                                   NonTermination
                                                                                                 ],
                                                                                                 Apply
@@ -856,14 +1004,20 @@ Value
                                                                                                 Lift
                                                                                                   (?,
                                                                                                     [
-                                                                                                      (OCaml.Effect.State.state,
-                                                                                                        (list,
-                                                                                                          Z))
+                                                                                                      Type
+                                                                                                        (OCaml.Effect.State.state,
+                                                                                                          Type
+                                                                                                            (list,
+                                                                                                              Type
+                                                                                                                (Z)))
                                                                                                     ],
                                                                                                     [
-                                                                                                      (OCaml.Effect.State.state,
-                                                                                                        (list,
-                                                                                                          Z));
+                                                                                                      Type
+                                                                                                        (OCaml.Effect.State.state,
+                                                                                                          Type
+                                                                                                            (list,
+                                                                                                              Type
+                                                                                                                (Z)));
                                                                                                       NonTermination
                                                                                                     ],
                                                                                                     Bind
@@ -923,14 +1077,20 @@ Value
                                                                                                         Lift
                                                                                                           (?,
                                                                                                             [
-                                                                                                              (OCaml.Effect.State.state,
-                                                                                                                (list,
-                                                                                                                  Z))
+                                                                                                              Type
+                                                                                                                (OCaml.Effect.State.state,
+                                                                                                                  Type
+                                                                                                                    (list,
+                                                                                                                      Type
+                                                                                                                        (Z)))
                                                                                                             ],
                                                                                                             [
-                                                                                                              (OCaml.Effect.State.state,
-                                                                                                                (list,
-                                                                                                                  Z));
+                                                                                                              Type
+                                                                                                                (OCaml.Effect.State.state,
+                                                                                                                  Type
+                                                                                                                    (list,
+                                                                                                                      Type
+                                                                                                                        (Z)));
                                                                                                               NonTermination
                                                                                                             ],
                                                                                                             Bind
@@ -1050,9 +1210,12 @@ Value
                                                                                       Counter
                                                                                     ],
                                                                                     [
-                                                                                      (OCaml.Effect.State.state,
-                                                                                        (list,
-                                                                                          Z));
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.state,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)));
                                                                                       Counter;
                                                                                       NonTermination
                                                                                     ],
@@ -1071,15 +1234,21 @@ Value
                                                                                 Lift
                                                                                   (?,
                                                                                     [
-                                                                                      (OCaml.Effect.State.state,
-                                                                                        (list,
-                                                                                          Z));
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.state,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)));
                                                                                       NonTermination
                                                                                     ],
                                                                                     [
-                                                                                      (OCaml.Effect.State.state,
-                                                                                        (list,
-                                                                                          Z));
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.state,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)));
                                                                                       Counter;
                                                                                       NonTermination
                                                                                     ],
@@ -1097,21 +1266,34 @@ Value
                                                                         Lift
                                                                           (?,
                                                                             [
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  (OCaml.Effect.State.t,
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
                                                                                     (list,
-                                                                                      Z))))
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.t,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)))))
                                                                             ],
                                                                             [
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  Z));
-                                                                              (OCaml.Effect.State.state,
-                                                                                (list,
-                                                                                  (OCaml.Effect.State.t,
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
                                                                                     (list,
-                                                                                      Z))));
+                                                                                      Type
+                                                                                        (Z)));
+                                                                              Type
+                                                                                (OCaml.Effect.State.state,
+                                                                                  Type
+                                                                                    (list,
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.t,
+                                                                                          Type
+                                                                                            (list,
+                                                                                              Type
+                                                                                                (Z)))));
                                                                               Counter;
                                                                               NonTermination
                                                                             ],
@@ -1156,14 +1338,22 @@ Value
                                       Counter
                                     ],
                                     [
-                                      (OCaml.Effect.State.state,
-                                        (list,
-                                          Z));
-                                      (OCaml.Effect.State.state,
-                                        (list,
-                                          (OCaml.Effect.State.t,
+                                      Type
+                                        (OCaml.Effect.State.state,
+                                          Type
                                             (list,
-                                              Z))));
+                                              Type
+                                                (Z)));
+                                      Type
+                                        (OCaml.Effect.State.state,
+                                          Type
+                                            (list,
+                                              Type
+                                                (OCaml.Effect.State.t,
+                                                  Type
+                                                    (list,
+                                                      Type
+                                                        (Z)))));
                                       Counter;
                                       NonTermination
                                     ],
@@ -1193,19 +1383,30 @@ Value
                             Lift
                               (?,
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      Z))
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (list,
+                                          Type
+                                            (Z)))
                                 ],
                                 [
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      Z));
-                                  (OCaml.Effect.State.state,
-                                    (list,
-                                      (OCaml.Effect.State.t,
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
                                         (list,
-                                          Z))));
+                                          Type
+                                            (Z)));
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (list,
+                                          Type
+                                            (OCaml.Effect.State.t,
+                                              Type
+                                                (list,
+                                                  Type
+                                                    (Z)))));
                                   Counter;
                                   NonTermination
                                 ],
@@ -1512,14 +1713,17 @@ Value
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
         Monad
-          ([ (OCaml.Effect.State.state, Z); Counter; NonTermination ],
-            Type (Z))),
+          ([
+            Type (OCaml.Effect.State.state, Type (Z));
+            Counter;
+            NonTermination
+          ], Type (Z))),
         Bind
           (?,
             Lift
-              (?, [ (OCaml.Effect.State.state, Z) ],
+              (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
                 [
-                  (OCaml.Effect.State.state, Z);
+                  Type (OCaml.Effect.State.state, Type (Z));
                   Counter;
                   NonTermination
                 ],
@@ -1529,9 +1733,9 @@ Value
             Bind
               (?,
                 Lift
-                  (?, [ (OCaml.Effect.State.state, Z) ],
+                  (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
                     [
-                      (OCaml.Effect.State.state, Z);
+                      Type (OCaml.Effect.State.state, Type (Z));
                       Counter;
                       NonTermination
                     ],
@@ -1541,9 +1745,18 @@ Value
                 Bind
                   (?,
                     Lift
-                      (?, [ (OCaml.Effect.State.state, Z) ],
+                      (?,
                         [
-                          (OCaml.Effect.State.state, Z);
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z))
+                        ],
+                        [
+                          Type
+                            (OCaml.Effect.State.state,
+                              Type
+                                (Z));
                           Counter;
                           NonTermination
                         ],
@@ -1566,8 +1779,10 @@ Value
                                 ],
                                 Monad
                                   ([
-                                    (OCaml.Effect.State.state,
-                                      Z);
+                                    Type
+                                      (OCaml.Effect.State.state,
+                                        Type
+                                          (Z));
                                     Counter;
                                     NonTermination
                                   ],
@@ -1586,8 +1801,10 @@ Value
                                               NonTermination
                                             ],
                                             [
-                                              (OCaml.Effect.State.state,
-                                                Z);
+                                              Type
+                                                (OCaml.Effect.State.state,
+                                                  Type
+                                                    (Z));
                                               Counter;
                                               NonTermination
                                             ],
@@ -1609,12 +1826,16 @@ Value
                                             Lift
                                               (?,
                                                 [
-                                                  (OCaml.Effect.State.state,
-                                                    Z)
+                                                  Type
+                                                    (OCaml.Effect.State.state,
+                                                      Type
+                                                        (Z))
                                                 ],
                                                 [
-                                                  (OCaml.Effect.State.state,
-                                                    Z);
+                                                  Type
+                                                    (OCaml.Effect.State.state,
+                                                      Type
+                                                        (Z));
                                                   Counter;
                                                   NonTermination
                                                 ],
@@ -1675,12 +1896,16 @@ Value
                                                         Lift
                                                           (?,
                                                             [
-                                                              (OCaml.Effect.State.state,
-                                                                Z)
+                                                              Type
+                                                                (OCaml.Effect.State.state,
+                                                                  Type
+                                                                    (Z))
                                                             ],
                                                             [
-                                                              (OCaml.Effect.State.state,
-                                                                Z);
+                                                              Type
+                                                                (OCaml.Effect.State.state,
+                                                                  Type
+                                                                    (Z));
                                                               Counter;
                                                               NonTermination
                                                             ],
@@ -1713,8 +1938,10 @@ Value
                                                                     ],
                                                                     Monad
                                                                       ([
-                                                                        (OCaml.Effect.State.state,
-                                                                          Z);
+                                                                        Type
+                                                                          (OCaml.Effect.State.state,
+                                                                            Type
+                                                                              (Z));
                                                                         NonTermination
                                                                       ],
                                                                         ())),
@@ -1732,8 +1959,10 @@ Value
                                                                                   NonTermination
                                                                                 ],
                                                                                 [
-                                                                                  (OCaml.Effect.State.state,
-                                                                                    Z);
+                                                                                  Type
+                                                                                    (OCaml.Effect.State.state,
+                                                                                      Type
+                                                                                        (Z));
                                                                                   NonTermination
                                                                                 ],
                                                                                 Apply
@@ -1754,12 +1983,16 @@ Value
                                                                                 Lift
                                                                                   (?,
                                                                                     [
-                                                                                      (OCaml.Effect.State.state,
-                                                                                        Z)
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.state,
+                                                                                          Type
+                                                                                            (Z))
                                                                                     ],
                                                                                     [
-                                                                                      (OCaml.Effect.State.state,
-                                                                                        Z);
+                                                                                      Type
+                                                                                        (OCaml.Effect.State.state,
+                                                                                          Type
+                                                                                            (Z));
                                                                                       NonTermination
                                                                                     ],
                                                                                     Bind
@@ -1817,12 +2050,16 @@ Value
                                                                                         Lift
                                                                                           (?,
                                                                                             [
-                                                                                              (OCaml.Effect.State.state,
-                                                                                                Z)
+                                                                                              Type
+                                                                                                (OCaml.Effect.State.state,
+                                                                                                  Type
+                                                                                                    (Z))
                                                                                             ],
                                                                                             [
-                                                                                              (OCaml.Effect.State.state,
-                                                                                                Z);
+                                                                                              Type
+                                                                                                (OCaml.Effect.State.state,
+                                                                                                  Type
+                                                                                                    (Z));
                                                                                               NonTermination
                                                                                             ],
                                                                                             Bind
@@ -1947,8 +2184,10 @@ Value
                                                                       Counter
                                                                     ],
                                                                     [
-                                                                      (OCaml.Effect.State.state,
-                                                                        Z);
+                                                                      Type
+                                                                        (OCaml.Effect.State.state,
+                                                                          Type
+                                                                            (Z));
                                                                       Counter;
                                                                       NonTermination
                                                                     ],
@@ -1967,13 +2206,17 @@ Value
                                                                 Lift
                                                                   (?,
                                                                     [
-                                                                      (OCaml.Effect.State.state,
-                                                                        Z);
+                                                                      Type
+                                                                        (OCaml.Effect.State.state,
+                                                                          Type
+                                                                            (Z));
                                                                       NonTermination
                                                                     ],
                                                                     [
-                                                                      (OCaml.Effect.State.state,
-                                                                        Z);
+                                                                      Type
+                                                                        (OCaml.Effect.State.state,
+                                                                          Type
+                                                                            (Z));
                                                                       Counter;
                                                                       NonTermination
                                                                     ],
@@ -1991,12 +2234,16 @@ Value
                                                             Lift
                                                               (?,
                                                                 [
-                                                                  (OCaml.Effect.State.state,
-                                                                    Z)
+                                                                  Type
+                                                                    (OCaml.Effect.State.state,
+                                                                      Type
+                                                                        (Z))
                                                                 ],
                                                                 [
-                                                                  (OCaml.Effect.State.state,
-                                                                    Z);
+                                                                  Type
+                                                                    (OCaml.Effect.State.state,
+                                                                      Type
+                                                                        (Z));
                                                                   Counter;
                                                                   NonTermination
                                                                 ],
@@ -2118,8 +2365,10 @@ Value
                             Lift
                               (?, [ Counter ],
                                 [
-                                  (OCaml.Effect.State.state,
-                                    Z);
+                                  Type
+                                    (OCaml.Effect.State.state,
+                                      Type
+                                        (Z));
                                   Counter;
                                   NonTermination
                                 ],
@@ -2144,12 +2393,16 @@ Value
                         Lift
                           (?,
                             [
-                              (OCaml.Effect.State.state,
-                                Z)
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z))
                             ],
                             [
-                              (OCaml.Effect.State.state,
-                                Z);
+                              Type
+                                (OCaml.Effect.State.state,
+                                  Type
+                                    (Z));
                               Counter;
                               NonTermination
                             ],

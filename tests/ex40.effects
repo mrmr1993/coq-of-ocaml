@@ -6,7 +6,9 @@ Value
     [
       ((b, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (Z))),
         Match
-          ((?, Effect ([ (OCaml.Effect.State.state, Z); a_state ], .)),
+          ((?,
+            Effect
+              ([ Type (OCaml.Effect.State.state, Type (Z)); a_state ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
@@ -14,8 +16,10 @@ Value
                   ((4,
                     Effect
                       ([
-                        (OCaml.Effect.State.state,
-                          Z);
+                        Type
+                          (OCaml.Effect.State.state,
+                            Type
+                              (Z));
                         a_state
                       ],
                         .)),
@@ -34,16 +38,22 @@ Value
     [
       ((c, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (string))),
         Match
-          ((?, Effect ([ (OCaml.Effect.State.state, string); a_state_1 ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((?,
+            Effect
+              ([
+                Type (OCaml.Effect.State.state, Type (string));
+                a_state_1
+              ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
                 Variable
                   ((6,
                     Effect
                       ([
-                        (OCaml.Effect.State.state,
-                          string);
+                        Type
+                          (OCaml.Effect.State.state,
+                            Type
+                              (string));
                         a_state_1
                       ],
                         .)),
