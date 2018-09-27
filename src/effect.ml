@@ -4,81 +4,24 @@ open Yojson.Basic
 open Utils
 
 module PureType = struct
-  type t =
-  | Variable of Name.t
-  | Arrow of t * t
-  | Tuple of t list
-  | Apply of BoundName.t * t list
+  include Kerneltypes.Type
+  type t = unit Kerneltypes.Type.t'
 
-let rec pp (typ : t) : SmartPrint.t =
-  match typ with
-  | Variable x -> Name.pp x
-  | Arrow (typ1, typ2) -> nest @@ parens (pp typ1 ^^ !^ "->" ^^ pp typ2)
-  | Tuple typs -> nest @@ parens (separate (space ^^ !^ "*" ^^ space) (List.map pp typs))
-  | Apply (x, typs) ->
-    nest @@ Pp.parens (typs <> []) @@
-      separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs)
+  let pp (typ : t) : SmartPrint.t = CommonType.pp (fun () -> !^ "[]") typ
 
-let first_param (typ : t) : t =
-  match typ with
-  | Apply (_, typ :: _) -> typ
-  | _ -> Variable "_"
+  let to_coq (paren : bool) (typ : t) : SmartPrint.t =
+    CommonType.to_coq (fun () -> !^ "[]") paren typ
 
-let rec to_coq (paren : bool) (typ : t) : SmartPrint.t =
-  match typ with
-  | Variable x -> Name.to_coq x
-  | Arrow (typ_x, typ_y) ->
-    Pp.parens paren @@ nest (to_coq true typ_x ^^ !^ "->" ^^ to_coq false typ_y)
-  | Tuple typs ->
-    (match typs with
-    | [] -> !^ "unit"
-    | _ ->
-      Pp.parens paren @@ nest @@ separate (space ^^ !^ "*" ^^ space)
-        (List.map (to_coq true) typs))
-  | Apply (path, typs) ->
-    Pp.parens (paren && typs <> []) @@ nest @@ separate space
-      (BoundName.to_coq path :: List.map (to_coq true) typs)
+  let map (f : BoundName.t -> BoundName.t) (typ : t) : t = CommonType.map f typ
 
-let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
-  match typ with
-  | Variable x -> Variable x
-  | Arrow (typ_x, typ_y) -> Arrow (map f typ_x, map f typ_y)
-  | Tuple typs -> Tuple (List.map (map f) typs)
-  | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
+  let map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
+    CommonType.map_vars (fun x -> Name.Map.find x vars_map) typ
 
-let rec map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
-  match typ with
-  | Variable x -> Name.Map.find x vars_map
-  | Arrow (typ_x, typ_y) ->
-    Arrow (map_type_vars vars_map typ_x, map_type_vars vars_map typ_y)
-  | Tuple typs -> Tuple (List.map (map_type_vars vars_map) typs)
-  | Apply (path, typs) -> Apply (path, List.map (map_type_vars vars_map) typs)
+  let has_type_vars (typ : t) : bool = CommonType.has_vars typ
 
-let rec has_type_vars (typ : t) : bool =
-  match typ with
-  | Variable _ -> true
-  | Arrow (typ_x, typ_y) -> has_type_vars typ_x || has_type_vars typ_y
-  | Tuple typs -> List.exists has_type_vars typs
-  | Apply (_, typs) -> List.exists has_type_vars typs
+  let to_json (typ : t) : json = CommonType.to_json (fun () -> `List []) typ
 
-let rec to_json (typ : t) : json =
-  match typ with
-  | Variable x -> `List [`String "Variable"; Name.to_json x]
-  | Arrow (typ_x, typ_y) ->
-    `List [`String "Arrow"; to_json typ_x; to_json typ_y]
-  | Tuple typs -> `List (`String "Tuple" :: List.map to_json typs)
-  | Apply (path, typs) ->
-    `List (`String "Apply" :: BoundName.to_json path :: List.map to_json typs)
-
-let rec of_json (json : json) : t =
-  match json with
-  | `List [`String "Variable"; x] -> Variable (Name.of_json x)
-  | `List [`String "Arrow"; typ_x; typ_y] ->
-    Arrow (of_json typ_x, of_json typ_y)
-  | `List (`String "Tuple" :: typs) -> Tuple (List.map of_json typs)
-  | `List (`String "Apply" :: path :: typs) ->
-    Apply (BoundName.of_json path, List.map of_json typs)
-  | _ -> failwith "Invalid JSON for PureType."
+  let of_json (json : json) : t = CommonType.of_json (fun _ -> ()) json
 end
 
 

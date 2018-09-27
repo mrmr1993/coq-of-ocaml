@@ -5,6 +5,7 @@ open Yojson.Basic
 open Utils
 
 include Kerneltypes.TypeDefinition
+type t = Effect.Descriptor.t t'
 
 let pp (def : t) : SmartPrint.t =
   match def with

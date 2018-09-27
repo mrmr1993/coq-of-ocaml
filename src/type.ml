@@ -4,17 +4,9 @@ open SmartPrint
 open Yojson.Basic
 
 include Kerneltypes.Type
+type t = Effect.Descriptor.t t'
 
-let rec pp (typ : t) : SmartPrint.t =
-  match typ with
-  | Variable x -> Name.pp x
-  | Arrow (typ1, typ2) -> nest @@ parens (pp typ1 ^^ !^ "->" ^^ pp typ2)
-  | Tuple typs -> nest @@ parens (separate (space ^^ !^ "*" ^^ space) (List.map pp typs))
-  | Apply (x, typs) ->
-    nest (!^ "Type" ^^ nest (parens (
-      separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs))))
-  | Monad (d, typ) -> nest (!^ "Monad" ^^ OCaml.tuple [
-    Effect.Descriptor.pp d; pp typ])
+let pp (typ : t) : SmartPrint.t = CommonType.pp Effect.Descriptor.pp typ
 
 (** Import an OCaml type. Add to the environment all the new free type variables. *)
 let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
@@ -95,61 +87,19 @@ let is_function (typ : t) : bool =
   | Arrow _ -> true
   | _ -> false
 
-let rec pure_type (typ : t) : Effect.PureType.t =
-  match typ with
-  | Variable x -> Effect.PureType.Variable x
-  | Arrow (typ1, typ2) ->
-    Effect.PureType.Arrow (pure_type typ1, pure_type typ2)
-  | Tuple typs -> Effect.PureType.Tuple (List.map pure_type typs)
-  | Apply (x, typs) -> Effect.PureType.Apply (x, List.map pure_type typs)
-  | Monad (x, typ) -> pure_type typ
+let pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
 
-let rec of_pure_type (typ : Effect.PureType.t) : t =
-  match typ with
-  | Effect.PureType.Variable x -> Variable x
-  | Effect.PureType.Arrow (typ1, typ2) ->
-    Arrow (of_pure_type typ1, of_pure_type typ2)
-  | Effect.PureType.Tuple typs -> Tuple (List.map of_pure_type typs)
-  | Effect.PureType.Apply (x, typs) -> Apply (x, List.map of_pure_type typs)
+let of_pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
 
-let rec unify (typ1 : t) (typ2 : t) : t Name.Map.t =
-  let union = Name.Map.union (fun _ typ _ -> Some typ) in
-  match typ1, typ2 with
-  | Variable x, _ -> Name.Map.singleton x typ2
-  | Monad (_, typ), _ -> unify typ typ2
-  | _, Monad (_, typ) -> unify typ1 typ
-  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
-    union (unify typ1a typ2a) (unify typ1b typ2b)
-  | Tuple typs1, Tuple typs2 ->
-    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
-      Name.Map.empty typs1 typs2
-  | Apply (x1, typs1), Apply (x2, typs2) ->
-    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
-      Name.Map.empty typs1 typs2
-  | _, _ -> failwith "Could not unify types"
+let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
 
 let unify_pure (ptyp : Effect.PureType.t) (typ : t)
   : Effect.PureType.t Name.Map.t =
-  Name.Map.map pure_type (unify (of_pure_type ptyp) typ)
+  Name.Map.map pure_type (CommonType.unify ptyp typ)
 
-let rec map_vars (f : Name.t -> t) (typ : t) : t =
-  match typ with
-  | Variable x -> f x
-  | Arrow (typ1, typ2) -> Arrow (map_vars f typ1, map_vars f typ2)
-  | Tuple typs -> Tuple (List.map (map_vars f) typs)
-  | Apply (x, typs) -> Apply (x, List.map (map_vars f) typs)
-  | Monad (x, typ) -> Monad (x, map_vars f typ)
+let map_vars (f : Name.t -> t) (typ : t) : t = CommonType.map_vars f typ
 
-let rec typ_args (typ : t) : Name.Set.t =
-  match typ with
-  | Variable x -> Name.Set.singleton x
-  | Arrow (typ1, typ2) -> typ_args_of_typs [typ1; typ2]
-  | Tuple typs | Apply (_, typs) -> typ_args_of_typs typs
-  | Monad (_, typ) -> typ_args typ
-
-and typ_args_of_typs (typs : t list) : Name.Set.t =
-  List.fold_left (fun args typ -> Name.Set.union args (typ_args typ))
-    Name.Set.empty typs
+let typ_args (typ : t) : Name.Set.t = CommonType.typ_args typ
 
 (** In a function's type extract the body's type (up to [n] arguments). *)
 let rec open_type (typ : t) (n : int) : t list * t =
@@ -184,28 +134,10 @@ let allocate_implicits_for_monad (implicit_args : (CoqName.t * 'a) list)
       (implicit_args, Monad (d, typ))
   | _ -> (implicit_args, typ)
 
-let rec to_json (typ : t) : json =
-  match typ with
-  | Variable x -> `List [`String "Variable"; Name.to_json x]
-  | Arrow (typ_x, typ_y) ->
-    `List [`String "Arrow"; to_json typ_x; to_json typ_y]
-  | Tuple typs -> `List (`String "Tuple" :: List.map to_json typs)
-  | Apply (path, typs) ->
-    `List (`String "Apply" :: BoundName.to_json path :: List.map to_json typs)
-  | Monad (descriptor, typ) ->
-    `List [`String "Monad"; Effect.Descriptor.to_json descriptor; to_json typ]
+let to_json (typ : t) : json = CommonType.to_json Effect.Descriptor.to_json typ
 
-let rec of_json (json : json) : t =
-  match json with
-  | `List [`String "Variable"; x] -> Variable (Name.of_json x)
-  | `List [`String "Arrow"; typ_x; typ_y] ->
-    Arrow (of_json typ_x, of_json typ_y)
-  | `List (`String "Tuple" :: typs) -> Tuple (List.map of_json typs)
-  | `List (`String "Apply" :: path :: typs) ->
-    Apply (BoundName.of_json path, List.map of_json typs)
-  | `List [`String "Monad"; descriptor; typ] ->
-    Monad (Effect.Descriptor.of_json descriptor, of_json typ)
-  | _ -> failwith "Invalid JSON for Type."
+let of_json (json : json) : t =
+  CommonType.of_json Effect.Descriptor.of_json json
 
 let monadise (typ : t) (effect : Effect.t) : t =
   let rec aux (typ : t) (effect_typ : Effect.Type.t) : t =
@@ -227,21 +159,5 @@ let monadise (typ : t) (effect : Effect.t) : t =
   else
     Monad (effect.Effect.descriptor, typ)
 
-(** Pretty-print a type (inside parenthesis if the [paren] flag is set). *)
-let rec to_coq (paren : bool) (typ : t) : SmartPrint.t =
-  match typ with
-  | Variable x -> Name.to_coq x
-  | Arrow (typ_x, typ_y) ->
-    Pp.parens paren @@ nest (to_coq true typ_x ^^ !^ "->" ^^ to_coq false typ_y)
-  | Tuple typs ->
-    (match typs with
-    | [] -> !^ "unit"
-    | _ ->
-      Pp.parens paren @@ nest @@ separate (space ^^ !^ "*" ^^ space)
-        (List.map (to_coq true) typs))
-  | Apply (path, typs) ->
-    Pp.parens (paren && typs <> []) @@ nest @@ separate space
-      (BoundName.to_coq path :: List.map (to_coq true) typs)
-  | Monad (d, typ) ->
-    Pp.parens paren @@ nest (
-      !^ "M" ^^ Effect.Descriptor.to_coq d ^^ to_coq true typ)
+let to_coq (paren : bool) (typ : t) : SmartPrint.t =
+  CommonType.to_coq Effect.Descriptor.to_coq paren typ

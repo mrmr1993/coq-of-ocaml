@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
-        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
+        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
@@ -76,7 +76,7 @@ Value
     [
       ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ],
         Monad
-          ([ (OCaml.Effect.State.state, (list, bool)) ],
+          ([ Type (OCaml.Effect.State.state, Type (list, Type (bool))) ],
             Type (list, Type (bool)))),
         Bind
           (?,
@@ -317,7 +317,7 @@ Value
     [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
-        Monad ([ (OCaml.Effect.State.state, Z) ], Type (Z))),
+        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply

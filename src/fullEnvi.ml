@@ -2,6 +2,37 @@ open SmartPrint
 open Kerneltypes
 open Utils
 
+module Value = struct
+  type 'a t =
+    | Variable of 'a
+    | Function of 'a * Effect.Descriptor.t Kerneltypes.Type.t'
+    | Type of Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
+    | Descriptor
+    | Exception of PathName.t
+    | Constructor of PathName.t * int
+    | Field of PathName.t * int
+
+  let map (f : 'a -> 'b) (v : 'a t) : 'b t =
+    match v with
+    | Variable a -> Variable (f a)
+    | Function (a, typ) -> Function (f a, typ)
+    | Type def -> Type def
+    | Descriptor -> Descriptor
+    | Exception raise_name -> Exception raise_name
+    | Constructor (typ, index) -> Constructor (typ, index)
+    | Field (typ, index) -> Field (typ, index)
+
+  let to_string (v : 'a t) : string =
+    match v with
+    | Variable _ -> "variable"
+    | Function _ -> "function"
+    | Type _ -> "type"
+    | Descriptor -> "descriptor"
+    | Exception _ -> "exception"
+    | Constructor _ -> "constructor"
+    | Field _ -> "field"
+end
+
 type 'a t = {
   values : 'a Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;
@@ -296,12 +327,12 @@ module Function = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.vars = PathName.Map.add x y m.Mod.vars }
 
-  type 'a t = 'a * Effect.PureType.t
-  type 'a t' = Effect.PureType.t option
+  type 'a t = 'a * Effect.Descriptor.t Kerneltypes.Type.t'
+  type 'a t' = Effect.Descriptor.t Kerneltypes.Type.t' option
 
-  let value ((v, typ) : 'a * Effect.PureType.t) : 'a Value.t = Function (v, typ)
+  let value ((v, typ) : 'a t) : 'a Value.t = Function (v, typ)
 
-  let unpack (v : 'a Value.t) : Effect.PureType.t option =
+  let unpack (v : 'a Value.t) : 'a t' =
     match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ
@@ -315,12 +346,12 @@ module Typ = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  type 'a t = Kerneltypes.TypeDefinition.t
-  type 'a t' = Kerneltypes.TypeDefinition.t
+  type 'a t = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
+  type 'a t' = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
 
-  let value (def : Kerneltypes.TypeDefinition.t) : 'a Value.t = Type def
+  let value (def : 'a t) : 'a Value.t = Type def
 
-  let unpack (v : 'a Value.t) : Kerneltypes.TypeDefinition.t =
+  let unpack (v : 'a Value.t) : 'a t' =
     match v with
     | Type def -> def
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."
