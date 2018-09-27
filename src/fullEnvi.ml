@@ -2,6 +2,37 @@ open SmartPrint
 open Kerneltypes
 open Utils
 
+module Value = struct
+  type 'a t =
+    | Variable of 'a
+    | Function of 'a * Effect.PureType.t
+    | Type of Kerneltypes.TypeDefinition.t
+    | Descriptor
+    | Exception of PathName.t
+    | Constructor of PathName.t * int
+    | Field of PathName.t * int
+
+  let map (f : 'a -> 'b) (v : 'a t) : 'b t =
+    match v with
+    | Variable a -> Variable (f a)
+    | Function (a, typ) -> Function (f a, typ)
+    | Type def -> Type def
+    | Descriptor -> Descriptor
+    | Exception raise_name -> Exception raise_name
+    | Constructor (typ, index) -> Constructor (typ, index)
+    | Field (typ, index) -> Field (typ, index)
+
+  let to_string (v : 'a t) : string =
+    match v with
+    | Variable _ -> "variable"
+    | Function _ -> "function"
+    | Type _ -> "type"
+    | Descriptor -> "descriptor"
+    | Exception _ -> "exception"
+    | Constructor _ -> "constructor"
+    | Field _ -> "field"
+end
+
 type 'a t = {
   values : 'a Value.t PathName.Map.t;
   modules : Mod.t PathName.Map.t;

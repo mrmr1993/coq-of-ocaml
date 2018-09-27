@@ -14,34 +14,3 @@ module TypeDefinition = struct
     | Synonym of CoqName.t * Name.t list * Type.t
     | Abstract of CoqName.t * Name.t list
 end
-
-module Value = struct
-  type 'a t =
-    | Variable of 'a
-    | Function of 'a * Effect.PureType.t
-    | Type of TypeDefinition.t
-    | Descriptor
-    | Exception of PathName.t
-    | Constructor of PathName.t * int
-    | Field of PathName.t * int
-
-  let map (f : 'a -> 'b) (v : 'a t) : 'b t =
-    match v with
-    | Variable a -> Variable (f a)
-    | Function (a, typ) -> Function (f a, typ)
-    | Type def -> Type def
-    | Descriptor -> Descriptor
-    | Exception raise_name -> Exception raise_name
-    | Constructor (typ, index) -> Constructor (typ, index)
-    | Field (typ, index) -> Field (typ, index)
-
-  let to_string (v : 'a t) : string =
-    match v with
-    | Variable _ -> "variable"
-    | Function _ -> "function"
-    | Type _ -> "type"
-    | Descriptor -> "descriptor"
-    | Exception _ -> "exception"
-    | Constructor _ -> "constructor"
-    | Field _ -> "field"
-end

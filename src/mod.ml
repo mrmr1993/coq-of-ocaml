@@ -1,7 +1,5 @@
 open Utils
 open SmartPrint
-open Kerneltypes
-open Value
 
 type t = {
   name : CoqName.t option;
