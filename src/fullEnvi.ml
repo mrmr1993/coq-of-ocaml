@@ -6,7 +6,7 @@ module Value = struct
   type 'a t =
     | Variable of 'a
     | Function of 'a * Effect.PureType.t
-    | Type of Kerneltypes.TypeDefinition.t
+    | Type of Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
     | Descriptor
     | Exception of PathName.t
     | Constructor of PathName.t * int
@@ -346,12 +346,12 @@ module Typ = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  type 'a t = Kerneltypes.TypeDefinition.t
-  type 'a t' = Kerneltypes.TypeDefinition.t
+  type 'a t = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
+  type 'a t' = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
 
-  let value (def : Kerneltypes.TypeDefinition.t) : 'a Value.t = Type def
+  let value (def : 'a t) : 'a Value.t = Type def
 
-  let unpack (v : 'a Value.t) : Kerneltypes.TypeDefinition.t =
+  let unpack (v : 'a Value.t) : 'a t' =
     match v with
     | Type def -> def
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."

@@ -4,6 +4,7 @@ open SmartPrint
 open Yojson.Basic
 
 include Kerneltypes.Type
+type t = Effect.Descriptor.t t'
 
 let rec pp (typ : t) : SmartPrint.t =
   match typ with
