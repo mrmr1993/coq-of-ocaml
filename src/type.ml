@@ -39,7 +39,10 @@ let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
   | Tconstr (path, typs, _) ->
     let (typs, typ_vars, new_typ_vars) = of_typs_exprs_new_free_vars env loc typ_vars typs in
     let x = FullEnvi.Typ.bound loc (PathName.of_type_path loc path) env in
-    (Apply (x, typs), typ_vars, new_typ_vars)
+    let typ = match FullEnvi.Typ.find loc x env with
+      | Open _ -> OpenApply (x, typs, [])
+      | _ -> Apply (x, typs) in
+    (typ, typ_vars, new_typ_vars)
   | Tlink typ -> of_type_expr_new_typ_vars env loc typ_vars typ
   | Tpoly (typ, []) -> of_type_expr_new_typ_vars env loc typ_vars typ
   | _ ->
