@@ -787,7 +787,7 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     (env, [def])
 
 let rec function_type (env : 'a FullEnvi.t) (e : (Loc.t * Type.t) t)
-  : Effect.PureType.t option =
+  : Type.t option =
   match e with
   | Variable ((l, typ), x) -> FullEnvi.Function.find l x env
   | _ -> None
@@ -822,12 +822,12 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     Constructor ((l, effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
     let vars_map = match function_type env e_f with
-      | Some ptyp_f -> Type.unify_pure ptyp_f (snd (annotation e_f))
+      | Some typ_f -> Type.unify typ_f (snd (annotation e_f))
       | None -> Name.Map.empty in
     let e_f = e_f
       |> effects env
       |> update_annotation (fun (l, eff) ->
-        (l, Effect.map_type_vars vars_map eff)) in
+        (l, Effect.map_type_vars (Name.Map.map Type.pure_type vars_map) eff)) in
     let effect_e_f = snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
     let arguments_are_pure = e_xs
@@ -862,7 +862,6 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e1 = effects env e1 in
     let effect1 = snd (annotation e1) in
     let env = if Effect.has_type_vars effect1 then
-      let typ = Type.pure_type typ in
       FullEnvi.Function.assoc x (Effect.eff effect1.Effect.typ, typ) env
     else
       FullEnvi.Var.assoc x (Effect.eff effect1.Effect.typ) env in
@@ -994,7 +993,7 @@ and env_after_def_with_effects (env : Effect.t FullEnvi.t)
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
     if Effect.has_type_vars effect then
-      let typ = Type.pure_type @@ List.fold_right (fun (_, arg_typ) typ ->
+      let typ = List.fold_right (fun (_, arg_typ) typ ->
         Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
       FullEnvi.Function.assoc header.Header.name (effect_typ, typ) env
     else

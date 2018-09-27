@@ -19,11 +19,11 @@ let env_with_effects (interfaces : (Name.t * string) list)
     Effect.Descriptor.singleton
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state")
       [Effect.PureType.Variable i] in
-  let state_type (x : int) : Effect.PureType.t =
+  let state_type (x : int) : Type.t =
     let i = string_of_int x in
-    Effect.PureType.Apply
+    Type.Apply
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
-      [Effect.PureType.Variable i]) in
+      [Type.Variable i]) in
   let add_exn path base = add_exception_with_effects path base in
   let arrow x y = Effect.eff (Arrow (x, y)) in
   let pure = Effect.pure in
@@ -128,8 +128,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"
     (arrow (typ_d 0) Pure,
-    Effect.PureType.Arrow
-      (state_type 0, Effect.PureType.Variable "0"))
+    Type.Arrow (state_type 0, Type.Variable "0"))
   |> Function.add ["Effect"; "State"] "write"
     (arrow (d []) (Arrow (typ_d 0, Pure)),
     Effect.PureType.Arrow
