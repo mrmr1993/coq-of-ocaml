@@ -5,6 +5,7 @@ open Utils
 type t =
   | Var of CoqName.t * Type.t
   | Typ of TypeDefinition.t
+  | TypeExt of PathName.t * TypeDefinition.t
   | Descriptor of CoqName.t
   | Exception of CoqName.t * CoqName.t
   | Include of PathName.t
@@ -16,6 +17,8 @@ let rec pp (interface : t) : SmartPrint.t =
   | Var (x, shape) ->
     !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.pp shape]
   | Typ def -> !^ "Typ" ^^ TypeDefinition.pp def
+  | TypeExt (name, def) ->
+    !^ "TypeExt" ^^ PathName.pp name ^^ TypeDefinition.pp def
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
   | Exception (x, typ_name) ->
     !^ "Exception" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp typ_name]
@@ -55,6 +58,8 @@ and of_structure (def : ('a * Type.t) Structure.t) : t list =
     (* TODO: Update to reflect that primitives are not usually pure. *)
     [Var (prim.PrimitiveDeclaration.name, Effect.pure)]
   | Structure.TypeDefinition (_, typ_def) -> [Typ typ_def]
+  | Structure.TypeExt (_, typ_ext) ->
+    [TypeExt (typ_ext.TypeExt.typ.BoundName.full_path, typ_ext.TypeExt.typ_def)]
   | Structure.Exception (_, exn) ->
     [Exception (exn.Exception.name, exn.Exception.typ_name)]
   | Structure.Reference (_, r) ->
@@ -83,6 +88,9 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
           FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
     FullEnvi.Var.assoc x effect env
   | Typ typ -> TypeDefinition.update_env typ env
+  | TypeExt (typ, typ_def) ->
+    let typ = FullEnvi.Typ.localize env typ.PathName.path typ.PathName.base in
+    TypeExt.update_env { TypeExt.typ; typ_def} env
   | Descriptor x -> FullEnvi.Descriptor.assoc x () env
   | Exception (name, typ_name) ->
     env |> Exception.update_env
@@ -119,6 +127,8 @@ let rec to_json (interface : t) : json =
   | Var (x, eff) ->
     `List [`String "Var"; CoqName.to_json x; Effect.to_json eff]
   | Typ x -> `List [`String "Typ"; TypeDefinition.to_json x]
+  | TypeExt (name, x) ->
+    `List [`String "TypeExt"; PathName.to_json name; TypeDefinition.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
   | Exception (name, typ_name) ->
     `List [`String "Exception"; CoqName.to_json name; CoqName.to_json typ_name]
@@ -133,6 +143,8 @@ let rec of_json (json : json) : t =
   | `List [`String "Var"; x; eff] ->
     Var (CoqName.of_json x, Effect.of_json eff)
   | `List [`String "Typ"; x] -> Typ (TypeDefinition.of_json x)
+  | `List [`String "TypeExt"; name; x] ->
+    TypeExt (PathName.of_json name, TypeDefinition.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
   | `List [`String "Exception"; name; typ_name] ->
     Exception (CoqName.of_json name, CoqName.of_json typ_name)

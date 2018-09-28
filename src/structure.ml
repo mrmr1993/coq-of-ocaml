@@ -47,6 +47,7 @@ type 'a t =
   | Value of Loc.t * 'a Value.t
   | Primitive of Loc.t * PrimitiveDeclaration.t
   | TypeDefinition of Loc.t * TypeDefinition.t
+  | TypeExt of Loc.t * TypeExt.t
   | Exception of Loc.t * Exception.t
   | Reference of Loc.t * 'a Reference.t
   | Open of Loc.t * Open.t
@@ -66,6 +67,8 @@ and pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
     group (Loc.pp loc ^^ PrimitiveDeclaration.pp prim)
   | TypeDefinition (loc, typ_def) ->
     group (Loc.pp loc ^^ TypeDefinition.pp typ_def)
+  | TypeExt (loc, typ_ext) ->
+    group (Loc.pp loc ^^ !^ "TypeExt" ^^ TypeExt.pp typ_ext)
   | Exception (loc, exn) -> group (Loc.pp loc ^^ Exception.pp exn)
   | Reference (loc, r) -> group (Loc.pp loc ^^ Reference.pp pp_a r)
   | Open (loc, o) -> group (Loc.pp loc ^^ Open.pp o)
@@ -134,12 +137,15 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let env = FullEnvi.leave_signature env in
       (env, [Signature (loc, name, signature)])
     | Tstr_modtype _ -> Error.raise loc "This kind of module type is not handled."
-    | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_primitive val_desc ->
       let prim = PrimitiveDeclaration.of_ocaml env loc val_desc in
       let env = PrimitiveDeclaration.update_env prim env in
       (env, [Primitive (loc, prim)])
-    | Tstr_typext _ -> Error.raise loc "Structure item `typext` not handled."
+    | Tstr_typext typext ->
+      let typext = TypeExt.of_ocaml env loc typext in
+      let env = TypeExt.update_env typext env in
+      (env, [TypeExt (loc, typext)])
+    | Tstr_eval _ -> Error.raise loc "Structure item `eval` not handled."
     | Tstr_recmodule _ -> Error.raise loc "Structure item `recmodule` not handled."
     | Tstr_class _ -> Error.raise loc "Structure item `class` not handled."
     | Tstr_class_type _ -> Error.raise loc "Structure item `class_type` not handled."
@@ -172,6 +178,8 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
       (PrimitiveDeclaration.update_env prim env, [def])
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, [def])
+    | TypeExt (loc, typ_ext) ->
+      (TypeExt.update_env typ_ext env, [def])
     | Exception (loc, exn) -> (Exception.update_env exn env, [def])
     | Reference (loc, r) ->
       let (env, r) = Reference.update_env Exp.monadise_let_rec r env in
@@ -213,6 +221,8 @@ let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (PrimitiveDeclaration.update_env_with_effects prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
+    | TypeExt (loc, typ_ext) ->
+      (TypeExt.update_env typ_ext env, TypeExt (loc, typ_ext))
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) ->
@@ -263,6 +273,8 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
       (PrimitiveDeclaration.update_env prim env, Primitive (loc, prim))
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
+    | TypeExt (loc, typ_ext) ->
+      (TypeExt.update_env typ_ext env, TypeExt (loc, typ_ext))
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) ->
@@ -297,6 +309,7 @@ let rec to_coq (defs : 'a t list) : SmartPrint.t =
     | Value (_, value) -> Value.to_coq value
     | Primitive (_, prim) -> PrimitiveDeclaration.to_coq prim
     | TypeDefinition (_, typ_def) -> TypeDefinition.to_coq typ_def
+    | TypeExt (_, typ_ext) -> TypeExt.to_coq typ_ext
     | Exception (_, exn) -> Exception.to_coq exn
     | Reference (_, r) -> Reference.to_coq r
     | Open (_, o) -> Open.to_coq o
