@@ -242,8 +242,13 @@ let rec to_coq (a_to_coq : desc -> SmartPrint.t) (paren : bool) (typ : t)
     Pp.parens (paren && typs <> []) @@ nest @@ separate space
       (BoundName.to_coq path :: List.map (to_coq true) typs)
   | OpenApply (path, typs, typ_defs) ->
+    (* The polymorphic annotation on TypeExt definitions doesn't work if there
+       are no type parameters. If this is the case, add a manual coercion to
+       Type. *)
+    let args_to_coq = match typs with
+      | [] -> fun name -> BoundName.to_coq name ^^ !^ ":" ^^ !^ "Type"
+      | _ -> fun name -> to_coq false (Apply (name, typs)) in
     Pp.parens paren @@ nest @@
-      BoundName.to_coq path ^^ OCaml.list (fun name ->
-        to_coq false (Apply (name, typs))) typ_defs
+      BoundName.to_coq path ^^ OCaml.list args_to_coq typ_defs
   | Monad (d, typ) ->
     Pp.parens paren @@ nest (!^ "M" ^^ a_to_coq d ^^ to_coq true typ)

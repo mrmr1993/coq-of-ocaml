@@ -465,7 +465,8 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_tuple es -> Tuple (a, List.map (of_expression env typ_vars) es)
   | Texp_construct (x, _, es) ->
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
-    Constructor (a, x, List.map (of_expression env typ_vars) es)
+    let typ = Type.set_type_extension l env typ x in
+    Constructor ((l, typ), x, List.map (of_expression env typ_vars) es)
   | Texp_record { fields; extended_expression } ->
     Record (a, Array.to_list fields |> List.map (fun (label, definition) ->
       match definition with

@@ -35,4 +35,4 @@ let update_env (ext : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   TypeDefinition.update_env ext.typ_def env
 
 let to_coq (ext : t) : SmartPrint.t =
-  TypeDefinition.to_coq ext.typ_def
+  !^ "Polymorphic" ^^ TypeDefinition.to_coq ext.typ_def
