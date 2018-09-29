@@ -271,93 +271,117 @@ module Type = struct
     let open Kerneltypes in
     let rec aux typ =
       match typ with
-      | Kerneltypes.Type.Variable _ | Kerneltypes.Type.Tuple _
-      | Kerneltypes.Type.Apply _ -> Pure
       | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
         Arrow (d, aux typ)
       | Kerneltypes.Type.Arrow (_, typ) -> Arrow (Descriptor.pure, aux typ)
-      | Kerneltypes.Type.Monad (_, typ) -> aux typ in
+      | Kerneltypes.Type.Monad (_, typ) -> aux typ
+      | _ -> Pure in
     aux typ
 
   let rec pp (typ : t) : SmartPrint.t =
-    match of_type typ with
-    | Pure -> !^ "."
-    | Arrow (d, typ) -> nest (
-      !^ "." ^^
-      (if Descriptor.is_pure d then
-        !^ "->"
-      else
-        !^ "-" ^-^ Descriptor.pp d ^-^ !^ "->") ^^
-      pp (to_type typ))
+    match typ with
+    | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+      nest (!^ "." ^^ !^ "-" ^-^ Descriptor.pp d ^-^ !^ "->" ^^ pp typ)
+    | Kerneltypes.Type.Arrow (_, typ) ->
+      nest (!^ "." ^^ !^ "->" ^^ pp typ)
+    | Kerneltypes.Type.Monad (_, typ) -> pp typ
+    | _ -> !^ "."
 
   let rec is_pure (typ : t) : bool =
-    match of_type typ with
-    | Pure -> true
-    | Arrow (d, typ) -> Descriptor.is_pure d && is_pure (to_type typ)
+    match typ with
+    | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+      Descriptor.is_pure d && is_pure typ
+    | Kerneltypes.Type.Arrow (_, typ) -> is_pure typ
+    | Kerneltypes.Type.Monad (_, typ) -> is_pure typ
+    | _ -> true
 
-  let rec compress (typ : t) : t =
-    if is_pure typ then
-      to_type Pure
-    else
-      to_type @@ match of_type typ with
-      | Pure -> Pure
-      | Arrow (d, typ) -> Arrow (d, of_type @@ compress (to_type typ))
+  let rec compress (typ : t) : t = typ
 
   let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
-    to_type @@ match of_type typ with
-    | Pure -> Pure
-    | Arrow (d, typ) ->  Arrow (Descriptor.map f d, of_type (map f (to_type typ)))
+    match typ with
+    | Kerneltypes.Type.Monad (d, typ) ->
+      Kerneltypes.Type.Monad (Descriptor.map f d, map f typ)
+    | Kerneltypes.Type.Arrow (typ1, typ) ->
+      Kerneltypes.Type.Arrow (typ1, map f typ)
+    | _ -> typ
 
   let rec return_descriptor (typ : t) (nb_args : int) : Descriptor.t =
     if nb_args = 0 then
       Descriptor.pure
     else
-      match of_type typ with
-      | Pure -> Descriptor.pure
-      | Arrow (d, typ) ->
-        Descriptor.union [d; return_descriptor (to_type typ) (nb_args - 1)]
+      match typ with
+      | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+        Descriptor.union [d; return_descriptor typ (nb_args - 1)]
+      | Kerneltypes.Type.Arrow (_, typ) ->
+        return_descriptor typ (nb_args - 1)
+      | Kerneltypes.Type.Monad (_, typ) -> return_descriptor typ nb_args
+      | _ -> Descriptor.pure
 
   let rec return_type (typ : t) (nb_args : int) : t =
     if nb_args = 0 then
       typ
     else
-      match of_type typ with
-      | Pure -> to_type Pure
-      | Arrow (_, typ) -> return_type (to_type typ) (nb_args - 1)
+      match typ with
+      | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+        return_type typ (nb_args - 1)
+      | Kerneltypes.Type.Arrow (_, typ) -> return_type typ (nb_args - 1)
+      | Kerneltypes.Type.Monad (_, typ) -> return_type typ nb_args
+      | _ -> typ
 
   let rec return_single_descriptor (typ : t) (nb_args : int) : Descriptor.t =
     if nb_args = 0 then
       Descriptor.pure
     else
-      match of_type typ with
-      | Pure -> Descriptor.pure
-      | Arrow (d, typ) ->
-        if nb_args = 1 then
-          d
-        else if Descriptor.is_pure d then
-          return_single_descriptor (to_type typ) (nb_args - 1)
+      match typ with
+      | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+        if nb_args = 1 then d
         else
           failwith "Found a non-pure callpoint earlier than expected."
+      | Kerneltypes.Type.Arrow (_, typ) ->
+        return_single_descriptor typ (nb_args - 1)
+      | Kerneltypes.Type.Monad (_, typ) ->
+        return_single_descriptor typ nb_args
+      | _ -> Descriptor.pure
 
   let union (typs : t list) : t =
     let rec aux typ1 typ2 =
-      match (typ1, typ2) with
-      | (Pure, _) -> if is_pure (to_type typ2) then Pure else typ2
-      | (_, Pure) -> if is_pure (to_type typ1) then Pure else typ1
-      | (Arrow (d1, typ1), Arrow (d2, typ2)) ->
-        Arrow (Descriptor.union [d1; d2], aux typ1 typ2) in
-    List.fold_left (fun x y -> to_type @@ aux (of_type x) (of_type y)) (to_type Pure) typs
+      match typ1, typ2 with
+      | Kerneltypes.Type.Arrow (typ1a, Kerneltypes.Type.Monad (d1, typ1b)),
+        Kerneltypes.Type.Arrow (typ2a, Kerneltypes.Type.Monad (d2, typ2b)) ->
+          Kerneltypes.Type.Arrow (typ1a,
+            Kerneltypes.Type.Monad (Descriptor.union [d1; d2], aux typ1b typ2b))
+      | Kerneltypes.Type.Arrow (typ1a, Kerneltypes.Type.Monad (d, typ1b)),
+        Kerneltypes.Type.Arrow (typ2a, typ2b)
+      | Kerneltypes.Type.Arrow (typ1a, typ1b),
+        Kerneltypes.Type.Arrow (typ2a, Kerneltypes.Type.Monad (d, typ2b)) ->
+          Kerneltypes.Type.Arrow (typ1a,
+            Kerneltypes.Type.Monad (d, aux typ1a typ1b))
+      | Kerneltypes.Type.Arrow (typ1a, typ1b),
+        Kerneltypes.Type.Arrow (typ2a, typ2b) ->
+          Kerneltypes.Type.Arrow (typ1a, aux typ1b typ2b)
+      | Kerneltypes.Type.Monad (_, typ1), _ -> aux typ1 typ2
+      | _, Kerneltypes.Type.Monad (_, typ2) -> aux typ1 typ2
+      | _, _ -> typ1 in
+    List.fold_left aux (Variable "_") typs
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
-    to_type @@ match of_type typ with
-    | Pure -> Pure
-    | Arrow (d, typ) ->
-      Arrow (Descriptor.map_type_vars vars_map d, of_type @@ map_type_vars vars_map (to_type typ))
+    match typ with
+    | Kerneltypes.Type.Arrow (typ1, Kerneltypes.Type.Monad (d, typ)) ->
+      Kerneltypes.Type.Arrow (typ1,
+        Kerneltypes.Type.Monad (Descriptor.map_type_vars vars_map d,
+          map_type_vars vars_map typ))
+    | Kerneltypes.Type.Arrow (typ1, typ) ->
+      Kerneltypes.Type.Arrow (typ1, map_type_vars vars_map typ)
+    | Kerneltypes.Type.Monad (_, typ) -> map_type_vars vars_map typ
+    | _ -> typ
 
   let rec has_type_vars (typ : t) : bool =
-    match of_type typ with
-    | Pure -> false
-    | Arrow (d, typ) -> Descriptor.has_type_vars d || has_type_vars (to_type typ)
+    match typ with
+    | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+      Descriptor.has_type_vars d || has_type_vars typ
+    | Kerneltypes.Type.Arrow (_, typ) -> has_type_vars typ
+    | Kerneltypes.Type.Monad (_, typ) -> has_type_vars typ
+    | _ -> false
 
   let rec split_calls (typ : t) (e_xs : 'a list)
     : ('a list * Descriptor.t) list =
@@ -375,18 +399,28 @@ module Type = struct
 
   let to_json (typ : t) : json =
     let rec to_json typ =
-      match of_type typ with
-      | Pure -> []
-      | Arrow (d, typ) -> Descriptor.to_json d :: to_json (to_type typ) in
+      match typ with
+      | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+        Descriptor.to_json d :: to_json typ
+      | Kerneltypes.Type.Arrow (_, typ) ->
+        Descriptor.to_json Descriptor.pure :: to_json typ
+      | Kerneltypes.Type.Monad (_, typ) -> to_json typ
+      | _ -> [] in
     `List (to_json typ)
 
   let of_json (json : json) : t =
     let rec of_json l =
       match l with
-      | [] -> Pure
-      | json :: l -> Arrow (Descriptor.of_json json, of_json l) in
+      | [] -> Kerneltypes.Type.Variable "_"
+      | json :: l ->
+        let d = Descriptor.of_json json in
+        Kerneltypes.Type.Arrow (Kerneltypes.Type.Variable "_",
+          if Descriptor.is_pure d then
+            of_json l
+          else
+            Kerneltypes.Type.Monad (d, of_json l)) in
     match json with
-    | `List jsons -> to_type @@ of_json jsons
+    | `List jsons -> of_json jsons
     | _ -> raise (Error.Json "List expected.")
 end
 
