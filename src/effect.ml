@@ -422,79 +422,83 @@ type t = Descriptor.t Kerneltypes.Type.t'
 type t' = { descriptor : Descriptor.t; typ : Type.t }
 
 let to_type (e : t') : t =
-  let open Kerneltypes.Type in
   if Descriptor.is_pure e.descriptor then e.typ
-  else Monad (e.descriptor, e.typ)
+  else Type.Monad (e.descriptor, e.typ)
 
 let of_type (typ : t) : t' =
   match typ with
-  | Monad (d, typ) -> { descriptor = d; typ = typ }
+  | Type.Monad (d, typ) -> { descriptor = d; typ = typ }
   | _ -> { descriptor = Descriptor.pure; typ = typ }
 
 let pp (effect : t) : SmartPrint.t =
-  let effect = of_type effect in
-  nest (!^ "Effect" ^^ OCaml.tuple [
-    Descriptor.pp effect.descriptor; Type.pp effect.typ])
+  nest @@ !^ "Effect" ^^ OCaml.tuple @@
+    match effect with
+    | Type.Monad (d, typ) -> [Descriptor.pp d; Type.pp typ]
+    | _ -> [Descriptor.pp Descriptor.pure; Type.pp effect]
 
 let function_typ (args : 'a list) (body_effect : t) : t =
   match args with
   | [] -> body_effect
   | _ :: args ->
-    let body_effect = of_type body_effect in
-    to_type { descriptor = Descriptor.pure;
-      typ =
-        args |> List.fold_left (fun effect_typ _ ->
-            Type.Arrow (Type.pure, effect_typ))
-          (Type.arrow body_effect.descriptor body_effect.typ)
-    }
+    args |> List.fold_left (fun effect_typ _ ->
+        Type.Arrow (Type.pure, effect_typ))
+      (Type.Arrow (Type.pure, body_effect))
 
-let pure : t = to_type {
-  descriptor = Descriptor.pure;
-  typ = Type.pure }
+let pure : t = Type.pure
 
 let is_pure (effect : t) : bool =
-  let effect = of_type effect in
-  Descriptor.is_pure effect.descriptor && Type.is_pure effect.typ
+  match effect with
+  | Type.Monad (d, typ) -> Descriptor.is_pure d && Type.is_pure typ
+  | _ -> Type.is_pure effect
 
-let eff (typ : Type.t) : t = to_type { descriptor = Descriptor.pure; typ }
+let eff (typ : Type.t) : t = typ
 
-let union (effects : t list) : t =
-  to_type { descriptor =
-      Descriptor.union @@ List.map (fun effect -> (of_type effect).descriptor) effects;
-    typ = Type.union (List.map (fun effect -> (of_type effect).typ) effects) }
+let rec union (effects : t list) : t =
+  let (descriptors, typs) = List.fold_left (fun (descriptors, typs) effect ->
+      match effect with
+      | Type.Monad (d, typ) -> (d :: descriptors, typ :: typs)
+      | _ -> (Descriptor.pure :: descriptors, effect :: typs))
+    ([], []) effects in
+  let descriptor = Descriptor.union descriptors in
+  let typ = Type.union typs in
+  if Descriptor.is_pure descriptor then
+    typ
+  else
+    Type.Monad (descriptor, typ)
 
 let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
-  let effect = of_type effect in
-  to_type { descriptor = Descriptor.map f effect.descriptor;
-    typ = Type.map f effect.typ }
+  match effect with
+  | Type.Monad (d, typ) -> Type.Monad (Descriptor.map f d, Type.map f typ)
+  | _ -> Type.map f effect
 
 let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
-  let effect = of_type effect in
-  to_type { descriptor = Descriptor.map_type_vars vars_map effect.descriptor;
-    typ = Type.map_type_vars vars_map effect.typ }
+  match effect with
+  | Type.Monad (d, typ) ->
+    Type.Monad (Descriptor.map_type_vars vars_map d,
+      Type.map_type_vars vars_map typ)
+  | _ -> Type.map_type_vars vars_map effect
 
 let has_type_vars (effect : t) : bool =
-  let effect = of_type effect in
-  Descriptor.has_type_vars effect.descriptor || Type.has_type_vars effect.typ
+  match effect with
+  | Type.Monad (d, typ) ->
+    Descriptor.has_type_vars d || Type.has_type_vars typ
+  | _ -> Type.has_type_vars effect
 
-let compress (effect : t) : t =
-  let effect = of_type effect in
-  to_type { effect with typ = Type.compress effect.typ }
+let compress (effect : t) : t = effect
 
 let to_json (effect : t) : json =
-  let effect = of_type effect in
-  if Descriptor.is_pure effect.descriptor then
-    if Type.is_pure effect.typ then
+  match effect with
+  | Type.Monad (d, typ) ->
+    `List [Descriptor.to_json d; Type.to_json typ]
+  | _ ->
+    if Type.is_pure effect then
       `List []
     else
-      `List [Type.to_json effect.typ]
-  else
-    `List [Descriptor.to_json effect.descriptor; Type.to_json effect.typ]
+      `List [Type.to_json effect]
 
 let of_json (json : json) : t =
-  let (descriptor, typ) = match json with
-    | `List [] -> (Descriptor.pure, Type.pure)
-    | `List [typ] -> (Descriptor.pure, Type.of_json typ)
-    | `List [d; typ] -> (Descriptor.of_json d, Type.of_json typ)
-    | _ -> raise (Error.Json "List expected.") in
-  to_type { descriptor; typ }
+  match json with
+  | `List [] -> Type.pure
+  | `List [typ] -> Type.of_json typ
+  | `List [d; typ] -> Type.Monad (Descriptor.of_json d, Type.of_json typ)
+  | _ -> raise (Error.Json "List expected.")
