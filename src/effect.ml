@@ -299,10 +299,8 @@ module Type = struct
 
   let rec is_pure (typ : t) : bool =
     match typ with
-    | Arrow (_, Monad (d, typ)) ->
-      Descriptor.is_pure d && is_pure typ
+    | Monad (d, typ) -> Descriptor.is_pure d && is_pure typ
     | Arrow (_, typ) -> is_pure typ
-    | Monad (_, typ) -> is_pure typ
     | _ -> true
 
   let rec compress (typ : t) : t = typ
@@ -350,34 +348,27 @@ module Type = struct
   let union (typs : t list) : t =
     let rec aux typ1 typ2 =
       match typ1, typ2 with
-      | Arrow (typ1a, Monad (d1, typ1b)), Arrow (typ2a, Monad (d2, typ2b)) ->
-        Arrow (typ1a, Monad (Descriptor.union [d1; d2], aux typ1b typ2b))
-      | Arrow (typ1a, Monad (d, typ1b)), Arrow (typ2a, typ2b)
-      | Arrow (typ1a, typ1b), Arrow (typ2a, Monad (d, typ2b)) ->
-        Arrow (typ1a, Monad (d, aux typ1a typ1b))
       | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
         Arrow (typ1a, aux typ1b typ2b)
-      | Monad (_, typ1), _ -> aux typ1 typ2
-      | _, Monad (_, typ2) -> aux typ1 typ2
+      | Monad (d1, typ1), Monad (d2, typ2) ->
+        Monad (Descriptor.union [d1; d2], aux typ1 typ2)
+      | Monad (d, typ1), typ2 | typ1, Monad (d, typ2) ->
+        Monad (Descriptor.union [d], aux typ1 typ2)
       | _, _ -> typ1 in
     List.fold_left aux (Variable "_") typs
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with
-    | Arrow (typ1, Monad (d, typ)) ->
-      Arrow (typ1, Monad (Descriptor.map_type_vars vars_map d,
-        map_type_vars vars_map typ))
     | Arrow (typ1, typ) ->
       Arrow (typ1, map_type_vars vars_map typ)
-    | Monad (_, typ) -> map_type_vars vars_map typ
+    | Monad (d, typ) ->
+      Monad (Descriptor.map_type_vars vars_map d, map_type_vars vars_map typ)
     | _ -> typ
 
   let rec has_type_vars (typ : t) : bool =
     match typ with
-    | Arrow (_, Monad (d, typ)) ->
-      Descriptor.has_type_vars d || has_type_vars typ
     | Arrow (_, typ) -> has_type_vars typ
-    | Monad (_, typ) -> has_type_vars typ
+    | Monad (d, typ) -> Descriptor.has_type_vars d || has_type_vars typ
     | _ -> false
 
   let rec split_calls (typ : t) (e_xs : 'a list)
@@ -446,43 +437,19 @@ let function_typ (args : 'a list) (body_effect : t) : t =
 
 let pure : t = Type.pure
 
-let is_pure (effect : t) : bool =
-  match effect with
-  | Type.Monad (d, typ) -> Descriptor.is_pure d && Type.is_pure typ
-  | _ -> Type.is_pure effect
+let is_pure (effect : t) : bool = Type.is_pure effect
 
 let eff (typ : Type.t) : t = typ
 
-let rec union (effects : t list) : t =
-  let (descriptors, typs) = List.fold_left (fun (descriptors, typs) effect ->
-      match effect with
-      | Type.Monad (d, typ) -> (d :: descriptors, typ :: typs)
-      | _ -> (Descriptor.pure :: descriptors, effect :: typs))
-    ([], []) effects in
-  let descriptor = Descriptor.union descriptors in
-  let typ = Type.union typs in
-  if Descriptor.is_pure descriptor then
-    typ
-  else
-    Type.Monad (descriptor, typ)
+let union (effects : t list) : t = Type.union effects
 
 let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
-  match effect with
-  | Type.Monad (d, typ) -> Type.Monad (Descriptor.map f d, Type.map f typ)
-  | _ -> Type.map f effect
+  Type.map f effect
 
 let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
-  match effect with
-  | Type.Monad (d, typ) ->
-    Type.Monad (Descriptor.map_type_vars vars_map d,
-      Type.map_type_vars vars_map typ)
-  | _ -> Type.map_type_vars vars_map effect
+  Type.map_type_vars vars_map effect
 
-let has_type_vars (effect : t) : bool =
-  match effect with
-  | Type.Monad (d, typ) ->
-    Descriptor.has_type_vars d || Type.has_type_vars typ
-  | _ -> Type.has_type_vars effect
+let has_type_vars (effect : t) : bool = Type.has_type_vars effect
 
 let compress (effect : t) : t = effect
 
