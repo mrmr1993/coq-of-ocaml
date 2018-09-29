@@ -153,6 +153,7 @@ let monadise (typ : t) (effect : Effect.t) : t =
           Monad (d, typ2))
     | (Monad _, _) -> failwith "This type is already monadic."
     | _ -> failwith "Type and effect type are not compatible." in
+  let effect = Effect.of_type effect in
   let typ = aux typ (Effect.Type.Old.of_type effect.Effect.typ) in
   if Effect.Descriptor.is_pure effect.Effect.descriptor then
     typ

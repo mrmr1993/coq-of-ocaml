@@ -417,9 +417,22 @@ module Type = struct
     | _ -> raise (Error.Json "List expected.")
 end
 
-type t = { descriptor : Descriptor.t; typ : Type.t }
+type t = Descriptor.t Kerneltypes.Type.t'
+
+type t' = { descriptor : Descriptor.t; typ : Type.t }
+
+let to_type (e : t') : t =
+  let open Kerneltypes.Type in
+  if Descriptor.is_pure e.descriptor then e.typ
+  else Monad (e.descriptor, e.typ)
+
+let of_type (typ : t) : t' =
+  match typ with
+  | Monad (d, typ) -> { descriptor = d; typ = typ }
+  | _ -> { descriptor = Descriptor.pure; typ = typ }
 
 let pp (effect : t) : SmartPrint.t =
+  let effect = of_type effect in
   nest (!^ "Effect" ^^ OCaml.tuple [
     Descriptor.pp effect.descriptor; Type.pp effect.typ])
 
@@ -427,52 +440,49 @@ let function_typ (args : 'a list) (body_effect : t) : t =
   match args with
   | [] -> body_effect
   | _ :: args ->
-    { descriptor = Descriptor.pure;
+    let body_effect = of_type body_effect in
+    to_type { descriptor = Descriptor.pure;
       typ =
         args |> List.fold_left (fun effect_typ _ ->
             Type.Arrow (Type.pure, effect_typ))
           (Type.arrow body_effect.descriptor body_effect.typ)
     }
 
-let pure : t = {
+let pure : t = to_type {
   descriptor = Descriptor.pure;
   typ = Type.pure }
 
-let to_type (e : t) : Descriptor.t Kerneltypes.Type.t' =
-  let open Kerneltypes.Type in
-  if Descriptor.is_pure e.descriptor then e.typ
-  else Monad (e.descriptor, e.typ)
-
-let of_type (typ : Descriptor.t Kerneltypes.Type.t') : t =
-  match typ with
-  | Monad (d, typ) -> { descriptor = d; typ = typ }
-  | _ -> { descriptor = Descriptor.pure; typ = typ }
-
 let is_pure (effect : t) : bool =
+  let effect = of_type effect in
   Descriptor.is_pure effect.descriptor && Type.is_pure effect.typ
 
-let eff (typ : Type.t) : t = { descriptor = Descriptor.pure; typ }
+let eff (typ : Type.t) : t = to_type { descriptor = Descriptor.pure; typ }
 
 let union (effects : t list) : t =
-  { descriptor =
-      Descriptor.union @@ List.map (fun effect -> effect.descriptor) effects;
-    typ = Type.union (List.map (fun effect -> effect.typ) effects) }
+  to_type { descriptor =
+      Descriptor.union @@ List.map (fun effect -> (of_type effect).descriptor) effects;
+    typ = Type.union (List.map (fun effect -> (of_type effect).typ) effects) }
 
 let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
-  { descriptor = Descriptor.map f effect.descriptor;
+  let effect = of_type effect in
+  to_type { descriptor = Descriptor.map f effect.descriptor;
     typ = Type.map f effect.typ }
 
 let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
-  { descriptor = Descriptor.map_type_vars vars_map effect.descriptor;
+  let effect = of_type effect in
+  to_type { descriptor = Descriptor.map_type_vars vars_map effect.descriptor;
     typ = Type.map_type_vars vars_map effect.typ }
 
 let has_type_vars (effect : t) : bool =
+  let effect = of_type effect in
   Descriptor.has_type_vars effect.descriptor || Type.has_type_vars effect.typ
 
 let compress (effect : t) : t =
-  { effect with typ = Type.compress effect.typ }
+  let effect = of_type effect in
+  to_type { effect with typ = Type.compress effect.typ }
 
 let to_json (effect : t) : json =
+  let effect = of_type effect in
   if Descriptor.is_pure effect.descriptor then
     if Type.is_pure effect.typ then
       `List []
@@ -487,4 +497,4 @@ let of_json (json : json) : t =
     | `List [typ] -> (Descriptor.pure, Type.of_json typ)
     | `List [d; typ] -> (Descriptor.of_json d, Type.of_json typ)
     | _ -> raise (Error.Json "List expected.") in
-  { descriptor; typ }
+  to_type { descriptor; typ }
