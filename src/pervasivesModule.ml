@@ -1,6 +1,6 @@
 (** The initially opened module. *)
 open FullEnvi
-open Effect.Type
+open Effect.Type.Old
 open SmartPrint
 
 let env_with_effects (interfaces : (Name.t * string) list)

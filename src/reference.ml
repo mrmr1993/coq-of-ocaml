@@ -39,7 +39,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
       Effect.Descriptor.singleton state [Type.pure_type typ];
       Effect.Descriptor.singleton bound_state [];
     ] in
-    let effect = { Effect.typ = Effect.Type.to_type @@ Effect.Type.Pure; descriptor } in
+    let effect = { Effect.typ = Effect.Type.pure; descriptor } in
     { name = name;
       state_name = state_name;
       effect;

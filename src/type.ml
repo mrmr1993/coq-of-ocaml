@@ -140,11 +140,11 @@ let of_json (json : json) : t =
   CommonType.of_json Effect.Descriptor.of_json json
 
 let monadise (typ : t) (effect : Effect.t) : t =
-  let rec aux (typ : t) (effect_typ : Effect.Type.t') : t =
+  let rec aux (typ : t) (effect_typ : Effect.Type.Old.t') : t =
     match (typ, effect_typ) with
-    | (Variable _, Effect.Type.Pure) | (Tuple _, Effect.Type.Pure)
-      | (Apply _, Effect.Type.Pure) | (Arrow _, Effect.Type.Pure) -> typ
-    | (Arrow (typ1, typ2), Effect.Type.Arrow (d, effect_typ2)) ->
+    | (Variable _, Effect.Type.Old.Pure) | (Tuple _, Effect.Type.Old.Pure)
+      | (Apply _, Effect.Type.Old.Pure) | (Arrow _, Effect.Type.Old.Pure) -> typ
+    | (Arrow (typ1, typ2), Effect.Type.Old.Arrow (d, effect_typ2)) ->
       let typ2 = aux typ2 effect_typ2 in
       Arrow (typ1,
         if Effect.Descriptor.is_pure d then
@@ -153,7 +153,7 @@ let monadise (typ : t) (effect : Effect.t) : t =
           Monad (d, typ2))
     | (Monad _, _) -> failwith "This type is already monadic."
     | _ -> failwith "Type and effect type are not compatible." in
-  let typ = aux typ (Effect.Type.of_type effect.Effect.typ) in
+  let typ = aux typ (Effect.Type.Old.of_type effect.Effect.typ) in
   if Effect.Descriptor.is_pure effect.Effect.descriptor then
     typ
   else

@@ -37,10 +37,10 @@ let update_env_with_effects (exn : t) (env : Effect.t FullEnvi.t)
   let env = FullEnvi.Exception.assoc exn.name raise_path env in
   let bound_effect = FullEnvi.Descriptor.bound Loc.Unknown
     (PathName.of_name [] (CoqName.ocaml_name exn.name)) env in
-  let effect_typ = Effect.Type.to_type @@
-    Effect.Type.Arrow (
+  let effect_typ = Effect.Type.Old.to_type @@
+    Effect.Type.Old.Arrow (
       Effect.Descriptor.singleton bound_effect [],
-      Effect.Type.Pure) in
+      Effect.Type.Old.Pure) in
   FullEnvi.Var.assoc exn.raise_name (Effect.eff effect_typ) env
 
 let to_coq (exn : t) : SmartPrint.t =
