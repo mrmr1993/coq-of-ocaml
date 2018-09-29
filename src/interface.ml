@@ -2,40 +2,6 @@ open SmartPrint
 open Yojson.Basic
 open Utils
 
-module Shape = struct
-  type t = PathName.t list list
-
-  let rec pp (shape : t) : SmartPrint.t =
-    OCaml.list (OCaml.list PathName.pp) shape
-
-  let rec of_effect_typ (typ : Effect.Type.t) : t =
-    match typ with
-    | Effect.Type.Pure -> []
-    | Effect.Type.Arrow (d, typ) ->
-      let ds = Effect.Descriptor.elements d |> List.map (fun x ->
-        x.BoundName.full_path) in
-      ds :: of_effect_typ typ
-
-  let to_effect_typ (shape : t) : Effect.Type.t =
-    let descriptor ds : Effect.Descriptor.t =
-      let ds = ds |> List.map (fun d ->
-        let bound_descriptor = { BoundName.full_path = d; local_path = d } in
-        Effect.Descriptor.singleton bound_descriptor []) in
-      Effect.Descriptor.union ds in
-    List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
-      shape Effect.Type.Pure
-
-  let to_json (shape : t) : json =
-    `List (List.map (fun ds -> `List (List.map PathName.to_json ds)) shape)
-
-  let of_json (json : json) : t =
-    let of_list f json =
-      match json with
-      | `List jsons -> List.map f jsons
-      | _ -> raise (Error.Json "List expected.") in
-    of_list (of_list PathName.of_json) json
-end
-
 type t =
   | Var of CoqName.t * Effect.t
   | Typ of TypeDefinition.t
