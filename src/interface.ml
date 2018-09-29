@@ -3,7 +3,7 @@ open Yojson.Basic
 open Utils
 
 type t =
-  | Var of CoqName.t * Effect.t
+  | Var of CoqName.t * Type.t
   | Typ of TypeDefinition.t
   | Descriptor of CoqName.t
   | Exception of CoqName.t * CoqName.t
@@ -39,10 +39,10 @@ and of_signature (decl : Signature.t) : t list =
   | Signature.ModType (_, name, decls) ->
     [Signature (name, of_signatures decls)]
 
-let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
+let rec of_structures (defs : ('a * Type.t) Structure.t list) : t list =
   List.flatten (List.map of_structure defs)
 
-and of_structure (def : ('a * Effect.t) Structure.t) : t list =
+and of_structure (def : ('a * Type.t) Structure.t) : t list =
   match def with
   | Structure.Require names -> []
   | Structure.Value (_, value) ->
@@ -68,7 +68,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [Signature (name, of_signatures decls)]
 
 let rec to_full_envi (top_name : Name.t option) (interface : t)
-  (env : Effect.t FullEnvi.t) : Effect.t FullEnvi.t =
+  (env : Type.t FullEnvi.t) : Type.t FullEnvi.t =
   match interface with
   | Var (x, effect) ->
     let effect = match top_name with
@@ -100,7 +100,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     FullEnvi.leave_signature env
 
 let load_interface (coq_prefix : Name.t) (interface : t)
-  (env : Effect.t FullEnvi.t) : Name.t * Effect.t FullEnvi.t =
+  (env : Type.t FullEnvi.t) : Name.t * Type.t FullEnvi.t =
   let name = match interface with
     | Interface (name, _) -> CoqName.ocaml_name name
     | _ -> "" in
@@ -174,8 +174,8 @@ let of_file (file_name : string) : t =
   really_input file content 0 size;
   of_json_string (Bytes.to_string content)
 
-let load_module (module_name : Name.t) (env : Effect.t FullEnvi.t)
-  : Effect.t FullEnvi.t =
+let load_module (module_name : Name.t) (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t =
     let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
     match find_first (fun (coq_prefix, dir) ->
         let file_name = Filename.concat dir (file_name ^ ".interface") in

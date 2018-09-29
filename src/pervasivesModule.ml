@@ -4,7 +4,7 @@ open Effect.Type.Old
 open SmartPrint
 
 let env_with_effects (interfaces : (Name.t * string) list)
-  : Effect.t FullEnvi.t =
+  : Type.t FullEnvi.t =
   let bound_name full_path path base = {
       BoundName.full_path = PathName.of_name full_path base;
       local_path = PathName.of_name path base

@@ -195,10 +195,10 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     (env, []) defs in
   (env, List.rev defs)
 
-let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
-  : Effect.t FullEnvi.t * ('a * Effect.t) t list =
-  let effects_one (env : Effect.t FullEnvi.t) (def : ('a * Type.t) t)
-    : Effect.t FullEnvi.t * ('a * Effect.t) t =
+let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
+  : Type.t FullEnvi.t * ('a * Type.t) t list =
+  let effects_one (env : Type.t FullEnvi.t) (def : ('a * Type.t) t)
+    : Type.t FullEnvi.t * ('a * Type.t) t =
     match def with
     | Require names -> (env, Require names)
     | Value (loc, def) ->
@@ -239,9 +239,9 @@ let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (env, []) defs in
   (env, List.rev defs)
 
-let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
+let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
   : unit FullEnvi.t * Loc.t t list =
-  let monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Effect.t) t)
+  let monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Type.t) t)
     : unit FullEnvi.t * Loc.t t =
     match def with
     | Require names -> (env, Require names)

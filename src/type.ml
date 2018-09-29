@@ -139,7 +139,7 @@ let to_json (typ : t) : json = CommonType.to_json Effect.Descriptor.to_json typ
 let of_json (json : json) : t =
   CommonType.of_json Effect.Descriptor.of_json json
 
-let monadise (typ : t) (effect : Effect.t) : t =
+let monadise (typ : t) (effect : t) : t =
   let rec aux (typ : t) (effect_typ : Effect.Type.Old.t') : t =
     match (typ, effect_typ) with
     | (Variable _, Effect.Type.Old.Pure) | (Tuple _, Effect.Type.Old.Pure)

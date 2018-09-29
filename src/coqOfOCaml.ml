@@ -5,17 +5,17 @@ let exp  (env : unit FullEnvi.t) (structure : Typedtree.structure)
   let (_, defs) = Structure.of_structure env structure in
   snd @@ Structure.monadise_let_rec env defs
 
-let effects (env : Effect.t FullEnvi.t)
+let effects (env : Type.t FullEnvi.t)
   (exp : (Loc.t * Type.t) Structure.t list)
-  : (Loc.t * Effect.t) Structure.t list =
+  : (Loc.t * Type.t) Structure.t list =
   snd @@ Structure.effects env @@ exp
 
 let monadise (env : unit FullEnvi.t)
-  (effects : (Loc.t * Effect.t) Structure.t list) : Loc.t Structure.t list =
+  (effects : (Loc.t * Type.t) Structure.t list) : Loc.t Structure.t list =
   snd @@ Structure.monadise env @@ effects
 
 let interface (module_name : string)
-  (effects : (Loc.t * Effect.t) Structure.t list) : Interface.t =
+  (effects : (Loc.t * Type.t) Structure.t list) : Interface.t =
   Interface.Interface (CoqName.Name module_name, Interface.of_structures effects)
 
 let coq (monadise : Loc.t Structure.t list) : SmartPrint.t =
@@ -45,7 +45,7 @@ let output_exp (c : out_channel) (exp : (Loc.t * Type.t) Structure.t list)
   to_out_channel c @@ Structure.pps pp_annotation exp
 
 let output_effects (c : out_channel)
-  (effects : (Loc.t * Effect.t) Structure.t list) : unit =
+  (effects : (Loc.t * Type.t) Structure.t list) : unit =
   let pp_annotation (l, effect) =
     OCaml.tuple [Loc.pp l; Effect.pp effect] in
   to_out_channel c @@ Structure.pps pp_annotation effects

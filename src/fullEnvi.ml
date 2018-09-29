@@ -5,7 +5,7 @@ open Utils
 module Value = struct
   type 'a t =
     | Variable of 'a
-    | Function of 'a * Effect.Descriptor.t Kerneltypes.Type.t'
+    | Function of 'a * Effect.t
     | Type of Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
     | Descriptor
     | Exception of PathName.t
@@ -327,12 +327,12 @@ module Function = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.vars = PathName.Map.add x y m.Mod.vars }
 
-  type 'a t = 'a * Effect.Descriptor.t Kerneltypes.Type.t'
-  type 'a t' = Effect.Descriptor.t Kerneltypes.Type.t' option
+  type 'a t = 'a * Effect.t
+  type 'a t' = Effect.t option
 
-  let value ((v, typ) : 'a t) : 'a Value.t = Function (v, typ)
+  let value ((v, typ) : 'a * Effect.t) : 'a Value.t = Function (v, typ)
 
-  let unpack (v : 'a Value.t) : 'a t' =
+  let unpack (v : 'a Value.t) : Effect.t option =
     match v with
     | Variable _ -> None
     | Function (_, typ) -> Some typ

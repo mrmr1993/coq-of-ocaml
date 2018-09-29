@@ -4,7 +4,7 @@ open SmartPrint
 type 'a t = {
   name : CoqName.t;
   state_name : CoqName.t;
-  effect : Effect.t;
+  effect : Type.t;
   typ : Type.t;
   expr : 'a Exp.t }
 
@@ -55,8 +55,8 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
-  (env : Effect.t FullEnvi.t)
-  : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
+  (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t * (Loc.t * Type.t) t =
   let env = env
     |> FullEnvi.Descriptor.assoc r.state_name ()
     |> FullEnvi.Var.assoc r.name r.effect in

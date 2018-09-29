@@ -792,10 +792,10 @@ let rec function_type (env : 'a FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Variable ((l, typ), x) -> FullEnvi.Function.find l x env
   | _ -> None
 
-let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
-  : (Loc.t * Effect.t) t =
+let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
+  : (Loc.t * Type.t) t =
   let compound (es : (Loc.t * Type.t) t list)
-  : (Loc.t * Effect.t) t list * Effect.t =
+  : (Loc.t * Type.t) t list * Type.t =
     let es = List.map (effects env) es in
     let descriptor = Effect.Descriptor.union (es |> List.map (fun e ->
       let (loc, effect) = annotation e in
@@ -989,8 +989,8 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     Error.raise Loc.Unknown
       "Cannot compute effects on an explicit return, bind or lift."
 
-and env_after_def_with_effects (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Effect.t) t Definition.t) : Effect.t FullEnvi.t =
+and env_after_def_with_effects (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : Type.t FullEnvi.t =
   List.fold_left (fun env (header, e) ->
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
@@ -1002,16 +1002,16 @@ and env_after_def_with_effects (env : Effect.t FullEnvi.t)
       FullEnvi.Var.assoc header.Header.name effect_typ env)
     env def.Definition.cases
 
-and effects_of_def_step (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Effect.t) t Definition.t =
+and effects_of_def_step (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
   { def with Definition.cases =
     def.Definition.cases |> List.map (fun (header, e) ->
       let env = Header.env_in_header header env Effect.pure in
       (header, effects env e)) }
 
-and effects_of_def (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Effect.t) t Definition.t =
-  let rec fix_effect (def' : (Loc.t * Effect.t) t Definition.t) =
+and effects_of_def (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
+  let rec fix_effect (def' : (Loc.t * Type.t) t Definition.t) =
     let env =
       if Recursivity.to_bool def.Definition.is_rec then
         env_after_def_with_effects env def'
@@ -1031,7 +1031,7 @@ and effects_of_def (env : Effect.t FullEnvi.t)
       env in
   fix_effect (effects_of_def_step env def)
 
-let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
+let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
   let descriptor e = (Effect.of_type @@ snd (annotation e)).Effect.descriptor in
   let lift d1 d2 e =
     if Effect.Descriptor.eq d1 d2 then

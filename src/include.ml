@@ -15,7 +15,7 @@ let update_env (loc : Loc.t) (incl : t) (env : unit FullEnvi.t)
   FullEnvi.include_module (fun _ _ _ -> ()) mod_body env
 
 let update_env_with_effects (loc : Loc.t) (incl : t)
-  (env : Effect.t FullEnvi.t) : Effect.t FullEnvi.t =
+  (env : Type.t FullEnvi.t) : Type.t FullEnvi.t =
   let mod_body = FullEnvi.Module.find loc incl env in
   let update_effects f env v =
     let v = v |> Effect.map (fun x ->
