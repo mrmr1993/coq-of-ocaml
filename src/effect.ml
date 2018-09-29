@@ -417,16 +417,22 @@ end
 
 type t = Descriptor.t Kerneltypes.Type.t'
 
+let join (d : Descriptor.t) (typ : Type.t) =
+  if Descriptor.is_pure d then typ
+  else Type.Monad (d, typ)
+
+let split (effect : t) : Descriptor.t * t =
+  match effect with
+  | Type.Monad (d, typ) -> (d, typ)
+  | _ -> (Descriptor.pure, effect)
+
 type t' = { descriptor : Descriptor.t; typ : Type.t }
 
-let to_type (e : t') : t =
-  if Descriptor.is_pure e.descriptor then e.typ
-  else Type.Monad (e.descriptor, e.typ)
+let to_type (e : t') : t = join e.descriptor e.typ
 
 let of_type (typ : t) : t' =
-  match typ with
-  | Type.Monad (d, typ) -> { descriptor = d; typ = typ }
-  | _ -> { descriptor = Descriptor.pure; typ = typ }
+  let (d, typ) = split typ in
+  { descriptor = d; typ = typ }
 
 let pp (effect : t) : SmartPrint.t =
   nest @@ !^ "Effect" ^^ OCaml.tuple @@
@@ -443,11 +449,6 @@ let function_typ (args : 'a list) (body_effect : t) : t =
       (Type.Arrow (Type.pure, body_effect))
 
 let pure : t = Type.pure
-
-let split_toplevel (effect : t) : Descriptor.t * t =
-  match effect with
-  | Type.Monad (d, typ) -> (d, typ)
-  | _ -> (Descriptor.pure, effect)
 
 let is_pure (effect : t) : bool = Type.is_pure effect
 

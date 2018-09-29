@@ -42,7 +42,7 @@ let rec unify_monad (f : 'a -> 'a option -> 'a) (typ1 : 'a t) (typ2 : 'a t)
   | Tuple typs1, Tuple typs2 ->
     Tuple (List.map2 unify_monad typs1 typs2)
   | Apply (x1, typs1), Apply (x2, typs2)
-    when BoundName.stable_compare x1 x2 = 0 ->
+    (*when BoundName.stable_compare x1 x2 = 0*) ->
     Apply (x1, List.map2 unify_monad typs1 typs2)
   | Monad (d1, typ1), Monad (d2, typ2) ->
     Monad (f d1 (Some d2), unify_monad typ1 typ2)
