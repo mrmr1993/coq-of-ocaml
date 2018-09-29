@@ -261,8 +261,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
-          let (t_exn, typ_vars, _) =
-            Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
+          let t_exn = Type.Arrow (
+            Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
+            Variable "_") in
           let x = PathName.of_loc x in
           let x = FullEnvi.Exception.bound l_exn x env in
           let raise_path = FullEnvi.Exception.find l_exn x env in
@@ -307,9 +308,13 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
       let match_fail = FullEnvi.Var.localize env ["OCaml"]
         "raise_Match_failure" in
+      let match_fail_t = Type.Arrow (
+        Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
+        typ) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any,
-          Apply ((Loc.Unknown, typ), Variable ((Loc.Unknown, typ), match_fail),
+          Apply ((Loc.Unknown, typ),
+          Variable ((Loc.Unknown, match_fail_t), match_fail),
             [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
               [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
               Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
@@ -416,7 +421,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_assert e ->
     let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
-    Apply (a, Variable (a, assert_function), [of_expression env typ_vars e])
+    let e = of_expression env typ_vars e in
+    Apply (a, Variable ((l, Type.Arrow (snd @@ annotation e, typ)),
+      assert_function), [e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
