@@ -802,7 +802,7 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       if not (Effect.Type.is_pure effect.Effect.typ) then
         Error.warn loc "Compounds cannot have functional effects; effect ignored.";
       effect.Effect.descriptor)) in
-    (es, { Effect.descriptor = descriptor; typ = Effect.Type.Pure }) in
+    (es, { Effect.descriptor = descriptor; typ = Effect.Type.to_type Effect.Type.Pure }) in
   match e with
   | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
   | Variable ((l, typ), x) ->
@@ -855,8 +855,8 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let effect_e = snd (annotation e) in
     let effect = {
       Effect.descriptor = Effect.Descriptor.pure;
-      typ = Effect.Type.Arrow (
-        effect_e.Effect.descriptor, effect_e.Effect.typ) } in
+      typ = Effect.Type.to_type @@ Effect.Type.Arrow (
+        effect_e.Effect.descriptor, Effect.Type.of_type @@ effect_e.Effect.typ) } in
     Function ((l, effect), x, e)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
@@ -959,7 +959,7 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         Effect.Descriptor.singleton counter [];
         Effect.Descriptor.singleton nonterm []
       ];
-      Effect.typ = Effect.Type.Pure
+      Effect.typ = Effect.Type.to_type Effect.Type.Pure
     } in
     let effect = Effect.union (loop_effects :: ([e1; e2] |> List.map (fun e ->
       snd (annotation e)))) in

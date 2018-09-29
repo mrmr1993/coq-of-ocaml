@@ -25,7 +25,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
       [Type.Variable i]) in
   let add_exn path base = add_exception_with_effects path base in
-  let arrow x y = Effect.eff (Arrow (x, y)) in
+  let arrow x y = Effect.eff (to_type @@ Arrow (x, y)) in
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)

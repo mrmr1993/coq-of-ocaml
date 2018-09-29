@@ -37,7 +37,7 @@ let update_env_with_effects (exn : t) (env : Effect.t FullEnvi.t)
   let env = FullEnvi.Exception.assoc exn.name raise_path env in
   let bound_effect = FullEnvi.Descriptor.bound Loc.Unknown
     (PathName.of_name [] (CoqName.ocaml_name exn.name)) env in
-  let effect_typ =
+  let effect_typ = Effect.Type.to_type @@
     Effect.Type.Arrow (
       Effect.Descriptor.singleton bound_effect [],
       Effect.Type.Pure) in
