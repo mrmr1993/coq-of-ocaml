@@ -253,6 +253,30 @@ module Type = struct
     | Pure
     | Arrow of Descriptor.t * t
 
+  let to_type (typ : t) : Descriptor.t Kerneltypes.Type.t' =
+    let rec aux i typ =
+      match typ with
+      | Pure -> Kerneltypes.Type.Variable (string_of_int i ^ "A")
+      | Arrow (d, typ) ->
+        Kerneltypes.Type.Arrow (Kerneltypes.Type.Variable (string_of_int i ^ "A"),
+          if Descriptor.is_pure d then
+            aux (i+1) typ
+          else
+            Kerneltypes.Type.Monad (d, aux (i+1) typ)) in
+    aux 1 typ
+
+  let of_type (typ : Descriptor.t Kerneltypes.Type.t') : t =
+    let open Kerneltypes in
+    let rec aux typ =
+      match typ with
+      | Kerneltypes.Type.Variable _ | Kerneltypes.Type.Tuple _
+      | Kerneltypes.Type.Apply _ -> Pure
+      | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
+        Arrow (d, aux typ)
+      | Kerneltypes.Type.Arrow (_, typ) -> Arrow (Descriptor.pure, aux typ)
+      | Kerneltypes.Type.Monad (_, typ) -> aux typ in
+    aux typ
+
   let rec pp (typ : t) : SmartPrint.t =
     match typ with
     | Pure -> !^ "."
@@ -392,6 +416,18 @@ let function_typ (args : 'a list) (body_effect : t) : t =
 let pure : t = {
   descriptor = Descriptor.pure;
   typ = Type.Pure }
+
+let to_type (e : t) : Descriptor.t Kerneltypes.Type.t' =
+  let open Kerneltypes.Type in
+  if Descriptor.is_pure e.descriptor then
+    Type.to_type e.typ
+  else
+    Monad (e.descriptor, Type.to_type e.typ)
+
+let of_type (typ : Descriptor.t Kerneltypes.Type.t') : t =
+  match typ with
+  | Monad (d, typ) -> { descriptor = d; typ = Type.of_type typ }
+  | _ -> { descriptor = Descriptor.pure; typ = Type.of_type typ }
 
 let is_pure (effect : t) : bool =
   Descriptor.is_pure effect.descriptor && Type.is_pure effect.typ
