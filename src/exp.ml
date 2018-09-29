@@ -439,6 +439,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   let l = Loc.of_location p1.pat_loc in
   let (typ_x, _, _) =
     Type.of_type_expr_new_typ_vars env l typ_vars p1.pat_type in
+  let typ = Effect.Type.return_type typ 1 in
   (CoqName.ocaml_name x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
