@@ -812,22 +812,28 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       effect.Effect.descriptor)) in
     (es, Effect.to_type { Effect.descriptor = descriptor; typ = Effect.Type.pure }) in
   match e with
-  | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
+  | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let effect = FullEnvi.Var.find l x env in
-      Variable ((l, effect), x)
+      let typ = Effect.Type.unify typ @@ FullEnvi.Var.find l x env in
+      Variable ((l, typ), x)
     with Not_found ->
       let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
       Error.warn l (SmartPrint.to_string 80 2 message);
-      Variable ((l, Effect.pure), x)
+      Variable ((l, typ), x)
     end
   | Tuple ((l, typ), es) ->
-    let (es, effect) = compound es in
-    Tuple ((l, effect), es)
+    let es = List.map (effects env) es in
+    let typs = es |> List.map (fun e ->
+      Effect.split_toplevel @@ snd @@ annotation e) in
+    let descriptor = Effect.Descriptor.union @@ List.map fst typs in
+    let typ = Effect.Type.unify typ @@ Tuple (List.map snd typs) in
+    let typ = if Effect.Descriptor.is_pure descriptor then typ
+      else Type.Monad (descriptor, typ) in
+    Tuple ((l, typ), es)
   | Constructor ((l, typ), x, es) ->
     let (es, effect) = compound es in
-    Constructor ((l, effect), x, es)
+    Constructor ((l, Effect.Type.unify typ effect), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
     let vars_map = match function_type env e_f with
       | Some typ_f -> Type.unify typ_f (snd (annotation e_f))
@@ -861,27 +867,23 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Function ((l, typ), x, e) ->
     let env = FullEnvi.Var.assoc x Effect.pure env in
     let e = effects env e in
-    let effect_e = Effect.of_type @@ snd (annotation e) in
-    let effect = {
-      Effect.descriptor = Effect.Descriptor.pure;
-      typ = Effect.Type.arrow effect_e.Effect.descriptor effect_e.Effect.typ } in
-    Function ((l, Effect.to_type effect), x, e)
+    let typ = Effect.Type.unify typ @@
+      Type.Arrow (Variable "_", snd (annotation e)) in
+    Function ((l, typ), x, e)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
-    let effect1 = snd (annotation e1) in
-    let effect1' = Effect.of_type effect1 in
+    let (d1, effect1) = Effect.split_toplevel @@ snd (annotation e1) in
     let env = if Effect.has_type_vars effect1 then
-      FullEnvi.Function.assoc x (Effect.eff effect1'.Effect.typ, typ) env
+      FullEnvi.Function.assoc x (effect1, typ) env
     else
-      FullEnvi.Var.assoc x (Effect.eff effect1'.Effect.typ) env in
+      FullEnvi.Var.assoc x effect1 env in
     let e2 = effects env e2 in
-    let effect2 = Effect.of_type @@ snd (annotation e2) in
-    let descriptor = Effect.Descriptor.union [
-      effect1'.Effect.descriptor; effect2.Effect.descriptor] in
-    let effect = {
-      Effect.descriptor = descriptor;
-      typ = effect2.Effect.typ } in
-    LetVar ((l, Effect.to_type effect), x, e1, e2)
+    let (d2, effect2) = Effect.split_toplevel @@ snd (annotation e2) in
+    let descriptor = Effect.Descriptor.union [d1; d2] in
+    let effect = Effect.Type.unify typ @@
+      if Effect.Descriptor.is_pure descriptor then effect2
+      else Type.Monad (descriptor, effect2) in
+    LetVar ((l, effect), x, e1, e2)
   | LetFun ((l, typ), def, e2) ->
     let def = effects_of_def env def in
     let env = env_after_def_with_effects env def in
@@ -890,21 +892,22 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     LetFun ((l, effect2), def, e2)
   | Match ((l, typ), e, cases) ->
     let e = effects env e in
-    let effect_e = Effect.of_type @@ snd (annotation e) in
-    if Effect.Type.is_pure effect_e.Effect.typ then
+    let (d_e, effect_e) = Effect.split_toplevel @@ snd (annotation e) in
+    if Effect.Type.is_pure effect_e then
       let cases = cases |> List.map (fun (p, e) ->
         let pattern_vars = Pattern.free_variables p in
         let env = CoqName.Set.fold (fun x env ->
           FullEnvi.Var.assoc x Effect.pure env)
           pattern_vars env in
         (p, effects env e)) in
-      let effect = Effect.of_type @@ Effect.union (cases |> List.map (fun (_, e) ->
-        snd (annotation e))) in
-      let effect = {
-        Effect.descriptor = Effect.Descriptor.union
-          [effect_e.Effect.descriptor; effect.Effect.descriptor];
-        typ = effect.Effect.typ } in
-      Match ((l, Effect.to_type effect), e, cases)
+      let (d, effect) = Effect.split_toplevel @@
+        Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
+      let descriptor = Effect.Descriptor.union [d_e; d] in
+      let effect = if Effect.Descriptor.is_pure descriptor then
+          effect
+        else
+          Type.Monad (descriptor, effect) in
+      Match ((l, effect), e, cases)
     else
       Error.raise l "Cannot match a value with functional effects."
   | Record ((l, typ), fields, base) ->

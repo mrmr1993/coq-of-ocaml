@@ -31,6 +31,25 @@ let rec unify (typ1 : 'a t) (typ2 : 'b t) : 'b t Name.Map.t =
       Name.Map.empty typs1 typs2
   | _, _ -> failwith "Could not unify types"
 
+let rec unify_monad (f : 'a -> 'a option -> 'a) (typ1 : 'a t) (typ2 : 'a t)
+  : 'a t =
+  let unify_monad = unify_monad f in
+  match typ1, typ2 with
+  | _, Variable y -> typ1
+  | Variable x, _ -> typ2
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    Arrow (unify_monad typ1a typ2a, unify_monad typ1b typ2b)
+  | Tuple typs1, Tuple typs2 ->
+    Tuple (List.map2 unify_monad typs1 typs2)
+  | Apply (x1, typs1), Apply (x2, typs2)
+    when BoundName.stable_compare x1 x2 = 0 ->
+    Apply (x1, List.map2 unify_monad typs1 typs2)
+  | Monad (d1, typ1), Monad (d2, typ2) ->
+    Monad (f d1 (Some d2), unify_monad typ1 typ2)
+  | Monad (d, typ1), typ2 | typ1, Monad (d, typ2) ->
+    Monad (f d None, unify_monad typ1 typ2)
+  | _, _ -> failwith "Could not unify types"
+
 let rec strip_monads (typ : 'a t) : 'b t =
   match typ with
   | Variable x -> Variable x

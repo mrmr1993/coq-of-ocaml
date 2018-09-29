@@ -357,6 +357,13 @@ module Type = struct
       | _, _ -> typ1 in
     List.fold_left aux (Variable "_") typs
 
+  let unify (typ1 : t) (typ2 : t) : t =
+    CommonType.unify_monad (fun d1 d2 ->
+        Descriptor.union @@ match d2 with
+        | Some d2 -> [d1; d2]
+        | None -> [d1])
+      typ1 typ2
+
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with
     | Arrow (typ1, typ) ->
@@ -436,6 +443,11 @@ let function_typ (args : 'a list) (body_effect : t) : t =
       (Type.Arrow (Type.pure, body_effect))
 
 let pure : t = Type.pure
+
+let split_toplevel (effect : t) : Descriptor.t * t =
+  match effect with
+  | Type.Monad (d, typ) -> (d, typ)
+  | _ -> (Descriptor.pure, effect)
 
 let is_pure (effect : t) : bool = Type.is_pure effect
 
