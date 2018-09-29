@@ -282,6 +282,11 @@ module Type = struct
   end
 
   let pure : t = Variable "_"
+  let arrow (d : Descriptor.t) (typ : t) : t =
+    if Descriptor.is_pure d then
+      Arrow (pure, typ)
+    else
+      Arrow (pure, Monad (d, typ))
 
   let rec pp (typ : t) : SmartPrint.t =
     match typ with
@@ -425,10 +430,8 @@ let function_typ (args : 'a list) (body_effect : t) : t =
     { descriptor = Descriptor.pure;
       typ =
         args |> List.fold_left (fun effect_typ _ ->
-          Type.Old.Arrow (Descriptor.pure, effect_typ))
-          (Type.Old.Arrow
-              (body_effect.descriptor, Type.Old.of_type body_effect.typ))
-          |> Type.Old.to_type
+            Type.Arrow (Type.pure, effect_typ))
+          (Type.arrow body_effect.descriptor body_effect.typ)
     }
 
 let pure : t = {

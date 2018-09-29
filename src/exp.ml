@@ -855,8 +855,7 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let effect_e = snd (annotation e) in
     let effect = {
       Effect.descriptor = Effect.Descriptor.pure;
-      typ = Effect.Type.Old.to_type @@ Effect.Type.Old.Arrow (
-        effect_e.Effect.descriptor, Effect.Type.Old.of_type @@ effect_e.Effect.typ) } in
+      typ = Effect.Type.arrow effect_e.Effect.descriptor effect_e.Effect.typ } in
     Function ((l, effect), x, e)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
