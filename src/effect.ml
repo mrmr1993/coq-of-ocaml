@@ -82,6 +82,13 @@ module Descriptor = struct
     no_args : t CommonType.t list;
   }
 
+  type desc = t
+
+  module CommonTypeSet = Set.Make (struct
+    type t = desc CommonType.t
+    let compare x y = CommonType.compare x y
+  end)
+
   let to_type (d : t') : t =
     { args_arg = d.unioned_arg;
       with_args = d.unioned |> List.map (fun typ ->
@@ -103,100 +110,87 @@ module Descriptor = struct
         |> BnSet.of_list;
     }
 
+  let rec pp (d : t) : SmartPrint.t =
+    OCaml.list (CommonType.pp pp) @@ d.with_args @ d.no_args
 
-  let pp (d : t) : SmartPrint.t =
-    let d = of_type d in
-    let id_els = d.unioned |> List.map (fun id ->
-        match id with
-        | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs))) in
-    let bn_els = BnSet.elements d.simple |> List.map BoundName.pp in
-    OCaml.list (fun x -> x) @@ id_els @ bn_els
-
-  let pure : t = to_type {
-    unioned_arg = None;
-    unioned = [];
-    compound = IdSet.empty;
-    simple = BnSet.empty
+  let pure : t = {
+    args_arg = None;
+    with_args = [];
+    no_args = [];
   }
 
   let is_pure (d : t) : bool =
-    let d = of_type d in
-    IdSet.is_empty d.compound && BnSet.is_empty d.simple
+    List.compare_length_with d.with_args 0 = 0 &&
+    List.compare_length_with d.no_args 0 = 0
 
   let eq (d1 : t) (d2 : t) : bool =
-    let d1 = of_type d1 in
-    let d2 = of_type d2 in
-    d1.unioned = d2.unioned && BnSet.equal d1.simple d2.simple
+    d1.with_args = d2.with_args && d1.no_args = d2.no_args
 
   let singleton (x : BoundName.t) (typs : PureType.t list) : t =
-    if typs = [] then
-      to_type { unioned_arg = None;
-        unioned = [];
-        compound = IdSet.empty;
-        simple = BnSet.singleton x
+    if typs = [] then {
+        args_arg = None;
+        with_args = [];
+        no_args = [CommonType.Apply (x, [])];
       }
-    else
-      to_type { unioned_arg = None;
-        unioned = [Id.Type (x, typs)];
-        compound = IdSet.singleton (Id.Type (x, typs));
-        simple = BnSet.empty
+    else {
+        args_arg = None;
+        with_args =
+          [CommonType.Apply (x, List.map CommonType.strip_monads typs)];
+        no_args = [];
       }
 
   let union (ds : t list) : t =
-    to_type @@ List.fold_left (fun d1 d2 ->
-      let d2 = of_type d2 in
-      let compound = IdSet.fold IdSet.add d1.compound d2.compound in
-      { unioned_arg = None;
-        unioned = IdSet.elements compound;
-        compound = compound;
-        simple = BnSet.fold BnSet.add d1.simple d2.simple
-      }) (of_type pure) ds
+    let (compound, simple) = List.fold_left (fun (compound, simple) d ->
+        (CommonTypeSet.union compound (CommonTypeSet.of_list d.with_args),
+        CommonTypeSet.union simple (CommonTypeSet.of_list d.no_args)))
+      (CommonTypeSet.empty, CommonTypeSet.empty) ds in
+    {
+      args_arg = None;
+      with_args = CommonTypeSet.elements compound;
+      no_args = CommonTypeSet.elements simple;
+    }
 
   let remove (x : BoundName.t) (d : t) : t =
-    let d = of_type d in
-    to_type { d with simple = BnSet.remove x d.simple }
+    { d with
+      no_args = d.no_args |> List.filter (fun y ->
+        compare y (CommonType.Apply (x, [])) <> 0)
+    }
 
   let elements (d : t) : BoundName.t list =
-    let d = of_type d in
-    BnSet.elements d.simple
+    d.no_args |> List.map (fun typ ->
+      match typ with
+      | CommonType.Apply (name, []) -> name
+      | _ -> failwith "Unexpected format of simple effect descriptor.")
 
   let index (x : BoundName.t) (d : t) : int =
-    let d = of_type d in
     let rec find_index l f =
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index (BnSet.elements d.simple) (fun y -> x = y)
+    find_index d.no_args (fun y -> CommonType.Apply (x, []) = y)
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
-    let d = of_type d in
-    to_type { d with unioned_arg = Some arg }
+    { d with args_arg = Some arg }
 
   let should_carry (d : t) : bool =
-    let d = of_type d in
-    List.compare_length_with d.unioned 2 >= 0
+    List.compare_length_with d.with_args 2 >= 0
 
-  let to_coq (d : t) : SmartPrint.t =
+  let rec to_coq (d : t) : SmartPrint.t =
     let should_carry = should_carry d in
-    let d = of_type d in
-    let id_els = d.unioned |> List.map (fun x ->
-      match x with
-      | Id.Type (x, typs) ->
-        PureType.to_coq should_carry (PureType.Apply (x, typs))) in
+    let id_els =
+      List.map (CommonType.to_coq to_coq should_carry) d.with_args in
     let id_els = if should_carry then
         [nest @@
           !^ "OCaml.Effect.Union.union" ^^
-          (match d.unioned_arg with
+          (match d.args_arg with
            | Some arg -> Name.to_coq arg
            | None -> !^ "_") ^^
           OCaml.list (fun x -> x) id_els]
       else id_els in
-    let bn_els = BnSet.elements d.simple |> List.map BoundName.to_coq in
+    let bn_els = List.map (CommonType.to_coq to_coq should_carry) d.no_args in
     OCaml.list (fun x -> x) (id_els @ bn_els)
 
   let subset_to_bools (d1 : t) (d2 : t) : bool list =
-    let d1 = of_type d1 in
-    let d2 = of_type d2 in
     let rec aux xs1 xs2 : bool list =
       match (xs1, xs2) with
       | ([], _) -> List.map (fun _ -> false) xs2
@@ -207,44 +201,46 @@ module Descriptor = struct
           false :: aux xs1 xs2'
       | (_ :: _, []) ->
         failwith "Must be a subset to display the subset." in
-    aux (BnSet.elements d1.simple) (BnSet.elements d2.simple)
+    aux d1.no_args d2.no_args
 
   let map (f : BoundName.t -> BoundName.t) (d : t) : t =
-    let d = of_type d in
-    to_type { d with
-      unioned = List.map (Id.map f) d.unioned;
-      compound = IdSet.map (Id.map f) d.compound;
-      simple = BnSet.map f d.simple
+    { d with
+      with_args = List.map (CommonType.map f) d.with_args;
+      no_args = List.map (CommonType.map f) d.no_args;
     }
 
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    let d = of_type d in
-    to_type { d with
-      unioned = List.map (Id.map_type_vars vars_map) d.unioned;
-      compound = IdSet.map (Id.map_type_vars vars_map) d.compound;
-      simple = d.simple
+    let vars_map = Name.Map.map CommonType.strip_monads vars_map in
+    { d with
+      with_args = d.with_args |> List.map
+        (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
+      no_args = d.no_args |> List.map
+        (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
     }
 
-  let to_json (d : t) : json =
-    let d = of_type d in
-    let unioned = List.map Id.to_json d.unioned in
-    let simple = List.map BoundName.to_json @@ BnSet.elements d.simple in
+  let rec to_json (d : t) : json =
+    let unioned = List.map (CommonType.to_json to_json) d.with_args in
+    let simple = d.no_args |> List.map (fun typ ->
+      match typ with
+      | CommonType.Apply (name, []) -> BoundName.to_json name
+      | _ -> failwith "Unexpected format of simple effect descriptor.") in
     match unioned, simple with
     | [], [] -> `List []
     | [], _ -> `List simple
     | _, [] -> `List unioned
     | _, _ -> `List [`List unioned; `List simple]
 
-  let of_json (json : json) : t =
+  let rec of_json (json : json) : t =
     let (unioned, simple) =
     match json with
     | `List [`List unioned; `List simple] -> (unioned, simple)
     | `List ((`List _ :: _) as unioned) -> (unioned, [])
     | `List simple -> ([], simple)
     | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
-    let unioned = List.map Id.of_json unioned in
-    let simple = BnSet.of_list @@ List.map BoundName.of_json simple in
-    to_type { unioned_arg = None; unioned; simple; compound = IdSet.of_list unioned }
+    let unioned = List.map (CommonType.of_json of_json) unioned in
+    let simple = simple |> List.map (fun json ->
+      CommonType.Apply (BoundName.of_json json, [])) in
+    { args_arg = None; with_args = unioned; no_args = simple }
 end
 
 module Lift = struct
@@ -256,37 +252,35 @@ module Lift = struct
   let compute (d1 : Descriptor.t) (d2 : Descriptor.t)
     : bool list option * t option =
     let bs = Descriptor.subset_to_bools d1 d2 in
-    let d1 = Descriptor.of_type d1 in
-    let d2 = Descriptor.of_type d2 in
-    if List.compare_lengths d1.unioned d2.unioned = 0 &&
-        List.for_all2 (fun x y -> Descriptor.Id.compare x y = 0)
-          d1.unioned d2.unioned then
-      if d1.unioned = [] then
+    if List.compare_lengths d1.with_args d2.with_args = 0 &&
+        List.for_all2 (fun x y -> CommonType.compare x y = 0)
+          d1.with_args d2.with_args then
+      if d1.with_args = [] then
         (Some bs, None)
       else
         (Some (true :: bs), None)
     else
-      match d1.unioned with
+      match d1.with_args with
       | [] -> (Some (false :: bs), None)
       | (x :: xs) ->
         let bs = if List.mem false bs then Some (true :: bs) else None in
         match xs with
         | [] ->
           let in_list =
-            to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
+            to_coq_list (List.map (fun _ -> !^ "_") d2.with_args) in
           let n = find_index (fun y ->
-            Descriptor.Id.compare x y = 0) d2.unioned in
+            CommonType.compare x y = 0) d2.with_args in
           (bs, Some (Lift (in_list, n)))
         | _ ->
-          match d2.unioned with
+          match d2.with_args with
           | [] -> failwith "No backing union found."
-          | [x] -> (bs, Some (Inject (List.length d1.unioned)))
+          | [x] -> (bs, Some (Inject (List.length d1.with_args)))
           | _ ->
             let in_list =
-              to_coq_list (List.map (fun _ -> !^ "_") d2.unioned) in
+              to_coq_list (List.map (fun _ -> !^ "_") d2.with_args) in
             let out_list = List.map (fun x ->
               find_index (fun y ->
-                Descriptor.Id.compare x y = 0) d2.unioned) d1.unioned in
+                CommonType.compare x y = 0) d2.with_args) d1.with_args in
             (bs, Some (Mix (in_list, out_list)))
 end
 

@@ -15,6 +15,13 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (typ : 'a t) : SmartPrint.t =
       separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs))))
   | Monad (d, typ) -> nest (!^ "Monad" ^^ OCaml.tuple [pp_a d; pp typ])
 
+let compare (typ1 : 'a t) (typ2 : 'a t) : int =
+  match typ1, typ2 with
+  | Apply (x, typ1), Apply (y, typ2) ->
+    let cmp = BoundName.stable_compare x y in
+    if cmp == 0 then compare typ1 typ2 else cmp
+  | _, _ -> compare typ1 typ2
+
 let rec unify (typ1 : 'a t) (typ2 : 'b t) : 'b t Name.Map.t =
   let union = Name.Map.union (fun _ typ _ -> Some typ) in
   match typ1, typ2 with
