@@ -50,7 +50,7 @@ and of_structure (def : ('a * Type.t) Structure.t) : t list =
       let name = header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
-      Var (name, Effect.compress typ))
+      Var (name, typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
     [Var (prim.PrimitiveDeclaration.name, Effect.pure)]

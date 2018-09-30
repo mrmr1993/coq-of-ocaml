@@ -17,8 +17,6 @@ module PureType = struct
   let map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
     CommonType.map_vars (fun x -> Name.Map.find x vars_map) typ
 
-  let has_type_vars (typ : t) : bool = CommonType.has_vars typ
-
   let to_json (typ : t) : json = CommonType.to_json (fun () -> `List []) typ
 
   let of_json (json : json) : t = CommonType.of_json (fun _ -> ()) json
@@ -182,10 +180,6 @@ module Descriptor = struct
       simple = d.simple
     }
 
-  let has_type_vars (d : t) : bool =
-     d.compound |> IdSet.exists (fun (Type (x, typs)) ->
-      List.exists PureType.has_type_vars typs)
-
   let to_json (d : t) : json =
     let unioned = List.map Id.to_json d.unioned in
     let simple = List.map BoundName.to_json @@ BnSet.elements d.simple in
@@ -303,8 +297,6 @@ module Type = struct
     | Arrow (_, typ) -> is_pure typ
     | _ -> true
 
-  let rec compress (typ : t) : t = typ
-
   let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
     match typ with
     | Monad (d, typ) -> Monad (Descriptor.map f d, map f typ)
@@ -368,12 +360,6 @@ module Type = struct
     | Monad (d, typ) ->
       Monad (Descriptor.map_type_vars vars_map d, map_type_vars vars_map typ)
     | _ -> typ
-
-  let rec has_type_vars (typ : t) : bool =
-    match typ with
-    | Arrow (_, typ) -> has_type_vars typ
-    | Monad (d, typ) -> Descriptor.has_type_vars d || has_type_vars typ
-    | _ -> false
 
   let rec split_calls (typ : t) (e_xs : 'a list)
     : ('a list * Descriptor.t) list =
@@ -454,10 +440,6 @@ let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
 
 let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
   Type.map_type_vars vars_map effect
-
-let has_type_vars (effect : t) : bool = Type.has_type_vars effect
-
-let compress (effect : t) : t = effect
 
 let to_json (effect : t) : json =
   match effect with
