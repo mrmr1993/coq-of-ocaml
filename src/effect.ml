@@ -440,13 +440,13 @@ let pp (effect : t) : SmartPrint.t =
     | Type.Monad (d, typ) -> [Descriptor.pp d; Type.pp typ]
     | _ -> [Descriptor.pp Descriptor.pure; Type.pp effect]
 
-let function_typ (args : 'a list) (body_effect : t) : t =
+let function_typ (args : ('a * t) list) (body_effect : t) : t =
   match args with
   | [] -> body_effect
-  | _ :: args ->
-    args |> List.fold_left (fun effect_typ _ ->
-        Type.Arrow (Type.pure, effect_typ))
-      (Type.Arrow (Type.pure, body_effect))
+  | _ ->
+    List.fold_right (fun (_, typ) effect_typ ->
+        Type.Arrow (typ, effect_typ))
+      args body_effect
 
 let pure : t = Type.pure
 
