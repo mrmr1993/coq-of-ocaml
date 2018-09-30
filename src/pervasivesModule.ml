@@ -19,7 +19,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
       [Type.Variable x] in
   let state_type (x : string) : Type.t =
     Type.Apply
-      (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
+      (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "t",
       [Type.Variable x]) in
   let add_exn path base = add_exception_with_effects path base in
   let arrow xs = List.fold_right (fun x typ ->
