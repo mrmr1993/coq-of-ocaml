@@ -1,6 +1,5 @@
 (** The initially opened module. *)
 open FullEnvi
-open Effect.Type.Old
 open SmartPrint
 
 let env_with_effects (interfaces : (Name.t * string) list)
@@ -25,7 +24,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
       [Type.Variable i]) in
   let add_exn path base = add_exception_with_effects path base in
-  let arrow x y = Effect.eff (to_type @@ Arrow (x, y)) in
+  let arrow x y = Type.Arrow (Effect.Type.pure, Type.Monad (x, y)) in
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
@@ -41,9 +40,9 @@ let env_with_effects (interfaces : (Name.t * string) list)
     ]))
   |> Descriptor.add [] "IO" ()
   |> Descriptor.add [] "Counter" ()
-  |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Pure)
+  |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Effect.Type.pure)
   |> Descriptor.add [] "NonTermination" ()
-  |> Var.add [] "not_terminated" (arrow (d [[], [], "NonTermination"]) Pure)
+  |> Var.add [] "not_terminated" (arrow (d [[], [], "NonTermination"]) Effect.Type.pure)
   |> Var.add ["OCaml"; "Basics"] "for_to" pure
   |> Var.add ["OCaml"; "Basics"] "for_downto" pure
 
@@ -107,7 +106,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   |> enter_module (CoqName.Name "OCaml")
   (* Values specific to the translation to Coq *)
-  |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Pure)
+  |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Effect.Type.pure)
   (* Predefined exceptions *)
   |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
   |> add_exn [] "Match_failure"
@@ -134,8 +133,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   (* Pervasives *)
   (* Exceptions *)
-  |> Var.add ["Pervasives"] "invalid_arg" (arrow (d [["OCaml"], [], "Invalid_argument"]) Pure)
-  |> Var.add ["Pervasives"] "failwith" (arrow (d [["OCaml"], [], "Failure"]) Pure)
+  |> Var.add ["Pervasives"] "invalid_arg" (arrow (d [["OCaml"], [], "Invalid_argument"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "failwith" (arrow (d [["OCaml"], [], "Failure"]) Effect.Type.pure)
   |> add_exn ["Pervasives"] "Exit"
   (* Comparisons *)
   |> Var.add ["Pervasives"] "lt" pure
@@ -150,7 +149,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Floating-point arithmetic *)
   (* Character operations *)
   |> Var.add ["Pervasives"] "int_of_char" pure
-  |> Var.add ["Pervasives"] "char_of_int" (arrow (d [["OCaml"], [], "Invalid_argument"]) Pure)
+  |> Var.add ["Pervasives"] "char_of_int" (arrow (d [["OCaml"], [], "Invalid_argument"]) Effect.Type.pure)
   (* Unit operations *)
   |> Var.add ["Pervasives"] "ignore" pure
   (* String conversion functions *)
@@ -162,20 +161,20 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add ["Pervasives"] "app" pure
   (* Input/output *)
   (* Output functions on standard output *)
-  |> Var.add ["Pervasives"] "print_char" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "print_string" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "print_int" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "print_endline" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "print_newline" (arrow (d [[], [], "IO"]) Pure)
+  |> Var.add ["Pervasives"] "print_char" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "print_string" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "print_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "print_endline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "print_newline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
   (* Output functions on standard error *)
-  |> Var.add ["Pervasives"] "prerr_char" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "prerr_string" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "prerr_int" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "prerr_endline" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "prerr_newline" (arrow (d [[], [], "IO"]) Pure)
+  |> Var.add ["Pervasives"] "prerr_char" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "prerr_string" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "prerr_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "prerr_endline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "prerr_newline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
   (* Input functions on standard input *)
-  |> Var.add ["Pervasives"] "read_line" (arrow (d [[], [], "IO"]) Pure)
-  |> Var.add ["Pervasives"] "read_int" (arrow (d [[], [], "IO"]) Pure)
+  |> Var.add ["Pervasives"] "read_line" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "read_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
   (* General output functions *)
   (* General input functions *)
   (* Operations on large files *)

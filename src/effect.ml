@@ -195,35 +195,6 @@ module Type = struct
   include Kerneltypes.Type
   type t = Descriptor.t Kerneltypes.Type.t'
 
-  module Old = struct
-    type t' =
-      | Pure
-      | Arrow of Descriptor.t * t'
-
-    let to_type (typ : t') : t =
-      let rec aux i typ =
-        match typ with
-        | Pure -> Kerneltypes.Type.Variable (string_of_int i ^ "A")
-        | Arrow (d, typ) ->
-          Kerneltypes.Type.Arrow (Kerneltypes.Type.Variable (string_of_int i ^ "A"),
-            if Descriptor.is_pure d then
-              aux (i+1) typ
-            else
-              Kerneltypes.Type.Monad (d, aux (i+1) typ)) in
-      aux 1 typ
-
-    let of_type (typ : t) : t' =
-      let open Kerneltypes in
-      let rec aux typ =
-        match typ with
-        | Kerneltypes.Type.Arrow (_, Kerneltypes.Type.Monad (d, typ)) ->
-          Arrow (d, aux typ)
-        | Kerneltypes.Type.Arrow (_, typ) -> Arrow (Descriptor.pure, aux typ)
-        | Kerneltypes.Type.Monad (_, typ) -> aux typ
-        | _ -> Pure in
-      aux typ
-  end
-
   let pure : t = Variable "_"
   let arrow (d : Descriptor.t) (typ : t) : t =
     if Descriptor.is_pure d then
