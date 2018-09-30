@@ -69,21 +69,50 @@ module Descriptor = struct
 
   (* NOTE: [unioned] should always represent how a statement accepts compound
      effects, while [compound] should hold these compound effects. *)
-  type t = {
+  type t' = {
     unioned_arg : Name.t option;
     unioned : Id.t list;
     compound : IdSet.t;
     simple : BnSet.t
   }
 
+  type t = {
+    args_arg : Name.t option;
+    with_args : t CommonType.t list;
+    no_args : t CommonType.t list;
+  }
+
+  let to_type (d : t') : t =
+    { args_arg = d.unioned_arg;
+      with_args = d.unioned |> List.map (fun typ ->
+        CommonType.strip_monads @@ Id.to_puretype typ);
+      no_args = d.simple |> BnSet.elements |> List.map (fun name ->
+        CommonType.Apply (name, []));
+    }
+
+  let of_type (d : t) : t' =
+    let unioned = d.with_args |> List.map (fun typ ->
+      Id.of_puretype @@ CommonType.strip_monads typ) in
+    { unioned_arg = d.args_arg;
+      unioned = unioned;
+      compound = IdSet.of_list unioned;
+      simple = d.no_args |> List.map (fun typ ->
+          match typ with
+          | CommonType.Apply (name, []) -> name
+          | _ -> failwith "Unexpected format of simple effect descriptor.")
+        |> BnSet.of_list;
+    }
+
+
   let pp (d : t) : SmartPrint.t =
+    let d = of_type d in
     let id_els = d.unioned |> List.map (fun id ->
         match id with
         | Id.Type (x, typs) -> PureType.pp (PureType.Apply (x, typs))) in
     let bn_els = BnSet.elements d.simple |> List.map BoundName.pp in
     OCaml.list (fun x -> x) @@ id_els @ bn_els
 
-  let pure : t = {
+  let pure : t = to_type {
     unioned_arg = None;
     unioned = [];
     compound = IdSet.empty;
@@ -91,40 +120,48 @@ module Descriptor = struct
   }
 
   let is_pure (d : t) : bool =
+    let d = of_type d in
     IdSet.is_empty d.compound && BnSet.is_empty d.simple
 
   let eq (d1 : t) (d2 : t) : bool =
+    let d1 = of_type d1 in
+    let d2 = of_type d2 in
     d1.unioned = d2.unioned && BnSet.equal d1.simple d2.simple
 
   let singleton (x : BoundName.t) (typs : PureType.t list) : t =
     if typs = [] then
-      { unioned_arg = None;
+      to_type { unioned_arg = None;
         unioned = [];
         compound = IdSet.empty;
         simple = BnSet.singleton x
       }
     else
-      { unioned_arg = None;
+      to_type { unioned_arg = None;
         unioned = [Id.Type (x, typs)];
         compound = IdSet.singleton (Id.Type (x, typs));
         simple = BnSet.empty
       }
 
   let union (ds : t list) : t =
-    List.fold_left (fun d1 d2 ->
+    to_type @@ List.fold_left (fun d1 d2 ->
+      let d2 = of_type d2 in
       let compound = IdSet.fold IdSet.add d1.compound d2.compound in
       { unioned_arg = None;
         unioned = IdSet.elements compound;
         compound = compound;
         simple = BnSet.fold BnSet.add d1.simple d2.simple
-      }) pure ds
+      }) (of_type pure) ds
 
   let remove (x : BoundName.t) (d : t) : t =
-    { d with simple = BnSet.remove x d.simple }
+    let d = of_type d in
+    to_type { d with simple = BnSet.remove x d.simple }
 
-  let elements (d : t) : BoundName.t list = BnSet.elements d.simple
+  let elements (d : t) : BoundName.t list =
+    let d = of_type d in
+    BnSet.elements d.simple
 
   let index (x : BoundName.t) (d : t) : int =
+    let d = of_type d in
     let rec find_index l f =
       match l with
       | [] -> 0
@@ -132,12 +169,16 @@ module Descriptor = struct
     find_index (BnSet.elements d.simple) (fun y -> x = y)
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
-    { d with unioned_arg = Some arg }
+    let d = of_type d in
+    to_type { d with unioned_arg = Some arg }
 
-  let should_carry (d : t) : bool = List.compare_length_with d.unioned 2 >= 0
+  let should_carry (d : t) : bool =
+    let d = of_type d in
+    List.compare_length_with d.unioned 2 >= 0
 
   let to_coq (d : t) : SmartPrint.t =
     let should_carry = should_carry d in
+    let d = of_type d in
     let id_els = d.unioned |> List.map (fun x ->
       match x with
       | Id.Type (x, typs) ->
@@ -154,6 +195,8 @@ module Descriptor = struct
     OCaml.list (fun x -> x) (id_els @ bn_els)
 
   let subset_to_bools (d1 : t) (d2 : t) : bool list =
+    let d1 = of_type d1 in
+    let d2 = of_type d2 in
     let rec aux xs1 xs2 : bool list =
       match (xs1, xs2) with
       | ([], _) -> List.map (fun _ -> false) xs2
@@ -167,20 +210,23 @@ module Descriptor = struct
     aux (BnSet.elements d1.simple) (BnSet.elements d2.simple)
 
   let map (f : BoundName.t -> BoundName.t) (d : t) : t =
-    { d with
+    let d = of_type d in
+    to_type { d with
       unioned = List.map (Id.map f) d.unioned;
       compound = IdSet.map (Id.map f) d.compound;
       simple = BnSet.map f d.simple
     }
 
   let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    { d with
+    let d = of_type d in
+    to_type { d with
       unioned = List.map (Id.map_type_vars vars_map) d.unioned;
       compound = IdSet.map (Id.map_type_vars vars_map) d.compound;
       simple = d.simple
     }
 
   let to_json (d : t) : json =
+    let d = of_type d in
     let unioned = List.map Id.to_json d.unioned in
     let simple = List.map BoundName.to_json @@ BnSet.elements d.simple in
     match unioned, simple with
@@ -198,7 +244,7 @@ module Descriptor = struct
     | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
     let unioned = List.map Id.of_json unioned in
     let simple = BnSet.of_list @@ List.map BoundName.of_json simple in
-    { unioned_arg = None; unioned; simple; compound = IdSet.of_list unioned }
+    to_type { unioned_arg = None; unioned; simple; compound = IdSet.of_list unioned }
 end
 
 module Lift = struct
@@ -210,6 +256,8 @@ module Lift = struct
   let compute (d1 : Descriptor.t) (d2 : Descriptor.t)
     : bool list option * t option =
     let bs = Descriptor.subset_to_bools d1 d2 in
+    let d1 = Descriptor.of_type d1 in
+    let d2 = Descriptor.of_type d2 in
     if List.compare_lengths d1.unioned d2.unioned = 0 &&
         List.for_all2 (fun x y -> Descriptor.Id.compare x y = 0)
           d1.unioned d2.unioned then
