@@ -357,12 +357,18 @@ module Type = struct
       | _, _ -> typ1 in
     List.fold_left aux (Variable "_") typs
 
-  let unify (typ1 : t) (typ2 : t) : t =
-    CommonType.unify_monad (fun d1 d2 ->
-        Descriptor.union @@ match d2 with
-        | Some d2 -> [d1; d2]
-        | None -> [d1])
-      typ1 typ2
+  let unify ?collapse:(collapse=true) (typ1 : t) (typ2 : t) : t =
+    let f = if collapse then
+        (fun d1 d2 ->
+          Descriptor.union @@ match d2 with
+          | Some d2 -> [d1; d2]
+          | None -> [d1])
+      else
+        (fun d1 d2 ->
+          match d2 with
+          | Some d2 -> Descriptor.union [d1; d2]
+          | None -> d1) in
+    CommonType.unify_monad f typ1 typ2
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with

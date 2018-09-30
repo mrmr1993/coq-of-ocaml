@@ -794,12 +794,6 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     let env = Definition.env_after_def def env in
     (env, [def])
 
-let rec function_type (env : 'a FullEnvi.t) (e : (Loc.t * Type.t) t)
-  : Type.t option =
-  match e with
-  | Variable ((l, typ), x) -> FullEnvi.Function.find l x env
-  | _ -> None
-
 let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Type.t) t =
   let compound_effect (es : (Loc.t * Type.t) t list)
@@ -823,7 +817,11 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let typ = Effect.Type.unify typ @@ FullEnvi.Var.find l x env in
+      let typ' = FullEnvi.Var.find l x env in
+      let vars_map = Type.unify typ' typ in
+      let typ' = Effect.map_type_vars (Name.Map.map Type.pure_type vars_map)
+        typ' in
+      let typ = Effect.Type.unify ~collapse:false typ typ' in
       Variable ((l, typ), x)
     with Not_found ->
       let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
@@ -841,14 +839,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       Error.warn l "Constructors cannot have functional effects; effect ignored.";
     Constructor ((l, typ), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
-    let typ_f = snd @@ annotation e_f in
-    let vars_map = match function_type env e_f with
-      | Some typ_f' -> Type.unify typ_f' typ_f
-      | None -> Name.Map.empty in
-    let e_f = e_f
-      |> effects env
-      |> update_annotation (fun (l, eff) ->
-        (l, Effect.map_type_vars (Name.Map.map Type.pure_type vars_map) eff)) in
+    let e_f = effects env e_f in
     let (_, effect_e_f) = Effect.split @@ snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
     let arguments_are_pure = e_xs |> List.for_all (fun e_x ->
