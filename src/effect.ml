@@ -358,14 +358,6 @@ let split (effect : t) : Descriptor.t * t =
   | Type.Monad (d, typ) -> (d, typ)
   | _ -> (Descriptor.pure, effect)
 
-type t' = { descriptor : Descriptor.t; typ : Type.t }
-
-let to_type (e : t') : t = join e.descriptor e.typ
-
-let of_type (typ : t) : t' =
-  let (d, typ) = split typ in
-  { descriptor = d; typ = typ }
-
 let pp (effect : t) : SmartPrint.t =
   nest @@ !^ "Effect" ^^ OCaml.tuple @@
     match effect with

@@ -842,8 +842,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
           List.map (fun e_x ->
             fst @@ Effect.split @@ snd @@ annotation e_x) e_xs) in
         let typ = Effect.Type.return_type typ_e (List.length e_xs) in
-        let effect = { Effect.descriptor = descriptor; typ = typ } in
-        Apply ((l, Effect.to_type effect), e, e_xs))
+        let typ = Effect.join descriptor typ in
+        Apply ((l, typ), e, e_xs))
         e_f e_xss
     else
       Error.raise l "Function arguments cannot have functional effects."
@@ -1014,7 +1014,7 @@ and effects_of_def (env : Type.t FullEnvi.t)
   fix_effect (effects_of_def_step env def)
 
 let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
-  let descriptor e = (Effect.of_type @@ snd (annotation e)).Effect.descriptor in
+  let descriptor e = fst @@ Effect.split @@ snd @@ annotation e in
   let lift d1 d2 e =
     if Effect.Descriptor.eq d1 d2 then
       e
@@ -1054,7 +1054,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
     monadise_list env es d [] (fun es' ->
       lift Effect.Descriptor.pure d (Constructor (l, x, es')))
   | Apply ((l, _), e_f, e_xs) ->
-    let effect_f = (Effect.of_type @@ snd (annotation e_f)).Effect.typ in
+    let effect_f = snd @@ Effect.split @@ snd @@ annotation e_f in
     monadise_list env (e_f :: e_xs) d [] (fun es' ->
       match es' with
       | e_f :: e_xs ->
@@ -1147,7 +1147,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
       FullEnvi.Var.fresh "counter" () env in
     let (check_name, check_bound, env) =
       FullEnvi.Var.fresh "check" () env in
-    let d = (Effect.of_type d).Effect.descriptor in
+    let d = fst @@ Effect.split d in
     let d1 = descriptor e1 in
     let d2 = descriptor e2 in
     let while_d = Effect.Descriptor.union [nonterm_d; d1; d2] in

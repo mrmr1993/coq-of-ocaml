@@ -204,8 +204,8 @@ let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Value (loc, def) ->
       let def = Exp.effects_of_def env def in
       (if def.Exp.Definition.cases |> List.exists (fun (header, e) ->
-        header.Exp.Header.args = [] &&
-          not (Effect.Descriptor.is_pure (Effect.of_type @@ snd (Exp.annotation e)).Effect.descriptor)) then
+        let d = fst @@ Effect.split @@ snd @@ Exp.annotation e in
+        header.Exp.Header.args = [] && not (Effect.Descriptor.is_pure d)) then
         Error.warn loc "Toplevel effects are forbidden.");
       let env = Exp.env_after_def_with_effects env def in
       (env, Value (loc, def))
