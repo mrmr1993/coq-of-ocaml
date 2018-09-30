@@ -447,12 +447,8 @@ let pp (effect : t) : SmartPrint.t =
     | _ -> [Descriptor.pp Descriptor.pure; Type.pp effect]
 
 let function_typ (args : ('a * t) list) (body_effect : t) : t =
-  match args with
-  | [] -> body_effect
-  | _ ->
-    List.fold_right (fun (_, typ) effect_typ ->
-        Type.Arrow (typ, effect_typ))
-      args body_effect
+  List.fold_right (fun (_, typ) effect_typ -> Type.Arrow (typ, effect_typ))
+    args body_effect
 
 let pure : t = Type.pure
 

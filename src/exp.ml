@@ -867,10 +867,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
     let (d1, typ1) = Effect.split @@ snd (annotation e1) in
-    let env = if Effect.has_type_vars typ1 then
-      FullEnvi.Function.assoc x (typ1, typ) env
-    else
-      FullEnvi.Var.assoc x typ1 env in
+    let env = FullEnvi.Var.assoc x typ1 env in
     let e2 = effects env e2 in
     let (d2, typ2) = Effect.split @@ snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [d1; d2] in
@@ -993,12 +990,7 @@ and env_after_def_with_effects (env : Type.t FullEnvi.t)
   List.fold_left (fun env (header, e) ->
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
-    if Effect.has_type_vars effect then
-      let typ = List.fold_right (fun (_, arg_typ) typ ->
-        Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
-      FullEnvi.Function.assoc header.Header.name (effect_typ, typ) env
-    else
-      FullEnvi.Var.assoc header.Header.name effect_typ env)
+    FullEnvi.Var.assoc header.Header.name effect_typ env)
     env def.Definition.cases
 
 and effects_of_def_step (env : Type.t FullEnvi.t)
