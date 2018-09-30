@@ -13,18 +13,17 @@ let env_with_effects (interfaces : (Name.t * string) list)
     Effect.Descriptor.singleton x [] in
   let d xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map descriptor xs) in
-  let typ_d (x : int) : Effect.Descriptor.t =
-    let i = string_of_int x in
+  let typ_d (x : string) : Effect.Descriptor.t =
     Effect.Descriptor.singleton
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state")
-      [Type.Variable i] in
-  let state_type (x : int) : Type.t =
-    let i = string_of_int x in
+      [Type.Variable x] in
+  let state_type (x : string) : Type.t =
     Type.Apply
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state",
-      [Type.Variable i]) in
+      [Type.Variable x]) in
   let add_exn path base = add_exception_with_effects path base in
-  let arrow x y = Type.Arrow (Effect.Type.pure, Type.Monad (x, y)) in
+  let arrow xs = List.fold_right (fun x typ ->
+    Effect.Type.arrow (d x) typ) xs Effect.pure in
   let pure = Effect.pure in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
@@ -40,9 +39,9 @@ let env_with_effects (interfaces : (Name.t * string) list)
     ]))
   |> Descriptor.add [] "IO" ()
   |> Descriptor.add [] "Counter" ()
-  |> Var.add [] "read_counter" (arrow (d [[], [], "Counter"]) Effect.Type.pure)
+  |> Var.add [] "read_counter" (arrow [[[], [], "Counter"]])
   |> Descriptor.add [] "NonTermination" ()
-  |> Var.add [] "not_terminated" (arrow (d [[], [], "NonTermination"]) Effect.Type.pure)
+  |> Var.add [] "not_terminated" (arrow [[[], [], "NonTermination"]])
   |> Var.add ["OCaml"; "Basics"] "for_to" pure
   |> Var.add ["OCaml"; "Basics"] "for_downto" pure
 
@@ -106,7 +105,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   |> enter_module (CoqName.Name "OCaml")
   (* Values specific to the translation to Coq *)
-  |> Var.add [] "assert" (arrow (d [["OCaml"], [], "Assert_failure"]) Effect.Type.pure)
+  |> Var.add [] "assert" (arrow [[["OCaml"], [], "Assert_failure"]])
   (* Predefined exceptions *)
   |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
   |> add_exn [] "Match_failure"
@@ -126,15 +125,15 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Typ.add ["Effect"; "State"] "t" (TypeDefinition.Abstract (CoqName.Name "t", []))
   |> Var.add ["Effect"; "State"] "global" pure
   |> Var.add ["Effect"; "State"] "read"
-    (Type.Arrow (state_type 0, Type.Monad (typ_d 0, Type.Variable "0")))
+    (Type.Arrow (state_type "0", Type.Monad (typ_d "0", Type.Variable "0")))
   |> Var.add ["Effect"; "State"] "write"
-    (Type.Arrow (state_type 0, Type.Arrow (Type.Variable "0",
-      Type.Monad (typ_d 0, Type.Apply (bound_name [] [] "unit", [])))))
+    (Type.Arrow (state_type "0", Type.Arrow (Type.Variable "0",
+      Type.Monad (typ_d "0", Type.Apply (bound_name [] [] "unit", [])))))
 
   (* Pervasives *)
   (* Exceptions *)
-  |> Var.add ["Pervasives"] "invalid_arg" (arrow (d [["OCaml"], [], "Invalid_argument"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "failwith" (arrow (d [["OCaml"], [], "Failure"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "invalid_arg" (arrow [[["OCaml"], [], "Invalid_argument"]])
+  |> Var.add ["Pervasives"] "failwith" (arrow [[["OCaml"], [], "Failure"]])
   |> add_exn ["Pervasives"] "Exit"
   (* Comparisons *)
   |> Var.add ["Pervasives"] "lt" pure
@@ -149,7 +148,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Floating-point arithmetic *)
   (* Character operations *)
   |> Var.add ["Pervasives"] "int_of_char" pure
-  |> Var.add ["Pervasives"] "char_of_int" (arrow (d [["OCaml"], [], "Invalid_argument"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "char_of_int" (arrow [[["OCaml"], [], "Invalid_argument"]])
   (* Unit operations *)
   |> Var.add ["Pervasives"] "ignore" pure
   (* String conversion functions *)
@@ -161,26 +160,26 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add ["Pervasives"] "app" pure
   (* Input/output *)
   (* Output functions on standard output *)
-  |> Var.add ["Pervasives"] "print_char" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "print_string" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "print_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "print_endline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "print_newline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "print_char" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "print_string" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "print_int" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "print_endline" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "print_newline" (arrow [[[], [], "IO"]])
   (* Output functions on standard error *)
-  |> Var.add ["Pervasives"] "prerr_char" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "prerr_string" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "prerr_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "prerr_endline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "prerr_newline" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "prerr_char" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "prerr_string" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "prerr_int" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "prerr_endline" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "prerr_newline" (arrow [[[], [], "IO"]])
   (* Input functions on standard input *)
-  |> Var.add ["Pervasives"] "read_line" (arrow (d [[], [], "IO"]) Effect.Type.pure)
-  |> Var.add ["Pervasives"] "read_int" (arrow (d [[], [], "IO"]) Effect.Type.pure)
+  |> Var.add ["Pervasives"] "read_line" (arrow [[[], [], "IO"]])
+  |> Var.add ["Pervasives"] "read_int" (arrow [[[], [], "IO"]])
   (* General output functions *)
   (* General input functions *)
   (* Operations on large files *)
   (* References *)
   |> Var.add ["Pervasives"] "ref"
-    (Type.Arrow (Type.Variable "0", Monad (typ_d 0, state_type 0)))
+    (Type.Arrow (Type.Variable "0", Monad (typ_d "0", state_type "0")))
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module localize_effects
