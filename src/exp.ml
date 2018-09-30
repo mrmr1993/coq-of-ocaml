@@ -384,13 +384,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_try (e1,
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
+    let typ1 = snd @@ annotation e1 in
     let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
     let p = Pattern.Tuple (List.map (Pattern.of_pattern false env) ps) in
-    Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
+    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
+    let typ_sum = Type.Apply (FullEnvi.Typ.localize env [] "sum",
+      [typ1; exn]) in
+    Match (a, Run ((Loc.Unknown, typ_sum), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
         FullEnvi.Constructor.localize env [] "inl",
-        [Pattern.Variable
-          (CoqName.of_names "x" (FullEnvi.Var.resolve [] "x" env).base)]) in
+        [Pattern.Variable (FullEnvi.Var.coq_name "x" env)]) in
       let env = Pattern.add_to_env p env in
       let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
       (p, Variable ((Loc.Unknown, typ), x)));
@@ -967,8 +970,10 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Run ((l, typ), x, d, e) ->
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd @@ annotation e in
+    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
     let typ = Effect.Type.unify typ @@
-      Effect.join (Effect.Descriptor.remove x d_e) typ_e in
+      Effect.join (Effect.Descriptor.remove x d_e) @@
+      Type.Apply (FullEnvi.Typ.localize env [] "sum", [typ_e; exn]) in
     Run ((l, typ), x, d, e)
   | Return _ | Bind _ | Lift _ ->
     Error.raise Loc.Unknown
@@ -1137,7 +1142,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
     let read_counter = FullEnvi.Var.localize env [] "read_counter" in
     let not_terminated = FullEnvi.Var.localize env [] "not_terminated" in
     let tt = FullEnvi.Constructor.localize env [] "tt" in
-    let nat = FullEnvi.Typ.localize env [] "nat" in
+    let nat = Type.Apply (FullEnvi.Typ.localize env [] "nat", []) in
     let o = FullEnvi.Constructor.localize env [] "O" in
     let s = FullEnvi.Constructor.localize env [] "S" in
     let counter_d = Effect.Descriptor.singleton counter [] in
@@ -1158,7 +1163,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
             Header.name = while_name;
             typ_vars = [];
             implicit_args = [];
-            args = [(counter_name, Type.Apply (nat, []))];
+            args = [(counter_name, nat)];
             typ = Monad (while_d, Type.Tuple [])
           },
           Match (Loc.Unknown, Variable (Loc.Unknown, counter_bound), [
