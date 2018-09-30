@@ -796,23 +796,13 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
 
 let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   : (Loc.t * Type.t) t =
-  let compound_effect (es : (Loc.t * Type.t) t list)
+  let compound (es : (Loc.t * Type.t) t list)
   : Effect.Descriptor.t * (Loc.t * Type.t) t list * Type.t list =
     let es = List.map (effects env) es in
     let effects = List.map (fun e -> Effect.split @@ snd @@ annotation e) es in
     let descriptor = Effect.Descriptor.union @@ List.map fst effects in
     let effects = List.map snd effects in
     (descriptor, es, effects) in
-  let compound (es : (Loc.t * Type.t) t list)
-  : (Loc.t * Type.t) t list * Type.t =
-    let es = List.map (effects env) es in
-    let descriptor = Effect.Descriptor.union (es |> List.map (fun e ->
-      let (loc, effect) = annotation e in
-      let effect = Effect.of_type effect in
-      if not (Effect.Type.is_pure effect.Effect.typ) then
-        Error.warn loc "Compounds cannot have functional effects; effect ignored.";
-      effect.Effect.descriptor)) in
-    (es, Effect.to_type { Effect.descriptor = descriptor; typ = Effect.Type.pure }) in
   match e with
   | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
@@ -829,11 +819,11 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       Variable ((l, typ), x)
     end
   | Tuple ((l, typ), es) ->
-    let (d, es, typs) = compound_effect es in
+    let (d, es, typs) = compound es in
     let typ = Effect.Type.unify typ @@ Effect.join d @@ Type.Tuple typs in
     Tuple ((l, typ), es)
   | Constructor ((l, typ), x, es) ->
-    let (d, es, typs) = compound_effect es in
+    let (d, es, typs) = compound es in
     let typ = Effect.join d typ in
     if not (List.for_all Effect.Type.is_pure typs) then
       Error.warn l "Constructors cannot have functional effects; effect ignored.";
@@ -901,10 +891,10 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       let expressions = option_filter @@ List.map snd fields in
       match base with
       | Some base ->
-        begin match compound_effect (base :: expressions) with
+        begin match compound (base :: expressions) with
         | (d, base :: es, typs) -> (Some base, (d, es, typs))
         | _ -> failwith "Wrong answer from 'compound'." end
-      | None -> (None, compound_effect expressions) in
+      | None -> (None, compound expressions) in
     if not (List.for_all Effect.Type.is_pure typs) then
       Error.warn l "Record field values cannot have functional effects; effect ignored.";
     let fields = mix_map2 (fun (_, x) -> is_some x)
@@ -923,7 +913,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (d1, typ1) = Effect.split @@ snd @@ annotation e1 in
     if not (Effect.Type.is_pure typ1) then
       Error.warn l "If cannot be taken of a value with functional effects; effect ignored.";
-    let (d, e2, e3, typ2, typ3) = match compound_effect [e2; e3] with
+    let (d, e2, e3, typ2, typ3) = match compound [e2; e3] with
     | (d, [e2; e3], [typ2; typ3]) -> (d, e2, e3, typ2, typ3)
     | _ -> failwith "Wrong answer from 'compound'." in
     let d = Effect.Descriptor.union [d1; d] in
@@ -936,7 +926,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     (* Give Coq a concrete type if it can't infer one. *)
     let e = if typ_e = typ_e' then e else
       Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
-    let (d, e, e1, e2) = match compound_effect [e; e1; e2] with
+    let (d, e, e1, e2) = match compound [e; e1; e2] with
       | (d, [e; e1; e2], _) -> (d, e, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in
     (* We don't use the actual type of [e] here, since OCaml ignores it, and
@@ -951,7 +941,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     (* Give Coq a concrete type if it can't infer one. *)
     let e2 = if typ2 = typ2' then e2 else
       Coerce ((Loc.Unknown, typ2'), e2, typ2') in
-    let (d, e1, e2) = match compound_effect [e1; e2] with
+    let (d, e1, e2) = match compound [e1; e2] with
       | (d, [e1; e2], _) -> (d, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in
     let counter = FullEnvi.Descriptor.localize env [] "Counter" in
@@ -970,7 +960,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e = effects env e in
     Coerce ((l, snd (annotation e)), e, typ)
   | Sequence ((l, typ), e1, e2) ->
-    let (d, e1, e2, typ2) = match compound_effect [e1; e2] with
+    let (d, e1, e2, typ2) = match compound [e1; e2] with
       | (d, [e1; e2], [_; typ2]) -> (d, e1, e2, typ2)
       | _ -> failwith "Wrong answer from 'compound'." in
     let typ = Effect.Type.unify typ @@ Effect.join d typ2 in
