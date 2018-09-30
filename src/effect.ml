@@ -345,18 +345,6 @@ module Type = struct
       | Monad (_, typ) -> return_single_descriptor typ nb_args
       | _ -> Descriptor.pure
 
-  let union (typs : t list) : t =
-    let rec aux typ1 typ2 =
-      match typ1, typ2 with
-      | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
-        Arrow (typ1a, aux typ1b typ2b)
-      | Monad (d1, typ1), Monad (d2, typ2) ->
-        Monad (Descriptor.union [d1; d2], aux typ1 typ2)
-      | Monad (d, typ1), typ2 | typ1, Monad (d, typ2) ->
-        Monad (Descriptor.union [d], aux typ1 typ2)
-      | _, _ -> typ1 in
-    List.fold_left aux (Variable "_") typs
-
   let unify ?collapse:(collapse=true) (typ1 : t) (typ2 : t) : t =
     let f = if collapse then
         (fun d1 d2 ->
@@ -369,6 +357,9 @@ module Type = struct
           | Some d2 -> Descriptor.union [d1; d2]
           | None -> d1) in
     CommonType.unify_monad f typ1 typ2
+
+  let union (typs : t list) : t =
+    List.fold_left unify pure typs
 
   let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
     match typ with
