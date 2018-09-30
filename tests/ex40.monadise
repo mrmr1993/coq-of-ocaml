@@ -6,7 +6,7 @@ Value
     [
       ((b, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); a_state ],
+          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (a_state) ],
             Type (OCaml.Effect.State.t, Type (Z)))),
         Match (?, Variable (?, x), [ (Constructor (tt), Variable (4, a)) ]))
     ])
@@ -19,8 +19,10 @@ Value
     [
       ((c, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (string)); a_state_1 ],
-            Type (OCaml.Effect.State.t, Type (string)))),
+          ([
+            Type (OCaml.Effect.State.state, Type (string));
+            Type (a_state_1)
+          ], Type (OCaml.Effect.State.t, Type (string)))),
         Match (?, Variable (?, x), [ (Constructor (tt), Variable (6, a_1)) ]))
     ])
 

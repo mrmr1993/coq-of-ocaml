@@ -2,7 +2,8 @@
 Value
   (non_rec, @.,
     [
-      ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ], Type (Z)),
+      ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
+        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
         LetVar (3, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
           y =
           Apply
@@ -66,7 +67,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               Z.add),
                           [
                             Apply
@@ -133,7 +138,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ], Type (list, Type (bool))),
+      ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ],
+        Monad
+          ([ Type (OCaml.Effect.State.state, Type (list, Type (bool))) ],
+            Type (list, Type (bool)))),
         LetVar
           (10,
             Effect
@@ -434,18 +442,22 @@ Value
 Value
   (non_rec, @.,
     [
-      ((raises, [ ], [ (x, Type (Z)) ], Type (unit)),
+      ((raises, [ ], [ (x, Type (Z)) ],
+        Monad ([ Type (OCaml.Failure) ], Type (unit))),
         For
-          ((20, Effect ([ OCaml.Failure ], .)), i, true,
+          ((20, Effect ([ Type (OCaml.Failure) ], .)), i, true,
             Constant ((20, Effect ([ ], .)), Int(0)),
             Variable ((20, Effect ([ ], .)), x),
             Coerce
-              ((?, Effect ([ OCaml.Failure ], .)),
+              ((?, Effect ([ Type (OCaml.Failure) ], .)),
                 Apply
-                  ((21, Effect ([ OCaml.Failure ], .)),
+                  ((21, Effect ([ Type (OCaml.Failure) ], .)),
                     Variable
                       ((21,
-                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                        Effect
+                          ([ ],
+                            . -[ Type (OCaml.Failure) ]->
+                              .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -462,16 +474,23 @@ Value
 Value
   (non_rec, @.,
     [
-      ((complex_raises, [ ], [ (x, Type (Z)) ], Type (unit)),
-        LetFun (25, Effect ([ OCaml.Failure ], .))
+      ((complex_raises, [ ], [ (x, Type (Z)) ],
+        Monad ([ Type (OCaml.Failure) ], Type (unit))),
+        LetFun (25, Effect ([ Type (OCaml.Failure) ], .))
           (non_rec, @.,
             [
-              ((f, [ A; B ], [ (a, A) ], (A * Type (Z) * B)),
+              ((f, [ A; B ], [ (a, A) ],
+                Monad
+                  ([
+                    Type
+                      (OCaml.Failure)
+                  ], (A * Type (Z) * B))),
                 Tuple
                   ((25,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Variable
@@ -492,7 +511,8 @@ Value
                       ((25,
                         Effect
                           ([
-                            OCaml.Failure
+                            Type
+                              (OCaml.Failure)
                           ],
                             .)),
                         Variable
@@ -502,7 +522,8 @@ Value
                               ],
                                 .
                                   -[
-                                    OCaml.Failure
+                                    Type
+                                      (OCaml.Failure)
                                   ]->
                                   .)),
                             OCaml.Pervasives.failwith),
@@ -517,17 +538,19 @@ Value
                         ])))
             ]) in
         For
-          ((26, Effect ([ OCaml.Failure ], .)), i, true,
+          ((26, Effect ([ Type (OCaml.Failure) ], .)), i, true,
             Constant ((26, Effect ([ ], .)), Int(0)),
             Variable ((26, Effect ([ ], .)), x),
             Coerce
-              ((?, Effect ([ OCaml.Failure ], .)),
+              ((?, Effect ([ Type (OCaml.Failure) ], .)),
                 Apply
-                  ((27, Effect ([ OCaml.Failure ], .)),
+                  ((27, Effect ([ Type (OCaml.Failure) ], .)),
                     Variable
                       ((27,
-                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
-                        f),
+                        Effect
+                          ([ ],
+                            . -[ Type (OCaml.Failure) ]->
+                              .)), f),
                     [ Constructor ((27, Effect ([ ], .)), true) ]),
                 (Type (bool) * Type (Z) * ()))))
     ])
@@ -538,7 +561,7 @@ Value
     [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
-        Type (Z)),
+        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
         LetVar (31, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
           y =
           Apply
@@ -697,7 +720,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       Z.add),
                                   [
                                     Apply
@@ -787,7 +814,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.sub),
                               [
                                 Apply

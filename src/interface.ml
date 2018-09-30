@@ -2,42 +2,8 @@ open SmartPrint
 open Yojson.Basic
 open Utils
 
-module Shape = struct
-  type t = PathName.t list list
-
-  let rec pp (shape : t) : SmartPrint.t =
-    OCaml.list (OCaml.list PathName.pp) shape
-
-  let rec of_effect_typ (typ : Effect.Type.t) : t =
-    match typ with
-    | Effect.Type.Pure -> []
-    | Effect.Type.Arrow (d, typ) ->
-      let ds = Effect.Descriptor.elements d |> List.map (fun x ->
-        x.BoundName.full_path) in
-      ds :: of_effect_typ typ
-
-  let to_effect_typ (shape : t) : Effect.Type.t =
-    let descriptor ds : Effect.Descriptor.t =
-      let ds = ds |> List.map (fun d ->
-        let bound_descriptor = { BoundName.full_path = d; local_path = d } in
-        Effect.Descriptor.singleton bound_descriptor []) in
-      Effect.Descriptor.union ds in
-    List.fold_right (fun ds typ -> Effect.Type.Arrow (descriptor ds, typ))
-      shape Effect.Type.Pure
-
-  let to_json (shape : t) : json =
-    `List (List.map (fun ds -> `List (List.map PathName.to_json ds)) shape)
-
-  let of_json (json : json) : t =
-    let of_list f json =
-      match json with
-      | `List jsons -> List.map f jsons
-      | _ -> raise (Error.Json "List expected.") in
-    of_list (of_list PathName.of_json) json
-end
-
 type t =
-  | Var of CoqName.t * Effect.t
+  | Var of CoqName.t * Type.t
   | Typ of TypeDefinition.t
   | Descriptor of CoqName.t
   | Exception of CoqName.t * CoqName.t
@@ -73,10 +39,10 @@ and of_signature (decl : Signature.t) : t list =
   | Signature.ModType (_, name, decls) ->
     [Signature (name, of_signatures decls)]
 
-let rec of_structures (defs : ('a * Effect.t) Structure.t list) : t list =
+let rec of_structures (defs : ('a * Type.t) Structure.t list) : t list =
   List.flatten (List.map of_structure defs)
 
-and of_structure (def : ('a * Effect.t) Structure.t) : t list =
+and of_structure (def : ('a * Type.t) Structure.t) : t list =
   match def with
   | Structure.Require names -> []
   | Structure.Value (_, value) ->
@@ -84,7 +50,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
       let name = header.Exp.Header.name in
       let typ =
         Effect.function_typ header.Exp.Header.args (snd (Exp.annotation e)) in
-      Var (name, Effect.compress typ))
+      Var (name, typ))
   | Structure.Primitive (_, prim) ->
     (* TODO: Update to reflect that primitives are not usually pure. *)
     [Var (prim.PrimitiveDeclaration.name, Effect.pure)]
@@ -102,7 +68,7 @@ and of_structure (def : ('a * Effect.t) Structure.t) : t list =
     [Signature (name, of_signatures decls)]
 
 let rec to_full_envi (top_name : Name.t option) (interface : t)
-  (env : Effect.t FullEnvi.t) : Effect.t FullEnvi.t =
+  (env : Type.t FullEnvi.t) : Type.t FullEnvi.t =
   match interface with
   | Var (x, effect) ->
     let effect = match top_name with
@@ -134,7 +100,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     FullEnvi.leave_signature env
 
 let load_interface (coq_prefix : Name.t) (interface : t)
-  (env : Effect.t FullEnvi.t) : Name.t * Effect.t FullEnvi.t =
+  (env : Type.t FullEnvi.t) : Name.t * Type.t FullEnvi.t =
   let name = match interface with
     | Interface (name, _) -> CoqName.ocaml_name name
     | _ -> "" in
@@ -208,8 +174,8 @@ let of_file (file_name : string) : t =
   really_input file content 0 size;
   of_json_string (Bytes.to_string content)
 
-let load_module (module_name : Name.t) (env : Effect.t FullEnvi.t)
-  : Effect.t FullEnvi.t =
+let load_module (module_name : Name.t) (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t =
     let file_name = String.uncapitalize_ascii (Name.to_string module_name) in
     match find_first (fun (coq_prefix, dir) ->
         let file_name = Filename.concat dir (file_name ^ ".interface") in

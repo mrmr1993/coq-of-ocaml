@@ -47,7 +47,8 @@ Value
     [
       ((s, [ ], [ ], Type (Z)),
         Apply
-          ((13, Effect ([ ], .)), Variable ((13, Effect ([ ], .)), Z.add),
+          ((13, Effect ([ ], .)),
+            Variable ((13, Effect ([ ], . -> . -> .)), Z.add),
             [
               Field
                 ((13, Effect ([ ], .)),
@@ -179,7 +180,13 @@ Value
                   Apply
                     ((35, Effect ([ ], .)),
                       Variable
-                        ((35, Effect ([ ], .)),
+                        ((35,
+                          Effect
+                            ([ ],
+                              . ->
+                                .
+                                  ->
+                                  .)),
                           Z.add),
                       [
                         Field

@@ -4,12 +4,12 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], B),
+      ((f, [ A; B ], [ (x, A) ], Monad ([ Type (Outside) ], B)),
         Apply
-          ((5, Effect ([ Outside ], .)),
+          ((5, Effect ([ Type (Outside) ], .)),
             Variable
-              ((5, Effect ([ ], . -[ Outside ]-> .)), raise_Outside),
-            [ Tuple ((?, Effect ([ ], .))) ]))
+              ((5, Effect ([ ], . -[ Type (Outside) ]-> .)),
+                raise_Outside), [ Tuple ((?, Effect ([ ], .))) ]))
     ])
 
 7 Module G:
@@ -19,18 +19,22 @@ Value
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool)) ], A),
+        ((g, [ A ], [ (b, Type (bool)) ],
+          Monad ([ Type (Outside); Type (G/Inside) ], A)),
           IfThenElse
-            ((11, Effect ([ Outside; G/Inside ], .)),
+            ((11, Effect ([ Type (Outside); Type (G/Inside) ], .)),
               Variable ((11, Effect ([ ], .)), G/b),
               Apply
-                ((12, Effect ([ G/Inside ], .)),
+                ((12, Effect ([ Type (G/Inside) ], .)),
                   Variable
                     ((12,
                       Effect
                         ([ ],
-                          . -[ G/Inside ]->
-                            .)),
+                          .
+                            -[
+                              Type
+                                (G/Inside)
+                            ]-> .)),
                       G/raise_Inside),
                   [
                     Tuple
@@ -55,11 +59,16 @@ Value
                             String("no")))
                   ]),
               Apply
-                ((14, Effect ([ Outside ], .)),
+                ((14, Effect ([ Type (Outside) ], .)),
                   Variable
                     ((14,
                       Effect
-                        ([ ], . -[ Outside ]-> .)),
+                        ([ ],
+                          .
+                            -[
+                              Type
+                                (Outside)
+                            ]-> .)),
                       raise_Outside),
                   [ Tuple ((?, Effect ([ ], .))) ])))
       ])
@@ -68,17 +77,31 @@ Value
 Value
   (rec, @.,
     [
-      ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ], B),
+      ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ],
+        Monad
+          ([
+            Type (IO);
+            Type (NonTermination);
+            Type (Outside);
+            Type (G.Inside)
+          ], B)),
         Match
-          ((?, Effect ([ IO; NonTermination; Outside; G.Inside ], .)),
-            Variable ((?, Effect ([ ], .)), counter),
+          ((?,
+            Effect
+              ([
+                Type (IO);
+                Type (NonTermination);
+                Type (Outside);
+                Type (G.Inside)
+              ], .)), Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
                 Apply
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -88,7 +111,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -105,10 +129,14 @@ Value
                   ((18,
                     Effect
                       ([
-                        IO;
-                        NonTermination;
-                        Outside;
-                        G.Inside
+                        Type
+                          (IO);
+                        Type
+                          (NonTermination);
+                        Type
+                          (Outside);
+                        Type
+                          (G.Inside)
                       ],
                         .)),
                     Variable
@@ -125,16 +153,20 @@ Value
                           ((19,
                             Effect
                               ([
-                                IO;
-                                Outside;
-                                G.Inside
+                                Type
+                                  (IO);
+                                Type
+                                  (Outside);
+                                Type
+                                  (G.Inside)
                               ],
                                 .)),
                             Apply
                               ((19,
                                 Effect
                                   ([
-                                    IO
+                                    Type
+                                      (IO)
                                   ],
                                     .)),
                                 Variable
@@ -144,7 +176,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            IO
+                                            Type
+                                              (IO)
                                           ]->
                                           .)),
                                     OCaml.Pervasives.print_string),
@@ -161,8 +194,10 @@ Value
                               ((19,
                                 Effect
                                   ([
-                                    Outside;
-                                    G.Inside
+                                    Type
+                                      (Outside);
+                                    Type
+                                      (G.Inside)
                                   ],
                                     .)),
                                 Variable
@@ -172,8 +207,10 @@ Value
                                       ],
                                         .
                                           -[
-                                            Outside;
-                                            G.Inside
+                                            Type
+                                              (Outside);
+                                            Type
+                                              (G.Inside)
                                           ]->
                                           .)),
                                     G.g),
@@ -195,7 +232,8 @@ Value
                           ((20,
                             Effect
                               ([
-                                G.Inside
+                                Type
+                                  (G.Inside)
                               ],
                                 .)),
                             Variable
@@ -205,7 +243,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        G.Inside
+                                        Type
+                                          (G.Inside)
                                       ]->
                                       .)),
                                 G.raise_Inside),
@@ -239,10 +278,14 @@ Value
                           ((21,
                             Effect
                               ([
-                                IO;
-                                NonTermination;
-                                Outside;
-                                G.Inside
+                                Type
+                                  (IO);
+                                Type
+                                  (NonTermination);
+                                Type
+                                  (Outside);
+                                Type
+                                  (G.Inside)
                               ],
                                 .)),
                             Apply
@@ -252,10 +295,14 @@ Value
                                   ],
                                     .
                                       -[
-                                        IO;
-                                        NonTermination;
-                                        Outside;
-                                        G.Inside
+                                        Type
+                                          (IO);
+                                        Type
+                                          (NonTermination);
+                                        Type
+                                          (Outside);
+                                        Type
+                                          (G.Inside)
                                       ]->
                                       .)),
                                 Variable
@@ -267,10 +314,14 @@ Value
                                           ->
                                           .
                                             -[
-                                              IO;
-                                              NonTermination;
-                                              Outside;
-                                              G.Inside
+                                              Type
+                                                (IO);
+                                              Type
+                                                (NonTermination);
+                                              Type
+                                                (Outside);
+                                              Type
+                                                (G.Inside)
                                             ]->
                                             .)),
                                     h_rec),
@@ -300,10 +351,25 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A; B ], [ (l, Type (list, A)) ], B),
+      ((h, [ A; B ], [ (l, Type (list, A)) ],
+        Monad
+          ([
+            Type (Counter);
+            Type (IO);
+            Type (NonTermination);
+            Type (Outside);
+            Type (G.Inside)
+          ], B)),
         Apply
           ((?,
-            Effect ([ Counter; IO; NonTermination; Outside; G.Inside ], .)),
+            Effect
+              ([
+                Type (Counter);
+                Type (IO);
+                Type (NonTermination);
+                Type (Outside);
+                Type (G.Inside)
+              ], .)),
             Variable
               ((?,
                 Effect
@@ -311,14 +377,14 @@ Value
                     . ->
                       .
                         -[
-                          IO;
-                          NonTermination;
-                          Outside;
-                          G.Inside
+                          Type (IO);
+                          Type (NonTermination);
+                          Type (Outside);
+                          Type (G.Inside)
                         ]-> .)), h_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -326,7 +392,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),

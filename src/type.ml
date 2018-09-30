@@ -87,15 +87,7 @@ let is_function (typ : t) : bool =
   | Arrow _ -> true
   | _ -> false
 
-let pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
-
-let of_pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
-
 let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
-
-let unify_pure (ptyp : Effect.PureType.t) (typ : t)
-  : Effect.PureType.t Name.Map.t =
-  Name.Map.map pure_type (CommonType.unify ptyp typ)
 
 let map_vars (f : Name.t -> t) (typ : t) : t = CommonType.map_vars f typ
 
@@ -138,26 +130,6 @@ let to_json (typ : t) : json = CommonType.to_json Effect.Descriptor.to_json typ
 
 let of_json (json : json) : t =
   CommonType.of_json Effect.Descriptor.of_json json
-
-let monadise (typ : t) (effect : Effect.t) : t =
-  let rec aux (typ : t) (effect_typ : Effect.Type.t) : t =
-    match (typ, effect_typ) with
-    | (Variable _, Effect.Type.Pure) | (Tuple _, Effect.Type.Pure)
-      | (Apply _, Effect.Type.Pure) | (Arrow _, Effect.Type.Pure) -> typ
-    | (Arrow (typ1, typ2), Effect.Type.Arrow (d, effect_typ2)) ->
-      let typ2 = aux typ2 effect_typ2 in
-      Arrow (typ1,
-        if Effect.Descriptor.is_pure d then
-          typ2
-        else
-          Monad (d, typ2))
-    | (Monad _, _) -> failwith "This type is already monadic."
-    | _ -> failwith "Type and effect type are not compatible." in
-  let typ = aux typ effect.Effect.typ in
-  if Effect.Descriptor.is_pure effect.Effect.descriptor then
-    typ
-  else
-    Monad (effect.Effect.descriptor, typ)
 
 let to_coq (paren : bool) (typ : t) : SmartPrint.t =
   CommonType.to_coq Effect.Descriptor.to_coq paren typ

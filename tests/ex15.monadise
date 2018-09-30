@@ -11,7 +11,7 @@ Value
     [
       ((member_rec, [ ],
         [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ],
-        Monad ([ NonTermination ], Type (bool))),
+        Monad ([ Type (NonTermination) ], Type (bool))),
         Match
           (?, Variable (?, counter),
             [
@@ -125,15 +125,17 @@ Value
   (non_rec, @.,
     [
       ((member, [ ], [ (x, Type (Z)); (s, Type (set)) ],
-        Monad ([ Counter; NonTermination ], Type (bool))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x_1,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, member_rec),
                     [
@@ -149,7 +151,7 @@ Value
     [
       ((insert_rec, [ ],
         [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ],
-        Monad ([ NonTermination ], Type (set))),
+        Monad ([ Type (NonTermination) ], Type (set))),
         Match
           (?, Variable (?, counter),
             [
@@ -308,15 +310,17 @@ Value
   (non_rec, @.,
     [
       ((insert, [ ], [ (x, Type (Z)); (s, Type (set)) ],
-        Monad ([ Counter; NonTermination ], Type (set))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (set))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x_1,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, insert_rec),
                     [

@@ -5,7 +5,6 @@ open Utils
 module Value = struct
   type 'a t =
     | Variable of 'a
-    | Function of 'a * Effect.Descriptor.t Kerneltypes.Type.t'
     | Type of Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
     | Descriptor
     | Exception of PathName.t
@@ -15,7 +14,6 @@ module Value = struct
   let map (f : 'a -> 'b) (v : 'a t) : 'b t =
     match v with
     | Variable a -> Variable (f a)
-    | Function (a, typ) -> Function (f a, typ)
     | Type def -> Type def
     | Descriptor -> Descriptor
     | Exception raise_name -> Exception raise_name
@@ -25,7 +23,6 @@ module Value = struct
   let to_string (v : 'a t) : string =
     match v with
     | Variable _ -> "variable"
-    | Function _ -> "function"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
     | Exception _ -> "exception"
@@ -316,26 +313,6 @@ module Var = ValueCarrier(struct
   let unpack (v : 'a Value.t) : 'a =
     match v with
     | Variable a -> a
-    | Function (a, _) -> a
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
-end)
-
-module Function = ValueCarrier(struct
-  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
-    PathName.Map.find_opt x m.Mod.vars
-
-  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
-    { m with Mod.vars = PathName.Map.add x y m.Mod.vars }
-
-  type 'a t = 'a * Effect.Descriptor.t Kerneltypes.Type.t'
-  type 'a t' = Effect.Descriptor.t Kerneltypes.Type.t' option
-
-  let value ((v, typ) : 'a t) : 'a Value.t = Function (v, typ)
-
-  let unpack (v : 'a Value.t) : 'a t' =
-    match v with
-    | Variable _ -> None
-    | Function (_, typ) -> Some typ
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a variable."
 end)
 
@@ -553,7 +530,7 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   let descriptor = PathName.of_name path base in
   let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
   let effect =
-    Effect.eff @@ Effect.Type.Arrow (
+    Effect.eff @@ Effect.Type.Arrow (Effect.Type.pure, Effect.Type.Monad (
       Effect.Descriptor.singleton bound_descriptor [],
-      Effect.Type.Pure) in
+      Effect.Type.pure)) in
   Var.add path ("raise_" ^ base) effect env

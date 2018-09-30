@@ -14,9 +14,10 @@ Value
   (rec, @.,
     [
       ((member_rec, [ ],
-        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (bool)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ],
+        Monad ([ Type (NonTermination) ], Type (bool))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -24,7 +25,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -34,7 +36,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -51,7 +54,8 @@ Value
                   ((10,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -80,7 +84,8 @@ Value
                           ((13,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Apply
@@ -94,7 +99,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     OCaml.Pervasives.lt),
                                 [
                                   Variable
@@ -116,7 +125,8 @@ Value
                               ((14,
                                 Effect
                                   ([
-                                    NonTermination
+                                    Type
+                                      (NonTermination)
                                   ],
                                     .)),
                                 Apply
@@ -128,7 +138,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              NonTermination
+                                              Type
+                                                (NonTermination)
                                             ]->
                                             .)),
                                     Variable
@@ -142,7 +153,8 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination
+                                                    Type
+                                                      (NonTermination)
                                                   ]->
                                                   .)),
                                         member_rec),
@@ -175,7 +187,8 @@ Value
                               ((15,
                                 Effect
                                   ([
-                                    NonTermination
+                                    Type
+                                      (NonTermination)
                                   ],
                                     .)),
                                 Apply
@@ -189,7 +202,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         OCaml.Pervasives.lt),
                                     [
                                       Variable
@@ -211,7 +228,8 @@ Value
                                   ((16,
                                     Effect
                                       ([
-                                        NonTermination
+                                        Type
+                                          (NonTermination)
                                       ],
                                         .)),
                                     Apply
@@ -223,7 +241,8 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination
+                                                  Type
+                                                    (NonTermination)
                                                 ]->
                                                 .)),
                                         Variable
@@ -237,7 +256,8 @@ Value
                                                     ->
                                                     .
                                                       -[
-                                                        NonTermination
+                                                        Type
+                                                          (NonTermination)
                                                       ]->
                                                       .)),
                                             member_rec),
@@ -281,15 +301,18 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (bool)),
+      ((member, [ ], [ (x, Type (Z)); (s, Type (set)) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -> . -[ NonTermination ]-> .)),
+              ((?,
+                Effect
+                  ([ ], . -> . -> . -[ Type (NonTermination) ]-> .)),
                 member_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -297,7 +320,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),
@@ -319,9 +343,10 @@ Value
   (rec, @.,
     [
       ((insert_rec, [ ],
-        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (set)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ],
+        Monad ([ Type (NonTermination) ], Type (set))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -329,7 +354,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -339,7 +365,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -356,7 +383,8 @@ Value
                   ((21,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -406,7 +434,8 @@ Value
                           ((24,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Apply
@@ -420,7 +449,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     OCaml.Pervasives.lt),
                                 [
                                   Variable
@@ -442,7 +475,8 @@ Value
                               ((25,
                                 Effect
                                   ([
-                                    NonTermination
+                                    Type
+                                      (NonTermination)
                                   ],
                                     .)),
                                 Node,
@@ -450,7 +484,8 @@ Value
                                   ((25,
                                     Effect
                                       ([
-                                        NonTermination
+                                        Type
+                                          (NonTermination)
                                       ],
                                         .)),
                                     Apply
@@ -462,7 +497,8 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination
+                                                  Type
+                                                    (NonTermination)
                                                 ]->
                                                 .)),
                                         Variable
@@ -476,7 +512,8 @@ Value
                                                     ->
                                                     .
                                                       -[
-                                                        NonTermination
+                                                        Type
+                                                          (NonTermination)
                                                       ]->
                                                       .)),
                                             insert_rec),
@@ -523,7 +560,8 @@ Value
                               ((26,
                                 Effect
                                   ([
-                                    NonTermination
+                                    Type
+                                      (NonTermination)
                                   ],
                                     .)),
                                 Apply
@@ -537,7 +575,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         OCaml.Pervasives.lt),
                                     [
                                       Variable
@@ -559,7 +601,8 @@ Value
                                   ((27,
                                     Effect
                                       ([
-                                        NonTermination
+                                        Type
+                                          (NonTermination)
                                       ],
                                         .)),
                                     Node,
@@ -581,7 +624,8 @@ Value
                                       ((27,
                                         Effect
                                           ([
-                                            NonTermination
+                                            Type
+                                              (NonTermination)
                                           ],
                                             .)),
                                         Apply
@@ -593,7 +637,8 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination
+                                                      Type
+                                                        (NonTermination)
                                                     ]->
                                                     .)),
                                             Variable
@@ -607,7 +652,8 @@ Value
                                                         ->
                                                         .
                                                           -[
-                                                            NonTermination
+                                                            Type
+                                                              (NonTermination)
                                                           ]->
                                                           .)),
                                                 insert_rec),
@@ -651,15 +697,18 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (set)),
+      ((insert, [ ], [ (x, Type (Z)); (s, Type (set)) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (set))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -> . -[ NonTermination ]-> .)),
+              ((?,
+                Effect
+                  ([ ], . -> . -> . -[ Type (NonTermination) ]-> .)),
                 insert_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -667,7 +716,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),

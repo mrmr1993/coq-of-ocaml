@@ -42,7 +42,7 @@ Value
     [
       ((f_map2_rec, [ A; B ],
         [ (counter, Type (nat)); (f, (A -> B)); (l, Type (list, A)) ],
-        Monad ([ NonTermination ], Type (list, B))),
+        Monad ([ Type (NonTermination) ], Type (list, B))),
         Match
           (?, Variable (?, counter),
             [
@@ -122,15 +122,17 @@ Value
   (non_rec, @.,
     [
       ((f_map2, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ],
-        Monad ([ Counter; NonTermination ], Type (list, B))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (list, B))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, f_map2_rec),
                     [
@@ -211,7 +213,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((n2, [ A ], [ (x, A) ], Monad ([ Counter; NonTermination ], Type (Z))),
+      ((n2, [ A ], [ (x, A) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
           (?, Variable (?, x),
             [
@@ -234,7 +237,8 @@ Value
                         ],
                         Monad
                           ([
-                            NonTermination
+                            Type
+                              (NonTermination)
                           ],
                             Type
                               (Z))),
@@ -332,8 +336,10 @@ Value
                         ],
                         Monad
                           ([
-                            Counter;
-                            NonTermination
+                            Type
+                              (Counter);
+                            Type
+                              (NonTermination)
                           ],
                             Type
                               (Z))),
@@ -342,11 +348,14 @@ Value
                             Lift
                               (?,
                                 [
-                                  Counter
+                                  Type
+                                    (Counter)
                                 ],
                                 [
-                                  Counter;
-                                  NonTermination
+                                  Type
+                                    (Counter);
+                                  Type
+                                    (NonTermination)
                                 ],
                                 Apply
                                   (?,
@@ -362,11 +371,14 @@ Value
                             Lift
                               (?,
                                 [
-                                  NonTermination
+                                  Type
+                                    (NonTermination)
                                 ],
                                 [
-                                  Counter;
-                                  NonTermination
+                                  Type
+                                    (Counter);
+                                  Type
+                                    (NonTermination)
                                 ],
                                 Apply
                                   (?,

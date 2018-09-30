@@ -7,7 +7,8 @@ Value
       ((all_eqb, [ ], [ (x, Type (bool)); (y, Type (bool)); (z, Type (bool)) ],
         Type (bool)),
         Apply
-          ((5, Effect ([ ], .)), Variable ((5, Effect ([ ], .)), andb),
+          ((5, Effect ([ ], .)),
+            Variable ((5, Effect ([ ], . -> . -> .)), andb),
             [
               Apply
                 ((5, Effect ([ ], .)),
@@ -16,7 +17,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       op_eq_eq),
                   [
                     Variable
@@ -41,7 +46,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       op_eq_eq),
                   [
                     Variable
@@ -70,7 +79,8 @@ Value
     [
       ((all_equal, [ A ], [ (x, A); (y, A); (z, A) ], Type (bool)),
         Apply
-          ((10, Effect ([ ], .)), Variable ((10, Effect ([ ], .)), andb),
+          ((10, Effect ([ ], .)),
+            Variable ((10, Effect ([ ], . -> . -> .)), andb),
             [
               Apply
                 ((10, Effect ([ ], .)),
@@ -79,7 +89,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       op_eq),
                   [
                     Variable
@@ -104,7 +118,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       op_eq),
                   [
                     Variable

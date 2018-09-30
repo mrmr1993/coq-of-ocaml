@@ -48,7 +48,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((hd, [ A ], [ (x, Type (list, A)) ], Monad ([ OCaml.Failure ], A)),
+      ((hd, [ A ], [ (x, Type (list, A)) ], Monad ([ Type (OCaml.Failure) ], A)),
         Match
           (?, Variable (?, x),
             [
@@ -72,7 +72,7 @@ Value
   (non_rec, @.,
     [
       ((tl, [ A ], [ (x, Type (list, A)) ],
-        Monad ([ OCaml.Failure ], Type (list, A))),
+        Monad ([ Type (OCaml.Failure) ], Type (list, A))),
         Match
           (?, Variable (?, x),
             [
@@ -96,21 +96,21 @@ Value
   (non_rec, @.,
     [
       ((nth, [ A ], [ (l, Type (list, A)); (n, Type (Z)) ],
-        Monad ([ OCaml.Failure; OCaml.Invalid_argument ], A)),
+        Monad ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ], A)),
         IfThenElse
           (32,
             Apply
               (32, Variable (32, OCaml.Pervasives.lt),
                 [ Variable (32, n); Constant (32, Int(0)) ]),
             Lift
-              (?, [ OCaml.Invalid_argument ],
-                [ OCaml.Failure; OCaml.Invalid_argument ],
+              (?, [ Type (OCaml.Invalid_argument) ],
+                [ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ],
                 Apply
                   (32, Variable (32, OCaml.Pervasives.invalid_arg),
                     [ Constant (32, String("List.nth")) ])),
             Lift
-              (?, [ OCaml.Failure ],
-                [ OCaml.Failure; OCaml.Invalid_argument ],
+              (?, [ Type (OCaml.Failure) ],
+                [ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ],
                 LetFun 33
                   (rec, @coq_rec,
                     [
@@ -126,7 +126,8 @@ Value
                         ],
                         Monad
                           ([
-                            OCaml.Failure
+                            Type
+                              (OCaml.Failure)
                           ],
                             B)),
                         Match
@@ -629,7 +630,7 @@ Value
     [
       ((map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (list, C))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, C))),
         Match
           (99, Tuple (99, Variable (99, l1), Variable (99, l2)),
             [
@@ -707,7 +708,7 @@ Value
     [
       ((rev_map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (list, C))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, C))),
         LetFun 106
           (rec, @coq_rec,
             [
@@ -719,7 +720,8 @@ Value
                 ],
                 Monad
                   ([
-                    OCaml.Invalid_argument
+                    Type
+                      (OCaml.Invalid_argument)
                   ], Type (list, C))),
                 Match
                   (107,
@@ -813,7 +815,7 @@ Value
     [
       ((iter2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (unit))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (unit))),
         Match
           (114, Tuple (114, Variable (114, l1), Variable (114, l2)),
             [
@@ -865,7 +867,7 @@ Value
           (accu, A);
           (l1, Type (list, B));
           (l2, Type (list, C))
-        ], Monad ([ OCaml.Invalid_argument ], A)),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], A)),
         Match
           (121, Tuple (121, Variable (121, l1), Variable (121, l2)),
             [
@@ -933,7 +935,7 @@ Value
           (l1, Type (list, A));
           (l2, Type (list, B));
           (accu, C)
-        ], Monad ([ OCaml.Invalid_argument ], C)),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], C)),
         Match
           (128, Tuple (128, Variable (128, l1), Variable (128, l2)),
             [
@@ -1097,7 +1099,7 @@ Value
           (p, (A -> (B -> Type (bool))));
           (l1, Type (list, A));
           (l2, Type (list, B))
-        ], Monad ([ OCaml.Invalid_argument ], Type (bool))),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
         Match
           (145, Tuple (145, Variable (145, l1), Variable (145, l2)),
             [
@@ -1177,7 +1179,7 @@ Value
           (p, (A -> (B -> Type (bool))));
           (l1, Type (list, A));
           (l2, Type (list, B))
-        ], Monad ([ OCaml.Invalid_argument ], Type (bool))),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
         Match
           (152, Tuple (152, Variable (152, l1), Variable (152, l2)),
             [
@@ -1253,7 +1255,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
-        Monad ([ OCaml.Not_found ], A)),
+        Monad ([ Type (OCaml.Not_found) ], A)),
         Match
           (?, Variable (?, x),
             [
@@ -1569,7 +1571,7 @@ Value
   (rec, @coq_rec,
     [
       ((combine, [ A; B ], [ (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (list, (A * B)))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, (A * B)))),
         Match
           (221, Tuple (221, Variable (221, l1), Variable (221, l2)),
             [
@@ -1752,7 +1754,7 @@ Value
   (rec, @coq_rec,
     [
       ((chop, [ A ], [ (k, Type (Z)); (l, Type (list, A)) ],
-        Monad ([ OCaml.Assert_failure ], Type (list, A))),
+        Monad ([ Type (OCaml.Assert_failure) ], Type (list, A))),
         IfThenElse
           (241,
             Apply
@@ -2128,7 +2130,9 @@ Value
             (n, Type (Z));
             (l, Type (list, A))
           ],
-          Monad ([ NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
             (?, Variable (?, StableSort/counter),
               [
@@ -2136,11 +2140,14 @@ Value
                   Lift
                     (?,
                       [
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                       [
-                        NonTermination;
-                        OCaml.Assert_failure
+                        Type
+                          (NonTermination);
+                        Type
+                          (OCaml.Assert_failure)
                       ],
                       Apply
                         (?,
@@ -2538,11 +2545,14 @@ Value
                               Lift
                                 (?,
                                   [
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   [
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   Apply
                                     (290,
@@ -2643,7 +2653,9 @@ Value
             (n, Type (Z));
             (l, Type (list, A))
           ],
-          Monad ([ NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
             (?, Variable (?, StableSort/counter),
               [
@@ -2651,11 +2663,14 @@ Value
                   Lift
                     (?,
                       [
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                       [
-                        NonTermination;
-                        OCaml.Assert_failure
+                        Type
+                          (NonTermination);
+                        Type
+                          (OCaml.Assert_failure)
                       ],
                       Apply
                         (?,
@@ -3053,11 +3068,14 @@ Value
                               Lift
                                 (?,
                                   [
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   [
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   Apply
                                     (312,
@@ -3164,26 +3182,33 @@ Value
             (l, Type (list, A))
           ],
           Monad
-            ([ Counter; NonTermination; OCaml.Assert_failure ],
-              Type (list, A))),
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter ],
+                (?, [ Type (Counter) ],
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination; OCaml.Assert_failure ],
+                (?,
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ],
+                  [
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?,
@@ -3216,26 +3241,33 @@ Value
             (l, Type (list, A))
           ],
           Monad
-            ([ Counter; NonTermination; OCaml.Assert_failure ],
-              Type (list, A))),
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter ],
+                (?, [ Type (Counter) ],
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination; OCaml.Assert_failure ],
+                (?,
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ],
+                  [
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?,
@@ -3265,7 +3297,11 @@ Value
       ((stable_sort, [ A ],
         [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ],
         Monad
-          ([ Counter; NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Assert_failure)
+          ], Type (list, A))),
         LetVar ? len =
           Apply (319, Variable (319, length), [ Variable (319, l) ]) in
         IfThenElse
@@ -3291,8 +3327,11 @@ Value
         ((A -> (A -> Type (Z))) ->
           (Type (list, A) ->
             Monad
-              ([ Counter; NonTermination; OCaml.Assert_failure ],
-                Type (list, A))))), Variable (322, stable_sort))
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], Type (list, A))))), Variable (322, stable_sort))
     ])
 
 323
@@ -3303,8 +3342,11 @@ Value
         ((A -> (A -> Type (Z))) ->
           (Type (list, A) ->
             Monad
-              ([ Counter; NonTermination; OCaml.Assert_failure ],
-                Type (list, A))))), Variable (323, stable_sort))
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], Type (list, A))))), Variable (323, stable_sort))
     ])
 
 325 Module SortUniq:
@@ -3731,7 +3773,9 @@ Value
             (n, Type (Z));
             (l, Type (list, A))
           ],
-          Monad ([ NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
             (?, Variable (?, SortUniq/counter),
               [
@@ -3739,11 +3783,14 @@ Value
                   Lift
                     (?,
                       [
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                       [
-                        NonTermination;
-                        OCaml.Assert_failure
+                        Type
+                          (NonTermination);
+                        Type
+                          (OCaml.Assert_failure)
                       ],
                       Apply
                         (?,
@@ -4435,11 +4482,14 @@ Value
                               Lift
                                 (?,
                                   [
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   [
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   Apply
                                     (387,
@@ -4540,7 +4590,9 @@ Value
             (n, Type (Z));
             (l, Type (list, A))
           ],
-          Monad ([ NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
             (?, Variable (?, SortUniq/counter),
               [
@@ -4548,11 +4600,14 @@ Value
                   Lift
                     (?,
                       [
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                       [
-                        NonTermination;
-                        OCaml.Assert_failure
+                        Type
+                          (NonTermination);
+                        Type
+                          (OCaml.Assert_failure)
                       ],
                       Apply
                         (?,
@@ -5244,11 +5299,14 @@ Value
                               Lift
                                 (?,
                                   [
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   [
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                   Apply
                                     (424,
@@ -5355,26 +5413,33 @@ Value
             (l, Type (list, A))
           ],
           Monad
-            ([ Counter; NonTermination; OCaml.Assert_failure ],
-              Type (list, A))),
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter ],
+                (?, [ Type (Counter) ],
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination; OCaml.Assert_failure ],
+                (?,
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ],
+                  [
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?, Variable (?, SortUniq/sort_rec),
@@ -5399,26 +5464,33 @@ Value
             (l, Type (list, A))
           ],
           Monad
-            ([ Counter; NonTermination; OCaml.Assert_failure ],
-              Type (list, A))),
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter ],
+                (?, [ Type (Counter) ],
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination; OCaml.Assert_failure ],
+                (?,
                   [
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ],
+                  [
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
                   ],
                   Apply
                     (?,
@@ -5442,7 +5514,11 @@ Value
       ((sort_uniq, [ A ],
         [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ],
         Monad
-          ([ Counter; NonTermination; OCaml.Assert_failure ], Type (list, A))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Assert_failure)
+          ], Type (list, A))),
         LetVar ? len =
           Apply (431, Variable (431, length), [ Variable (431, l) ]) in
         IfThenElse

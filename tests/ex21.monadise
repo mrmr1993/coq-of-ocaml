@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B; C ], [ (x, A) ],
-        Monad ([ IO ], (B -> Monad ([ OCaml.Failure ], C)))),
+        Monad ([ Type (IO) ], (B -> Monad ([ Type (OCaml.Failure) ], C)))),
         Bind
           (?,
             Apply
@@ -24,7 +24,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], Monad ([ IO; OCaml.Failure ], B)),
+      ((r, [ A; B ], [ (x, A) ], Monad ([ Type (IO); Type (OCaml.Failure) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -34,11 +34,14 @@ Value
                     Lift
                       (?,
                         [
-                          IO
+                          Type
+                            (IO)
                         ],
                         [
-                          IO;
-                          OCaml.Failure
+                          Type
+                            (IO);
+                          Type
+                            (OCaml.Failure)
                         ],
                         Apply
                           (7,
@@ -55,11 +58,14 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Failure
+                          Type
+                            (OCaml.Failure)
                         ],
                         [
-                          IO;
-                          OCaml.Failure
+                          Type
+                            (IO);
+                          Type
+                            (OCaml.Failure)
                         ],
                         Apply
                           (7,

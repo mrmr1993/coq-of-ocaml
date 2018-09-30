@@ -4,20 +4,21 @@
 Value
   (non_rec, @.,
     [
-      ((div, [ ], [ (n, Type (Z)) ], Type (Z)),
+      ((div, [ ], [ (n, Type (Z)) ], Monad ([ Type (Fail) ], Type (Z))),
         IfThenElse
-          ((6, Effect ([ Fail ], .)),
+          ((6, Effect ([ Type (Fail) ], .)),
             Apply
               ((6, Effect ([ ], .)),
-                Variable ((6, Effect ([ ], .)), equiv_decb),
+                Variable ((6, Effect ([ ], . -> . -> .)), equiv_decb),
                 [
                   Variable ((6, Effect ([ ], .)), n);
                   Constant ((6, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((7, Effect ([ Fail ], .)),
+              ((7, Effect ([ Type (Fail) ], .)),
                 Variable
-                  ((7, Effect ([ ], . -[ Fail ]-> .)), raise_Fail),
+                  ((7, Effect ([ ], . -[ Type (Fail) ]-> .)),
+                    raise_Fail),
                 [
                   Tuple
                     ((?, Effect ([ ], .)),
@@ -31,7 +32,7 @@ Value
                 ]),
             Apply
               ((9, Effect ([ ], .)),
-                Variable ((9, Effect ([ ], .)), Z.div),
+                Variable ((9, Effect ([ ], . -> . -> .)), Z.div),
                 [
                   Constant ((9, Effect ([ ], .)), Int(256));
                   Variable ((9, Effect ([ ], .)), n)

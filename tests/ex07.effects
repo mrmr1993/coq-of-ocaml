@@ -4,7 +4,8 @@ Value
     [
       ((b, [ ], [ ], Type (bool)),
         Apply
-          ((3, Effect ([ ], .)), Variable ((3, Effect ([ ], .)), orb),
+          ((3, Effect ([ ], .)),
+            Variable ((3, Effect ([ ], . -> . -> .)), orb),
             [
               Apply
                 ((3, Effect ([ ], .)),
@@ -13,7 +14,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       equiv_decb),
                   [
                     Constructor
@@ -38,7 +43,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       andb),
                   [
                     Apply
@@ -52,7 +61,11 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                             nequiv_decb),
                         [
                           Constructor
@@ -81,7 +94,9 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .)),
                             negb),
                         [
                           Constructor
@@ -102,7 +117,8 @@ Value
     [
       ((n1, [ ], [ ], Type (Z)),
         Apply
-          ((5, Effect ([ ], .)), Variable ((5, Effect ([ ], .)), Z.add),
+          ((5, Effect ([ ], .)),
+            Variable ((5, Effect ([ ], . -> . -> .)), Z.add),
             [
               Constant ((5, Effect ([ ], .)), Int(1));
               Apply
@@ -112,7 +128,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.mul),
                   [
                     Constant
@@ -139,7 +159,8 @@ Value
     [
       ((n2, [ ], [ ], Type (Z)),
         Apply
-          ((7, Effect ([ ], .)), Variable ((7, Effect ([ ], .)), Z.sub),
+          ((7, Effect ([ ], .)),
+            Variable ((7, Effect ([ ], . -> . -> .)), Z.sub),
             [
               Apply
                 ((7, Effect ([ ], .)),
@@ -148,7 +169,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.add),
                   [
                     Apply
@@ -162,7 +187,9 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .)),
                             Z.abs),
                         [
                           Constant
@@ -188,7 +215,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.mul),
                   [
                     Apply
@@ -202,7 +233,11 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                             Z.modulo),
                         [
                           Apply
@@ -216,7 +251,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.div),
                               [
                                 Constant
@@ -259,7 +298,8 @@ Value
     [
       ((n3, [ ], [ ], Type (Z)),
         Apply
-          ((9, Effect ([ ], .)), Variable ((9, Effect ([ ], .)), Z.pred),
+          ((9, Effect ([ ], .)),
+            Variable ((9, Effect ([ ], . -> .)), Z.pred),
             [
               Apply
                 ((9, Effect ([ ], .)),
@@ -268,7 +308,9 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .)),
                       Z.succ),
                   [
                     Constant
@@ -288,7 +330,8 @@ Value
     [
       ((n4, [ ], [ ], Type (Z)),
         Apply
-          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], .)), Z.lxor),
+          ((11, Effect ([ ], .)),
+            Variable ((11, Effect ([ ], . -> . -> .)), Z.lxor),
             [
               Apply
                 ((11, Effect ([ ], .)),
@@ -297,7 +340,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.lor),
                   [
                     Apply
@@ -311,7 +358,11 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                             Z.land),
                         [
                           Constant
@@ -347,7 +398,8 @@ Value
     [
       ((n5, [ ], [ ], Type (Z)),
         Apply
-          ((13, Effect ([ ], .)), Variable ((13, Effect ([ ], .)), Z.add),
+          ((13, Effect ([ ], .)),
+            Variable ((13, Effect ([ ], . -> . -> .)), Z.add),
             [
               Apply
                 ((13, Effect ([ ], .)),
@@ -356,7 +408,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.shiftl),
                   [
                     Constant
@@ -381,7 +437,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.shiftr),
                   [
                     Constant
@@ -409,7 +469,7 @@ Value
       ((s, [ ], [ ], Type (string)),
         Apply
           ((15, Effect ([ ], .)),
-            Variable ((15, Effect ([ ], .)), String.append),
+            Variable ((15, Effect ([ ], . -> . -> .)), String.append),
             [
               Constant ((15, Effect ([ ], .)), String("ghj"));
               Constant ((15, Effect ([ ], .)), String("klm"))
@@ -420,9 +480,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((c, [ A ], [ (x, A) ], Type (ascii)),
+      ((c, [ A ], [ (x, A) ],
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (ascii))),
         Match
-          ((?, Effect ([ OCaml.Invalid_argument ], .)),
+          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -430,7 +491,8 @@ Value
                   ((17,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -440,7 +502,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.char_of_int),
@@ -456,7 +519,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               Z.add),
                           [
                             Apply
@@ -470,7 +537,9 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .)),
                                     OCaml.Pervasives.int_of_char),
                                 [
                                   Constant
@@ -500,7 +569,7 @@ Value
       ((x, [ ], [ ], Type (unit)),
         Apply
           ((19, Effect ([ ], .)),
-            Variable ((19, Effect ([ ], .)), OCaml.Pervasives.ignore),
+            Variable ((19, Effect ([ ], . -> .)), OCaml.Pervasives.ignore),
             [ Constant ((19, Effect ([ ], .)), Int(23)) ]))
     ])
 
@@ -510,7 +579,8 @@ Value
     [
       ((p, [ ], [ ], Type (Z)),
         Apply
-          ((21, Effect ([ ], .)), Variable ((21, Effect ([ ], .)), Z.add),
+          ((21, Effect ([ ], .)),
+            Variable ((21, Effect ([ ], . -> . -> .)), Z.add),
             [
               Apply
                 ((21, Effect ([ ], .)),
@@ -519,7 +589,9 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .)),
                       fst),
                   [
                     Tuple
@@ -550,7 +622,9 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .)),
                       snd),
                   [
                     Tuple
@@ -584,7 +658,8 @@ Value
       ((l, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((23, Effect ([ ], .)),
-            Variable ((23, Effect ([ ], .)), OCaml.Pervasives.app),
+            Variable
+              ((23, Effect ([ ], . -> . -> .)), OCaml.Pervasives.app),
             [
               Constructor
                 ((23, Effect ([ ], .)), cons,
@@ -641,7 +716,8 @@ Value
     [
       ((y, [ ], [ ], Type (Z)),
         Apply
-          ((25, Effect ([ ], .)), Variable ((25, Effect ([ ], .)), apply),
+          ((25, Effect ([ ], .)),
+            Variable ((25, Effect ([ ], . -> . -> .)), apply),
             [
               Function
                 ((25, Effect ([ ], . -> .)), n,
@@ -656,7 +732,11 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .
+                                  ->
+                                  .)),
                           Z.add),
                       [
                         Variable

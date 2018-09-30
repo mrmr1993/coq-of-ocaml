@@ -5,7 +5,7 @@ Value
       ((temp, [ ], [ ], Type (unit)),
         Apply
           ((3, Effect ([ ], .)),
-            Variable ((3, Effect ([ ], .)), OCaml.Pervasives.ignore),
+            Variable ((3, Effect ([ ], . -> .)), OCaml.Pervasives.ignore),
             [
               Apply
                 ((3, Effect ([ ], .)),
@@ -14,7 +14,11 @@ Value
                       Effect
                         ([
                         ],
-                          .)),
+                          .
+                            ->
+                            .
+                              ->
+                              .)),
                       Z.add),
                   [
                     Constant
@@ -365,10 +369,19 @@ Value
     [
       ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
         Match
-          ((30, Effect ([ ], .)), Variable ((30, Effect ([ ], .)), c_val),
+          ((30, Effect ([ ], . -> .)),
+            Variable ((30, Effect ([ ], .)), c_val),
             [
               (Record ((f, f (= f_1))),
-                Variable ((30, Effect ([ ], .)), f_1))
+                Variable
+                  ((30,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .)),
+                    f_1))
             ]))
     ])
 
@@ -406,6 +419,10 @@ Value
     [
       ((g, [ A ], [ ], (A -> Type (Z))),
         Match
-          ((36, Effect ([ ], .)), Variable ((36, Effect ([ ], .)), d_val),
-            [ (Constructor (F, g), Variable ((36, Effect ([ ], .)), g)) ]))
+          ((36, Effect ([ ], . -> .)),
+            Variable ((36, Effect ([ ], .)), d_val),
+            [
+              (Constructor (F, g),
+                Variable ((36, Effect ([ ], . -> .)), g))
+            ]))
     ])

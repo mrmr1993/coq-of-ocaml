@@ -195,17 +195,17 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     (env, []) defs in
   (env, List.rev defs)
 
-let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
-  : Effect.t FullEnvi.t * ('a * Effect.t) t list =
-  let effects_one (env : Effect.t FullEnvi.t) (def : ('a * Type.t) t)
-    : Effect.t FullEnvi.t * ('a * Effect.t) t =
+let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
+  : Type.t FullEnvi.t * ('a * Type.t) t list =
+  let effects_one (env : Type.t FullEnvi.t) (def : ('a * Type.t) t)
+    : Type.t FullEnvi.t * ('a * Type.t) t =
     match def with
     | Require names -> (env, Require names)
     | Value (loc, def) ->
       let def = Exp.effects_of_def env def in
       (if def.Exp.Definition.cases |> List.exists (fun (header, e) ->
-        header.Exp.Header.args = [] &&
-          not (Effect.Descriptor.is_pure (snd (Exp.annotation e)).Effect.descriptor)) then
+        let d = fst @@ Effect.split @@ snd @@ Exp.annotation e in
+        header.Exp.Header.args = [] && not (Effect.Descriptor.is_pure d)) then
         Error.warn loc "Toplevel effects are forbidden.");
       let env = Exp.env_after_def_with_effects env def in
       (env, Value (loc, def))
@@ -239,9 +239,9 @@ let rec effects (env : Effect.t FullEnvi.t) (defs : ('a * Type.t) t list)
       (env, []) defs in
   (env, List.rev defs)
 
-let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
+let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
   : unit FullEnvi.t * Loc.t t list =
-  let monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Effect.t) t)
+  let monadise_one (env : unit FullEnvi.t) (def : (Loc.t * Type.t) t)
     : unit FullEnvi.t * Loc.t t =
     match def with
     | Require names -> (env, Require names)
@@ -250,7 +250,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Effect.t) t list)
       let def = { def with
         Exp.Definition.cases =
           def.Exp.Definition.cases |> List.map (fun (header, e) ->
-            let typ = Type.monadise header.Exp.Header.typ (snd (Exp.annotation e)) in
+            let typ = header.Exp.Header.typ in
         let (implicit_args, typ) = Type.allocate_implicits_for_monad
           header.Exp.Header.implicit_args header.Exp.Header.args typ in
         let header = { header with Exp.Header.typ = typ; implicit_args } in

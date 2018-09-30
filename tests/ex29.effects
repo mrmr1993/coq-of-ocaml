@@ -18,7 +18,9 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .)),
                         negb),
                     [
                       Apply
@@ -63,7 +65,9 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .)),
                         negb),
                     [
                       Apply
@@ -98,23 +102,27 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((odd_length_with_print, [ A ], [ (l, Type (list, A)) ], Type (bool)),
+      ((odd_length_with_print, [ A ], [ (l, Type (list, A)) ],
+        Monad ([ Type (IO) ], Type (bool))),
         Match
-          ((15, Effect ([ IO ], .)), Variable ((15, Effect ([ ], .)), l),
+          ((15, Effect ([ Type (IO) ], .)),
+            Variable ((15, Effect ([ ], .)), l),
             [
               (Constructor ([]),
                 Sequence
                   ((16,
                     Effect
                       ([
-                        IO
+                        Type
+                          (IO)
                       ],
                         .)),
                     Apply
                       ((16,
                         Effect
                           ([
-                            IO
+                            Type
+                              (IO)
                           ],
                             .)),
                         Variable
@@ -124,7 +132,8 @@ Value
                               ],
                                 .
                                   -[
-                                    IO
+                                    Type
+                                      (IO)
                                   ]->
                                   .)),
                             OCaml.Pervasives.print_endline),
@@ -149,7 +158,8 @@ Value
                   ((17,
                     Effect
                       ([
-                        IO
+                        Type
+                          (IO)
                       ],
                         .)),
                     Variable
@@ -157,14 +167,17 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .)),
                         negb),
                     [
                       Apply
                         ((17,
                           Effect
                             ([
-                              IO
+                              Type
+                                (IO)
                             ],
                               .)),
                           Variable
@@ -174,7 +187,8 @@ Value
                                 ],
                                   .
                                     -[
-                                      IO
+                                      Type
+                                        (IO)
                                     ]->
                                     .)),
                               even_length_with_print),
@@ -189,9 +203,11 @@ Value
                           ])
                     ]))
             ]));
-      ((even_length_with_print, [ A ], [ (l, Type (list, A)) ], Type (bool)),
+      ((even_length_with_print, [ A ], [ (l, Type (list, A)) ],
+        Monad ([ Type (IO) ], Type (bool))),
         Match
-          ((21, Effect ([ IO ], .)), Variable ((21, Effect ([ ], .)), l),
+          ((21, Effect ([ Type (IO) ], .)),
+            Variable ((21, Effect ([ ], .)), l),
             [
               (Constructor ([]),
                 Constructor
@@ -202,7 +218,8 @@ Value
                   ((23,
                     Effect
                       ([
-                        IO
+                        Type
+                          (IO)
                       ],
                         .)),
                     Variable
@@ -210,14 +227,17 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .)),
                         negb),
                     [
                       Apply
                         ((23,
                           Effect
                             ([
-                              IO
+                              Type
+                                (IO)
                             ],
                               .)),
                           Variable
@@ -227,7 +247,8 @@ Value
                                 ],
                                   .
                                     -[
-                                      IO
+                                      Type
+                                        (IO)
                                     ]->
                                     .)),
                               odd_length_with_print),
@@ -249,9 +270,10 @@ Value
   (rec, @.,
     [
       ((odd_length_free_rec, [ A ],
-        [ (counter, Type (nat)); (l, Type (list, A)) ], Type (bool)),
+        [ (counter, Type (nat)); (l, Type (list, A)) ],
+        Monad ([ Type (NonTermination) ], Type (bool))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -259,7 +281,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -269,7 +292,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -286,7 +310,8 @@ Value
                   ((26,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -314,7 +339,8 @@ Value
                           ((28,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Variable
@@ -322,14 +348,17 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .)),
                                 negb),
                             [
                               Apply
                                 ((28,
                                   Effect
                                     ([
-                                      NonTermination
+                                      Type
+                                        (NonTermination)
                                     ],
                                       .)),
                                   Apply
@@ -339,7 +368,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              NonTermination
+                                              Type
+                                                (NonTermination)
                                             ]->
                                             .)),
                                       Variable
@@ -351,7 +381,8 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination
+                                                    Type
+                                                      (NonTermination)
                                                   ]->
                                                   .)),
                                           even_length_free_rec),
@@ -377,9 +408,10 @@ Value
                     ]))
             ]));
       ((even_length_free_rec, [ A ],
-        [ (counter, Type (nat)); (l, Type (list, A)) ], Type (bool)),
+        [ (counter, Type (nat)); (l, Type (list, A)) ],
+        Monad ([ Type (NonTermination) ], Type (bool))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -387,7 +419,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -397,7 +430,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -414,7 +448,8 @@ Value
                   ((31,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -442,7 +477,8 @@ Value
                           ((33,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Variable
@@ -450,14 +486,17 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .)),
                                 negb),
                             [
                               Apply
                                 ((33,
                                   Effect
                                     ([
-                                      NonTermination
+                                      Type
+                                        (NonTermination)
                                     ],
                                       .)),
                                   Apply
@@ -467,7 +506,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              NonTermination
+                                              Type
+                                                (NonTermination)
                                             ]->
                                             .)),
                                       Variable
@@ -479,7 +519,8 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination
+                                                    Type
+                                                      (NonTermination)
                                                   ]->
                                                   .)),
                                           odd_length_free_rec),
@@ -510,15 +551,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((odd_length_free, [ A ], [ (l, Type (list, A)) ], Type (bool)),
+      ((odd_length_free, [ A ], [ (l, Type (list, A)) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -[ NonTermination ]-> .)),
+              ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
                 odd_length_free_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -526,7 +568,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),
@@ -546,15 +589,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((even_length_free, [ A ], [ (l, Type (list, A)) ], Type (bool)),
+      ((even_length_free, [ A ], [ (l, Type (list, A)) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -[ NonTermination ]-> .)),
+              ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
                 even_length_free_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -562,7 +606,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),

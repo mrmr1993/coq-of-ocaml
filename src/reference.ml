@@ -4,7 +4,7 @@ open SmartPrint
 type 'a t = {
   name : CoqName.t;
   state_name : CoqName.t;
-  effect : Effect.t;
+  effect : Type.t;
   typ : Type.t;
   expr : 'a Exp.t }
 
@@ -36,10 +36,10 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
       (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
     let typ = Type.of_type_expr env loc typ in
     let descriptor = Effect.Descriptor.union [
-      Effect.Descriptor.singleton state [Type.pure_type typ];
+      Effect.Descriptor.singleton state [typ];
       Effect.Descriptor.singleton bound_state [];
     ] in
-    let effect = { Effect.typ = Effect.Type.Pure; descriptor } in
+    let effect = Effect.join descriptor Effect.Type.pure in
     { name = name;
       state_name = state_name;
       effect;
@@ -55,8 +55,8 @@ let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (env, {r with expr = update_exp env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
-  (env : Effect.t FullEnvi.t)
-  : Effect.t FullEnvi.t * (Loc.t * Effect.t) t =
+  (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t * (Loc.t * Type.t) t =
   let env = env
     |> FullEnvi.Descriptor.assoc r.state_name ()
     |> FullEnvi.Var.assoc r.name r.effect in

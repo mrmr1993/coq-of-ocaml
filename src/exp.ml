@@ -261,8 +261,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
-          let (t_exn, typ_vars, _) =
-            Type.of_type_expr_new_typ_vars env l typ_vars e_x.exp_type in
+          let t_exn = Type.Arrow (
+            Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
+            Variable "_") in
           let x = PathName.of_loc x in
           let x = FullEnvi.Exception.bound l_exn x env in
           let raise_path = FullEnvi.Exception.find l_exn x env in
@@ -307,9 +308,13 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
       let match_fail = FullEnvi.Var.localize env ["OCaml"]
         "raise_Match_failure" in
+      let match_fail_t = Type.Arrow (
+        Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
+        typ) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any,
-          Apply ((Loc.Unknown, typ), Variable ((Loc.Unknown, typ), match_fail),
+          Apply ((Loc.Unknown, typ),
+          Variable ((Loc.Unknown, match_fail_t), match_fail),
             [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
               [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
               Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
@@ -379,13 +384,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_try (e1,
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
+    let typ1 = snd @@ annotation e1 in
     let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
     let p = Pattern.Tuple (List.map (Pattern.of_pattern false env) ps) in
-    Match (a, Run ((Loc.Unknown, typ), x, Effect.Descriptor.pure, e1), [
+    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
+    let typ_sum = Type.Apply (FullEnvi.Typ.localize env [] "sum",
+      [typ1; exn]) in
+    Match (a, Run ((Loc.Unknown, typ_sum), x, Effect.Descriptor.pure, e1), [
       (let p = Pattern.Constructor (
         FullEnvi.Constructor.localize env [] "inl",
-        [Pattern.Variable
-          (CoqName.of_names "x" (FullEnvi.Var.resolve [] "x" env).base)]) in
+        [Pattern.Variable (FullEnvi.Var.coq_name "x" env)]) in
       let env = Pattern.add_to_env p env in
       let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
       (p, Variable ((Loc.Unknown, typ), x)));
@@ -416,7 +424,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_assert e ->
     let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
-    Apply (a, Variable (a, assert_function), [of_expression env typ_vars e])
+    let e = of_expression env typ_vars e in
+    Apply (a, Variable ((l, Type.Arrow (snd @@ annotation e, typ)),
+      assert_function), [e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
@@ -432,6 +442,7 @@ and open_cases (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   let l = Loc.of_location p1.pat_loc in
   let (typ_x, _, _) =
     Type.of_type_expr_new_typ_vars env l typ_vars p1.pat_type in
+  let typ = Effect.Type.return_type typ 1 in
   (CoqName.ocaml_name x, Match ((Loc.Unknown, typ),
     Variable ((Loc.Unknown, typ_x), bound_x), cases))
 
@@ -786,92 +797,73 @@ and monadise_let_rec_definition (env : unit FullEnvi.t)
     let env = Definition.env_after_def def env in
     (env, [def])
 
-let rec function_type (env : 'a FullEnvi.t) (e : (Loc.t * Type.t) t)
-  : Type.t option =
-  match e with
-  | Variable ((l, typ), x) -> FullEnvi.Function.find l x env
-  | _ -> None
-
-let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
-  : (Loc.t * Effect.t) t =
+let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
+  : (Loc.t * Type.t) t =
   let compound (es : (Loc.t * Type.t) t list)
-  : (Loc.t * Effect.t) t list * Effect.t =
+  : Effect.Descriptor.t * (Loc.t * Type.t) t list * Type.t list =
     let es = List.map (effects env) es in
-    let descriptor = Effect.Descriptor.union (es |> List.map (fun e ->
-      let (loc, effect) = annotation e in
-      if not (Effect.Type.is_pure effect.Effect.typ) then
-        Error.warn loc "Compounds cannot have functional effects; effect ignored.";
-      effect.Effect.descriptor)) in
-    (es, { Effect.descriptor = descriptor; typ = Effect.Type.Pure }) in
+    let effects = List.map (fun e -> Effect.split @@ snd @@ annotation e) es in
+    let descriptor = Effect.Descriptor.union @@ List.map fst effects in
+    let effects = List.map snd effects in
+    (descriptor, es, effects) in
   match e with
-  | Constant ((l, typ), c) -> Constant ((l, Effect.pure), c)
+  | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let effect = FullEnvi.Var.find l x env in
-      Variable ((l, effect), x)
+      let typ' = FullEnvi.Var.find l x env in
+      let vars_map = Type.unify typ' typ in
+      let typ' = Effect.map_type_vars vars_map typ' in
+      let typ = Effect.Type.unify ~collapse:false typ typ' in
+      Variable ((l, typ), x)
     with Not_found ->
       let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
       Error.warn l (SmartPrint.to_string 80 2 message);
-      Variable ((l, Effect.pure), x)
+      Variable ((l, typ), x)
     end
   | Tuple ((l, typ), es) ->
-    let (es, effect) = compound es in
-    Tuple ((l, effect), es)
+    let (d, es, typs) = compound es in
+    let typ = Effect.Type.unify typ @@ Effect.join d @@ Type.Tuple typs in
+    Tuple ((l, typ), es)
   | Constructor ((l, typ), x, es) ->
-    let (es, effect) = compound es in
-    Constructor ((l, effect), x, es)
+    let (d, es, typs) = compound es in
+    let typ = Effect.join d typ in
+    if not (List.for_all Effect.Type.is_pure typs) then
+      Error.warn l "Constructors cannot have functional effects; effect ignored.";
+    Constructor ((l, typ), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
-    let vars_map = match function_type env e_f with
-      | Some typ_f -> Type.unify typ_f (snd (annotation e_f))
-      | None -> Name.Map.empty in
-    let e_f = e_f
-      |> effects env
-      |> update_annotation (fun (l, eff) ->
-        (l, Effect.map_type_vars (Name.Map.map Type.pure_type vars_map) eff)) in
-    let effect_e_f = snd (annotation e_f) in
+    let e_f = effects env e_f in
+    let (_, effect_e_f) = Effect.split @@ snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
-    let arguments_are_pure = e_xs
-      |> List.map (fun e_x -> snd (annotation e_x))
-      |> List.for_all (fun effect_e_x ->
-        Effect.Type.is_pure effect_e_x.Effect.typ) in
+    let arguments_are_pure = e_xs |> List.for_all (fun e_x ->
+      Effect.Type.is_pure @@ snd @@ Effect.split @@ snd @@ annotation e_x) in
     if arguments_are_pure then
-      let e_xss = Effect.Type.split_calls effect_e_f.Effect.typ e_xs in
+      let e_xss = Effect.Type.split_calls effect_e_f e_xs in
       List.fold_left (fun e (e_xs, d) ->
-        let effect_e = snd (annotation e) in
-        let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
-        let descriptor = Effect.Descriptor.union (
-          effect_e.Effect.descriptor ::
-          Effect.Type.return_descriptor effect_e.Effect.typ (List.length e_xs) ::
-          List.map (fun effect_e_x -> effect_e_x.Effect.descriptor) effects_e_xs) in
-        let typ = Effect.Type.return_type effect_e.Effect.typ (List.length e_xs) in
-        let effect = { Effect.descriptor = descriptor; typ = typ } in
-        Apply ((l, effect), e, e_xs))
+        let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
+        let descriptor = Effect.Descriptor.union (d_e ::
+          Effect.Type.return_descriptor typ_e (List.length e_xs) ::
+          List.map (fun e_x ->
+            fst @@ Effect.split @@ snd @@ annotation e_x) e_xs) in
+        let typ = Effect.Type.return_type typ_e (List.length e_xs) in
+        let typ = Effect.join descriptor typ in
+        Apply ((l, typ), e, e_xs))
         e_f e_xss
     else
       Error.raise l "Function arguments cannot have functional effects."
   | Function ((l, typ), x, e) ->
     let env = FullEnvi.Var.assoc x Effect.pure env in
     let e = effects env e in
-    let effect_e = snd (annotation e) in
-    let effect = {
-      Effect.descriptor = Effect.Descriptor.pure;
-      typ = Effect.Type.Arrow (
-        effect_e.Effect.descriptor, effect_e.Effect.typ) } in
-    Function ((l, effect), x, e)
+    let typ = Effect.Type.unify typ @@
+      Type.Arrow (Variable "_", snd (annotation e)) in
+    Function ((l, typ), x, e)
   | LetVar ((l, typ), x, e1, e2) ->
     let e1 = effects env e1 in
-    let effect1 = snd (annotation e1) in
-    let env = if Effect.has_type_vars effect1 then
-      FullEnvi.Function.assoc x (Effect.eff effect1.Effect.typ, typ) env
-    else
-      FullEnvi.Var.assoc x (Effect.eff effect1.Effect.typ) env in
+    let (d1, typ1) = Effect.split @@ snd (annotation e1) in
+    let env = FullEnvi.Var.assoc x typ1 env in
     let e2 = effects env e2 in
-    let effect2 = snd (annotation e2) in
-    let descriptor = Effect.Descriptor.union [
-      effect1.Effect.descriptor; effect2.Effect.descriptor] in
-    let effect = {
-      Effect.descriptor = descriptor;
-      typ = effect2.Effect.typ } in
+    let (d2, typ2) = Effect.split @@ snd (annotation e2) in
+    let descriptor = Effect.Descriptor.union [d1; d2] in
+    let effect = Effect.Type.unify typ @@ Effect.join descriptor typ2 in
     LetVar ((l, effect), x, e1, e2)
   | LetFun ((l, typ), def, e2) ->
     let def = effects_of_def env def in
@@ -881,135 +873,132 @@ let rec effects (env : Effect.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     LetFun ((l, effect2), def, e2)
   | Match ((l, typ), e, cases) ->
     let e = effects env e in
-    let effect_e = snd (annotation e) in
-    if Effect.Type.is_pure effect_e.Effect.typ then
+    let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
+    if Effect.Type.is_pure typ_e then
       let cases = cases |> List.map (fun (p, e) ->
         let pattern_vars = Pattern.free_variables p in
         let env = CoqName.Set.fold (fun x env ->
           FullEnvi.Var.assoc x Effect.pure env)
           pattern_vars env in
         (p, effects env e)) in
-      let effect = Effect.union (cases |> List.map (fun (_, e) ->
-        snd (annotation e))) in
-      let effect = {
-        Effect.descriptor = Effect.Descriptor.union
-          [effect_e.Effect.descriptor; effect.Effect.descriptor];
-        typ = effect.Effect.typ } in
-      Match ((l, effect), e, cases)
+      let (d, typ_cases) = Effect.split @@
+        Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
+      let descriptor = Effect.Descriptor.union [d_e; d] in
+      let typ = Effect.Type.unify typ @@ Effect.join descriptor typ_cases in
+      Match ((l, typ), e, cases)
     else
       Error.raise l "Cannot match a value with functional effects."
   | Record ((l, typ), fields, base) ->
-    let (base, (es, effect)) =
+    let (base, (d, es, typs)) =
       let expressions = option_filter @@ List.map snd fields in
       match base with
       | Some base ->
         begin match compound (base :: expressions) with
-        | (base :: es, effect) -> (Some base, (es, effect))
+        | (d, base :: es, typs) -> (Some base, (d, es, typs))
         | _ -> failwith "Wrong answer from 'compound'." end
       | None -> (None, compound expressions) in
+    if not (List.for_all Effect.Type.is_pure typs) then
+      Error.warn l "Record field values cannot have functional effects; effect ignored.";
     let fields = mix_map2 (fun (_, x) -> is_some x)
       (fun (x, _) -> (x, None)) (fun (x, _) e -> (x, Some e)) fields es in
-    Record ((l, effect), fields, base)
+    let typ = Effect.join d typ in
+    Record ((l, typ), fields, base)
   | Field ((l, typ), e, x) ->
     let e = effects env e in
-    let effect = snd (annotation e) in
-    if Effect.Type.is_pure effect.Effect.typ then
-      Field ((l, effect), e, x)
-    else
-      Error.raise l "Cannot take a field of a value with functional effects."
+    let (d, typ') = Effect.split @@ snd @@ annotation e in
+    if not (Effect.Type.is_pure typ') then
+      Error.warn l "Field cannot be taken of a value with functional effects; effect ignored.";
+    let typ = Effect.join d typ in
+    Field ((l, typ), e, x)
   | IfThenElse ((l, typ), e1, e2, e3) ->
     let e1 = effects env e1 in
-    let effect_e1 = snd (annotation e1) in
-    if Effect.Type.is_pure effect_e1.Effect.typ then
-      let e2 = effects env e2 in
-      let e3 = effects env e3 in
-      let effect = Effect.union ([e2; e3] |> List.map (fun e ->
-        snd (annotation e))) in
-      let effect = {
-        Effect.descriptor = Effect.Descriptor.union
-          [effect_e1.Effect.descriptor; effect.Effect.descriptor];
-        typ = effect.Effect.typ } in
-      IfThenElse ((l, effect), e1, e2, e3)
-    else
-      Error.raise l "Cannot do an if on a value with functional effects."
+    let (d1, typ1) = Effect.split @@ snd @@ annotation e1 in
+    if not (Effect.Type.is_pure typ1) then
+      Error.warn l "If cannot be taken of a value with functional effects; effect ignored.";
+    let (d, e2, e3, typ2, typ3) = match compound [e2; e3] with
+    | (d, [e2; e3], [typ2; typ3]) -> (d, e2, e3, typ2, typ3)
+    | _ -> failwith "Wrong answer from 'compound'." in
+    let d = Effect.Descriptor.union [d1; d] in
+    let typ = Effect.Type.unify typ @@ Effect.join d @@
+      Effect.Type.unify typ2 typ3 in
+    IfThenElse ((l, typ), e1, e2, e3)
   | For ((l, typ), name, down, e1, e2, e) ->
-    let e1 = effects env e1 in
-    let e2 = effects env e2 in
     let typ_e = snd @@ annotation e in
     let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
     (* Give Coq a concrete type if it can't infer one. *)
     let e = if typ_e = typ_e' then e else
       Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
-    let e = effects env e in
-    let effect = Effect.union ([e1; e2; e] |> List.map (fun e ->
-      snd (annotation e))) in
-    For ((l, effect), name, down, e1, e2, e)
+    let (d, e, e1, e2) = match compound [e; e1; e2] with
+      | (d, [e; e1; e2], _) -> (d, e, e1, e2)
+      | _ -> failwith "Wrong answer from 'compound'." in
+    (* We don't use the actual type of [e] here, since OCaml ignores it, and
+       thus it won't necessarily unify with [unit]. We choose not to insert an
+       [ignore] call, since it can bloat the generated code significantly for
+       exactly the same effect. *)
+    let typ = Effect.join d typ in
+    For ((l, typ), name, down, e1, e2, e)
   | While ((l, typ), e1, e2) ->
     let typ2 = snd @@ annotation e2 in
     let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
     (* Give Coq a concrete type if it can't infer one. *)
     let e2 = if typ2 = typ2' then e2 else
       Coerce ((Loc.Unknown, typ2'), e2, typ2') in
-    let e1 = effects env e1 in
-    let e2 = effects env e2 in
+    let (d, e1, e2) = match compound [e1; e2] with
+      | (d, [e1; e2], _) -> (d, e1, e2)
+      | _ -> failwith "Wrong answer from 'compound'." in
     let counter = FullEnvi.Descriptor.localize env [] "Counter" in
     let nonterm = FullEnvi.Descriptor.localize env [] "NonTermination" in
-    let loop_effects = {
-      Effect.descriptor = Effect.Descriptor.union [
+    let loop_d = Effect.Descriptor.union [
         Effect.Descriptor.singleton counter [];
-        Effect.Descriptor.singleton nonterm []
-      ];
-      Effect.typ = Effect.Type.Pure
-    } in
-    let effect = Effect.union (loop_effects :: ([e1; e2] |> List.map (fun e ->
-      snd (annotation e)))) in
-    While ((l, effect), e1, e2)
+        Effect.Descriptor.singleton nonterm [];
+      ] in
+    (* We don't use the actual type of [e2] here, since OCaml ignores it, and
+       thus it won't necessarily unify with [unit]. We choose not to insert an
+       [ignore] call, since it can bloat the generated code significantly for
+       exactly the same effect. *)
+    let typ = Effect.join (Effect.Descriptor.union [loop_d; d]) typ in
+    While ((l, typ), e1, e2)
   | Coerce ((l, _), e, typ) ->
     let e = effects env e in
     Coerce ((l, snd (annotation e)), e, typ)
   | Sequence ((l, typ), e1, e2) ->
-    let e1 = effects env e1 in
-    let effect_e1 = snd (annotation e1) in
-    let e2 = effects env e2 in
-    let effect_e2 = snd (annotation e2) in
-    let effect = {
-      Effect.descriptor = Effect.Descriptor.union
-        [effect_e1.Effect.descriptor; effect_e2.Effect.descriptor];
-      typ = effect_e2.Effect.typ } in
-    Sequence ((l, effect), e1, e2)
+    let (d, e1, e2, typ2) = match compound [e1; e2] with
+      | (d, [e1; e2], [_; typ2]) -> (d, e1, e2, typ2)
+      | _ -> failwith "Wrong answer from 'compound'." in
+    let typ = Effect.Type.unify typ @@ Effect.join d typ2 in
+    Sequence ((l, typ), e1, e2)
   | Run ((l, typ), x, d, e) ->
     let e = effects env e in
-    let effect_e = snd (annotation e) in
-    let effect = { effect_e with Effect.descriptor =
-      Effect.Descriptor.remove x effect_e.Effect.descriptor } in
-    Run ((l, effect), x, d, e)
+    let (d_e, typ_e) = Effect.split @@ snd @@ annotation e in
+    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
+    let typ = Effect.Type.unify typ @@
+      Effect.join (Effect.Descriptor.remove x d_e) @@
+      Type.Apply (FullEnvi.Typ.localize env [] "sum", [typ_e; exn]) in
+    Run ((l, typ), x, d, e)
   | Return _ | Bind _ | Lift _ ->
     Error.raise Loc.Unknown
       "Cannot compute effects on an explicit return, bind or lift."
 
-and env_after_def_with_effects (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Effect.t) t Definition.t) : Effect.t FullEnvi.t =
+and env_after_def_with_effects (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : Type.t FullEnvi.t =
   List.fold_left (fun env (header, e) ->
     let effect = snd (annotation e) in
     let effect_typ = Effect.function_typ header.Header.args effect in
-    if Effect.has_type_vars effect then
-      let typ = List.fold_right (fun (_, arg_typ) typ ->
-        Type.Arrow (arg_typ, typ)) header.Header.args header.Header.typ in
-      FullEnvi.Function.assoc header.Header.name (effect_typ, typ) env
-    else
-      FullEnvi.Var.assoc header.Header.name effect_typ env)
+    FullEnvi.Var.assoc header.Header.name effect_typ env)
     env def.Definition.cases
 
-and effects_of_def_step (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Effect.t) t Definition.t =
+and effects_of_def_step (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
   { def with Definition.cases =
     def.Definition.cases |> List.map (fun (header, e) ->
       let env = Header.env_in_header header env Effect.pure in
-      (header, effects env e)) }
+      let e = effects env e in
+      let typ = Effect.Type.unify header.Header.typ @@ snd @@ annotation e in
+      ({ header with Header.typ = typ }, e)) }
 
-and effects_of_def (env : Effect.t FullEnvi.t)
-  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Effect.t) t Definition.t =
-  let rec fix_effect (def' : (Loc.t * Effect.t) t Definition.t) =
+and effects_of_def (env : Type.t FullEnvi.t)
+  (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
+  let rec fix_effect (def' : (Loc.t * Type.t) t Definition.t) =
     let env =
       if Recursivity.to_bool def.Definition.is_rec then
         env_after_def_with_effects env def'
@@ -1029,8 +1018,8 @@ and effects_of_def (env : Effect.t FullEnvi.t)
       env in
   fix_effect (effects_of_def_step env def)
 
-let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
-  let descriptor e = (snd (annotation e)).Effect.descriptor in
+let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
+  let descriptor e = fst @@ Effect.split @@ snd @@ annotation e in
   let lift d1 d2 e =
     if Effect.Descriptor.eq d1 d2 then
       e
@@ -1070,7 +1059,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
     monadise_list env es d [] (fun es' ->
       lift Effect.Descriptor.pure d (Constructor (l, x, es')))
   | Apply ((l, _), e_f, e_xs) ->
-    let effect_f = (snd (annotation e_f)).Effect.typ in
+    let effect_f = snd @@ Effect.split @@ snd @@ annotation e_f in
     monadise_list env (e_f :: e_xs) d [] (fun es' ->
       match es' with
       | e_f :: e_xs ->
@@ -1091,8 +1080,6 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
     let env_in_def = Definition.env_in_def def env in
     let def = { def with
       Definition.cases = def.Definition.cases |> List.map (fun (header, e) ->
-      let typ = Type.monadise header.Header.typ (snd (annotation e)) in
-      let header = { header with Header.typ = typ } in
       let env = Header.env_in_header header env_in_def () in
       let e = monadise env e in
       (header, e)) } in
@@ -1155,7 +1142,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
     let read_counter = FullEnvi.Var.localize env [] "read_counter" in
     let not_terminated = FullEnvi.Var.localize env [] "not_terminated" in
     let tt = FullEnvi.Constructor.localize env [] "tt" in
-    let nat = FullEnvi.Typ.localize env [] "nat" in
+    let nat = Type.Apply (FullEnvi.Typ.localize env [] "nat", []) in
     let o = FullEnvi.Constructor.localize env [] "O" in
     let s = FullEnvi.Constructor.localize env [] "S" in
     let counter_d = Effect.Descriptor.singleton counter [] in
@@ -1165,7 +1152,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
       FullEnvi.Var.fresh "counter" () env in
     let (check_name, check_bound, env) =
       FullEnvi.Var.fresh "check" () env in
-    let d = d.Effect.descriptor in
+    let d = fst @@ Effect.split d in
     let d1 = descriptor e1 in
     let d2 = descriptor e2 in
     let while_d = Effect.Descriptor.union [nonterm_d; d1; d2] in
@@ -1176,7 +1163,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
             Header.name = while_name;
             typ_vars = [];
             implicit_args = [];
-            args = [(counter_name, Type.Apply (nat, []))];
+            args = [(counter_name, nat)];
             typ = Monad (while_d, Type.Tuple [])
           },
           Match (Loc.Unknown, Variable (Loc.Unknown, counter_bound), [
@@ -1200,7 +1187,8 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Effect.t) t) : Loc.t t =
         (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
           [Variable (Loc.Unknown, counter_bound)]))
     )
-  | Coerce ((l, d), e, typ) -> Coerce (l, monadise env e, Type.monadise typ d)
+  | Coerce ((l, d), e, typ) ->
+    Coerce (l, monadise env e, Effect.Type.unify d typ)
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in

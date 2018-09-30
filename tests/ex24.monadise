@@ -2,7 +2,8 @@
 Value
   (non_rec, @.,
     [
-      ((e_invalid, [ A; B ], [ (x, A) ], Monad ([ OCaml.Invalid_argument ], B)),
+      ((e_invalid, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Invalid_argument) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -24,7 +25,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -46,7 +47,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit1, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit ], B)),
+      ((e_exit1, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -67,7 +69,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_exit2, [ A; B ], [ (x, A) ], Monad ([ OCaml.Pervasives.Exit ], B)),
+      ((e_exit2, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -426,7 +429,7 @@ Value
   (non_rec, @.,
     [
       ((char_n, [ A ], [ (x, A) ],
-        Monad ([ OCaml.Invalid_argument ], Type (ascii))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (ascii))),
         Match
           (?, Variable (?, x),
             [
@@ -551,7 +554,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_c, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((p_c, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -573,7 +576,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((p_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -595,7 +598,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((p_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -617,7 +620,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_endline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((p_endline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -639,7 +642,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((p_newline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((p_newline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -661,7 +664,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_c, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((perr_c, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -683,7 +686,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((perr_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -705,7 +708,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((perr_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -727,7 +730,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_endline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((perr_endline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -749,7 +752,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((perr_newline, [ A ], [ (x, A) ], Monad ([ IO ], Type (unit))),
+      ((perr_newline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
           (?, Variable (?, x),
             [
@@ -771,7 +774,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_s, [ A ], [ (x, A) ], Monad ([ IO ], Type (string))),
+      ((r_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (string))),
         Match
           (?, Variable (?, x),
             [
@@ -793,7 +796,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r_n, [ A ], [ (x, A) ], Monad ([ IO ], Type (Z))),
+      ((r_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (Z))),
         Match
           (?, Variable (?, x),
             [
