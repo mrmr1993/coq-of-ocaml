@@ -4,7 +4,7 @@ Value
     [
       ((map_rec, [ A; B ],
         [ (counter, Type (nat)); (f, (A -> B)); (l, Type (list, A)) ],
-        Monad ([ NonTermination ], Type (list, B))),
+        Monad ([ Type (NonTermination) ], Type (list, B))),
         Match
           (?, Variable (?, counter),
             [
@@ -84,15 +84,17 @@ Value
   (non_rec, @.,
     [
       ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ],
-        Monad ([ Counter; NonTermination ], Type (list, B))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (list, B))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, map_rec),
                     [
@@ -112,7 +114,7 @@ Value
           (f, (A -> (B -> A)));
           (a, A);
           (l, Type (list, B))
-        ], Monad ([ NonTermination ], A)),
+        ], Monad ([ Type (NonTermination) ], A)),
         Match
           (?, Variable (?, counter),
             [
@@ -183,15 +185,17 @@ Value
   (non_rec, @.,
     [
       ((fold, [ A; B ], [ (f, (A -> (B -> A))); (a, A); (l, Type (list, B)) ],
-        Monad ([ Counter; NonTermination ], A)),
+        Monad ([ Type (Counter); Type (NonTermination) ], A)),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, fold_rec),
                     [
@@ -224,7 +228,7 @@ Value
     [
       ((n, [ A ],
         [ (incr, (Type (Z) -> A)); (plus, (Type (Z) -> (A -> Type (Z)))) ],
-        Monad ([ Counter; NonTermination ], Type (Z))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Bind
           (?,
             Apply

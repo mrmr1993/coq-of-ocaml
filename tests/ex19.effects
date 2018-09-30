@@ -10,9 +10,9 @@ Value
             Run
               ((?, Effect ([ ], .)), Error, [ ],
                 Apply
-                  ((6, Effect ([ Error ], .)),
+                  ((6, Effect ([ Type (Error) ], .)),
                     Variable
-                      ((6, Effect ([ ], . -[ Error ]-> .)),
+                      ((6, Effect ([ ], . -[ Type (Error) ]-> .)),
                         raise_Error),
                     [ Tuple ((?, Effect ([ ], .))) ])),
             [
@@ -26,9 +26,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x2, [ A; B ], [ (x, A) ], B),
+      ((x2, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
         Match
-          ((?, Effect ([ OCaml.Failure ], .)),
+          ((?, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -36,7 +36,8 @@ Value
                   ((10,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Run
@@ -52,7 +53,8 @@ Value
                           ((10,
                             Effect
                               ([
-                                Error
+                                Type
+                                  (Error)
                               ],
                                 .)),
                             Variable
@@ -62,7 +64,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        Error
+                                        Type
+                                          (Error)
                                       ]->
                                       .)),
                                 raise_Error),
@@ -93,7 +96,8 @@ Value
                           ((11,
                             Effect
                               ([
-                                OCaml.Failure
+                                Type
+                                  (OCaml.Failure)
                               ],
                                 .)),
                             Variable
@@ -103,7 +107,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        OCaml.Failure
+                                        Type
+                                          (OCaml.Failure)
                                       ]->
                                       .)),
                                 OCaml.Pervasives.failwith),
@@ -124,22 +129,28 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x3, [ ], [ (b, Type (bool)) ], Type (Z)),
+      ((x3, [ ], [ (b, Type (bool)) ],
+        Monad ([ Type (OCaml.Failure) ], Type (Z))),
         Match
-          ((14, Effect ([ OCaml.Failure ], .)),
+          ((14, Effect ([ Type (OCaml.Failure) ], .)),
             Run
-              ((?, Effect ([ OCaml.Failure ], .)), Error, [ ],
+              ((?, Effect ([ Type (OCaml.Failure) ], .)), Error, [ ],
                 IfThenElse
-                  ((14, Effect ([ Error; OCaml.Failure ], .)),
+                  ((14,
+                    Effect
+                      ([ Type (Error); Type (OCaml.Failure) ], .)),
                     Variable ((14, Effect ([ ], .)), b),
                     Apply
-                      ((14, Effect ([ OCaml.Failure ], .)),
+                      ((14, Effect ([ Type (OCaml.Failure) ], .)),
                         Variable
                           ((14,
                             Effect
                               ([ ],
-                                . -[ OCaml.Failure ]->
-                                  .)),
+                                .
+                                  -[
+                                    Type
+                                      (OCaml.Failure)
+                                  ]-> .)),
                             OCaml.Pervasives.failwith),
                         [
                           Constant
@@ -151,11 +162,13 @@ Value
                               String("arg"))
                         ]),
                     Apply
-                      ((14, Effect ([ Error ], .)),
+                      ((14, Effect ([ Type (Error) ], .)),
                         Variable
                           ((14,
-                            Effect ([ ], . -[ Error ]-> .)),
-                            raise_Error),
+                            Effect
+                              ([ ],
+                                . -[ Type (Error) ]->
+                                  .)), raise_Error),
                         [ Tuple ((?, Effect ([ ], .))) ]))),
             [
               (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));

@@ -89,7 +89,7 @@ Value
   (non_rec, @.,
     [
       ((bal, [ ], [ (l, Type (t)); (v, Type (elt)); (r, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (t))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         LetVar ? hl =
           Match
             (34, Variable (34, l),
@@ -475,7 +475,7 @@ Value
   (rec, @coq_rec,
     [
       ((add, [ ], [ (x, Type (elt)); (x_1, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (t))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
           (?, Variable (?, x_1),
             [
@@ -632,7 +632,7 @@ Value
   (rec, @coq_rec,
     [
       ((add_min_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (t))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
           (?, Variable (?, x),
             [
@@ -691,7 +691,7 @@ Value
   (rec, @coq_rec,
     [
       ((add_max_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (t))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
           (?, Variable (?, x),
             [
@@ -755,7 +755,10 @@ Value
           (l, Type (t));
           (v, Type (elt));
           (r, Type (t))
-        ], Monad ([ NonTermination; OCaml.Invalid_argument ], Type (t))),
+        ],
+        Monad
+          ([ Type (NonTermination); Type (OCaml.Invalid_argument) ],
+            Type (t))),
         Match
           (?, Variable (?, counter),
             [
@@ -763,11 +766,14 @@ Value
                 Lift
                   (?,
                     [
-                      NonTermination
+                      Type
+                        (NonTermination)
                     ],
                     [
-                      NonTermination;
-                      OCaml.Invalid_argument
+                      Type
+                        (NonTermination);
+                      Type
+                        (OCaml.Invalid_argument)
                     ],
                     Apply
                       (?,
@@ -797,11 +803,14 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              NonTermination;
-                              OCaml.Invalid_argument
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             Apply
                               (99,
@@ -823,11 +832,14 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              NonTermination;
-                              OCaml.Invalid_argument
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             Apply
                               (100,
@@ -910,11 +922,14 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     [
-                                      NonTermination;
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (NonTermination);
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     Apply
                                       (102,
@@ -987,11 +1002,14 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ],
                                         [
-                                          NonTermination;
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (NonTermination);
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ],
                                         Apply
                                           (103,
@@ -1036,17 +1054,34 @@ Value
   (non_rec, @.,
     [
       ((join, [ ], [ (l, Type (t)); (v, Type (elt)); (r, Type (t)) ],
-        Monad ([ Counter; NonTermination; OCaml.Invalid_argument ], Type (t))),
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument)
+          ], Type (t))),
         Bind
           (?,
             Lift
-              (?, [ Counter ],
-                [ Counter; NonTermination; OCaml.Invalid_argument ],
+              (?, [ Type (Counter) ],
+                [
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Invalid_argument)
+                ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination; OCaml.Invalid_argument ],
-                [ Counter; NonTermination; OCaml.Invalid_argument ],
+              (?,
+                [
+                  Type (NonTermination);
+                  Type (OCaml.Invalid_argument)
+                ],
+                [
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Invalid_argument)
+                ],
                 Apply
                   (?, Variable (?, join_rec),
                     [
@@ -1061,7 +1096,8 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((min_elt, [ ], [ (x, Type (t)) ], Monad ([ OCaml.Not_found ], Type (elt))),
+      ((min_elt, [ ], [ (x, Type (t)) ],
+        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
           (?, Variable (?, x),
             [
@@ -1095,7 +1131,8 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((max_elt, [ ], [ (x, Type (t)) ], Monad ([ OCaml.Not_found ], Type (elt))),
+      ((max_elt, [ ], [ (x, Type (t)) ],
+        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
           (?, Variable (?, x),
             [
@@ -1130,7 +1167,7 @@ Value
   (rec, @coq_rec,
     [
       ((remove_min_elt, [ ], [ (x, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument ], Type (t))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
           (?, Variable (?, x),
             [
@@ -1186,7 +1223,9 @@ Value
   (non_rec, @.,
     [
       ((merge, [ ], [ (t1, Type (t)); (t2, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument; OCaml.Not_found ], Type (t))),
+        Monad
+          ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
+            Type (t))),
         Match
           (133, Tuple (133, Variable (133, t1), Variable (133, t2)),
             [
@@ -1200,11 +1239,14 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Not_found
+                          Type
+                            (OCaml.Not_found)
                         ],
                         [
-                          OCaml.Invalid_argument;
-                          OCaml.Not_found
+                          Type
+                            (OCaml.Invalid_argument);
+                          Type
+                            (OCaml.Not_found)
                         ],
                         Apply
                           (136,
@@ -1223,11 +1265,14 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              OCaml.Invalid_argument;
-                              OCaml.Not_found
+                              Type
+                                (OCaml.Invalid_argument);
+                              Type
+                                (OCaml.Not_found)
                             ],
                             Apply
                               (136,
@@ -1244,11 +1289,14 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              OCaml.Invalid_argument;
-                              OCaml.Not_found
+                              Type
+                                (OCaml.Invalid_argument);
+                              Type
+                                (OCaml.Not_found)
                             ],
                             Apply
                               (136,
@@ -1276,10 +1324,10 @@ Value
       ((concat, [ ], [ (t1, Type (t)); (t2, Type (t)) ],
         Monad
           ([
-            Counter;
-            NonTermination;
-            OCaml.Invalid_argument;
-            OCaml.Not_found
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument);
+            Type (OCaml.Not_found)
           ], Type (t))),
         Match
           (143, Tuple (143, Variable (143, t1), Variable (143, t2)),
@@ -1294,13 +1342,18 @@ Value
                     Lift
                       (?,
                         [
-                          OCaml.Not_found
+                          Type
+                            (OCaml.Not_found)
                         ],
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Invalid_argument;
-                          OCaml.Not_found
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Invalid_argument);
+                          Type
+                            (OCaml.Not_found)
                         ],
                         Apply
                           (146,
@@ -1319,13 +1372,18 @@ Value
                         Lift
                           (?,
                             [
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              Counter;
-                              NonTermination;
-                              OCaml.Invalid_argument;
-                              OCaml.Not_found
+                              Type
+                                (Counter);
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Invalid_argument);
+                              Type
+                                (OCaml.Not_found)
                             ],
                             Apply
                               (146,
@@ -1342,15 +1400,22 @@ Value
                         Lift
                           (?,
                             [
-                              Counter;
-                              NonTermination;
-                              OCaml.Invalid_argument
+                              Type
+                                (Counter);
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                             [
-                              Counter;
-                              NonTermination;
-                              OCaml.Invalid_argument;
-                              OCaml.Not_found
+                              Type
+                                (Counter);
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Invalid_argument);
+                              Type
+                                (OCaml.Not_found)
                             ],
                             Apply
                               (146,
@@ -1377,8 +1442,11 @@ Value
     [
       ((split, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
         Monad
-          ([ Counter; NonTermination; OCaml.Invalid_argument ],
-            (Type (t) * Type (bool) * Type (t)))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument)
+          ], (Type (t) * Type (bool) * Type (t)))),
         Match
           (?, Variable (?, x_1),
             [
@@ -1680,7 +1748,9 @@ Value
   (rec, @coq_rec,
     [
       ((remove, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
-        Monad ([ OCaml.Invalid_argument; OCaml.Not_found ], Type (t))),
+        Monad
+          ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
+            Type (t))),
         Match
           (?, Variable (?, x_1),
             [
@@ -1765,11 +1835,14 @@ Value
                             Lift
                               (?,
                                 [
-                                  OCaml.Invalid_argument
+                                  Type
+                                    (OCaml.Invalid_argument)
                                 ],
                                 [
-                                  OCaml.Invalid_argument;
-                                  OCaml.Not_found
+                                  Type
+                                    (OCaml.Invalid_argument);
+                                  Type
+                                    (OCaml.Not_found)
                                 ],
                                 Apply
                                   (184,
@@ -1807,11 +1880,14 @@ Value
                             Lift
                               (?,
                                 [
-                                  OCaml.Invalid_argument
+                                  Type
+                                    (OCaml.Invalid_argument)
                                 ],
                                 [
-                                  OCaml.Invalid_argument;
-                                  OCaml.Not_found
+                                  Type
+                                    (OCaml.Invalid_argument);
+                                  Type
+                                    (OCaml.Not_found)
                                 ],
                                 Apply
                                   (184,
@@ -1838,7 +1914,12 @@ Value
     [
       ((union_rec, [ ],
         [ (counter, Type (nat)); (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ Counter; NonTermination; OCaml.Invalid_argument ], Type (t))),
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument)
+          ], Type (t))),
         Match
           (?, Variable (?, counter),
             [
@@ -1846,12 +1927,16 @@ Value
                 Lift
                   (?,
                     [
-                      NonTermination
+                      Type
+                        (NonTermination)
                     ],
                     [
-                      Counter;
-                      NonTermination;
-                      OCaml.Invalid_argument
+                      Type
+                        (Counter);
+                      Type
+                        (NonTermination);
+                      Type
+                        (OCaml.Invalid_argument)
                     ],
                     Apply
                       (?,
@@ -1938,12 +2023,16 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     [
-                                      Counter;
-                                      NonTermination;
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (Counter);
+                                      Type
+                                        (NonTermination);
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     Apply
                                       (193,
@@ -2068,12 +2157,16 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     [
-                                      Counter;
-                                      NonTermination;
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (Counter);
+                                      Type
+                                        (NonTermination);
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ],
                                     Apply
                                       (198,
@@ -2189,12 +2282,21 @@ Value
   (non_rec, @.,
     [
       ((union, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ Counter; NonTermination; OCaml.Invalid_argument ], Type (t))),
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument)
+          ], Type (t))),
         Bind
           (?,
             Lift
-              (?, [ Counter ],
-                [ Counter; NonTermination; OCaml.Invalid_argument ],
+              (?, [ Type (Counter) ],
+                [
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Invalid_argument)
+                ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Apply
@@ -2209,10 +2311,10 @@ Value
       ((inter, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
         Monad
           ([
-            Counter;
-            NonTermination;
-            OCaml.Invalid_argument;
-            OCaml.Not_found
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument);
+            Type (OCaml.Not_found)
           ], Type (t))),
         Match
           (204, Tuple (204, Variable (204, s1), Variable (204, s2)),
@@ -2227,15 +2329,22 @@ Value
                     Lift
                       (?,
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Invalid_argument
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Invalid_argument)
                         ],
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Invalid_argument;
-                          OCaml.Not_found
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Invalid_argument);
+                          Type
+                            (OCaml.Not_found)
                         ],
                         Apply
                           (208,
@@ -2352,15 +2461,22 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          Counter;
-                                          NonTermination;
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (Counter);
+                                          Type
+                                            (NonTermination);
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ],
                                         [
-                                          Counter;
-                                          NonTermination;
-                                          OCaml.Invalid_argument;
-                                          OCaml.Not_found
+                                          Type
+                                            (Counter);
+                                          Type
+                                            (NonTermination);
+                                          Type
+                                            (OCaml.Invalid_argument);
+                                          Type
+                                            (OCaml.Not_found)
                                         ],
                                         Apply
                                           (212,
@@ -2389,10 +2505,10 @@ Value
       ((diff, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
         Monad
           ([
-            Counter;
-            NonTermination;
-            OCaml.Invalid_argument;
-            OCaml.Not_found
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument);
+            Type (OCaml.Not_found)
           ], Type (t))),
         Match
           (216, Tuple (216, Variable (216, s1), Variable (216, s2)),
@@ -2407,15 +2523,22 @@ Value
                     Lift
                       (?,
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Invalid_argument
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Invalid_argument)
                         ],
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Invalid_argument;
-                          OCaml.Not_found
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Invalid_argument);
+                          Type
+                            (OCaml.Not_found)
                         ],
                         Apply
                           (220,
@@ -2480,15 +2603,22 @@ Value
                                     Lift
                                       (?,
                                         [
-                                          Counter;
-                                          NonTermination;
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (Counter);
+                                          Type
+                                            (NonTermination);
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ],
                                         [
-                                          Counter;
-                                          NonTermination;
-                                          OCaml.Invalid_argument;
-                                          OCaml.Not_found
+                                          Type
+                                            (Counter);
+                                          Type
+                                            (NonTermination);
+                                          Type
+                                            (OCaml.Invalid_argument);
+                                          Type
+                                            (OCaml.Not_found)
                                         ],
                                         Apply
                                           (222,
@@ -2611,7 +2741,7 @@ Value
           (counter, Type (nat));
           (e1, Type (enumeration));
           (e2, Type (enumeration))
-        ], Monad ([ NonTermination ], Type (Z))),
+        ], Monad ([ Type (NonTermination) ], Type (Z))),
         Match
           (?, Variable (?, counter),
             [
@@ -2764,15 +2894,17 @@ Value
     [
       ((compare_aux, [ ],
         [ (e1, Type (enumeration)); (e2, Type (enumeration)) ],
-        Monad ([ Counter; NonTermination ], Type (Z))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, compare_aux_rec),
                     [
@@ -2787,7 +2919,7 @@ Value
   (non_rec, @.,
     [
       ((compare, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ Counter; NonTermination ], Type (Z))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Apply
           (247, Variable (247, compare_aux),
             [
@@ -2819,7 +2951,7 @@ Value
   (non_rec, @.,
     [
       ((equal, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ Counter; NonTermination ], Type (bool))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Bind
           (?,
             Apply
@@ -2838,7 +2970,7 @@ Value
     [
       ((subset_rec, [ ],
         [ (counter, Type (nat)); (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ NonTermination ], Type (bool))),
+        Monad ([ Type (NonTermination) ], Type (bool))),
         Match
           (?, Variable (?, counter),
             [
@@ -3167,15 +3299,17 @@ Value
   (non_rec, @.,
     [
       ((subset, [ ], [ (s1, Type (t)); (s2, Type (t)) ],
-        Monad ([ Counter; NonTermination ], Type (bool))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ NonTermination ], [ Counter; NonTermination ],
+              (?, [ Type (NonTermination) ],
+                [ Type (Counter); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, subset_rec),
                     [
@@ -3399,10 +3533,10 @@ Value
       ((filter, [ ], [ (p, (Type (elt) -> Type (bool))); (x, Type (t)) ],
         Monad
           ([
-            Counter;
-            NonTermination;
-            OCaml.Invalid_argument;
-            OCaml.Not_found
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument);
+            Type (OCaml.Not_found)
           ], Type (t))),
         Match
           (?, Variable (?, x),
@@ -3467,15 +3601,22 @@ Value
                             Lift
                               (?,
                                 [
-                                  Counter;
-                                  NonTermination;
-                                  OCaml.Invalid_argument
+                                  Type
+                                    (Counter);
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Invalid_argument)
                                 ],
                                 [
-                                  Counter;
-                                  NonTermination;
-                                  OCaml.Invalid_argument;
-                                  OCaml.Not_found
+                                  Type
+                                    (Counter);
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Invalid_argument);
+                                  Type
+                                    (OCaml.Not_found)
                                 ],
                                 Apply
                                   (295,
@@ -3516,10 +3657,10 @@ Value
       ((partition, [ ], [ (p, (Type (elt) -> Type (bool))); (x, Type (t)) ],
         Monad
           ([
-            Counter;
-            NonTermination;
-            OCaml.Invalid_argument;
-            OCaml.Not_found
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Invalid_argument);
+            Type (OCaml.Not_found)
           ], (Type (t) * Type (t)))),
         Match
           (?, Variable (?, x),
@@ -3613,15 +3754,22 @@ Value
                                                 Lift
                                                   (?,
                                                     [
-                                                      Counter;
-                                                      NonTermination;
-                                                      OCaml.Invalid_argument
+                                                      Type
+                                                        (Counter);
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Invalid_argument)
                                                     ],
                                                     [
-                                                      Counter;
-                                                      NonTermination;
-                                                      OCaml.Invalid_argument;
-                                                      OCaml.Not_found
+                                                      Type
+                                                        (Counter);
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Invalid_argument);
+                                                      Type
+                                                        (OCaml.Not_found)
                                                     ],
                                                     Apply
                                                       (306,
@@ -3690,15 +3838,22 @@ Value
                                                     Lift
                                                       (?,
                                                         [
-                                                          Counter;
-                                                          NonTermination;
-                                                          OCaml.Invalid_argument
+                                                          Type
+                                                            (Counter);
+                                                          Type
+                                                            (NonTermination);
+                                                          Type
+                                                            (OCaml.Invalid_argument)
                                                         ],
                                                         [
-                                                          Counter;
-                                                          NonTermination;
-                                                          OCaml.Invalid_argument;
-                                                          OCaml.Not_found
+                                                          Type
+                                                            (Counter);
+                                                          Type
+                                                            (NonTermination);
+                                                          Type
+                                                            (OCaml.Invalid_argument);
+                                                          Type
+                                                            (OCaml.Not_found)
                                                         ],
                                                         Apply
                                                           (307,
@@ -3840,7 +3995,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((choose, [ ], [ ], (Type (t) -> Monad ([ OCaml.Not_found ], Type (elt)))),
+      ((choose, [ ], [ ],
+        (Type (t) -> Monad ([ Type (OCaml.Not_found) ], Type (elt)))),
         Variable (323, min_elt))
     ])
 
@@ -3849,7 +4005,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
-        Monad ([ OCaml.Not_found ], Type (elt))),
+        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
           (?, Variable (?, x_1),
             [
@@ -3938,7 +4094,12 @@ Value
   (non_rec, @.,
     [
       ((of_sorted_list, [ ], [ (l, Type (list, Type (elt))) ],
-        Monad ([ Counter; NonTermination; OCaml.Assert_failure ], Type (t))),
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Assert_failure)
+          ], Type (t))),
         LetFun 334
           (rec, @.,
             [
@@ -3954,8 +4115,10 @@ Value
                 ],
                 Monad
                   ([
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type
+                      (NonTermination);
+                    Type
+                      (OCaml.Assert_failure)
                   ],
                     (Type
                       (t)
@@ -3975,11 +4138,14 @@ Value
                         Lift
                           (?,
                             [
-                              NonTermination
+                              Type
+                                (NonTermination)
                             ],
                             [
-                              NonTermination;
-                              OCaml.Assert_failure
+                              Type
+                                (NonTermination);
+                              Type
+                                (OCaml.Assert_failure)
                             ],
                             Apply
                               (?,
@@ -4211,11 +4377,14 @@ Value
                                                     Lift
                                                       (?,
                                                         [
-                                                          OCaml.Assert_failure
+                                                          Type
+                                                            (OCaml.Assert_failure)
                                                         ],
                                                         [
-                                                          NonTermination;
-                                                          OCaml.Assert_failure
+                                                          Type
+                                                            (NonTermination);
+                                                          Type
+                                                            (OCaml.Assert_failure)
                                                         ],
                                                         Apply
                                                           (344,
@@ -4327,9 +4496,12 @@ Value
                 ],
                 Monad
                   ([
-                    Counter;
-                    NonTermination;
-                    OCaml.Assert_failure
+                    Type
+                      (Counter);
+                    Type
+                      (NonTermination);
+                    Type
+                      (OCaml.Assert_failure)
                   ],
                     (Type
                       (t)
@@ -4343,12 +4515,16 @@ Value
                     Lift
                       (?,
                         [
-                          Counter
+                          Type
+                            (Counter)
                         ],
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                         Apply
                           (?,
@@ -4364,13 +4540,18 @@ Value
                     Lift
                       (?,
                         [
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                         [
-                          Counter;
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (Counter);
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                         Apply
                           (?,

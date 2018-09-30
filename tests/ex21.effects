@@ -2,22 +2,26 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B; C ], [ (x, A) ], (B -> C)),
+      ((f, [ A; B; C ], [ (x, A) ],
+        Monad ([ Type (IO) ], (B -> Monad ([ Type (OCaml.Failure) ], C)))),
         Sequence
-          ((4, Effect ([ IO ], . -[ OCaml.Failure ]-> .)),
+          ((4, Effect ([ Type (IO) ], . -[ Type (OCaml.Failure) ]-> .)),
             Apply
-              ((4, Effect ([ IO ], .)),
+              ((4, Effect ([ Type (IO) ], .)),
                 Variable
-                  ((4, Effect ([ ], . -[ IO ]-> .)),
+                  ((4, Effect ([ ], . -[ Type (IO) ]-> .)),
                     OCaml.Pervasives.print_string),
                 [ Constant ((4, Effect ([ ], .)), String("Hi")) ]),
             Function
-              ((5, Effect ([ ], . -[ OCaml.Failure ]-> .)), y,
+              ((5, Effect ([ ], . -[ Type (OCaml.Failure) ]-> .)), y,
                 Apply
-                  ((5, Effect ([ OCaml.Failure ], .)),
+                  ((5, Effect ([ Type (OCaml.Failure) ], .)),
                     Variable
                       ((5,
-                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                        Effect
+                          ([ ],
+                            . -[ Type (OCaml.Failure) ]->
+                              .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -34,9 +38,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], B),
+      ((r, [ A; B ], [ (x, A) ], Monad ([ Type (IO); Type (OCaml.Failure) ], B)),
         Match
-          ((?, Effect ([ IO; OCaml.Failure ], .)),
+          ((?, Effect ([ Type (IO); Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -44,19 +48,23 @@ Value
                   ((7,
                     Effect
                       ([
-                        IO;
-                        OCaml.Failure
+                        Type
+                          (IO);
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Apply
                       ((7,
                         Effect
                           ([
-                            IO
+                            Type
+                              (IO)
                           ],
                             .
                               -[
-                                OCaml.Failure
+                                Type
+                                  (OCaml.Failure)
                               ]->
                               .)),
                         Variable
@@ -66,11 +74,13 @@ Value
                               ],
                                 .
                                   -[
-                                    IO
+                                    Type
+                                      (IO)
                                   ]->
                                   .
                                     -[
-                                      OCaml.Failure
+                                      Type
+                                        (OCaml.Failure)
                                     ]->
                                     .)),
                             f),

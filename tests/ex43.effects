@@ -4,14 +4,20 @@ Require [ OCaml.List ]
 Value
   (non_rec, @.,
     [
-      ((slow_div, [ ], [ (a, Type (Z)); (b, Type (Z)) ], Type (Z)),
+      ((slow_div, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
+        Monad
+          ([
+            Type (OCaml.Effect.State.state, Type (Z));
+            Type (Counter);
+            Type (NonTermination)
+          ], Type (Z))),
         LetVar
           (3,
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)) y =
           Apply
             ((3, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
@@ -32,8 +38,8 @@ Value
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)) c =
           Apply
             ((4, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
@@ -54,16 +60,16 @@ Value
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)),
             While
               ((5,
                 Effect
                   ([
                     Type (OCaml.Effect.State.state, Type (Z));
-                    Counter;
-                    NonTermination
+                    Type (Counter);
+                    Type (NonTermination)
                   ], .)),
                 Apply
                   ((5,
@@ -75,7 +81,8 @@ Value
                               (Z))
                       ], .)),
                     Variable
-                      ((5, Effect ([ ], .)), OCaml.Pervasives.le),
+                      ((5, Effect ([ ], . -> . -> .)),
+                        OCaml.Pervasives.le),
                     [
                       Apply
                         ((5,
@@ -92,7 +99,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               Z.add),
                           [
                             Apply
@@ -186,7 +197,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.add),
                               [
                                 Apply
@@ -270,7 +285,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.add),
                               [
                                 Apply
@@ -337,7 +356,23 @@ Value
 Value
   (non_rec, @.,
     [
-      ((nested, [ ], [ (x, Type (unit)) ], Type (list, Type (Z))),
+      ((nested, [ ], [ (x, Type (unit)) ],
+        Monad
+          ([
+            Type (OCaml.Effect.State.state, Type (list, Type (Z)));
+            Type
+              (OCaml.Effect.State.state,
+                Type
+                  (list,
+                    Type
+                      (OCaml.Effect.State.t,
+                        Type
+                          (list,
+                            Type
+                              (Z)))));
+            Type (Counter);
+            Type (NonTermination)
+          ], Type (list, Type (Z)))),
         Match
           ((?,
             Effect
@@ -353,8 +388,8 @@ Value
                               (list,
                                 Type
                                   (Z)))));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
@@ -378,8 +413,10 @@ Value
                                       (list,
                                         Type
                                           (Z)))));
-                        Counter;
-                        NonTermination
+                        Type
+                          (Counter);
+                        Type
+                          (NonTermination)
                       ],
                         .))
                   a =
@@ -703,8 +740,10 @@ Value
                                       (list,
                                         Type
                                           (Z)))));
-                        Counter;
-                        NonTermination
+                        Type
+                          (Counter);
+                        Type
+                          (NonTermination)
                       ],
                         .))
                   b =
@@ -766,8 +805,10 @@ Value
                                       (list,
                                         Type
                                           (Z)))));
-                        Counter;
-                        NonTermination
+                        Type
+                          (Counter);
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     While
@@ -790,8 +831,10 @@ Value
                                           (list,
                                             Type
                                               (Z)))));
-                            Counter;
-                            NonTermination
+                            Type
+                              (Counter);
+                            Type
+                              (NonTermination)
                           ],
                             .)),
                         Apply
@@ -815,7 +858,11 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                                 OCaml.Pervasives.gt),
                             [
                               Apply
@@ -839,7 +886,9 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .)),
                                       OCaml.List.length),
                                   [
                                     Apply
@@ -916,8 +965,10 @@ Value
                                               (list,
                                                 Type
                                                   (Z)))));
-                                Counter;
-                                NonTermination
+                                Type
+                                  (Counter);
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Apply
@@ -999,8 +1050,10 @@ Value
                                                       (list,
                                                         Type
                                                           (Z)))));
-                                        Counter;
-                                        NonTermination
+                                        Type
+                                          (Counter);
+                                        Type
+                                          (NonTermination)
                                       ],
                                         .)),
                                     While
@@ -1013,8 +1066,10 @@ Value
                                                   (list,
                                                     Type
                                                       (Z)));
-                                            Counter;
-                                            NonTermination
+                                            Type
+                                              (Counter);
+                                            Type
+                                              (NonTermination)
                                           ],
                                             .)),
                                         Apply
@@ -1034,7 +1089,11 @@ Value
                                                 Effect
                                                   ([
                                                   ],
-                                                    .)),
+                                                    .
+                                                      ->
+                                                      .
+                                                        ->
+                                                        .)),
                                                 OCaml.Pervasives.gt),
                                             [
                                               Apply
@@ -1054,7 +1113,9 @@ Value
                                                       Effect
                                                         ([
                                                         ],
-                                                          .)),
+                                                          .
+                                                            ->
+                                                            .)),
                                                       OCaml.List.length),
                                                   [
                                                     Apply
@@ -1420,17 +1481,28 @@ Value
 Value
   (non_rec, @.,
     [
-      ((raises, [ ], [ (b, Type (bool)) ], Type (unit)),
+      ((raises, [ ], [ (b, Type (bool)) ],
+        Monad
+          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
+            Type (unit))),
         While
-          ((30, Effect ([ Counter; NonTermination; OCaml.Failure ], .)),
-            Variable ((30, Effect ([ ], .)), b),
+          ((30,
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Failure)
+              ], .)), Variable ((30, Effect ([ ], .)), b),
             Coerce
-              ((?, Effect ([ OCaml.Failure ], .)),
+              ((?, Effect ([ Type (OCaml.Failure) ], .)),
                 Apply
-                  ((31, Effect ([ OCaml.Failure ], .)),
+                  ((31, Effect ([ Type (OCaml.Failure) ], .)),
                     Variable
                       ((31,
-                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
+                        Effect
+                          ([ ],
+                            . -[ Type (OCaml.Failure) ]->
+                              .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -1447,16 +1519,32 @@ Value
 Value
   (non_rec, @.,
     [
-      ((complex_raises, [ ], [ (b, Type (bool)) ], Type (unit)),
-        LetFun (35, Effect ([ Counter; NonTermination; OCaml.Failure ], .))
+      ((complex_raises, [ ], [ (b, Type (bool)) ],
+        Monad
+          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
+            Type (unit))),
+        LetFun
+          (35,
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Failure)
+              ], .))
           (non_rec, @.,
             [
-              ((f, [ A; B ], [ (a, A) ], (A * Type (Z) * B)),
+              ((f, [ A; B ], [ (a, A) ],
+                Monad
+                  ([
+                    Type
+                      (OCaml.Failure)
+                  ], (A * Type (Z) * B))),
                 Tuple
                   ((35,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Variable
@@ -1477,7 +1565,8 @@ Value
                       ((35,
                         Effect
                           ([
-                            OCaml.Failure
+                            Type
+                              (OCaml.Failure)
                           ],
                             .)),
                         Variable
@@ -1487,7 +1576,8 @@ Value
                               ],
                                 .
                                   -[
-                                    OCaml.Failure
+                                    Type
+                                      (OCaml.Failure)
                                   ]->
                                   .)),
                             OCaml.Pervasives.failwith),
@@ -1502,16 +1592,23 @@ Value
                         ])))
             ]) in
         While
-          ((36, Effect ([ Counter; NonTermination; OCaml.Failure ], .)),
-            Variable ((36, Effect ([ ], .)), b),
+          ((36,
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Failure)
+              ], .)), Variable ((36, Effect ([ ], .)), b),
             Coerce
-              ((?, Effect ([ OCaml.Failure ], .)),
+              ((?, Effect ([ Type (OCaml.Failure) ], .)),
                 Apply
-                  ((37, Effect ([ OCaml.Failure ], .)),
+                  ((37, Effect ([ Type (OCaml.Failure) ], .)),
                     Variable
                       ((37,
-                        Effect ([ ], . -[ OCaml.Failure ]-> .)),
-                        f),
+                        Effect
+                          ([ ],
+                            . -[ Type (OCaml.Failure) ]->
+                              .)), f),
                     [ Constructor ((37, Effect ([ ], .)), true) ]),
                 (Type (bool) * Type (Z) * ()))))
     ])
@@ -1522,14 +1619,19 @@ Value
     [
       ((argument_effects, [ ],
         [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
-        Type (Z)),
+        Monad
+          ([
+            Type (OCaml.Effect.State.state, Type (Z));
+            Type (Counter);
+            Type (NonTermination)
+          ], Type (Z))),
         LetVar
           (41,
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)) y =
           Apply
             ((41,
@@ -1551,8 +1653,8 @@ Value
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)) z =
           Apply
             ((42,
@@ -1574,8 +1676,8 @@ Value
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)) i =
           Apply
             ((43,
@@ -1597,16 +1699,16 @@ Value
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (Z));
-                Counter;
-                NonTermination
+                Type (Counter);
+                Type (NonTermination)
               ], .)),
             While
               ((44,
                 Effect
                   ([
                     Type (OCaml.Effect.State.state, Type (Z));
-                    Counter;
-                    NonTermination
+                    Type (Counter);
+                    Type (NonTermination)
                   ], .)),
                 Apply
                   ((44,
@@ -1618,7 +1720,7 @@ Value
                               (Z))
                       ], .)),
                     Variable
-                      ((44, Effect ([ ], .)),
+                      ((44, Effect ([ ], . -> . -> .)),
                         OCaml.Pervasives.le),
                     [
                       Apply
@@ -1696,8 +1798,8 @@ Value
                           (OCaml.Effect.State.state,
                             Type
                               (Z));
-                        Counter;
-                        NonTermination
+                        Type (Counter);
+                        Type (NonTermination)
                       ], .)) j =
                   Apply
                     ((45,
@@ -1737,8 +1839,8 @@ Value
                           (OCaml.Effect.State.state,
                             Type
                               (Z));
-                        Counter;
-                        NonTermination
+                        Type (Counter);
+                        Type (NonTermination)
                       ], .)),
                     While
                       ((46,
@@ -1748,8 +1850,8 @@ Value
                               (OCaml.Effect.State.state,
                                 Type
                                   (Z));
-                            Counter;
-                            NonTermination
+                            Type (Counter);
+                            Type (NonTermination)
                           ], .)),
                         Apply
                           ((46,
@@ -1761,7 +1863,9 @@ Value
                                       (Z))
                               ], .)),
                             Variable
-                              ((46, Effect ([ ], .)),
+                              ((46,
+                                Effect
+                                  ([ ], . -> . -> .)),
                                 OCaml.Pervasives.le),
                             [
                               Apply
@@ -1886,7 +1990,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           Z.add),
                                       [
                                         Apply
@@ -1977,7 +2085,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           Z.add),
                                       [
                                         Apply
@@ -2076,7 +2188,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       Z.sub),
                                   [
                                     Apply
@@ -2166,7 +2282,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       Z.add),
                                   [
                                     Apply

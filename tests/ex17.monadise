@@ -4,7 +4,7 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], Monad ([ Outside ], B)),
+      ((f, [ A; B ], [ (x, A) ], Monad ([ Type (Outside) ], B)),
         Apply (5, Variable (5, raise_Outside), [ Tuple (?) ]))
     ])
 
@@ -15,11 +15,13 @@ Value
   Value
     (non_rec, @.,
       [
-        ((g, [ A ], [ (b, Type (bool)) ], Monad ([ Outside; G/Inside ], A)),
+        ((g, [ A ], [ (b, Type (bool)) ],
+          Monad ([ Type (Outside); Type (G/Inside) ], A)),
           IfThenElse
             (11, Variable (11, G/b),
               Lift
-                (?, [ G/Inside ], [ Outside; G/Inside ],
+                (?, [ Type (G/Inside) ],
+                  [ Type (Outside); Type (G/Inside) ],
                   Apply
                     (12, Variable (12, G/raise_Inside),
                       [
@@ -33,7 +35,8 @@ Value
                                 String("no")))
                       ])),
               Lift
-                (?, [ Outside ], [ Outside; G/Inside ],
+                (?, [ Type (Outside) ],
+                  [ Type (Outside); Type (G/Inside) ],
                   Apply
                     (14, Variable (14, raise_Outside),
                       [ Tuple (?) ]))))
@@ -44,7 +47,13 @@ Value
   (rec, @.,
     [
       ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ],
-        Monad ([ IO; NonTermination; Outside; G.Inside ], B)),
+        Monad
+          ([
+            Type (IO);
+            Type (NonTermination);
+            Type (Outside);
+            Type (G.Inside)
+          ], B)),
         Match
           (?, Variable (?, counter),
             [
@@ -52,13 +61,18 @@ Value
                 Lift
                   (?,
                     [
-                      NonTermination
+                      Type
+                        (NonTermination)
                     ],
                     [
-                      IO;
-                      NonTermination;
-                      Outside;
-                      G.Inside
+                      Type
+                        (IO);
+                      Type
+                        (NonTermination);
+                      Type
+                        (Outside);
+                      Type
+                        (G.Inside)
                     ],
                     Apply
                       (?,
@@ -78,27 +92,38 @@ Value
                         Lift
                           (?,
                             [
-                              IO;
-                              Outside;
-                              G.Inside
+                              Type
+                                (IO);
+                              Type
+                                (Outside);
+                              Type
+                                (G.Inside)
                             ],
                             [
-                              IO;
-                              NonTermination;
-                              Outside;
-                              G.Inside
+                              Type
+                                (IO);
+                              Type
+                                (NonTermination);
+                              Type
+                                (Outside);
+                              Type
+                                (G.Inside)
                             ],
                             Bind
                               (?,
                                 Lift
                                   (?,
                                     [
-                                      IO
+                                      Type
+                                        (IO)
                                     ],
                                     [
-                                      IO;
-                                      Outside;
-                                      G.Inside
+                                      Type
+                                        (IO);
+                                      Type
+                                        (Outside);
+                                      Type
+                                        (G.Inside)
                                     ],
                                     Apply
                                       (19,
@@ -114,13 +139,18 @@ Value
                                 Lift
                                   (?,
                                     [
-                                      Outside;
-                                      G.Inside
+                                      Type
+                                        (Outside);
+                                      Type
+                                        (G.Inside)
                                     ],
                                     [
-                                      IO;
-                                      Outside;
-                                      G.Inside
+                                      Type
+                                        (IO);
+                                      Type
+                                        (Outside);
+                                      Type
+                                        (G.Inside)
                                     ],
                                     Apply
                                       (19,
@@ -140,13 +170,18 @@ Value
                         Lift
                           (?,
                             [
-                              G.Inside
+                              Type
+                                (G.Inside)
                             ],
                             [
-                              IO;
-                              NonTermination;
-                              Outside;
-                              G.Inside
+                              Type
+                                (IO);
+                              Type
+                                (NonTermination);
+                              Type
+                                (Outside);
+                              Type
+                                (G.Inside)
                             ],
                             Apply
                               (20,
@@ -193,17 +228,42 @@ Value
   (non_rec, @.,
     [
       ((h, [ A; B ], [ (l, Type (list, A)) ],
-        Monad ([ Counter; IO; NonTermination; Outside; G.Inside ], B)),
+        Monad
+          ([
+            Type (Counter);
+            Type (IO);
+            Type (NonTermination);
+            Type (Outside);
+            Type (G.Inside)
+          ], B)),
         Bind
           (?,
             Lift
-              (?, [ Counter ],
-                [ Counter; IO; NonTermination; Outside; G.Inside ],
+              (?, [ Type (Counter) ],
+                [
+                  Type (Counter);
+                  Type (IO);
+                  Type (NonTermination);
+                  Type (Outside);
+                  Type (G.Inside)
+                ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
             Lift
-              (?, [ IO; NonTermination; Outside; G.Inside ],
-                [ Counter; IO; NonTermination; Outside; G.Inside ],
+              (?,
+                [
+                  Type (IO);
+                  Type (NonTermination);
+                  Type (Outside);
+                  Type (G.Inside)
+                ],
+                [
+                  Type (Counter);
+                  Type (IO);
+                  Type (NonTermination);
+                  Type (Outside);
+                  Type (G.Inside)
+                ],
                 Apply
                   (?, Variable (?, h_rec),
                     [ Variable (?, x); Variable (?, l) ]))))

@@ -102,9 +102,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_match, [ A; B ], [ (x, A) ], B),
+      ((e_match, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Match_failure) ], B)),
         Match
-          ((?, Effect ([ OCaml.Match_failure ], .)),
+          ((?, Effect ([ Type (OCaml.Match_failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -112,7 +112,8 @@ Value
                   ((26,
                     Effect
                       ([
-                        OCaml.Match_failure
+                        Type
+                          (OCaml.Match_failure)
                       ],
                         .)),
                     Variable
@@ -122,7 +123,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Match_failure
+                                Type
+                                  (OCaml.Match_failure)
                               ]->
                               .)),
                         OCaml.raise_Match_failure),
@@ -168,9 +170,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_assert, [ A; B ], [ (x, A) ], B),
+      ((e_assert, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Assert_failure) ], B)),
         Match
-          ((?, Effect ([ OCaml.Assert_failure ], .)),
+          ((?, Effect ([ Type (OCaml.Assert_failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -178,7 +181,8 @@ Value
                   ((27,
                     Effect
                       ([
-                        OCaml.Assert_failure
+                        Type
+                          (OCaml.Assert_failure)
                       ],
                         .)),
                     Variable
@@ -188,7 +192,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Assert_failure
+                                Type
+                                  (OCaml.Assert_failure)
                               ]->
                               .)),
                         OCaml.raise_Assert_failure),
@@ -234,9 +239,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_invalid, [ A; B ], [ (x, A) ], B),
+      ((e_invalid, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Invalid_argument) ], B)),
         Match
-          ((?, Effect ([ OCaml.Invalid_argument ], .)),
+          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -244,7 +250,8 @@ Value
                   ((28,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -254,7 +261,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.raise_Invalid_argument),
@@ -280,9 +288,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], B),
+      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
         Match
-          ((?, Effect ([ OCaml.Failure ], .)),
+          ((?, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -290,7 +298,8 @@ Value
                   ((29,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Variable
@@ -300,7 +309,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Failure
+                                Type
+                                  (OCaml.Failure)
                               ]->
                               .)),
                         OCaml.raise_Failure),
@@ -326,9 +336,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_not_found, [ A; B ], [ (x, A) ], B),
+      ((e_not_found, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Not_found) ], B)),
         Match
-          ((?, Effect ([ OCaml.Not_found ], .)),
+          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -336,7 +346,8 @@ Value
                   ((30,
                     Effect
                       ([
-                        OCaml.Not_found
+                        Type
+                          (OCaml.Not_found)
                       ],
                         .)),
                     Variable
@@ -346,7 +357,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Not_found
+                                Type
+                                  (OCaml.Not_found)
                               ]->
                               .)),
                         OCaml.raise_Not_found),
@@ -365,9 +377,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_out_of_mem, [ A; B ], [ (x, A) ], B),
+      ((e_out_of_mem, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Out_of_memory) ], B)),
         Match
-          ((?, Effect ([ OCaml.Out_of_memory ], .)),
+          ((?, Effect ([ Type (OCaml.Out_of_memory) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -375,7 +388,8 @@ Value
                   ((31,
                     Effect
                       ([
-                        OCaml.Out_of_memory
+                        Type
+                          (OCaml.Out_of_memory)
                       ],
                         .)),
                     Variable
@@ -385,7 +399,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Out_of_memory
+                                Type
+                                  (OCaml.Out_of_memory)
                               ]->
                               .)),
                         OCaml.raise_Out_of_memory),
@@ -404,9 +419,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_overflow, [ A; B ], [ (x, A) ], B),
+      ((e_overflow, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Stack_overflow) ], B)),
         Match
-          ((?, Effect ([ OCaml.Stack_overflow ], .)),
+          ((?, Effect ([ Type (OCaml.Stack_overflow) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -414,7 +430,8 @@ Value
                   ((32,
                     Effect
                       ([
-                        OCaml.Stack_overflow
+                        Type
+                          (OCaml.Stack_overflow)
                       ],
                         .)),
                     Variable
@@ -424,7 +441,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Stack_overflow
+                                Type
+                                  (OCaml.Stack_overflow)
                               ]->
                               .)),
                         OCaml.raise_Stack_overflow),
@@ -443,9 +461,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_sys_err, [ A; B ], [ (x, A) ], B),
+      ((e_sys_err, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Sys_error) ], B)),
         Match
-          ((?, Effect ([ OCaml.Sys_error ], .)),
+          ((?, Effect ([ Type (OCaml.Sys_error) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -453,7 +471,8 @@ Value
                   ((33,
                     Effect
                       ([
-                        OCaml.Sys_error
+                        Type
+                          (OCaml.Sys_error)
                       ],
                         .)),
                     Variable
@@ -463,7 +482,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Sys_error
+                                Type
+                                  (OCaml.Sys_error)
                               ]->
                               .)),
                         OCaml.raise_Sys_error),
@@ -489,9 +509,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_EOF, [ A; B ], [ (x, A) ], B),
+      ((e_EOF, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.End_of_file) ], B)),
         Match
-          ((?, Effect ([ OCaml.End_of_file ], .)),
+          ((?, Effect ([ Type (OCaml.End_of_file) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -499,7 +519,8 @@ Value
                   ((34,
                     Effect
                       ([
-                        OCaml.End_of_file
+                        Type
+                          (OCaml.End_of_file)
                       ],
                         .)),
                     Variable
@@ -509,7 +530,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.End_of_file
+                                Type
+                                  (OCaml.End_of_file)
                               ]->
                               .)),
                         OCaml.raise_End_of_file),
@@ -528,9 +550,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_div, [ A; B ], [ (x, A) ], B),
+      ((e_div, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Division_by_zero) ], B)),
         Match
-          ((?, Effect ([ OCaml.Division_by_zero ], .)),
+          ((?, Effect ([ Type (OCaml.Division_by_zero) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -538,7 +561,8 @@ Value
                   ((35,
                     Effect
                       ([
-                        OCaml.Division_by_zero
+                        Type
+                          (OCaml.Division_by_zero)
                       ],
                         .)),
                     Variable
@@ -548,7 +572,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Division_by_zero
+                                Type
+                                  (OCaml.Division_by_zero)
                               ]->
                               .)),
                         OCaml.raise_Division_by_zero),
@@ -567,9 +592,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_sys_blocked, [ A; B ], [ (x, A) ], B),
+      ((e_sys_blocked, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Sys_blocked_io) ], B)),
         Match
-          ((?, Effect ([ OCaml.Sys_blocked_io ], .)),
+          ((?, Effect ([ Type (OCaml.Sys_blocked_io) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -577,7 +603,8 @@ Value
                   ((36,
                     Effect
                       ([
-                        OCaml.Sys_blocked_io
+                        Type
+                          (OCaml.Sys_blocked_io)
                       ],
                         .)),
                     Variable
@@ -587,7 +614,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Sys_blocked_io
+                                Type
+                                  (OCaml.Sys_blocked_io)
                               ]->
                               .)),
                         OCaml.raise_Sys_blocked_io),
@@ -606,9 +634,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_rec_module, [ A; B ], [ (x, A) ], B),
+      ((e_rec_module, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.Undefined_recursive_module) ], B)),
         Match
-          ((?, Effect ([ OCaml.Undefined_recursive_module ], .)),
+          ((?, Effect ([ Type (OCaml.Undefined_recursive_module) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -616,7 +645,8 @@ Value
                   ((37,
                     Effect
                       ([
-                        OCaml.Undefined_recursive_module
+                        Type
+                          (OCaml.Undefined_recursive_module)
                       ],
                         .)),
                     Variable
@@ -626,7 +656,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Undefined_recursive_module
+                                Type
+                                  (OCaml.Undefined_recursive_module)
                               ]->
                               .)),
                         OCaml.raise_Undefined_recursive_module),

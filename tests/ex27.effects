@@ -33,7 +33,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               Z.add),
                           [
                             Variable
@@ -80,9 +84,9 @@ Value
 Value
   (non_rec, @.,
     [
-      ((hd, [ A ], [ (x, Type (list, A)) ], A),
+      ((hd, [ A ], [ (x, Type (list, A)) ], Monad ([ Type (OCaml.Failure) ], A)),
         Match
-          ((?, Effect ([ OCaml.Failure ], .)),
+          ((?, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -90,7 +94,8 @@ Value
                   ((24,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Variable
@@ -100,7 +105,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Failure
+                                Type
+                                  (OCaml.Failure)
                               ]->
                               .)),
                         OCaml.Pervasives.failwith),
@@ -122,9 +128,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((tl, [ A ], [ (x, Type (list, A)) ], Type (list, A)),
+      ((tl, [ A ], [ (x, Type (list, A)) ],
+        Monad ([ Type (OCaml.Failure) ], Type (list, A))),
         Match
-          ((?, Effect ([ OCaml.Failure ], .)),
+          ((?, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -132,7 +139,8 @@ Value
                   ((28,
                     Effect
                       ([
-                        OCaml.Failure
+                        Type
+                          (OCaml.Failure)
                       ],
                         .)),
                     Variable
@@ -142,7 +150,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Failure
+                                Type
+                                  (OCaml.Failure)
                               ]->
                               .)),
                         OCaml.Pervasives.failwith),
@@ -164,29 +173,36 @@ Value
 Value
   (non_rec, @.,
     [
-      ((nth, [ A ], [ (l, Type (list, A)); (n, Type (Z)) ], A),
+      ((nth, [ A ], [ (l, Type (list, A)); (n, Type (Z)) ],
+        Monad ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ], A)),
         IfThenElse
-          ((32, Effect ([ OCaml.Failure; OCaml.Invalid_argument ], .)),
+          ((32,
+            Effect
+              ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ],
+                .)),
             Apply
               ((32, Effect ([ ], .)),
-                Variable ((32, Effect ([ ], .)), OCaml.Pervasives.lt),
+                Variable
+                  ((32, Effect ([ ], . -> . -> .)),
+                    OCaml.Pervasives.lt),
                 [
                   Variable ((32, Effect ([ ], .)), n);
                   Constant ((32, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((32, Effect ([ OCaml.Invalid_argument ], .)),
+              ((32, Effect ([ Type (OCaml.Invalid_argument) ], .)),
                 Variable
                   ((32,
                     Effect
-                      ([ ], . -[ OCaml.Invalid_argument ]-> .)),
-                    OCaml.Pervasives.invalid_arg),
+                      ([ ],
+                        . -[ Type (OCaml.Invalid_argument) ]->
+                          .)), OCaml.Pervasives.invalid_arg),
                 [
                   Constant
                     ((32, Effect ([ ], .)),
                       String("List.nth"))
                 ]),
-            LetFun (33, Effect ([ OCaml.Failure ], .))
+            LetFun (33, Effect ([ Type (OCaml.Failure) ], .))
               (rec, @coq_rec,
                 [
                   ((nth_aux_coq_rec, [ B ],
@@ -198,12 +214,19 @@ Value
                       (n,
                         Type
                           (Z))
-                    ], B),
+                    ],
+                    Monad
+                      ([
+                        Type
+                          (OCaml.Failure)
+                      ],
+                        B)),
                     Match
                       ((34,
                         Effect
                           ([
-                            OCaml.Failure
+                            Type
+                              (OCaml.Failure)
                           ],
                             .)),
                         Variable
@@ -220,7 +243,8 @@ Value
                               ((35,
                                 Effect
                                   ([
-                                    OCaml.Failure
+                                    Type
+                                      (OCaml.Failure)
                                   ],
                                     .)),
                                 Variable
@@ -230,7 +254,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            OCaml.Failure
+                                            Type
+                                              (OCaml.Failure)
                                           ]->
                                           .)),
                                     OCaml.Pervasives.failwith),
@@ -251,7 +276,8 @@ Value
                               ((36,
                                 Effect
                                   ([
-                                    OCaml.Failure
+                                    Type
+                                      (OCaml.Failure)
                                   ],
                                     .)),
                                 Apply
@@ -265,7 +291,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         equiv_decb),
                                     [
                                       Variable
@@ -294,7 +324,8 @@ Value
                                   ((36,
                                     Effect
                                       ([
-                                        OCaml.Failure
+                                        Type
+                                          (OCaml.Failure)
                                       ],
                                         .)),
                                     Variable
@@ -306,7 +337,8 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  OCaml.Failure
+                                                  Type
+                                                    (OCaml.Failure)
                                                 ]->
                                                 .)),
                                         nth_aux_coq_rec),
@@ -329,7 +361,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               Z.sub),
                                           [
                                             Variable
@@ -351,9 +387,11 @@ Value
                         ]))
                 ]) in
             Apply
-              ((37, Effect ([ OCaml.Failure ], .)),
+              ((37, Effect ([ Type (OCaml.Failure) ], .)),
                 Variable
-                  ((37, Effect ([ ], . -> . -[ OCaml.Failure ]-> .)),
+                  ((37,
+                    Effect
+                      ([ ], . -> . -[ Type (OCaml.Failure) ]-> .)),
                     nth_aux_coq_rec),
                 [
                   Variable ((37, Effect ([ ], .)), l);
@@ -367,7 +405,7 @@ Value
     [
       ((append, [ A ], [ ],
         (Type (list, A) -> (Type (list, A) -> Type (list, A)))),
-        Variable ((39, Effect ([ ], .)), OCaml.Pervasives.app))
+        Variable ((39, Effect ([ ], . -> . -> .)), OCaml.Pervasives.app))
     ])
 
 41
@@ -459,7 +497,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         OCaml.Pervasives.app),
                     [
                       Variable
@@ -528,7 +570,9 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .)),
                           f),
                       [
                         Variable
@@ -573,7 +617,9 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .)),
                               f);
                           Variable
                             ((58,
@@ -611,7 +657,11 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .
+                                  ->
+                                  .)),
                           f),
                       [
                         Variable
@@ -671,7 +721,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.add),
                               [
                                 Variable
@@ -694,7 +748,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               f);
                           Variable
                             ((63,
@@ -718,7 +776,7 @@ Value
             Variable ((66, Effect ([ ], . -> . -> . -> .)), mapi_aux),
             [
               Constant ((66, Effect ([ ], .)), Int(0));
-              Variable ((66, Effect ([ ], .)), f);
+              Variable ((66, Effect ([ ], . -> . -> .)), f);
               Variable ((66, Effect ([ ], .)), l)
             ]))
     ])
@@ -796,7 +854,9 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .)),
                                           f),
                                       [
                                         Variable
@@ -857,7 +917,9 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .)),
                             f),
                         [
                           Variable
@@ -891,7 +953,9 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .)),
                               f);
                           Variable
                             ((76,
@@ -930,7 +994,11 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                             f),
                         [
                           Variable
@@ -979,7 +1047,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.add),
                               [
                                 Variable
@@ -1002,7 +1074,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               f);
                           Variable
                             ((81,
@@ -1026,7 +1102,7 @@ Value
             Variable ((84, Effect ([ ], . -> . -> . -> .)), iteri_aux),
             [
               Constant ((84, Effect ([ ], .)), Int(0));
-              Variable ((84, Effect ([ ], .)), f);
+              Variable ((84, Effect ([ ], . -> . -> .)), f);
               Variable ((84, Effect ([ ], .)), l)
             ]))
     ])
@@ -1063,7 +1139,11 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .
+                                  ->
+                                  .)),
                           f);
                       Apply
                         ((89,
@@ -1076,7 +1156,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               f),
                           [
                             Variable
@@ -1123,7 +1207,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         f),
                     [
                       Variable
@@ -1158,7 +1246,11 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                                 f);
                             Variable
                               ((95,
@@ -1185,9 +1277,9 @@ Value
     [
       ((map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Type (list, C)),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, C))),
         Match
-          ((99, Effect ([ OCaml.Invalid_argument ], .)),
+          ((99, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((99, Effect ([ ], .)),
                 Variable ((99, Effect ([ ], .)), l1),
@@ -1205,7 +1297,8 @@ Value
                   (101,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .))
                   r =
@@ -1220,7 +1313,11 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .
+                                  ->
+                                  .)),
                           f),
                       [
                         Variable
@@ -1243,7 +1340,8 @@ Value
                   ((101,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     cons,
@@ -1258,7 +1356,8 @@ Value
                       ((101,
                         Effect
                           ([
-                            OCaml.Invalid_argument
+                            Type
+                              (OCaml.Invalid_argument)
                           ],
                             .)),
                         Variable
@@ -1272,7 +1371,8 @@ Value
                                     ->
                                     .
                                       -[
-                                        OCaml.Invalid_argument
+                                        Type
+                                          (OCaml.Invalid_argument)
                                       ]->
                                       .)),
                             map2),
@@ -1282,7 +1382,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               f);
                           Variable
                             ((101,
@@ -1304,7 +1408,8 @@ Value
                   ((102,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1314,7 +1419,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -1336,8 +1442,8 @@ Value
     [
       ((rev_map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Type (list, C)),
-        LetFun (106, Effect ([ OCaml.Invalid_argument ], .))
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, C))),
+        LetFun (106, Effect ([ Type (OCaml.Invalid_argument) ], .))
           (rec, @coq_rec,
             [
               ((rmap2_f_coq_rec, [ ],
@@ -1345,12 +1451,18 @@ Value
                   (accu, Type (list, C));
                   (l1, Type (list, A));
                   (l2, Type (list, B))
-                ], Type (list, C)),
+                ],
+                Monad
+                  ([
+                    Type
+                      (OCaml.Invalid_argument)
+                  ], Type (list, C))),
                 Match
                   ((107,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Tuple
@@ -1399,7 +1511,8 @@ Value
                           ((109,
                             Effect
                               ([
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ],
                                 .)),
                             Variable
@@ -1413,7 +1526,8 @@ Value
                                         ->
                                         .
                                           -[
-                                            OCaml.Invalid_argument
+                                            Type
+                                              (OCaml.Invalid_argument)
                                           ]->
                                           .)),
                                 rmap2_f_coq_rec),
@@ -1436,7 +1550,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           f),
                                       [
                                         Variable
@@ -1483,7 +1601,8 @@ Value
                           ((110,
                             Effect
                               ([
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ],
                                 .)),
                             Variable
@@ -1493,7 +1612,8 @@ Value
                                   ],
                                     .
                                       -[
-                                        OCaml.Invalid_argument
+                                        Type
+                                          (OCaml.Invalid_argument)
                                       ]->
                                       .)),
                                 OCaml.Pervasives.invalid_arg),
@@ -1509,12 +1629,15 @@ Value
                     ]))
             ]) in
         Apply
-          ((111, Effect ([ OCaml.Invalid_argument ], .)),
+          ((111, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable
               ((111,
                 Effect
-                  ([ ], . -> . -> . -[ OCaml.Invalid_argument ]-> .)),
-                rmap2_f_coq_rec),
+                  ([ ],
+                    . ->
+                      . ->
+                        . -[ Type (OCaml.Invalid_argument) ]->
+                          .)), rmap2_f_coq_rec),
             [
               Constructor ((111, Effect ([ ], .)), []);
               Variable ((111, Effect ([ ], .)), l1);
@@ -1528,9 +1651,9 @@ Value
     [
       ((iter2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Type (unit)),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (unit))),
         Match
-          ((114, Effect ([ OCaml.Invalid_argument ], .)),
+          ((114, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((114, Effect ([ ], .)),
                 Variable ((114, Effect ([ ], .)), l1),
@@ -1548,7 +1671,8 @@ Value
                   ((116,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Apply
@@ -1562,7 +1686,11 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                             f),
                         [
                           Variable
@@ -1584,7 +1712,8 @@ Value
                       ((116,
                         Effect
                           ([
-                            OCaml.Invalid_argument
+                            Type
+                              (OCaml.Invalid_argument)
                           ],
                             .)),
                         Variable
@@ -1598,7 +1727,8 @@ Value
                                     ->
                                     .
                                       -[
-                                        OCaml.Invalid_argument
+                                        Type
+                                          (OCaml.Invalid_argument)
                                       ]->
                                       .)),
                             iter2),
@@ -1608,7 +1738,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               f);
                           Variable
                             ((116,
@@ -1630,7 +1764,8 @@ Value
                   ((117,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1640,7 +1775,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -1666,9 +1802,9 @@ Value
           (accu, A);
           (l1, Type (list, B));
           (l2, Type (list, C))
-        ], A),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], A)),
         Match
-          ((121, Effect ([ OCaml.Invalid_argument ], .)),
+          ((121, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((121, Effect ([ ], .)),
                 Variable ((121, Effect ([ ], .)), l1),
@@ -1686,7 +1822,8 @@ Value
                   ((123,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1702,7 +1839,8 @@ Value
                                   ->
                                   .
                                     -[
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ]->
                                     .)),
                         fold_left2),
@@ -1712,7 +1850,13 @@ Value
                           Effect
                             ([
                             ],
-                              .)),
+                              .
+                                ->
+                                .
+                                  ->
+                                  .
+                                    ->
+                                    .)),
                           f);
                       Apply
                         ((123,
@@ -1725,7 +1869,13 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                               f),
                           [
                             Variable
@@ -1770,7 +1920,8 @@ Value
                   ((124,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1780,7 +1931,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -1806,9 +1958,9 @@ Value
           (l1, Type (list, A));
           (l2, Type (list, B));
           (accu, C)
-        ], C),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], C)),
         Match
-          ((128, Effect ([ OCaml.Invalid_argument ], .)),
+          ((128, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((128, Effect ([ ], .)),
                 Variable ((128, Effect ([ ], .)), l1),
@@ -1826,7 +1978,8 @@ Value
                   ((130,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1834,7 +1987,13 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .
+                                  ->
+                                  .)),
                         f),
                     [
                       Variable
@@ -1855,7 +2014,8 @@ Value
                         ((130,
                           Effect
                             ([
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                               .)),
                           Variable
@@ -1871,7 +2031,8 @@ Value
                                         ->
                                         .
                                           -[
-                                            OCaml.Invalid_argument
+                                            Type
+                                              (OCaml.Invalid_argument)
                                           ]->
                                           .)),
                               fold_right2),
@@ -1881,7 +2042,13 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                 f);
                             Variable
                               ((130,
@@ -1911,7 +2078,8 @@ Value
                   ((131,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -1921,7 +2089,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -1958,7 +2127,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         andb),
                     [
                       Apply
@@ -1972,7 +2145,9 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .)),
                               p),
                           [
                             Variable
@@ -2006,7 +2181,9 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .)),
                                 p);
                             Variable
                               ((136,
@@ -2041,7 +2218,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         orb),
                     [
                       Apply
@@ -2055,7 +2236,9 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .)),
                               p),
                           [
                             Variable
@@ -2089,7 +2272,9 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .)),
                                 p);
                             Variable
                               ((141,
@@ -2112,9 +2297,9 @@ Value
           (p, (A -> (B -> Type (bool))));
           (l1, Type (list, A));
           (l2, Type (list, B))
-        ], Type (bool)),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
         Match
-          ((145, Effect ([ OCaml.Invalid_argument ], .)),
+          ((145, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((145, Effect ([ ], .)),
                 Variable ((145, Effect ([ ], .)), l1),
@@ -2134,7 +2319,8 @@ Value
                   ((147,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -2142,7 +2328,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         andb),
                     [
                       Apply
@@ -2156,7 +2346,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               p),
                           [
                             Variable
@@ -2178,7 +2372,8 @@ Value
                         ((147,
                           Effect
                             ([
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                               .)),
                           Variable
@@ -2192,7 +2387,8 @@ Value
                                       ->
                                       .
                                         -[
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ]->
                                         .)),
                               for_all2),
@@ -2202,7 +2398,11 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                                 p);
                             Variable
                               ((147,
@@ -2225,7 +2425,8 @@ Value
                   ((148,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -2235,7 +2436,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -2260,9 +2462,9 @@ Value
           (p, (A -> (B -> Type (bool))));
           (l1, Type (list, A));
           (l2, Type (list, B))
-        ], Type (bool)),
+        ], Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
         Match
-          ((152, Effect ([ OCaml.Invalid_argument ], .)),
+          ((152, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((152, Effect ([ ], .)),
                 Variable ((152, Effect ([ ], .)), l1),
@@ -2282,7 +2484,8 @@ Value
                   ((154,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -2290,7 +2493,11 @@ Value
                         Effect
                           ([
                           ],
-                            .)),
+                            .
+                              ->
+                              .
+                                ->
+                                .)),
                         orb),
                     [
                       Apply
@@ -2304,7 +2511,11 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .
+                                      ->
+                                      .)),
                               p),
                           [
                             Variable
@@ -2326,7 +2537,8 @@ Value
                         ((154,
                           Effect
                             ([
-                              OCaml.Invalid_argument
+                              Type
+                                (OCaml.Invalid_argument)
                             ],
                               .)),
                           Variable
@@ -2340,7 +2552,8 @@ Value
                                       ->
                                       .
                                         -[
-                                          OCaml.Invalid_argument
+                                          Type
+                                            (OCaml.Invalid_argument)
                                         ]->
                                         .)),
                               _exists2),
@@ -2350,7 +2563,11 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                                 p);
                             Variable
                               ((154,
@@ -2373,7 +2590,8 @@ Value
                   ((155,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -2383,7 +2601,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -2403,9 +2622,10 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ], A),
+      ((find, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
+        Monad ([ Type (OCaml.Not_found) ], A)),
         Match
-          ((?, Effect ([ OCaml.Not_found ], .)),
+          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -2413,7 +2633,8 @@ Value
                   ((192,
                     Effect
                       ([
-                        OCaml.Not_found
+                        Type
+                          (OCaml.Not_found)
                       ],
                         .)),
                     Variable
@@ -2423,7 +2644,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Not_found
+                                Type
+                                  (OCaml.Not_found)
                               ]->
                               .)),
                         OCaml.raise_Not_found),
@@ -2440,7 +2662,8 @@ Value
                   ((193,
                     Effect
                       ([
-                        OCaml.Not_found
+                        Type
+                          (OCaml.Not_found)
                       ],
                         .)),
                     Apply
@@ -2454,7 +2677,9 @@ Value
                             Effect
                               ([
                               ],
-                                .)),
+                                .
+                                  ->
+                                  .)),
                             p),
                         [
                           Variable
@@ -2476,7 +2701,8 @@ Value
                       ((193,
                         Effect
                           ([
-                            OCaml.Not_found
+                            Type
+                              (OCaml.Not_found)
                           ],
                             .)),
                         Variable
@@ -2488,7 +2714,8 @@ Value
                                   ->
                                   .
                                     -[
-                                      OCaml.Not_found
+                                      Type
+                                        (OCaml.Not_found)
                                     ]->
                                     .)),
                             find),
@@ -2498,7 +2725,9 @@ Value
                               Effect
                                 ([
                                 ],
-                                  .)),
+                                  .
+                                    ->
+                                    .)),
                               p);
                           Variable
                             ((193,
@@ -2582,7 +2811,9 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .)),
                                     p),
                                 [
                                   Variable
@@ -2792,7 +3023,9 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .)),
                                     p),
                                 [
                                   Variable
@@ -3041,9 +3274,9 @@ Value
   (rec, @coq_rec,
     [
       ((combine, [ A; B ], [ (l1, Type (list, A)); (l2, Type (list, B)) ],
-        Type (list, (A * B))),
+        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, (A * B)))),
         Match
-          ((221, Effect ([ OCaml.Invalid_argument ], .)),
+          ((221, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Tuple
               ((221, Effect ([ ], .)),
                 Variable ((221, Effect ([ ], .)), l1),
@@ -3061,7 +3294,8 @@ Value
                   ((223,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     cons,
@@ -3089,7 +3323,8 @@ Value
                       ((223,
                         Effect
                           ([
-                            OCaml.Invalid_argument
+                            Type
+                              (OCaml.Invalid_argument)
                           ],
                             .)),
                         Variable
@@ -3101,7 +3336,8 @@ Value
                                   ->
                                   .
                                     -[
-                                      OCaml.Invalid_argument
+                                      Type
+                                        (OCaml.Invalid_argument)
                                     ]->
                                     .)),
                             combine),
@@ -3126,7 +3362,8 @@ Value
                   ((224,
                     Effect
                       ([
-                        OCaml.Invalid_argument
+                        Type
+                          (OCaml.Invalid_argument)
                       ],
                         .)),
                     Variable
@@ -3136,7 +3373,8 @@ Value
                           ],
                             .
                               -[
-                                OCaml.Invalid_argument
+                                Type
+                                  (OCaml.Invalid_argument)
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -3238,7 +3476,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     OCaml.Pervasives.le),
                                 [
                                   Apply
@@ -3252,7 +3494,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           cmp),
                                       [
                                         Variable
@@ -3317,7 +3563,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           cmp);
                                       Variable
                                         ((235,
@@ -3384,18 +3634,20 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((chop, [ A ], [ (k, Type (Z)); (l, Type (list, A)) ], Type (list, A)),
+      ((chop, [ A ], [ (k, Type (Z)); (l, Type (list, A)) ],
+        Monad ([ Type (OCaml.Assert_failure) ], Type (list, A))),
         IfThenElse
-          ((241, Effect ([ OCaml.Assert_failure ], .)),
+          ((241, Effect ([ Type (OCaml.Assert_failure) ], .)),
             Apply
               ((241, Effect ([ ], .)),
-                Variable ((241, Effect ([ ], .)), equiv_decb),
+                Variable
+                  ((241, Effect ([ ], . -> . -> .)), equiv_decb),
                 [
                   Variable ((241, Effect ([ ], .)), k);
                   Constant ((241, Effect ([ ], .)), Int(0))
                 ]), Variable ((241, Effect ([ ], .)), l),
             Match
-              ((241, Effect ([ OCaml.Assert_failure ], .)),
+              ((241, Effect ([ Type (OCaml.Assert_failure) ], .)),
                 Variable ((242, Effect ([ ], .)), l),
                 [
                   (Constructor (cons, x, t),
@@ -3403,7 +3655,8 @@ Value
                       ((243,
                         Effect
                           ([
-                            OCaml.Assert_failure
+                            Type
+                              (OCaml.Assert_failure)
                           ],
                             .)),
                         Variable
@@ -3415,7 +3668,8 @@ Value
                                   ->
                                   .
                                     -[
-                                      OCaml.Assert_failure
+                                      Type
+                                        (OCaml.Assert_failure)
                                     ]->
                                     .)),
                             chop),
@@ -3431,7 +3685,11 @@ Value
                                   Effect
                                     ([
                                     ],
-                                      .)),
+                                      .
+                                        ->
+                                        .
+                                          ->
+                                          .)),
                                   Z.sub),
                               [
                                 Variable
@@ -3462,7 +3720,8 @@ Value
                       ((244,
                         Effect
                           ([
-                            OCaml.Assert_failure
+                            Type
+                              (OCaml.Assert_failure)
                           ],
                             .)),
                         Variable
@@ -3472,7 +3731,8 @@ Value
                               ],
                                 .
                                   -[
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ]->
                                   .)),
                             OCaml.assert),
@@ -3641,7 +3901,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.le),
                                   [
                                     Apply
@@ -3655,7 +3919,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -3708,7 +3976,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         StableSort/cmp);
                                     Variable
                                       ((256,
@@ -3960,7 +4232,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.gt),
                                   [
                                     Apply
@@ -3974,7 +4250,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -4027,7 +4307,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         StableSort/cmp);
                                     Variable
                                       ((268,
@@ -4137,9 +4421,17 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
-            ((?, Effect ([ NonTermination; OCaml.Assert_failure ], .)),
+            ((?,
+              Effect
+                ([
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
+                ], .)),
               Variable ((?, Effect ([ ], .)), StableSort/counter),
               [
                 (Constructor (O),
@@ -4147,7 +4439,8 @@ Value
                     ((?,
                       Effect
                         ([
-                          NonTermination
+                          Type
+                            (NonTermination)
                         ],
                           .)),
                       Variable
@@ -4157,7 +4450,8 @@ Value
                             ],
                               .
                                 -[
-                                  NonTermination
+                                  Type
+                                    (NonTermination)
                                 ]->
                                 .)),
                           not_terminated),
@@ -4174,8 +4468,10 @@ Value
                     ((274,
                       Effect
                         ([
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                           .)),
                       Tuple
@@ -4225,7 +4521,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.le),
                                   [
                                     Apply
@@ -4239,7 +4539,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -4364,7 +4668,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.le),
                                   [
                                     Apply
@@ -4378,7 +4686,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -4421,7 +4733,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.le),
                                       [
                                         Apply
@@ -4435,7 +4751,11 @@ Value
                                                 Effect
                                                   ([
                                                   ],
-                                                    .)),
+                                                    .
+                                                      ->
+                                                      .
+                                                        ->
+                                                        .)),
                                                 StableSort/cmp),
                                             [
                                               Variable
@@ -4527,7 +4847,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.le),
                                           [
                                             Apply
@@ -4541,7 +4865,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     StableSort/cmp),
                                                 [
                                                   Variable
@@ -4682,7 +5010,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.le),
                                       [
                                         Apply
@@ -4696,7 +5028,11 @@ Value
                                                 Effect
                                                   ([
                                                   ],
-                                                    .)),
+                                                    .
+                                                      ->
+                                                      .
+                                                        ->
+                                                        .)),
                                                 StableSort/cmp),
                                             [
                                               Variable
@@ -4788,7 +5124,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.le),
                                           [
                                             Apply
@@ -4802,7 +5142,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     StableSort/cmp),
                                                 [
                                                   Variable
@@ -4933,8 +5277,10 @@ Value
                             (288,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n1
@@ -4950,7 +5296,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.div),
                                 [
                                   Variable
@@ -4973,8 +5323,10 @@ Value
                             (289,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n2
@@ -4990,7 +5342,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.sub),
                                 [
                                   Variable
@@ -5013,8 +5369,10 @@ Value
                             (290,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             l2
@@ -5023,7 +5381,8 @@ Value
                               ((290,
                                 Effect
                                   ([
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Variable
@@ -5035,7 +5394,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              OCaml.Assert_failure
+                                              Type
+                                                (OCaml.Assert_failure)
                                             ]->
                                             .)),
                                     chop),
@@ -5060,8 +5420,10 @@ Value
                             (291,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s1
@@ -5070,8 +5432,10 @@ Value
                               ((291,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -5085,8 +5449,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -5102,8 +5468,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         StableSort/rev_sort_rec),
@@ -5122,7 +5490,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       StableSort/cmp);
                                   Variable
                                     ((291,
@@ -5144,8 +5516,10 @@ Value
                             (292,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s2
@@ -5154,8 +5528,10 @@ Value
                               ((292,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -5169,8 +5545,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -5186,8 +5564,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         StableSort/rev_sort_rec),
@@ -5206,7 +5586,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       StableSort/cmp);
                                   Variable
                                     ((292,
@@ -5251,7 +5635,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     StableSort/cmp);
                                 Variable
                                   ((293,
@@ -5283,9 +5671,17 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
-            ((?, Effect ([ NonTermination; OCaml.Assert_failure ], .)),
+            ((?,
+              Effect
+                ([
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
+                ], .)),
               Variable ((?, Effect ([ ], .)), StableSort/counter),
               [
                 (Constructor (O),
@@ -5293,7 +5689,8 @@ Value
                     ((?,
                       Effect
                         ([
-                          NonTermination
+                          Type
+                            (NonTermination)
                         ],
                           .)),
                       Variable
@@ -5303,7 +5700,8 @@ Value
                             ],
                               .
                                 -[
-                                  NonTermination
+                                  Type
+                                    (NonTermination)
                                 ]->
                                 .)),
                           not_terminated),
@@ -5320,8 +5718,10 @@ Value
                     ((296,
                       Effect
                         ([
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                           .)),
                       Tuple
@@ -5371,7 +5771,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.gt),
                                   [
                                     Apply
@@ -5385,7 +5789,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -5510,7 +5918,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       OCaml.Pervasives.gt),
                                   [
                                     Apply
@@ -5524,7 +5936,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             StableSort/cmp),
                                         [
                                           Variable
@@ -5567,7 +5983,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.gt),
                                       [
                                         Apply
@@ -5581,7 +6001,11 @@ Value
                                                 Effect
                                                   ([
                                                   ],
-                                                    .)),
+                                                    .
+                                                      ->
+                                                      .
+                                                        ->
+                                                        .)),
                                                 StableSort/cmp),
                                             [
                                               Variable
@@ -5673,7 +6097,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.gt),
                                           [
                                             Apply
@@ -5687,7 +6115,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     StableSort/cmp),
                                                 [
                                                   Variable
@@ -5828,7 +6260,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.gt),
                                       [
                                         Apply
@@ -5842,7 +6278,11 @@ Value
                                                 Effect
                                                   ([
                                                   ],
-                                                    .)),
+                                                    .
+                                                      ->
+                                                      .
+                                                        ->
+                                                        .)),
                                                 StableSort/cmp),
                                             [
                                               Variable
@@ -5934,7 +6374,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.gt),
                                           [
                                             Apply
@@ -5948,7 +6392,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     StableSort/cmp),
                                                 [
                                                   Variable
@@ -6079,8 +6527,10 @@ Value
                             (310,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n1
@@ -6096,7 +6546,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.div),
                                 [
                                   Variable
@@ -6119,8 +6573,10 @@ Value
                             (311,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n2
@@ -6136,7 +6592,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.sub),
                                 [
                                   Variable
@@ -6159,8 +6619,10 @@ Value
                             (312,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             l2
@@ -6169,7 +6631,8 @@ Value
                               ((312,
                                 Effect
                                   ([
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Variable
@@ -6181,7 +6644,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              OCaml.Assert_failure
+                                              Type
+                                                (OCaml.Assert_failure)
                                             ]->
                                             .)),
                                     chop),
@@ -6206,8 +6670,10 @@ Value
                             (313,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s1
@@ -6216,8 +6682,10 @@ Value
                               ((313,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -6231,8 +6699,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -6248,8 +6718,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         StableSort/sort_rec),
@@ -6268,7 +6740,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       StableSort/cmp);
                                   Variable
                                     ((313,
@@ -6290,8 +6766,10 @@ Value
                             (314,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s2
@@ -6300,8 +6778,10 @@ Value
                               ((314,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -6315,8 +6795,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -6332,8 +6814,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         StableSort/sort_rec),
@@ -6352,7 +6836,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       StableSort/cmp);
                                   Variable
                                     ((314,
@@ -6397,7 +6885,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     StableSort/cmp);
                                 Variable
                                   ((315,
@@ -6434,14 +6926,20 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Apply
             ((?,
               Effect
                 ([
-                  Counter;
-                  NonTermination;
-                  OCaml.Assert_failure
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
                 ], .)),
               Variable
                 ((?,
@@ -6452,8 +6950,10 @@ Value
                           . ->
                             .
                               -[
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type
+                                  (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)),
                   StableSort/sort_rec),
               [
@@ -6461,7 +6961,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        Counter
+                        Type
+                          (Counter)
                       ],
                         .)),
                     Variable
@@ -6471,7 +6972,8 @@ Value
                           ],
                             .
                               -[
-                                Counter
+                                Type
+                                  (Counter)
                               ]->
                               .)),
                         read_counter),
@@ -6483,7 +6985,17 @@ Value
                             ],
                               .)))
                     ]);
-                Variable ((?, Effect ([ ], .)), StableSort/cmp);
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .)),
+                    StableSort/cmp);
                 Variable ((?, Effect ([ ], .)), StableSort/n);
                 Variable ((?, Effect ([ ], .)), StableSort/l)
               ]))
@@ -6498,14 +7010,20 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Apply
             ((?,
               Effect
                 ([
-                  Counter;
-                  NonTermination;
-                  OCaml.Assert_failure
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
                 ], .)),
               Variable
                 ((?,
@@ -6516,8 +7034,10 @@ Value
                           . ->
                             .
                               -[
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type
+                                  (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)),
                   StableSort/rev_sort_rec),
               [
@@ -6525,7 +7045,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        Counter
+                        Type
+                          (Counter)
                       ],
                         .)),
                     Variable
@@ -6535,7 +7056,8 @@ Value
                           ],
                             .
                               -[
-                                Counter
+                                Type
+                                  (Counter)
                               ]->
                               .)),
                         read_counter),
@@ -6547,7 +7069,17 @@ Value
                             ],
                               .)))
                     ]);
-                Variable ((?, Effect ([ ], .)), StableSort/cmp);
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .)),
+                    StableSort/cmp);
                 Variable ((?, Effect ([ ], .)), StableSort/n);
                 Variable ((?, Effect ([ ], .)), StableSort/l)
               ]))
@@ -6558,21 +7090,38 @@ Value
   (non_rec, @.,
     [
       ((stable_sort, [ A ],
-        [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ], Type (list, A)),
+        [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ],
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Assert_failure)
+          ], Type (list, A))),
         LetVar
           (319,
-            Effect ([ Counter; NonTermination; OCaml.Assert_failure ], .))
-          len =
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], .)) len =
           Apply
             ((319, Effect ([ ], .)),
               Variable ((319, Effect ([ ], . -> .)), length),
               [ Variable ((319, Effect ([ ], .)), l) ]) in
         IfThenElse
           ((320,
-            Effect ([ Counter; NonTermination; OCaml.Assert_failure ], .)),
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], .)),
             Apply
               ((320, Effect ([ ], .)),
-                Variable ((320, Effect ([ ], .)), OCaml.Pervasives.lt),
+                Variable
+                  ((320, Effect ([ ], . -> . -> .)),
+                    OCaml.Pervasives.lt),
                 [
                   Variable ((320, Effect ([ ], .)), len);
                   Constant ((320, Effect ([ ], .)), Int(2))
@@ -6580,8 +7129,11 @@ Value
             Apply
               ((320,
                 Effect
-                  ([ Counter; NonTermination; OCaml.Assert_failure ],
-                    .)),
+                  ([
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ], .)),
                 Variable
                   ((320,
                     Effect
@@ -6590,12 +7142,13 @@ Value
                           . ->
                             .
                               -[
-                                Counter;
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type (Counter);
+                                Type (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)), StableSort.sort),
                 [
-                  Variable ((320, Effect ([ ], .)), cmp);
+                  Variable ((320, Effect ([ ], . -> . -> .)), cmp);
                   Variable ((320, Effect ([ ], .)), len);
                   Variable ((320, Effect ([ ], .)), l)
                 ])))
@@ -6606,7 +7159,14 @@ Value
   (non_rec, @.,
     [
       ((sort, [ A ], [ ],
-        ((A -> (A -> Type (Z))) -> (Type (list, A) -> Type (list, A)))),
+        ((A -> (A -> Type (Z))) ->
+          (Type (list, A) ->
+            Monad
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], Type (list, A))))),
         Variable
           ((322,
             Effect
@@ -6614,9 +7174,9 @@ Value
                 . ->
                   .
                     -[
-                      Counter;
-                      NonTermination;
-                      OCaml.Assert_failure
+                      Type (Counter);
+                      Type (NonTermination);
+                      Type (OCaml.Assert_failure)
                     ]-> .)), stable_sort))
     ])
 
@@ -6625,7 +7185,14 @@ Value
   (non_rec, @.,
     [
       ((fast_sort, [ A ], [ ],
-        ((A -> (A -> Type (Z))) -> (Type (list, A) -> Type (list, A)))),
+        ((A -> (A -> Type (Z))) ->
+          (Type (list, A) ->
+            Monad
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], Type (list, A))))),
         Variable
           ((323,
             Effect
@@ -6633,9 +7200,9 @@ Value
                 . ->
                   .
                     -[
-                      Counter;
-                      NonTermination;
-                      OCaml.Assert_failure
+                      Type (Counter);
+                      Type (NonTermination);
+                      Type (OCaml.Assert_failure)
                     ]-> .)), stable_sort))
     ])
 
@@ -6794,7 +7361,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -6830,7 +7401,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -6875,7 +7450,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         SortUniq/cmp);
                                     Variable
                                       ((334,
@@ -6930,7 +7509,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.lt),
                                       [
                                         Variable
@@ -6975,7 +7558,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp);
                                         Variable
                                           ((336,
@@ -7227,7 +7814,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -7263,7 +7854,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -7308,7 +7903,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         SortUniq/cmp);
                                     Variable
                                       ((348,
@@ -7363,7 +7962,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.gt),
                                       [
                                         Variable
@@ -7408,7 +8011,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp);
                                         Variable
                                           ((350,
@@ -7516,9 +8123,17 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
-            ((?, Effect ([ NonTermination; OCaml.Assert_failure ], .)),
+            ((?,
+              Effect
+                ([
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
+                ], .)),
               Variable ((?, Effect ([ ], .)), SortUniq/counter),
               [
                 (Constructor (O),
@@ -7526,7 +8141,8 @@ Value
                     ((?,
                       Effect
                         ([
-                          NonTermination
+                          Type
+                            (NonTermination)
                         ],
                           .)),
                       Variable
@@ -7536,7 +8152,8 @@ Value
                             ],
                               .
                                 -[
-                                  NonTermination
+                                  Type
+                                    (NonTermination)
                                 ]->
                                 .)),
                           not_terminated),
@@ -7553,8 +8170,10 @@ Value
                     ((356,
                       Effect
                         ([
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                           .)),
                       Tuple
@@ -7606,7 +8225,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -7642,7 +8265,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -7698,7 +8325,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.lt),
                                       [
                                         Variable
@@ -7817,7 +8448,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -7853,7 +8488,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -7890,7 +8529,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         SortUniq/cmp),
                                     [
                                       Variable
@@ -7926,7 +8569,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           equiv_decb),
                                       [
                                         Variable
@@ -7982,7 +8629,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.lt),
                                           [
                                             Variable
@@ -8087,7 +8738,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.lt),
                                       [
                                         Variable
@@ -8124,7 +8779,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp),
                                         [
                                           Variable
@@ -8160,7 +8819,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               equiv_decb),
                                           [
                                             Variable
@@ -8230,7 +8893,11 @@ Value
                                                   Effect
                                                     ([
                                                     ],
-                                                      .)),
+                                                      .
+                                                        ->
+                                                        .
+                                                          ->
+                                                          .)),
                                                   OCaml.Pervasives.lt),
                                               [
                                                 Variable
@@ -8316,7 +8983,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     SortUniq/cmp),
                                                 [
                                                   Variable
@@ -8352,7 +9023,11 @@ Value
                                                       Effect
                                                         ([
                                                         ],
-                                                          .)),
+                                                          .
+                                                            ->
+                                                            .
+                                                              ->
+                                                              .)),
                                                       equiv_decb),
                                                   [
                                                     Variable
@@ -8422,7 +9097,11 @@ Value
                                                           Effect
                                                             ([
                                                             ],
-                                                              .)),
+                                                              .
+                                                                ->
+                                                                .
+                                                                  ->
+                                                                  .)),
                                                           OCaml.Pervasives.lt),
                                                       [
                                                         Variable
@@ -8557,7 +9236,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp),
                                         [
                                           Variable
@@ -8593,7 +9276,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               equiv_decb),
                                           [
                                             Variable
@@ -8663,7 +9350,11 @@ Value
                                                   Effect
                                                     ([
                                                     ],
-                                                      .)),
+                                                      .
+                                                        ->
+                                                        .
+                                                          ->
+                                                          .)),
                                                   OCaml.Pervasives.lt),
                                               [
                                                 Variable
@@ -8749,7 +9440,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     SortUniq/cmp),
                                                 [
                                                   Variable
@@ -8785,7 +9480,11 @@ Value
                                                       Effect
                                                         ([
                                                         ],
-                                                          .)),
+                                                          .
+                                                            ->
+                                                            .
+                                                              ->
+                                                              .)),
                                                       equiv_decb),
                                                   [
                                                     Variable
@@ -8855,7 +9554,11 @@ Value
                                                           Effect
                                                             ([
                                                             ],
-                                                              .)),
+                                                              .
+                                                                ->
+                                                                .
+                                                                  ->
+                                                                  .)),
                                                           OCaml.Pervasives.lt),
                                                       [
                                                         Variable
@@ -8978,8 +9681,10 @@ Value
                             (385,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n1
@@ -8995,7 +9700,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.div),
                                 [
                                   Variable
@@ -9018,8 +9727,10 @@ Value
                             (386,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n2
@@ -9035,7 +9746,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.sub),
                                 [
                                   Variable
@@ -9058,8 +9773,10 @@ Value
                             (387,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             l2
@@ -9068,7 +9785,8 @@ Value
                               ((387,
                                 Effect
                                   ([
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Variable
@@ -9080,7 +9798,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              OCaml.Assert_failure
+                                              Type
+                                                (OCaml.Assert_failure)
                                             ]->
                                             .)),
                                     chop),
@@ -9105,8 +9824,10 @@ Value
                             (388,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s1
@@ -9115,8 +9836,10 @@ Value
                               ((388,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -9130,8 +9853,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -9147,8 +9872,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         SortUniq/rev_sort_rec),
@@ -9167,7 +9894,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       SortUniq/cmp);
                                   Variable
                                     ((388,
@@ -9189,8 +9920,10 @@ Value
                             (389,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s2
@@ -9199,8 +9932,10 @@ Value
                               ((389,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -9214,8 +9949,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -9231,8 +9968,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         SortUniq/rev_sort_rec),
@@ -9251,7 +9990,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       SortUniq/cmp);
                                   Variable
                                     ((389,
@@ -9296,7 +10039,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp);
                                 Variable
                                   ((390,
@@ -9328,9 +10075,17 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([ Type (NonTermination); Type (OCaml.Assert_failure) ],
+              Type (list, A))),
           Match
-            ((?, Effect ([ NonTermination; OCaml.Assert_failure ], .)),
+            ((?,
+              Effect
+                ([
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
+                ], .)),
               Variable ((?, Effect ([ ], .)), SortUniq/counter),
               [
                 (Constructor (O),
@@ -9338,7 +10093,8 @@ Value
                     ((?,
                       Effect
                         ([
-                          NonTermination
+                          Type
+                            (NonTermination)
                         ],
                           .)),
                       Variable
@@ -9348,7 +10104,8 @@ Value
                             ],
                               .
                                 -[
-                                  NonTermination
+                                  Type
+                                    (NonTermination)
                                 ]->
                                 .)),
                           not_terminated),
@@ -9365,8 +10122,10 @@ Value
                     ((393,
                       Effect
                         ([
-                          NonTermination;
-                          OCaml.Assert_failure
+                          Type
+                            (NonTermination);
+                          Type
+                            (OCaml.Assert_failure)
                         ],
                           .)),
                       Tuple
@@ -9418,7 +10177,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -9454,7 +10217,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -9510,7 +10277,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.gt),
                                       [
                                         Variable
@@ -9629,7 +10400,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp),
                                 [
                                   Variable
@@ -9665,7 +10440,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       equiv_decb),
                                   [
                                     Variable
@@ -9702,7 +10481,11 @@ Value
                                         Effect
                                           ([
                                           ],
-                                            .)),
+                                            .
+                                              ->
+                                              .
+                                                ->
+                                                .)),
                                         SortUniq/cmp),
                                     [
                                       Variable
@@ -9738,7 +10521,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           equiv_decb),
                                       [
                                         Variable
@@ -9794,7 +10581,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               OCaml.Pervasives.gt),
                                           [
                                             Variable
@@ -9899,7 +10690,11 @@ Value
                                           Effect
                                             ([
                                             ],
-                                              .)),
+                                              .
+                                                ->
+                                                .
+                                                  ->
+                                                  .)),
                                           OCaml.Pervasives.gt),
                                       [
                                         Variable
@@ -9936,7 +10731,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp),
                                         [
                                           Variable
@@ -9972,7 +10771,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               equiv_decb),
                                           [
                                             Variable
@@ -10042,7 +10845,11 @@ Value
                                                   Effect
                                                     ([
                                                     ],
-                                                      .)),
+                                                      .
+                                                        ->
+                                                        .
+                                                          ->
+                                                          .)),
                                                   OCaml.Pervasives.gt),
                                               [
                                                 Variable
@@ -10128,7 +10935,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     SortUniq/cmp),
                                                 [
                                                   Variable
@@ -10164,7 +10975,11 @@ Value
                                                       Effect
                                                         ([
                                                         ],
-                                                          .)),
+                                                          .
+                                                            ->
+                                                            .
+                                                              ->
+                                                              .)),
                                                       equiv_decb),
                                                   [
                                                     Variable
@@ -10234,7 +11049,11 @@ Value
                                                           Effect
                                                             ([
                                                             ],
-                                                              .)),
+                                                              .
+                                                                ->
+                                                                .
+                                                                  ->
+                                                                  .)),
                                                           OCaml.Pervasives.gt),
                                                       [
                                                         Variable
@@ -10369,7 +11188,11 @@ Value
                                             Effect
                                               ([
                                               ],
-                                                .)),
+                                                .
+                                                  ->
+                                                  .
+                                                    ->
+                                                    .)),
                                             SortUniq/cmp),
                                         [
                                           Variable
@@ -10405,7 +11228,11 @@ Value
                                               Effect
                                                 ([
                                                 ],
-                                                  .)),
+                                                  .
+                                                    ->
+                                                    .
+                                                      ->
+                                                      .)),
                                               equiv_decb),
                                           [
                                             Variable
@@ -10475,7 +11302,11 @@ Value
                                                   Effect
                                                     ([
                                                     ],
-                                                      .)),
+                                                      .
+                                                        ->
+                                                        .
+                                                          ->
+                                                          .)),
                                                   OCaml.Pervasives.gt),
                                               [
                                                 Variable
@@ -10561,7 +11392,11 @@ Value
                                                     Effect
                                                       ([
                                                       ],
-                                                        .)),
+                                                        .
+                                                          ->
+                                                          .
+                                                            ->
+                                                            .)),
                                                     SortUniq/cmp),
                                                 [
                                                   Variable
@@ -10597,7 +11432,11 @@ Value
                                                       Effect
                                                         ([
                                                         ],
-                                                          .)),
+                                                          .
+                                                            ->
+                                                            .
+                                                              ->
+                                                              .)),
                                                       equiv_decb),
                                                   [
                                                     Variable
@@ -10667,7 +11506,11 @@ Value
                                                           Effect
                                                             ([
                                                             ],
-                                                              .)),
+                                                              .
+                                                                ->
+                                                                .
+                                                                  ->
+                                                                  .)),
                                                           OCaml.Pervasives.gt),
                                                       [
                                                         Variable
@@ -10790,8 +11633,10 @@ Value
                             (422,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n1
@@ -10807,7 +11652,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.div),
                                 [
                                   Variable
@@ -10830,8 +11679,10 @@ Value
                             (423,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             n2
@@ -10847,7 +11698,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     Z.sub),
                                 [
                                   Variable
@@ -10870,8 +11725,10 @@ Value
                             (424,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             l2
@@ -10880,7 +11737,8 @@ Value
                               ((424,
                                 Effect
                                   ([
-                                    OCaml.Assert_failure
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Variable
@@ -10892,7 +11750,8 @@ Value
                                           ->
                                           .
                                             -[
-                                              OCaml.Assert_failure
+                                              Type
+                                                (OCaml.Assert_failure)
                                             ]->
                                             .)),
                                     chop),
@@ -10917,8 +11776,10 @@ Value
                             (425,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s1
@@ -10927,8 +11788,10 @@ Value
                               ((425,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -10942,8 +11805,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -10959,8 +11824,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         SortUniq/sort_rec),
@@ -10979,7 +11846,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       SortUniq/cmp);
                                   Variable
                                     ((425,
@@ -11001,8 +11872,10 @@ Value
                             (426,
                               Effect
                                 ([
-                                  NonTermination;
-                                  OCaml.Assert_failure
+                                  Type
+                                    (NonTermination);
+                                  Type
+                                    (OCaml.Assert_failure)
                                 ],
                                   .))
                             s2
@@ -11011,8 +11884,10 @@ Value
                               ((426,
                                 Effect
                                   ([
-                                    NonTermination;
-                                    OCaml.Assert_failure
+                                    Type
+                                      (NonTermination);
+                                    Type
+                                      (OCaml.Assert_failure)
                                   ],
                                     .)),
                                 Apply
@@ -11026,8 +11901,10 @@ Value
                                             ->
                                             .
                                               -[
-                                                NonTermination;
-                                                OCaml.Assert_failure
+                                                Type
+                                                  (NonTermination);
+                                                Type
+                                                  (OCaml.Assert_failure)
                                               ]->
                                               .)),
                                     Variable
@@ -11043,8 +11920,10 @@ Value
                                                   ->
                                                   .
                                                     -[
-                                                      NonTermination;
-                                                      OCaml.Assert_failure
+                                                      Type
+                                                        (NonTermination);
+                                                      Type
+                                                        (OCaml.Assert_failure)
                                                     ]->
                                                     .)),
                                         SortUniq/sort_rec),
@@ -11063,7 +11942,11 @@ Value
                                       Effect
                                         ([
                                         ],
-                                          .)),
+                                          .
+                                            ->
+                                            .
+                                              ->
+                                              .)),
                                       SortUniq/cmp);
                                   Variable
                                     ((426,
@@ -11108,7 +11991,11 @@ Value
                                     Effect
                                       ([
                                       ],
-                                        .)),
+                                        .
+                                          ->
+                                          .
+                                            ->
+                                            .)),
                                     SortUniq/cmp);
                                 Variable
                                   ((427,
@@ -11145,14 +12032,20 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Apply
             ((?,
               Effect
                 ([
-                  Counter;
-                  NonTermination;
-                  OCaml.Assert_failure
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
                 ], .)),
               Variable
                 ((?,
@@ -11163,8 +12056,10 @@ Value
                           . ->
                             .
                               -[
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type
+                                  (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)),
                   SortUniq/sort_rec),
               [
@@ -11172,7 +12067,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        Counter
+                        Type
+                          (Counter)
                       ],
                         .)),
                     Variable
@@ -11182,7 +12078,8 @@ Value
                           ],
                             .
                               -[
-                                Counter
+                                Type
+                                  (Counter)
                               ]->
                               .)),
                         read_counter),
@@ -11194,7 +12091,17 @@ Value
                             ],
                               .)))
                     ]);
-                Variable ((?, Effect ([ ], .)), SortUniq/cmp);
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .)),
+                    SortUniq/cmp);
                 Variable ((?, Effect ([ ], .)), SortUniq/n);
                 Variable ((?, Effect ([ ], .)), SortUniq/l)
               ]))
@@ -11209,14 +12116,20 @@ Value
             (cmp, (A -> (A -> Type (Z))));
             (n, Type (Z));
             (l, Type (list, A))
-          ], Type (list, A)),
+          ],
+          Monad
+            ([
+              Type (Counter);
+              Type (NonTermination);
+              Type (OCaml.Assert_failure)
+            ], Type (list, A))),
           Apply
             ((?,
               Effect
                 ([
-                  Counter;
-                  NonTermination;
-                  OCaml.Assert_failure
+                  Type (Counter);
+                  Type (NonTermination);
+                  Type (OCaml.Assert_failure)
                 ], .)),
               Variable
                 ((?,
@@ -11227,8 +12140,10 @@ Value
                           . ->
                             .
                               -[
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type
+                                  (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)),
                   SortUniq/rev_sort_rec),
               [
@@ -11236,7 +12151,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        Counter
+                        Type
+                          (Counter)
                       ],
                         .)),
                     Variable
@@ -11246,7 +12162,8 @@ Value
                           ],
                             .
                               -[
-                                Counter
+                                Type
+                                  (Counter)
                               ]->
                               .)),
                         read_counter),
@@ -11258,7 +12175,17 @@ Value
                             ],
                               .)))
                     ]);
-                Variable ((?, Effect ([ ], .)), SortUniq/cmp);
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .)),
+                    SortUniq/cmp);
                 Variable ((?, Effect ([ ], .)), SortUniq/n);
                 Variable ((?, Effect ([ ], .)), SortUniq/l)
               ]))
@@ -11269,21 +12196,38 @@ Value
   (non_rec, @.,
     [
       ((sort_uniq, [ A ],
-        [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ], Type (list, A)),
+        [ (cmp, (A -> (A -> Type (Z)))); (l, Type (list, A)) ],
+        Monad
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.Assert_failure)
+          ], Type (list, A))),
         LetVar
           (431,
-            Effect ([ Counter; NonTermination; OCaml.Assert_failure ], .))
-          len =
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], .)) len =
           Apply
             ((431, Effect ([ ], .)),
               Variable ((431, Effect ([ ], . -> .)), length),
               [ Variable ((431, Effect ([ ], .)), l) ]) in
         IfThenElse
           ((432,
-            Effect ([ Counter; NonTermination; OCaml.Assert_failure ], .)),
+            Effect
+              ([
+                Type (Counter);
+                Type (NonTermination);
+                Type (OCaml.Assert_failure)
+              ], .)),
             Apply
               ((432, Effect ([ ], .)),
-                Variable ((432, Effect ([ ], .)), OCaml.Pervasives.lt),
+                Variable
+                  ((432, Effect ([ ], . -> . -> .)),
+                    OCaml.Pervasives.lt),
                 [
                   Variable ((432, Effect ([ ], .)), len);
                   Constant ((432, Effect ([ ], .)), Int(2))
@@ -11291,8 +12235,11 @@ Value
             Apply
               ((432,
                 Effect
-                  ([ Counter; NonTermination; OCaml.Assert_failure ],
-                    .)),
+                  ([
+                    Type (Counter);
+                    Type (NonTermination);
+                    Type (OCaml.Assert_failure)
+                  ], .)),
                 Variable
                   ((432,
                     Effect
@@ -11301,12 +12248,13 @@ Value
                           . ->
                             .
                               -[
-                                Counter;
-                                NonTermination;
-                                OCaml.Assert_failure
+                                Type (Counter);
+                                Type (NonTermination);
+                                Type
+                                  (OCaml.Assert_failure)
                               ]-> .)), SortUniq.sort),
                 [
-                  Variable ((432, Effect ([ ], .)), cmp);
+                  Variable ((432, Effect ([ ], . -> . -> .)), cmp);
                   Variable ((432, Effect ([ ], .)), len);
                   Variable ((432, Effect ([ ], .)), l)
                 ])))

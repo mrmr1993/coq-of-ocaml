@@ -4,12 +4,17 @@
 Value
   (non_rec, @.,
     [
-      ((b, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (Z))),
+      ((b, [ ], [ (x, Type (unit)) ],
+        Monad
+          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (a_state) ],
+            Type (OCaml.Effect.State.t, Type (Z)))),
         Match
           ((?,
             Effect
-              ([ Type (OCaml.Effect.State.state, Type (Z)); a_state ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+              ([
+                Type (OCaml.Effect.State.state, Type (Z));
+                Type (a_state)
+              ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
                 Variable
@@ -20,7 +25,8 @@ Value
                           (OCaml.Effect.State.state,
                             Type
                               (Z));
-                        a_state
+                        Type
+                          (a_state)
                       ],
                         .)),
                     a))
@@ -36,13 +42,18 @@ Reference
 Value
   (non_rec, @.,
     [
-      ((c, [ ], [ (x, Type (unit)) ], Type (OCaml.Effect.State.t, Type (string))),
+      ((c, [ ], [ (x, Type (unit)) ],
+        Monad
+          ([
+            Type (OCaml.Effect.State.state, Type (string));
+            Type (a_state_1)
+          ], Type (OCaml.Effect.State.t, Type (string)))),
         Match
           ((?,
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (string));
-                a_state_1
+                Type (a_state_1)
               ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
@@ -54,7 +65,8 @@ Value
                           (OCaml.Effect.State.state,
                             Type
                               (string));
-                        a_state_1
+                        Type
+                          (a_state_1)
                       ],
                         .)),
                     a_1))
@@ -92,7 +104,8 @@ Value
     [
       ((g, [ A ], [ (x, A); (y, A) ], Type (bool)),
         Apply
-          ((14, Effect ([ ], .)), Variable ((14, Effect ([ ], .)), op_eq),
+          ((14, Effect ([ ], .)),
+            Variable ((14, Effect ([ ], . -> . -> .)), op_eq),
             [
               Variable ((14, Effect ([ ], .)), x);
               Variable ((14, Effect ([ ], .)), y)
@@ -107,7 +120,8 @@ Value
     [
       ((h, [ A ], [ (x, A); (y, A) ], Type (bool)),
         Apply
-          ((16, Effect ([ ], .)), Variable ((16, Effect ([ ], .)), op_eq_1),
+          ((16, Effect ([ ], .)),
+            Variable ((16, Effect ([ ], . -> . -> .)), op_eq_1),
             [
               Variable ((16, Effect ([ ], .)), x);
               Variable ((16, Effect ([ ], .)), y)

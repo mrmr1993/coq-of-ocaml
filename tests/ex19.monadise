@@ -20,7 +20,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x2, [ A; B ], [ (x, A) ], Monad ([ OCaml.Failure ], B)),
+      ((x2, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
         Match
           (?, Variable (?, x),
             [
@@ -72,16 +72,17 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x3, [ ], [ (b, Type (bool)) ], Monad ([ OCaml.Failure ], Type (Z))),
+      ((x3, [ ], [ (b, Type (bool)) ],
+        Monad ([ Type (OCaml.Failure) ], Type (Z))),
         Bind
           (?,
             Run
-              (?, Error, [ Error; OCaml.Failure ],
+              (?, Error, [ Type (Error); Type (OCaml.Failure) ],
                 IfThenElse
                   (14, Variable (14, b),
                     Lift
-                      (?, [ OCaml.Failure ],
-                        [ Error; OCaml.Failure ],
+                      (?, [ Type (OCaml.Failure) ],
+                        [ Type (Error); Type (OCaml.Failure) ],
                         Apply
                           (14,
                             Variable
@@ -93,7 +94,8 @@ Value
                                   String("arg"))
                             ])),
                     Lift
-                      (?, [ Error ], [ Error; OCaml.Failure ],
+                      (?, [ Type (Error) ],
+                        [ Type (Error); Type (OCaml.Failure) ],
                         Apply
                           (14, Variable (14, raise_Error),
                             [ Tuple (?) ])))), Some x,

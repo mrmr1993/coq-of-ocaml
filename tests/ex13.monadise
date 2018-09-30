@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((tail, [ A ], [ (l, Type (list, A)) ],
-        Monad ([ OCaml.Failure ], Type (list, A))),
+        Monad ([ Type (OCaml.Failure) ], Type (list, A))),
         Match
           (4, Variable (4, l),
             [
@@ -29,7 +29,7 @@ Value
     [
       ((print_list_rec, [ ],
         [ (counter, Type (nat)); (x, Type (list, Type (string))) ],
-        Monad ([ IO; NonTermination ], Type (unit))),
+        Monad ([ Type (IO); Type (NonTermination) ], Type (unit))),
         Match
           (?, Variable (?, counter),
             [
@@ -37,11 +37,14 @@ Value
                 Lift
                   (?,
                     [
-                      NonTermination
+                      Type
+                        (NonTermination)
                     ],
                     [
-                      IO;
-                      NonTermination
+                      Type
+                        (IO);
+                      Type
+                        (NonTermination)
                     ],
                     Apply
                       (?,
@@ -72,11 +75,14 @@ Value
                             Lift
                               (?,
                                 [
-                                  IO
+                                  Type
+                                    (IO)
                                 ],
                                 [
-                                  IO;
-                                  NonTermination
+                                  Type
+                                    (IO);
+                                  Type
+                                    (NonTermination)
                                 ],
                                 Apply
                                   (11,
@@ -115,16 +121,18 @@ Value
   (non_rec, @.,
     [
       ((print_list, [ ], [ (x, Type (list, Type (string))) ],
-        Monad ([ Counter; IO; NonTermination ], Type (unit))),
+        Monad
+          ([ Type (Counter); Type (IO); Type (NonTermination) ], Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ Counter ], [ Counter; IO; NonTermination ],
+              (?, [ Type (Counter) ],
+                [ Type (Counter); Type (IO); Type (NonTermination) ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x_1,
             Lift
-              (?, [ IO; NonTermination ],
-                [ Counter; IO; NonTermination ],
+              (?, [ Type (IO); Type (NonTermination) ],
+                [ Type (Counter); Type (IO); Type (NonTermination) ],
                 Apply
                   (?, Variable (?, print_list_rec),
                     [ Variable (?, x_1); Variable (?, x) ]))))
@@ -136,8 +144,9 @@ Value
     [
       ((f, [ ], [ ],
         (Type (list, Type (string)) ->
-          Monad ([ Counter; IO; NonTermination ], Type (unit)))),
-        Variable (14, print_list))
+          Monad
+            ([ Type (Counter); Type (IO); Type (NonTermination) ],
+              Type (unit)))), Variable (14, print_list))
     ])
 
 16
@@ -145,12 +154,23 @@ Value
   (non_rec, @.,
     [
       ((x, [ A ], [ (z, A) ],
-        Monad ([ Counter; IO; NonTermination; OCaml.Failure ], Type (unit))),
+        Monad
+          ([
+            Type (Counter);
+            Type (IO);
+            Type (NonTermination);
+            Type (OCaml.Failure)
+          ], Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ OCaml.Failure ],
-                [ Counter; IO; NonTermination; OCaml.Failure ],
+              (?, [ Type (OCaml.Failure) ],
+                [
+                  Type (Counter);
+                  Type (IO);
+                  Type (NonTermination);
+                  Type (OCaml.Failure)
+                ],
                 Apply
                   (16, Variable (16, tail),
                     [
@@ -183,7 +203,11 @@ Value
                                           [])))))
                     ])), Some x,
             Lift
-              (?, [ Counter; IO; NonTermination ],
-                [ Counter; IO; NonTermination; OCaml.Failure ],
-                Apply (16, Variable (16, f), [ Variable (?, x) ]))))
+              (?, [ Type (Counter); Type (IO); Type (NonTermination) ],
+                [
+                  Type (Counter);
+                  Type (IO);
+                  Type (NonTermination);
+                  Type (OCaml.Failure)
+                ], Apply (16, Variable (16, f), [ Variable (?, x) ]))))
     ])

@@ -9,7 +9,7 @@
       [
         ((sum_rec, [ ],
           [ (counter, Type (nat)); (l, Type (List2/t, Type (Z))) ],
-          Monad ([ NonTermination ], Type (Z))),
+          Monad ([ Type (NonTermination) ], Type (Z))),
           Match
             (?, Variable (?, List2/counter),
               [
@@ -86,17 +86,18 @@
     (non_rec, @.,
       [
         ((sum, [ ], [ (l, Type (List2/t, Type (Z))) ],
-          Monad ([ Counter; NonTermination ], Type (Z))),
+          Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
           Bind
             (?,
               Lift
-                (?, [ Counter ], [ Counter; NonTermination ],
+                (?, [ Type (Counter) ],
+                  [ Type (Counter); Type (NonTermination) ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x,
               Lift
-                (?, [ NonTermination ],
-                  [ Counter; NonTermination ],
+                (?, [ Type (NonTermination) ],
+                  [ Type (Counter); Type (NonTermination) ],
                   Apply
                     (?, Variable (?, List2/sum_rec),
                       [
@@ -110,7 +111,7 @@
     (rec, @.,
       [
         ((of_list_rec, [ A ], [ (counter, Type (nat)); (x, Type (list, A)) ],
-          Monad ([ NonTermination ], Type (List2/t, A))),
+          Monad ([ Type (NonTermination) ], Type (List2/t, A))),
           Match
             (?, Variable (?, List2/counter),
               [
@@ -183,17 +184,20 @@
     (non_rec, @.,
       [
         ((of_list, [ A ], [ (x, Type (list, A)) ],
-          Monad ([ Counter; NonTermination ], Type (List2/t, A))),
+          Monad
+            ([ Type (Counter); Type (NonTermination) ],
+              Type (List2/t, A))),
           Bind
             (?,
               Lift
-                (?, [ Counter ], [ Counter; NonTermination ],
+                (?, [ Type (Counter) ],
+                  [ Type (Counter); Type (NonTermination) ],
                   Apply
                     (?, Variable (?, read_counter),
                       [ Tuple (?) ])), Some x_1,
               Lift
-                (?, [ NonTermination ],
-                  [ Counter; NonTermination ],
+                (?, [ Type (NonTermination) ],
+                  [ Type (Counter); Type (NonTermination) ],
                   Apply
                     (?, Variable (?, List2/of_list_rec),
                       [
@@ -210,7 +214,8 @@
 Value
   (non_rec, @.,
     [
-      ((n, [ A ], [ (x, A) ], Monad ([ Counter; NonTermination ], Type (Z))),
+      ((n, [ A ], [ (x, A) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
           (?, Variable (?, x),
             [

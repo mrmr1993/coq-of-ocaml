@@ -36,9 +36,9 @@ Value
   (rec, @.,
     [
       ((of_list_rec, [ A ], [ (counter, Type (nat)); (l, Type (list, A)) ],
-        Type (t2, A)),
+        Monad ([ Type (NonTermination) ], Type (t2, A))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -46,7 +46,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -56,7 +57,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -73,7 +75,8 @@ Value
                   ((19,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -101,7 +104,8 @@ Value
                           ((21,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             D2,
@@ -116,7 +120,8 @@ Value
                               ((21,
                                 Effect
                                   ([
-                                    NonTermination
+                                    Type
+                                      (NonTermination)
                                   ],
                                     .)),
                                 Apply
@@ -126,7 +131,8 @@ Value
                                       ],
                                         .
                                           -[
-                                            NonTermination
+                                            Type
+                                              (NonTermination)
                                           ]->
                                           .)),
                                     Variable
@@ -138,7 +144,8 @@ Value
                                               ->
                                               .
                                                 -[
-                                                  NonTermination
+                                                  Type
+                                                    (NonTermination)
                                                 ]->
                                                 .)),
                                         of_list_rec),
@@ -168,15 +175,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((of_list, [ A ], [ (l, Type (list, A)) ], Type (t2, A)),
+      ((of_list, [ A ], [ (l, Type (list, A)) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (t2, A))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -[ NonTermination ]-> .)),
+              ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
                 of_list_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -184,7 +192,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),
@@ -205,9 +214,9 @@ Value
   (rec, @.,
     [
       ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (t2, Type (Z))) ],
-        Type (Z)),
+        Monad ([ Type (NonTermination) ], Type (Z))),
         Match
-          ((?, Effect ([ NonTermination ], .)),
+          ((?, Effect ([ Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), counter),
             [
               (Constructor (O),
@@ -215,7 +224,8 @@ Value
                   ((?,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -225,7 +235,8 @@ Value
                           ],
                             .
                               -[
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         not_terminated),
@@ -242,7 +253,8 @@ Value
                   ((24,
                     Effect
                       ([
-                        NonTermination
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -270,7 +282,8 @@ Value
                           ((26,
                             Effect
                               ([
-                                NonTermination
+                                Type
+                                  (NonTermination)
                               ],
                                 .)),
                             Variable
@@ -278,7 +291,11 @@ Value
                                 Effect
                                   ([
                                   ],
-                                    .)),
+                                    .
+                                      ->
+                                      .
+                                        ->
+                                        .)),
                                 Z.add),
                             [
                               Variable
@@ -292,7 +309,8 @@ Value
                                 ((26,
                                   Effect
                                     ([
-                                      NonTermination
+                                      Type
+                                        (NonTermination)
                                     ],
                                       .)),
                                   Apply
@@ -302,7 +320,8 @@ Value
                                         ],
                                           .
                                             -[
-                                              NonTermination
+                                              Type
+                                                (NonTermination)
                                             ]->
                                             .)),
                                       Variable
@@ -314,7 +333,8 @@ Value
                                                 ->
                                                 .
                                                   -[
-                                                    NonTermination
+                                                    Type
+                                                      (NonTermination)
                                                   ]->
                                                   .)),
                                           sum_rec),
@@ -345,15 +365,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sum (= sum_1), [ ], [ (l, Type (t2, Type (Z))) ], Type (Z)),
+      ((sum (= sum_1), [ ], [ (l, Type (t2, Type (Z))) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Apply
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
-              ((?, Effect ([ ], . -> . -[ NonTermination ]-> .)),
+              ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
                 sum_rec),
             [
               Apply
-                ((?, Effect ([ Counter ], .)),
+                ((?, Effect ([ Type (Counter) ], .)),
                   Variable
                     ((?,
                       Effect
@@ -361,7 +382,8 @@ Value
                         ],
                           .
                             -[
-                              Counter
+                              Type
+                                (Counter)
                             ]->
                             .)),
                       read_counter),
@@ -381,9 +403,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((s, [ A ], [ (x, A) ], Type (Z)),
+      ((s, [ A ], [ (x, A) ],
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
-          ((?, Effect ([ Counter; NonTermination ], .)),
+          ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -391,8 +414,10 @@ Value
                   ((28,
                     Effect
                       ([
-                        Counter;
-                        NonTermination
+                        Type
+                          (Counter);
+                        Type
+                          (NonTermination)
                       ],
                         .)),
                     Variable
@@ -402,8 +427,10 @@ Value
                           ],
                             .
                               -[
-                                Counter;
-                                NonTermination
+                                Type
+                                  (Counter);
+                                Type
+                                  (NonTermination)
                               ]->
                               .)),
                         sum_1),
@@ -412,8 +439,10 @@ Value
                         ((28,
                           Effect
                             ([
-                              Counter;
-                              NonTermination
+                              Type
+                                (Counter);
+                              Type
+                                (NonTermination)
                             ],
                               .)),
                           Variable
@@ -423,8 +452,10 @@ Value
                                 ],
                                   .
                                     -[
-                                      Counter;
-                                      NonTermination
+                                      Type
+                                        (Counter);
+                                      Type
+                                        (NonTermination)
                                     ]->
                                     .)),
                               of_list),
