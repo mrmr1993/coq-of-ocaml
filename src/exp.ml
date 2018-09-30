@@ -1210,7 +1210,8 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
         (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
           [Variable (Loc.Unknown, counter_bound)]))
     )
-  | Coerce ((l, d), e, typ) -> Coerce (l, monadise env e, Type.monadise typ d)
+  | Coerce ((l, d), e, typ) ->
+    Coerce (l, monadise env e, Effect.Type.unify d typ)
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in

@@ -139,26 +139,5 @@ let to_json (typ : t) : json = CommonType.to_json Effect.Descriptor.to_json typ
 let of_json (json : json) : t =
   CommonType.of_json Effect.Descriptor.of_json json
 
-let monadise (typ : t) (effect : t) : t =
-  let rec aux (typ : t) (effect_typ : Effect.Type.Old.t') : t =
-    match (typ, effect_typ) with
-    | (Variable _, Effect.Type.Old.Pure) | (Tuple _, Effect.Type.Old.Pure)
-      | (Apply _, Effect.Type.Old.Pure) | (Arrow _, Effect.Type.Old.Pure) -> typ
-    | (Arrow (typ1, typ2), Effect.Type.Old.Arrow (d, effect_typ2)) ->
-      let typ2 = aux typ2 effect_typ2 in
-      Arrow (typ1,
-        if Effect.Descriptor.is_pure d then
-          typ2
-        else
-          Monad (d, typ2))
-    | (Monad _, _) -> failwith "This type is already monadic."
-    | _ -> failwith "Type and effect type are not compatible." in
-  let effect = Effect.of_type effect in
-  let typ = aux typ (Effect.Type.Old.of_type effect.Effect.typ) in
-  if Effect.Descriptor.is_pure effect.Effect.descriptor then
-    typ
-  else
-    Monad (effect.Effect.descriptor, typ)
-
 let to_coq (paren : bool) (typ : t) : SmartPrint.t =
   CommonType.to_coq Effect.Descriptor.to_coq paren typ
