@@ -57,14 +57,6 @@ let rec unify_monad (f : 'a -> 'a option -> 'a) (typ1 : 'a t) (typ2 : 'a t)
   | Variable x, _ -> typ2
   | _, _ -> failwith "Could not unify types"
 
-let rec strip_monads (typ : 'a t) : 'b t =
-  match typ with
-  | Variable x -> Variable x
-  | Arrow (typ1, typ2) -> Arrow (strip_monads typ1, strip_monads typ2)
-  | Tuple typs -> Tuple (List.map strip_monads typs)
-  | Apply (x, typs) -> Apply (x, List.map strip_monads typs)
-  | Monad (x, typ) -> strip_monads typ
-
 let rec map (f : BoundName.t -> BoundName.t) (typ : 'a t) : 'a t =
   match typ with
   | Variable x -> Variable x

@@ -3,79 +3,7 @@ open SmartPrint
 open Yojson.Basic
 open Utils
 
-module PureType = struct
-  include Kerneltypes.Type
-  type t = unit Kerneltypes.Type.t'
-
-  let pp (typ : t) : SmartPrint.t = CommonType.pp (fun () -> !^ "[]") typ
-
-  let to_coq (paren : bool) (typ : t) : SmartPrint.t =
-    CommonType.to_coq (fun () -> !^ "[]") paren typ
-
-  let map (f : BoundName.t -> BoundName.t) (typ : t) : t = CommonType.map f typ
-
-  let map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
-    CommonType.map_vars (fun x -> Name.Map.find x vars_map) typ
-
-  let to_json (typ : t) : json = CommonType.to_json (fun () -> `List []) typ
-
-  let of_json (json : json) : t = CommonType.of_json (fun _ -> ()) json
-end
-
-
 module Descriptor = struct
-  module Id = struct
-    type t =
-      | Type of BoundName.t * PureType.t list (* Mirrors PureType.Apply *)
-
-    let map (f : BoundName.t -> BoundName.t) (x : t) =
-      match x with
-      | Type (x, typs) -> Type (f x, List.map (PureType.map f) typs)
-
-    let bound_name (x : t) : BoundName.t =
-      match x with
-      | Type (x, _) -> x
-
-    let map_type_vars (vars_map : PureType.t Name.Map.t) (x : t) : t =
-      match x with
-      | Type (x, typs) ->
-        Type (x, List.map (PureType.map_type_vars vars_map) typs)
-    let compare x y =
-      match x, y with
-      | Type (a, ta), Type (b, tb) ->
-        let cmp = BoundName.stable_compare a b in
-        if cmp == 0 then compare ta tb else cmp
-
-    let to_puretype (x : t) : PureType.t =
-      match x with | Type (x, typs) -> PureType.Apply (x, typs)
-
-    let of_puretype (x : PureType.t) : t =
-      match x with
-      | PureType.Apply (x, typs) -> Type (x, typs)
-      | _ -> failwith "Could not convert PureType to Descriptor.Id."
-
-    let to_json (x : t) : json = PureType.to_json @@ to_puretype x
-
-    let of_json (json : json) : t = of_puretype @@ PureType.of_json json
-  end
-  module IdSet = Set.Make (struct
-      type t = Id.t
-      let compare x y = Id.compare x y
-    end)
-  module BnSet = Set.Make (struct
-      type t = BoundName.t
-      let compare x y = BoundName.stable_compare x y
-    end)
-
-  (* NOTE: [unioned] should always represent how a statement accepts compound
-     effects, while [compound] should hold these compound effects. *)
-  type t' = {
-    unioned_arg : Name.t option;
-    unioned : Id.t list;
-    compound : IdSet.t;
-    simple : BnSet.t
-  }
-
   type t = {
     args_arg : Name.t option;
     with_args : t CommonType.t list;
@@ -83,32 +11,12 @@ module Descriptor = struct
   }
 
   type desc = t
+  type typ = t CommonType.t
 
   module CommonTypeSet = Set.Make (struct
     type t = desc CommonType.t
     let compare x y = CommonType.compare x y
   end)
-
-  let to_type (d : t') : t =
-    { args_arg = d.unioned_arg;
-      with_args = d.unioned |> List.map (fun typ ->
-        CommonType.strip_monads @@ Id.to_puretype typ);
-      no_args = d.simple |> BnSet.elements |> List.map (fun name ->
-        CommonType.Apply (name, []));
-    }
-
-  let of_type (d : t) : t' =
-    let unioned = d.with_args |> List.map (fun typ ->
-      Id.of_puretype @@ CommonType.strip_monads typ) in
-    { unioned_arg = d.args_arg;
-      unioned = unioned;
-      compound = IdSet.of_list unioned;
-      simple = d.no_args |> List.map (fun typ ->
-          match typ with
-          | CommonType.Apply (name, []) -> name
-          | _ -> failwith "Unexpected format of simple effect descriptor.")
-        |> BnSet.of_list;
-    }
 
   let rec pp (d : t) : SmartPrint.t =
     OCaml.list (CommonType.pp pp) @@ d.with_args @ d.no_args
@@ -126,7 +34,7 @@ module Descriptor = struct
   let eq (d1 : t) (d2 : t) : bool =
     d1.with_args = d2.with_args && d1.no_args = d2.no_args
 
-  let singleton (x : BoundName.t) (typs : PureType.t list) : t =
+  let singleton (x : BoundName.t) (typs : typ list) : t =
     if typs = [] then {
         args_arg = None;
         with_args = [];
@@ -135,7 +43,7 @@ module Descriptor = struct
     else {
         args_arg = None;
         with_args =
-          [CommonType.Apply (x, List.map CommonType.strip_monads typs)];
+          [CommonType.Apply (x, typs)];
         no_args = [];
       }
 
@@ -209,8 +117,7 @@ module Descriptor = struct
       no_args = List.map (CommonType.map f) d.no_args;
     }
 
-  let map_type_vars (vars_map : PureType.t Name.Map.t) (d : t) : t =
-    let vars_map = Name.Map.map CommonType.strip_monads vars_map in
+  let map_type_vars (vars_map : typ Name.Map.t) (d : t) : t =
     { d with
       with_args = d.with_args |> List.map
         (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
@@ -395,7 +302,7 @@ module Type = struct
   let union (typs : t list) : t =
     List.fold_left unify pure typs
 
-  let rec map_type_vars (vars_map : PureType.t Name.Map.t) (typ : t) : t =
+  let rec map_type_vars (vars_map : t Name.Map.t) (typ : t) : t =
     match typ with
     | Arrow (typ1, typ) ->
       Arrow (typ1, map_type_vars vars_map typ)
@@ -480,7 +387,7 @@ let union (effects : t list) : t = Type.union effects
 let rec map (f : BoundName.t -> BoundName.t) (effect : t) : t =
   Type.map f effect
 
-let map_type_vars (vars_map : PureType.t Name.Map.t) (effect : t) : t =
+let map_type_vars (vars_map : t Name.Map.t) (effect : t) : t =
   Type.map_type_vars vars_map effect
 
 let to_json (effect : t) : json =

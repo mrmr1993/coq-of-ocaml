@@ -36,7 +36,7 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
       (PathName.of_name ["OCaml"; "Effect"; "State"] "state") env in
     let typ = Type.of_type_expr env loc typ in
     let descriptor = Effect.Descriptor.union [
-      Effect.Descriptor.singleton state [Type.pure_type typ];
+      Effect.Descriptor.singleton state [typ];
       Effect.Descriptor.singleton bound_state [];
     ] in
     let effect = Effect.to_type { Effect.typ = Effect.Type.pure; descriptor } in

@@ -809,8 +809,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     begin try
       let typ' = FullEnvi.Var.find l x env in
       let vars_map = Type.unify typ' typ in
-      let typ' = Effect.map_type_vars (Name.Map.map Type.pure_type vars_map)
-        typ' in
+      let typ' = Effect.map_type_vars vars_map typ' in
       let typ = Effect.Type.unify ~collapse:false typ typ' in
       Variable ((l, typ), x)
     with Not_found ->

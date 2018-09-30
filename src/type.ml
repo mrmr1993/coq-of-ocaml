@@ -87,15 +87,7 @@ let is_function (typ : t) : bool =
   | Arrow _ -> true
   | _ -> false
 
-let pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
-
-let of_pure_type (typ : t) : Effect.PureType.t = CommonType.strip_monads typ
-
 let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
-
-let unify_pure (ptyp : Effect.PureType.t) (typ : t)
-  : Effect.PureType.t Name.Map.t =
-  Name.Map.map pure_type (CommonType.unify ptyp typ)
 
 let map_vars (f : Name.t -> t) (typ : t) : t = CommonType.map_vars f typ
 

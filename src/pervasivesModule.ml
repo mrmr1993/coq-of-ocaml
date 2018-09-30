@@ -18,7 +18,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
     let i = string_of_int x in
     Effect.Descriptor.singleton
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "state")
-      [Effect.PureType.Variable i] in
+      [Type.Variable i] in
   let state_type (x : int) : Type.t =
     let i = string_of_int x in
     Type.Apply
