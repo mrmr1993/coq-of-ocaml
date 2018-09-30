@@ -3,57 +3,67 @@ open Typedtree
 open SmartPrint
 
 type t =
-  | Any
-  | Constant of Constant.t
-  | Variable of CoqName.t
-  | Tuple of t list
-  | Constructor of BoundName.t * t list (** A constructor name and a list of pattern in arguments. *)
-  | Alias of t * CoqName.t
-  | Record of (BoundName.t * t) list (** A list of fields from a record with their expected patterns. *)
-  | Or of t * t
+  | Any of Type.t
+  | Constant of Type.t * Constant.t
+  | Variable of Type.t * CoqName.t
+  | Tuple of Type.t * t list
+  | Constructor of Type.t * BoundName.t * t list (** A constructor name and a list of pattern in arguments. *)
+  | Alias of Type.t * t * CoqName.t
+  | Record of Type.t * (BoundName.t * t) list (** A list of fields from a record with their expected patterns. *)
+  | Or of Type.t * t * t
 
 let rec pp (p : t) : SmartPrint.t =
   match p with
-  | Any -> !^ "Any"
-  | Constant c -> Constant.pp c
-  | Variable x -> CoqName.pp x
-  | Tuple ps -> nest (!^ "Tuple" ^^ OCaml.tuple (List.map pp ps))
-  | Constructor (x, ps) ->
+  | Any _ -> !^ "Any"
+  | Constant (_, c) -> Constant.pp c
+  | Variable (_, x) -> CoqName.pp x
+  | Tuple (_, ps) -> nest (!^ "Tuple" ^^ OCaml.tuple (List.map pp ps))
+  | Constructor (_, x, ps) ->
     nest (!^ "Constructor" ^^ OCaml.tuple (BoundName.pp x :: List.map pp ps))
-  | Alias (p, x) -> nest (!^ "Alias" ^^ OCaml.tuple [pp p; CoqName.pp x])
-  | Record fields ->
+  | Alias (_, p, x) -> nest (!^ "Alias" ^^ OCaml.tuple [pp p; CoqName.pp x])
+  | Record (_, fields) ->
     nest (!^ "Record" ^^ OCaml.tuple (fields |> List.map (fun (x, p) ->
       nest @@ parens (BoundName.pp x ^-^ !^ "," ^^ pp p))))
-  | Or (p1, p2) -> nest (!^ "Or" ^^ OCaml.tuple [pp p1; pp p2])
+  | Or (_, p1, p2) -> nest (!^ "Or" ^^ OCaml.tuple [pp p1; pp p2])
+
+let typ (p : t) : Type.t =
+  match p with
+  | Any typ | Constant (typ, _) | Variable (typ, _) | Tuple (typ, _)
+  | Constructor (typ, _, _) | Alias (typ, _, _) | Record (typ, _)
+  | Or (typ, _, _) -> typ
 
 (** Import an OCaml pattern. *)
-let rec of_pattern (new_names : bool) (env : unit FullEnvi.t) (p : pattern) : t =
+let rec of_pattern  (new_names : bool) (env : unit FullEnvi.t)
+  (typ_vars : Name.t Name.Map.t) (p : pattern) : t =
   let l = Loc.of_location p.pat_loc in
+  let (typ, typ_vars, _) =
+    Type.of_type_expr_new_typ_vars env l typ_vars p.pat_type in
+  let of_pattern = of_pattern new_names env typ_vars in
   match p.pat_desc with
-  | Tpat_any -> Any
+  | Tpat_any -> Any typ
   | Tpat_var (x, _) ->
     let x = Name.of_ident x in
     let x = if new_names then
         let (x, _, _) = FullEnvi.Var.create x () env in x
       else FullEnvi.Var.coq_name x env in
-    Variable x
-  | Tpat_tuple ps -> Tuple (List.map (of_pattern new_names env) ps)
+    Variable (typ, x)
+  | Tpat_tuple ps -> Tuple (typ, List.map of_pattern ps)
   | Tpat_construct (x, _, ps) ->
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
-    Constructor (x, List.map (of_pattern new_names env) ps)
+    Constructor (typ, x, List.map of_pattern ps)
   | Tpat_alias (p, x, _) ->
     let x = Name.of_ident x in
     let x = if new_names then
         let (x, _, _) = FullEnvi.Var.create x () env in x
       else FullEnvi.Var.coq_name x env in
-    Alias (of_pattern new_names env p, x)
-  | Tpat_constant c -> Constant (Constant.of_constant l c)
+    Alias (typ, of_pattern p, x)
+  | Tpat_constant c -> Constant (typ, Constant.of_constant l c)
   | Tpat_record (fields, _) ->
-    Record (fields |> List.map (fun (x, _, p) ->
+    Record (typ, fields |> List.map (fun (x, _, p) ->
       let x = FullEnvi.Field.bound l (PathName.of_loc x) env in
-      (x, of_pattern new_names env p)))
+      (x, of_pattern p)))
   | Tpat_or (p1, p2, _) ->
-    Or (of_pattern new_names env p1, of_pattern new_names env p2)
+    Or (typ, of_pattern p1, of_pattern p2)
   | _ -> Error.raise l "Unhandled pattern."
 
 (** Free variables in a pattern. *)
@@ -62,14 +72,14 @@ let rec free_variables (p : t) : CoqName.Set.t =
     List.fold_left (fun s p -> CoqName.Set.union s (free_variables p))
     CoqName.Set.empty ps in
   match p with
-  | Any | Constant _ -> CoqName.Set.empty
-  | Variable x -> CoqName.Set.singleton x
-  | Tuple ps | Constructor (_, ps) -> aux ps
-  | Alias (p, x) ->
+  | Any _ | Constant _ -> CoqName.Set.empty
+  | Variable (_, x) -> CoqName.Set.singleton x
+  | Tuple (_, ps) | Constructor (_, _, ps) -> aux ps
+  | Alias (_, p, x) ->
     CoqName.Set.union (CoqName.Set.singleton x)
       (free_variables p)
-  | Record fields -> aux (List.map snd fields)
-  | Or (p1, p2) -> CoqName.Set.inter (free_variables p1) (free_variables p2)
+  | Record (_, fields) -> aux (List.map snd fields)
+  | Or (_, p1, p2) -> CoqName.Set.inter (free_variables p1) (free_variables p2)
 
 let rec free_typed_variables (field_type : BoundName.t -> Type.t * Type.t)
   (constructor_types : BoundName.t -> Type.t * Type.t list) (typ : Type.t)
@@ -84,25 +94,25 @@ let rec free_typed_variables (field_type : BoundName.t -> Type.t * Type.t)
     List.fold_left2 (fun s typ p -> union s (free_typed_variables typ p))
     CoqName.Map.empty typs ps in
   match typ, p with
-  | _, Any | _, Constant _ -> CoqName.Map.empty
-  | _, Variable x -> CoqName.Map.singleton x typ
-  | Type.Tuple typs, Tuple ps -> aux typs ps
-  | _, Constructor (c, ps) ->
+  | _, Any _ | _, Constant _ -> CoqName.Map.empty
+  | _, Variable (_, x) -> CoqName.Map.singleton x typ
+  | Type.Tuple typs, Tuple (_, ps) -> aux typs ps
+  | _, Constructor (_, c, ps) ->
     let (typ', typs) = constructor_types c in
     let vars_map = Type.unify typ' typ in
     let typs = List.map (Type.map_vars (fun x -> Name.Map.find x vars_map))
       typs in
     aux typs ps
-  | _, Alias (p, x) ->
+  | _, Alias (_, p, x) ->
     union (CoqName.Map.singleton x typ) (free_typed_variables typ p)
-  | _, Record fields ->
+  | _, Record (_, fields) ->
     let typs = List.map (fun (field_name, _) ->
       let (record_typ, typ') = field_type field_name in
       let vars_map = Type.unify record_typ typ in
       let typ' = Type.map_vars (fun x -> Name.Map.find x vars_map) typ' in
       typ') fields in
     aux typs (List.map snd fields)
-  | _, Or (p1, p2) ->
+  | _, Or (_, p1, p2) ->
     inter (free_typed_variables typ p1) (free_typed_variables typ p2)
   | _, _ -> failwith "Pattern is incompatable with the associated type."
 
@@ -113,24 +123,24 @@ let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
 (** Pretty-print a pattern to Coq (inside parenthesis if the [paren] flag is set). *)
 let rec to_coq (paren : bool) (p : t) : SmartPrint.t =
   match p with
-  | Any -> !^ "_"
-  | Constant c -> Constant.to_coq c
-  | Variable x -> CoqName.to_coq x
-  | Tuple ps ->
+  | Any _ -> !^ "_"
+  | Constant (_, c) -> Constant.to_coq c
+  | Variable (_, x) -> CoqName.to_coq x
+  | Tuple (_, ps) ->
     if ps = [] then
       !^ "tt"
     else
       parens @@ nest @@ separate (!^ "," ^^ space) (List.map (to_coq false) ps)
-  | Constructor (x, ps) ->
+  | Constructor (_, x, ps) ->
     if ps = [] then
       BoundName.to_coq x
     else
       Pp.parens paren @@ nest @@ separate space (BoundName.to_coq x :: List.map (to_coq true) ps)
-  | Alias (p, x) ->
+  | Alias (_, p, x) ->
     Pp.parens paren @@ nest (to_coq false p ^^ !^ "as" ^^ CoqName.to_coq x)
-  | Record fields ->
+  | Record (_, fields) ->
     !^ "{|" ^^
     nest_all @@ separate (!^ ";" ^^ space) (fields |> List.map (fun (x, p) ->
       nest (BoundName.to_coq x ^^ !^ ":=" ^^ to_coq false p)))
     ^^ !^ "|}"
-  | Or (p1, p2) -> to_coq false p1 ^^ !^ "|" ^^ to_coq false p2
+  | Or (_, p1, p2) -> to_coq false p1 ^^ !^ "|" ^^ to_coq false p2
