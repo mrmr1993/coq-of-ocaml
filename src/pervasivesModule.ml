@@ -127,15 +127,13 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Typ.add ["Effect"; "State"] "t" (TypeDefinition.Abstract (CoqName.Name "t", []))
   |> Var.add ["Effect"; "State"] "global" pure
   |> Function.add ["Effect"; "State"] "read"
-    (arrow (typ_d 0) Pure,
-    Type.Arrow (state_type 0, Type.Variable "0"))
+    (Type.Arrow (state_type 0, Type.Monad (typ_d 0, Type.Variable "0")),
+    Type.Arrow (state_type 0, Type.Monad (typ_d 0, Type.Variable "0")))
   |> Function.add ["Effect"; "State"] "write"
-    (arrow (d []) (Arrow (typ_d 0, Pure)),
-    Effect.PureType.Arrow
-      (state_type 0,
-        Effect.PureType.Arrow
-          (Effect.PureType.Variable "0",
-          Effect.PureType.Apply (bound_name [] [] "unit", []))))
+    (Type.Arrow (state_type 0, Type.Arrow (Type.Variable "0",
+      Type.Monad (typ_d 0, Type.Apply (bound_name [] [] "unit", [])))),
+    Type.Arrow (state_type 0, Type.Arrow (Type.Variable "0",
+      Type.Monad (typ_d 0, Type.Apply (bound_name [] [] "unit", [])))))
 
   (* Pervasives *)
   (* Exceptions *)
@@ -186,8 +184,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Operations on large files *)
   (* References *)
   |> Function.add ["Pervasives"] "ref"
-    (arrow (typ_d 0) Pure,
-    Effect.PureType.Arrow (Effect.PureType.Variable "0", state_type 0))
+    (Type.Arrow (Type.Variable "0", Monad (typ_d 0, state_type 0)),
+    Type.Arrow (Type.Variable "0", Monad (typ_d 0, state_type 0)))
   (* Operations on format strings *)
   (* Program termination *)
   |> leave_module localize_effects
