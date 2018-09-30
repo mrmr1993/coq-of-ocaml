@@ -1015,7 +1015,9 @@ and effects_of_def_step (env : Type.t FullEnvi.t)
   { def with Definition.cases =
     def.Definition.cases |> List.map (fun (header, e) ->
       let env = Header.env_in_header header env Effect.pure in
-      (header, effects env e)) }
+      let e = effects env e in
+      let typ = Effect.Type.unify header.Header.typ @@ snd @@ annotation e in
+      ({ header with Header.typ = typ }, e)) }
 
 and effects_of_def (env : Type.t FullEnvi.t)
   (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
@@ -1101,8 +1103,6 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
     let env_in_def = Definition.env_in_def def env in
     let def = { def with
       Definition.cases = def.Definition.cases |> List.map (fun (header, e) ->
-      let typ = Type.monadise header.Header.typ (snd (annotation e)) in
-      let header = { header with Header.typ = typ } in
       let env = Header.env_in_header header env_in_def () in
       let e = monadise env e in
       (header, e)) } in

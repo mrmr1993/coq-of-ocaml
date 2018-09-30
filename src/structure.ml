@@ -250,7 +250,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
       let def = { def with
         Exp.Definition.cases =
           def.Exp.Definition.cases |> List.map (fun (header, e) ->
-            let typ = Type.monadise header.Exp.Header.typ (snd (Exp.annotation e)) in
+            let typ = header.Exp.Header.typ in
         let (implicit_args, typ) = Type.allocate_implicits_for_monad
           header.Exp.Header.implicit_args header.Exp.Header.args typ in
         let header = { header with Exp.Header.typ = typ; implicit_args } in
