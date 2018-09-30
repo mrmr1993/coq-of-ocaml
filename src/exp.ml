@@ -841,30 +841,27 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       Error.warn l "Constructors cannot have functional effects; effect ignored.";
     Constructor ((l, typ), x, es)
   | Apply ((l, typ), e_f, e_xs) ->
+    let typ_f = snd @@ annotation e_f in
     let vars_map = match function_type env e_f with
-      | Some typ_f -> Type.unify typ_f (snd (annotation e_f))
+      | Some typ_f' -> Type.unify typ_f' typ_f
       | None -> Name.Map.empty in
     let e_f = e_f
       |> effects env
       |> update_annotation (fun (l, eff) ->
         (l, Effect.map_type_vars (Name.Map.map Type.pure_type vars_map) eff)) in
-    let effect_e_f = Effect.of_type @@ snd (annotation e_f) in
+    let (_, effect_e_f) = Effect.split @@ snd (annotation e_f) in
     let e_xs = List.map (effects env) e_xs in
-    let arguments_are_pure = e_xs
-      |> List.map (fun e_x -> snd (annotation e_x))
-      |> List.for_all (fun effect_e_x ->
-        let effect_e_x = Effect.of_type effect_e_x in
-        Effect.Type.is_pure effect_e_x.Effect.typ) in
+    let arguments_are_pure = e_xs |> List.for_all (fun e_x ->
+      Effect.Type.is_pure @@ snd @@ Effect.split @@ snd @@ annotation e_x) in
     if arguments_are_pure then
-      let e_xss = Effect.Type.split_calls effect_e_f.Effect.typ e_xs in
+      let e_xss = Effect.Type.split_calls effect_e_f e_xs in
       List.fold_left (fun e (e_xs, d) ->
-        let effect_e = Effect.of_type @@ snd (annotation e) in
-        let effects_e_xs = List.map (fun e_x -> snd (annotation e_x)) e_xs in
-        let descriptor = Effect.Descriptor.union (
-          effect_e.Effect.descriptor ::
-          Effect.Type.return_descriptor effect_e.Effect.typ (List.length e_xs) ::
-          List.map (fun effect_e_x -> (Effect.of_type effect_e_x).Effect.descriptor) effects_e_xs) in
-        let typ = Effect.Type.return_type effect_e.Effect.typ (List.length e_xs) in
+        let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
+        let descriptor = Effect.Descriptor.union (d_e ::
+          Effect.Type.return_descriptor typ_e (List.length e_xs) ::
+          List.map (fun e_x ->
+            fst @@ Effect.split @@ snd @@ annotation e_x) e_xs) in
+        let typ = Effect.Type.return_type typ_e (List.length e_xs) in
         let effect = { Effect.descriptor = descriptor; typ = typ } in
         Apply ((l, Effect.to_type effect), e, e_xs))
         e_f e_xss
