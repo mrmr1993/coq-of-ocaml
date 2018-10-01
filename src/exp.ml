@@ -474,14 +474,13 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     let loc = Loc.of_location p.pat_loc in
     let p = Pattern.of_pattern new_names env typ_vars p in
     match p with
-    | Pattern.Variable (_, x) ->
-      (FullEnvi.Var.assoc x () env, (None, p, [x], e, loc))
+    | Pattern.Variable (typ, x) ->
+      (FullEnvi.Var.assoc x () env, (None, p, [(x, typ)], e, loc))
     | _ ->
       if Recursivity.to_bool is_rec then
         Error.raise loc "Only variables are allowed as a left-hand side of let rec";
-      let free_vars = CoqName.Set.elements @@
-        Pattern.free_variables p in
-      let env = List.fold_left (fun env x ->
+      let free_vars = CoqName.Map.bindings @@ Pattern.free_variables p in
+      let env = List.fold_left (fun env (x, typ) ->
         FullEnvi.Var.assoc x () env) env free_vars in
       let (x, x_bound, env) = FullEnvi.Var.fresh "temp" () env in
       (env, (Some (x, x_bound), p, free_vars, e, loc)))) in
@@ -489,7 +488,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
       let env = match bound with
         | Some (x, _) -> FullEnvi.Var.assoc x () env
         | None -> env in
-      List.fold_left (fun env x -> FullEnvi.Var.assoc x () env) env xs)
+      List.fold_left (fun env (x, typ) -> FullEnvi.Var.assoc x () env) env xs)
     env cases in
   let env =
     if Recursivity.to_bool is_rec then
@@ -506,7 +505,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     match bound with
     | None ->
       let x = match xs with
-        | [x] -> x
+        | [(x, _)] -> x
         | _ ->
           failwith "No temporary variable allocated for toplevel pattern match." in
       let header = {
@@ -520,24 +519,19 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
       if List.compare_length_with args_names 0 > 0 then
         Error.raise loc "Could not match against a function.";
       match xs with
-      | [_] ->
-        begin match CoqName.Map.bindings @@ Pattern.free_typed_variables p with
-        | [(y, typ)] ->
-          let typ_vars = Type.typ_args typ in
-          let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
-          let header = {
-            Header.name = y;
-            typ_vars = Name.Set.elements new_typ_vars;
-            implicit_args = [];
-            args = [];
-            typ = typ } in
-          let y_bound = FullEnvi.Var.bound loc
-            (PathName.of_name [] (CoqName.ocaml_name y)) env_with_let in
-          (header, Match ((loc, typ), e_body,
-            [p, Variable ((loc, typ), y_bound)]))
-        | _ ->
-          failwith "Different number of variables from Pattern.free_variables and Pattern.free_typed_variables."
-        end
+      | [(y, typ)] ->
+        let typ_vars = Type.typ_args typ in
+        let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
+        let header = {
+          Header.name = y;
+          typ_vars = Name.Set.elements new_typ_vars;
+          implicit_args = [];
+          args = [];
+          typ = typ } in
+        let y_bound = FullEnvi.Var.bound loc
+          (PathName.of_name [] (CoqName.ocaml_name y)) env_with_let in
+        (header, Match ((loc, typ), e_body,
+          [p, Variable ((loc, typ), y_bound)]))
       | _ ->
         let header = {
           Header.name = x;
@@ -560,7 +554,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         let (e_typ, _, new_typ_vars) =
           Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
         let free_vars =
-          CoqName.Map.bindings @@ Pattern.free_typed_variables p in
+          CoqName.Map.bindings @@ Pattern.free_variables p in
         free_vars |> List.map (fun (y, typ) ->
           let typ_vars = Type.typ_args typ in
           let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
@@ -623,7 +617,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     let e = substitute x e' e in
     let cases = cases |> List.map (fun (p, e) ->
       let ys = Pattern.free_variables p in
-      if CoqName.Set.exists (fun y -> CoqName.ocaml_name y = x) ys then
+      if CoqName.Map.exists (fun y _ -> CoqName.ocaml_name y = x) ys then
         (p, e)
       else
         (p, substitute x e' e)) in
@@ -880,10 +874,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
     if Effect.Type.is_pure typ_e then
       let cases = cases |> List.map (fun (p, e) ->
-        let pattern_vars = Pattern.free_variables p in
-        let env = CoqName.Set.fold (fun x env ->
-          FullEnvi.Var.assoc x Effect.pure env)
-          pattern_vars env in
+        let env = Pattern.add_to_env_with_effects p env in
         (p, effects env e)) in
       let (d, typ_cases) = Effect.split @@
         Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
@@ -1095,8 +1086,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
       match es' with
       | [e] ->
         let cases = cases |> List.map (fun (p, e)->
-          let env = CoqName.Set.fold (fun x env -> FullEnvi.Var.assoc x () env)
-            (Pattern.free_variables p) env in
+          let env = Pattern.add_to_env p env in
           (p, lift (descriptor e) d (monadise env e))) in
         Match (l, e, cases)
       | _ -> failwith "Wrong answer from 'monadise_list'.")

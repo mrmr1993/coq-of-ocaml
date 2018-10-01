@@ -67,42 +67,32 @@ let rec of_pattern  (new_names : bool) (env : unit FullEnvi.t)
   | _ -> Error.raise l "Unhandled pattern."
 
 (** Free variables in a pattern. *)
-let rec free_variables (p : t) : CoqName.Set.t =
-  let aux ps =
-    List.fold_left (fun s p -> CoqName.Set.union s (free_variables p))
-    CoqName.Set.empty ps in
-  match p with
-  | Any _ | Constant _ -> CoqName.Set.empty
-  | Variable (_, x) -> CoqName.Set.singleton x
-  | Tuple (_, ps) | Constructor (_, _, ps) -> aux ps
-  | Alias (_, p, x) ->
-    CoqName.Set.union (CoqName.Set.singleton x)
-      (free_variables p)
-  | Record (_, fields) -> aux (List.map snd fields)
-  | Or (_, p1, p2) -> CoqName.Set.inter (free_variables p1) (free_variables p2)
-
-let rec free_typed_variables (p : t) : Type.t CoqName.Map.t =
+let rec free_variables (p : t) : Type.t CoqName.Map.t =
   let union = CoqName.Map.union (fun _ a _ -> Some a) in
   let inter = CoqName.Map.merge (fun _ a b ->
     match a, b with
     | Some _, Some _ -> a
     | _, _ -> None) in
   let aux ps =
-    List.fold_left (fun s p -> union s (free_typed_variables p))
+    List.fold_left (fun s p -> union s (free_variables p))
     CoqName.Map.empty ps in
   match p with
   | Any _ | Constant _ -> CoqName.Map.empty
   | Variable (typ, x) -> CoqName.Map.singleton x typ
   | Tuple (_, ps) | Constructor (_, _, ps) -> aux ps
   | Alias (typ, p, x) ->
-    union (CoqName.Map.singleton x typ) (free_typed_variables p)
+    union (CoqName.Map.singleton x typ) (free_variables p)
   | Record (_, fields) -> aux (List.map snd fields)
   | Or (_, p1, p2) ->
-    inter (free_typed_variables p1) (free_typed_variables p2)
+    inter (free_variables p1) (free_variables p2)
 
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-  CoqName.Set.fold (fun x env -> FullEnvi.Var.assoc x () env)
+  CoqName.Map.fold (fun x typ env -> FullEnvi.Var.assoc x () env)
     (free_variables p) env
+
+let add_to_env_with_effects (p : t) (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t =
+  CoqName.Map.fold FullEnvi.Var.assoc (free_variables p) env
 
 (** Pretty-print a pattern to Coq (inside parenthesis if the [paren] flag is set). *)
 let rec to_coq (paren : bool) (p : t) : SmartPrint.t =
