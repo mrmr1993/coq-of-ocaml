@@ -521,9 +521,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         Error.raise loc "Could not match against a function.";
       match xs with
       | [_] ->
-        begin match CoqName.Map.bindings @@
-          Pattern.free_typed_variables (TypeDefinition.field_type loc env)
-            (TypeDefinition.constructor_type loc env) e_body_typ p with
+        begin match CoqName.Map.bindings @@ Pattern.free_typed_variables p with
         | [(y, typ)] ->
           let typ_vars = Type.typ_args typ in
           let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
@@ -561,9 +559,8 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
       | Some (x, x_bound), _ ->
         let (e_typ, _, new_typ_vars) =
           Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
-        let free_vars = CoqName.Map.bindings @@
-          Pattern.free_typed_variables (TypeDefinition.field_type loc env)
-          (TypeDefinition.constructor_type loc env) e_typ p in
+        let free_vars =
+          CoqName.Map.bindings @@ Pattern.free_typed_variables p in
         free_vars |> List.map (fun (y, typ) ->
           let typ_vars = Type.typ_args typ in
           let new_typ_vars = Name.Set.inter typ_vars new_typ_vars in
