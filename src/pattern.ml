@@ -86,6 +86,60 @@ let rec free_variables (p : t) : Type.t CoqName.Map.t =
   | Or (_, p1, p2) ->
     inter (free_variables p1) (free_variables p2)
 
+(** Unify types with effect types. *)
+let rec unify (env : Type.t FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
+  : t =
+  let unify = unify env loc in
+  match typ, p with
+  | Type.Variable _, _ -> p
+  | Type.Apply (
+      {BoundName.full_path = { PathName.path = ["OCaml"]; base = "exn" }},
+      []), _ -> p
+  | _, Any typ' -> Any (Effect.Type.unify typ' typ)
+  | _, Constant (typ', c) -> Constant (Effect.Type.unify typ' typ, c)
+  | _, Variable (typ', x) -> Variable (Effect.Type.unify typ' typ, x)
+  | Type.Monad (_, Type.Tuple typs), Tuple (typ', ps)
+  | Type.Tuple typs, Tuple (typ', ps) ->
+    Tuple (Effect.Type.unify typ' typ, List.map2 unify typs ps)
+  | Type.Monad (_, Type.Apply (_, typ_vars)), Constructor (typ', x, ps)
+  | Type.Apply (_, typ_vars), Constructor (typ', x, ps) ->
+    let (typ_name, index) = FullEnvi.Constructor.find loc x env in
+    let bound_typ = { BoundName.full_path = typ_name; local_path = typ_name } in
+    let (typ_args, constructors) =
+      match FullEnvi.Typ.find loc bound_typ env with
+      | TypeDefinition.Inductive (name, typ_args, constructors) ->
+        (typ_args, constructors)
+      | _ ->
+        Error.raise loc @@ SmartPrint.to_string 80 2 @@
+        !^ "Could not find inductive type for constructor" ^^ BoundName.pp x in
+    let var_map = List.fold_left2 (fun m n typ -> Name.Map.add n typ m)
+      Name.Map.empty typ_args typ_vars in
+    let typs = List.map (Type.map_vars (fun x -> Name.Map.find x var_map)) @@
+      snd @@ List.nth constructors index in
+    Constructor (Effect.Type.unify typ' typ, x, List.map2 unify typs ps)
+  | _, Alias (typ', p, x) -> Alias (Effect.Type.unify typ' typ, p, x)
+  | Type.Monad (_, Type.Apply (bound_typ, typ_vars)), Record (typ', fields)
+  | Type.Apply (bound_typ, typ_vars), Record (typ', fields) ->
+    let (typ_args, field_typs) =
+      match FullEnvi.Typ.find loc bound_typ env with
+      | TypeDefinition.Record (name, typ_args, field_typs) ->
+        (typ_args, field_typs)
+      | _ ->
+        Error.raise loc @@ SmartPrint.to_string 80 2 @@
+        !^ "Could not find record type" ^^ BoundName.pp bound_typ in
+    let var_map = List.fold_left2 (fun m n typ -> Name.Map.add n typ m)
+      Name.Map.empty typ_args typ_vars in
+    let typs = field_typs |> List.map (fun (name, typ) ->
+      Type.map_vars (fun x -> Name.Map.find x var_map) typ) in
+    let fields = fields |> List.map (fun (field_name, p) ->
+      let typ = FullEnvi.Field.find loc field_name env
+        |> snd |> List.nth typs in
+      (field_name, unify typ p)) in
+    Record (Effect.Type.unify typ' typ, fields)
+  | _, Or (typ', p1, p2) ->
+    Or (Effect.Type.unify typ' typ, unify typ' p1, unify typ' p2)
+  | _, _ -> Error.raise loc "Cannot unify type with pattern."
+
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
   CoqName.Map.fold (fun x typ env -> FullEnvi.Var.assoc x () env)
     (free_variables p) env

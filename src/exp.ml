@@ -873,9 +873,10 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
     if Effect.Type.is_pure typ_e then
-      let cases = cases |> List.map (fun (p, e) ->
+      let cases = cases |> List.map (fun (p, e') ->
+        let p = Pattern.unify env l (snd @@ annotation e) p in
         let env = Pattern.add_to_env_with_effects p env in
-        (p, effects env e)) in
+        (p, effects env e')) in
       let (d, typ_cases) = Effect.split @@
         Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
       let descriptor = Effect.Descriptor.union [d_e; d] in
