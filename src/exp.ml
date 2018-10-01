@@ -312,7 +312,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
         typ) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
-      let no_match = (Pattern.Any (snd @@ annotation e),
+      let no_match = (Pattern.Any (Type.Tuple [snd @@ annotation e; int_t]),
           Apply ((Loc.Unknown, typ),
           Variable ((Loc.Unknown, match_fail_t), match_fail),
             [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
