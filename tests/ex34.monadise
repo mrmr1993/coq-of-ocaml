@@ -9,14 +9,14 @@ Require [ OCaml.List ]
       [
         ((compare, [ ], [ (x, Type (Ord/t)) ], (Type (Ord/t) -> Type (Z))),
           Match
-            (?, Variable (?, Ord/x),
+            (5, Variable (?, Ord/x),
               [
                 (Any,
                   Function
                     (5,
                       x_1,
                       Match
-                        (?,
+                        (5,
                           Variable
                             (?,
                               Ord/x_1),
@@ -41,7 +41,7 @@ Value
     [
       ((height, [ ], [ (x, Type (t)) ], Type (Z)),
         Match
-          (?, Variable (?, x),
+          (15, Variable (?, x),
             [
               (Constructor (Empty), Constant (15, Int(0)));
               (Constructor (Node, Any, Any, Any, h), Variable (16, h))
@@ -477,7 +477,7 @@ Value
       ((add, [ ], [ (x, Type (elt)); (x_1, Type (t)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
-          (?, Variable (?, x_1),
+          (66, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Return
@@ -634,7 +634,7 @@ Value
       ((add_min_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
-          (?, Variable (?, x),
+          (83, Variable (?, x),
             [
               (Constructor (Empty),
                 Return
@@ -693,7 +693,7 @@ Value
       ((add_max_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
-          (?, Variable (?, x),
+          (89, Variable (?, x),
             [
               (Constructor (Empty),
                 Return
@@ -1099,7 +1099,7 @@ Value
       ((min_elt, [ ], [ (x, Type (t)) ],
         Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
-          (?, Variable (?, x),
+          (109, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -1134,7 +1134,7 @@ Value
       ((max_elt, [ ], [ (x, Type (t)) ],
         Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
-          (?, Variable (?, x),
+          (115, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -1169,7 +1169,7 @@ Value
       ((remove_min_elt, [ ], [ (x, Type (t)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
         Match
-          (?, Variable (?, x),
+          (123, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -1448,7 +1448,7 @@ Value
             Type (OCaml.Invalid_argument)
           ], (Type (t) * Type (bool) * Type (t)))),
         Match
-          (?, Variable (?, x_1),
+          (155, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Return
@@ -1657,7 +1657,7 @@ Value
     [
       ((is_empty, [ ], [ (x, Type (t)) ], Type (bool)),
         Match
-          (?, Variable (?, x),
+          (170, Variable (?, x),
             [
               (Constructor (Empty), Constructor (170, true));
               (Any, Constructor (170, false))
@@ -1670,7 +1670,7 @@ Value
     [
       ((mem, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ], Type (bool)),
         Match
-          (?, Variable (?, x_1),
+          (173, Variable (?, x_1),
             [
               (Constructor (Empty), Constructor (173, false));
               (Constructor (Node, l, v, r, Any),
@@ -1752,7 +1752,7 @@ Value
           ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
             Type (t))),
         Match
-          (?, Variable (?, x_1),
+          (180, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Return (?, Constructor (180, Empty)));
@@ -3325,7 +3325,7 @@ Value
     [
       ((iter, [ A ], [ (f, (Type (elt) -> A)); (x, Type (t)) ], Type (unit)),
         Match
-          (?, Variable (?, x),
+          (268, Variable (?, x),
             [
               (Constructor (Empty), Constructor (268, tt));
               (Constructor (Node, l, v, r, Any),
@@ -3405,7 +3405,7 @@ Value
       ((for_all, [ ], [ (p, (Type (elt) -> Type (bool))); (x, Type (t)) ],
         Type (bool)),
         Match
-          (?, Variable (?, x),
+          (279, Variable (?, x),
             [
               (Constructor (Empty), Constructor (279, true));
               (Constructor (Node, l, v, r, Any),
@@ -3469,7 +3469,7 @@ Value
       ((exists_, [ ], [ (p, (Type (elt) -> Type (bool))); (x, Type (t)) ],
         Type (bool)),
         Match
-          (?, Variable (?, x),
+          (284, Variable (?, x),
             [
               (Constructor (Empty), Constructor (284, false));
               (Constructor (Node, l, v, r, Any),
@@ -3539,7 +3539,7 @@ Value
             Type (OCaml.Not_found)
           ], Type (t))),
         Match
-          (?, Variable (?, x),
+          (289, Variable (?, x),
             [
               (Constructor (Empty),
                 Return (?, Constructor (289, Empty)));
@@ -3663,7 +3663,7 @@ Value
             Type (OCaml.Not_found)
           ], (Type (t) * Type (t)))),
         Match
-          (?, Variable (?, x),
+          (299, Variable (?, x),
             [
               (Constructor (Empty),
                 Return
@@ -3894,7 +3894,7 @@ Value
     [
       ((cardinal, [ ], [ (x, Type (t)) ], Type (Z)),
         Match
-          (?, Variable (?, x),
+          (311, Variable (?, x),
             [
               (Constructor (Empty), Constant (311, Int(0)));
               (Constructor (Node, l, v, r, Any),
@@ -3945,7 +3945,7 @@ Value
       ((elements_aux, [ ], [ (accu, Type (list, Type (elt))); (x, Type (t)) ],
         Type (list, Type (elt))),
         Match
-          (?, Variable (?, x),
+          (316, Variable (?, x),
             [
               (Constructor (Empty), Variable (316, accu));
               (Constructor (Node, l, v, r, Any),
@@ -4007,7 +4007,7 @@ Value
       ((find, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
         Monad ([ Type (OCaml.Not_found) ], Type (elt))),
         Match
-          (?, Variable (?, x_1),
+          (326, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Apply

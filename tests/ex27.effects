@@ -4,7 +4,7 @@ Value
     [
       ((length_aux, [ A ], [ (len, Type (Z)); (x, Type (list, A)) ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((17, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]), Variable ((17, Effect ([ ], .)), len));
               (Constructor (cons, a, l),
@@ -86,7 +86,7 @@ Value
     [
       ((hd, [ A ], [ (x, Type (list, A)) ], Monad ([ Type (OCaml.Failure) ], A)),
         Match
-          ((?, Effect ([ Type (OCaml.Failure) ], .)),
+          ((24, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -131,7 +131,7 @@ Value
       ((tl, [ A ], [ (x, Type (list, A)) ],
         Monad ([ Type (OCaml.Failure) ], Type (list, A))),
         Match
-          ((?, Effect ([ Type (OCaml.Failure) ], .)),
+          ((28, Effect ([ Type (OCaml.Failure) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -485,7 +485,7 @@ Value
     [
       ((flatten, [ A ], [ (x, Type (list, Type (list, A))) ], Type (list, A)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((50, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor ((50, Effect ([ ], .)), []));
@@ -553,7 +553,7 @@ Value
     [
       ((map, [ A; B ], [ (f, (A -> B)); (x, Type (list, A)) ], Type (list, B)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((57, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor ((57, Effect ([ ], .)), []));
@@ -640,7 +640,7 @@ Value
         [ (i, Type (Z)); (f, (Type (Z) -> (A -> B))); (x, Type (list, A)) ],
         Type (list, B)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((62, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor ((62, Effect ([ ], .)), []));
@@ -796,7 +796,7 @@ Value
                   (x, Type (list, A))
                 ], Type (list, B)),
                 Match
-                  ((?, Effect ([ ], .)),
+                  ((70, Effect ([ ], .)),
                     Variable
                       ((?,
                         Effect
@@ -899,7 +899,7 @@ Value
     [
       ((iter, [ A; B ], [ (f, (A -> B)); (x, Type (list, A)) ], Type (unit)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((75, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor ((75, Effect ([ ], .)), tt));
@@ -976,7 +976,7 @@ Value
         [ (i, Type (Z)); (f, (Type (Z) -> (A -> B))); (x, Type (list, A)) ],
         Type (unit)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((80, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor ((80, Effect ([ ], .)), tt));
@@ -2113,7 +2113,7 @@ Value
       ((for_all, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
         Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((135, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor
@@ -2204,7 +2204,7 @@ Value
       ((_exists, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
         Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((140, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Constructor
@@ -2625,7 +2625,7 @@ Value
       ((find, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
         Monad ([ Type (OCaml.Not_found) ], A)),
         Match
-          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((192, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
@@ -2755,7 +2755,7 @@ Value
                   (x, Type (list, A))
                 ], Type (list, A)),
                 Match
-                  ((?, Effect ([ ], .)),
+                  ((198, Effect ([ ], .)),
                     Variable
                       ((?,
                         Effect
@@ -2937,7 +2937,7 @@ Value
                   (x, Type (list, A))
                 ], (Type (list, A) * Type (list, A))),
                 Match
-                  ((?, Effect ([ ], .)),
+                  ((206, Effect ([ ], .)),
                     Variable
                       ((?,
                         Effect
@@ -3167,7 +3167,7 @@ Value
       ((split, [ A; B ], [ (x, Type (list, (A * B))) ],
         (Type (list, A) * Type (list, B))),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((215, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor ([]),
                 Tuple

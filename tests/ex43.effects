@@ -374,7 +374,7 @@ Value
             Type (NonTermination)
           ], Type (list, Type (Z)))),
         Match
-          ((?,
+          ((11,
             Effect
               ([
                 Type (OCaml.Effect.State.state, Type (list, Type (Z)));
@@ -1512,7 +1512,7 @@ Value
                             ],
                               .)),
                           String("b is true"))
-                    ]), ())))
+                    ]), Monad ([ Type (OCaml.Failure) ], ()))))
     ])
 
 34
@@ -1610,7 +1610,9 @@ Value
                             . -[ Type (OCaml.Failure) ]->
                               .)), f),
                     [ Constructor ((37, Effect ([ ], .)), true) ]),
-                (Type (bool) * Type (Z) * ()))))
+                Monad
+                  ([ Type (OCaml.Failure) ],
+                    (Type (bool) * Type (Z) * ())))))
     ])
 
 40
