@@ -1016,18 +1016,15 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Match ((l, typ), e, cases) ->
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd (annotation e) in
-    if Effect.Type.is_pure typ_e then
-      let cases = cases |> List.map (fun (p, e') ->
-        let p = Pattern.unify env l (snd @@ annotation e) p in
-        let env = Pattern.add_to_env_with_effects p env in
-        (p, effects env e')) in
-      let (d, typ_cases) = Effect.split @@
-        Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
-      let descriptor = Effect.Descriptor.union [d_e; d] in
-      let typ = Effect.Type.unify typ @@ Effect.join descriptor typ_cases in
-      Match ((l, typ), e, cases)
-    else
-      Error.raise l "Cannot match a value with functional effects."
+    let cases = cases |> List.map (fun (p, e') ->
+      let p = Pattern.unify env l (snd @@ annotation e) p in
+      let env = Pattern.add_to_env_with_effects p env in
+      (p, effects env e')) in
+    let (d, typ_cases) = Effect.split @@
+      Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
+    let descriptor = Effect.Descriptor.union [d_e; d] in
+    let typ = Effect.Type.unify typ @@ Effect.join descriptor typ_cases in
+    Match ((l, typ), e, cases)
   | Record ((l, typ), fields, base) ->
     let (base, (d, es, typs)) =
       let expressions = option_filter @@ List.map snd fields in
