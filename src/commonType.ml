@@ -22,6 +22,23 @@ let compare (typ1 : 'a t) (typ2 : 'a t) : int =
     if cmp == 0 then compare typ1 typ2 else cmp
   | _, _ -> compare typ1 typ2
 
+let rec equal (eq_a : 'a -> 'a -> bool) (typ1 : 'a t) (typ2 : 'a t) : bool =
+  let equal = equal eq_a in
+  let rec equal_list l1 l2 =
+    match l1, l2 with
+    | [], [] -> true
+    | (x :: l1), (y :: l2) -> equal x y && equal_list l1 l2
+    | _, _ -> false in
+  match typ1, typ2 with
+  | Variable x, Variable y -> x = y
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    equal typ1a typ2a && equal typ1b typ2b
+  | Tuple typs1, Tuple typs2 -> equal_list typs1 typs2
+  | Apply (x, typs1), Apply (y, typs2) ->
+    BoundName.stable_compare x y = 0 && equal_list typs1 typs2
+  | Monad (d1, typ1), Monad (d2, typ2) -> eq_a d1 d2 && equal typ1 typ2
+  | _, _ -> false
+
 let rec unify (typ1 : 'a t) (typ2 : 'b t) : 'b t Name.Map.t =
   let union = Name.Map.union (fun _ typ _ -> Some typ) in
   match typ1, typ2 with

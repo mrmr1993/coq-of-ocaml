@@ -87,7 +87,7 @@ let rec free_variables (p : t) : Type.t CoqName.Map.t =
     inter (free_variables p1) (free_variables p2)
 
 (** Unify types with effect types. *)
-let rec unify (env : Type.t FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
+let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
   : t =
   let unify = unify env loc in
   match typ, p with

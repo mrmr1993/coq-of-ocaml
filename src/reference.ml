@@ -47,12 +47,14 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t) (cases : value_binding list)
       expr = Exp.of_expression env Name.Map.empty expr }
   | _ -> Error.raise loc "This kind of reference definition is not handled."
 
-let update_env (update_exp : unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
+let update_env
+  (update_exp : Name.Set.t -> unit FullEnvi.t -> 'a Exp.t -> 'b Exp.t)
   (r : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t * 'b t =
   let env = env
     |> FullEnvi.Descriptor.assoc r.state_name ()
     |> FullEnvi.Var.assoc r.name () in
-  (env, {r with expr = update_exp env r.expr})
+  let typ_vars = Type.typ_args r.typ in
+  (env, {r with expr = update_exp typ_vars env r.expr})
 
 let update_env_with_effects (r : (Loc.t * Type.t) t)
   (env : Type.t FullEnvi.t)
