@@ -7,14 +7,14 @@
       [
         ((compare, [ ], [ (x, Type (Ord/t)) ], (Type (Ord/t) -> Type (Z))),
           Match
-            (?, Variable (?, Ord/x),
+            (5, Variable (?, Ord/x),
               [
                 (Any,
                   Function
                     (5,
                       x_1,
                       Match
-                        (?,
+                        (5,
                           Variable
                             (?,
                               Ord/x_1),
@@ -43,7 +43,7 @@ Value
     [
       ((height, [ A ], [ (x, Type (t, A)) ], Type (Z)),
         Match
-          (?, Variable (?, x),
+          (15, Variable (?, x),
             [
               (Constructor (Empty), Constant (15, Int(0)));
               (Constructor (Node, Any, Any, Any, Any, h),
@@ -503,7 +503,7 @@ Value
     [
       ((is_empty, [ A ], [ (x, Type (t, A)) ], Type (bool)),
         Match
-          (?, Variable (?, x),
+          (57, Variable (?, x),
             [
               (Constructor (Empty), Constructor (57, true));
               (Any, Constructor (57, false))
@@ -517,7 +517,7 @@ Value
       ((add, [ A ], [ (x, Type (key)); (data, A); (x_1, Type (t, A)) ],
         Type (t, A)),
         Match
-          (?, Variable (?, x_1),
+          (60, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Constructor
@@ -674,7 +674,7 @@ Value
     [
       ((find, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], A),
         Match
-          (?, Variable (?, x_1),
+          (73, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Apply
@@ -760,7 +760,7 @@ Value
     [
       ((mem, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], Type (bool)),
         Match
-          (?, Variable (?, x_1),
+          (82, Variable (?, x_1),
             [
               (Constructor (Empty), Constructor (83, false));
               (Constructor (Node, l, v, d, r, Any),
@@ -839,7 +839,7 @@ Value
     [
       ((min_binding, [ A ], [ (x, Type (t, A)) ], (Type (key) * A)),
         Match
-          (?, Variable (?, x),
+          (90, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -877,7 +877,7 @@ Value
     [
       ((max_binding, [ A ], [ (x, Type (t, A)) ], (Type (key) * A)),
         Match
-          (?, Variable (?, x),
+          (96, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -915,7 +915,7 @@ Value
     [
       ((remove_min_binding, [ A ], [ (x, Type (t, A)) ], Type (t, A)),
         Match
-          (?, Variable (?, x),
+          (102, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -1026,7 +1026,7 @@ Value
     [
       ((remove, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], Type (t, A)),
         Match
-          (?, Variable (?, x_1),
+          (116, Variable (?, x_1),
             [
               (Constructor (Empty), Constructor (117, Empty));
               (Constructor (Node, l, v, d, r, h),
@@ -1156,7 +1156,7 @@ Value
       ((iter, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
         Type (unit)),
         Match
-          (?, Variable (?, x),
+          (129, Variable (?, x),
             [
               (Constructor (Empty), Constructor (129, tt));
               (Constructor (Node, l, v, d, r, Any),
@@ -1212,7 +1212,7 @@ Value
     [
       ((map, [ A; B ], [ (f, (A -> B)); (x, Type (t, A)) ], Type (t, B)),
         Match
-          (?, Variable (?, x),
+          (135, Variable (?, x),
             [
               (Constructor (Empty), Constructor (136, Empty));
               (Constructor (Node, l, v, d, r, h),
@@ -1285,7 +1285,7 @@ Value
       ((mapi, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
         Type (t, B)),
         Match
-          (?, Variable (?, x),
+          (145, Variable (?, x),
             [
               (Constructor (Empty), Constructor (146, Empty));
               (Constructor (Node, l, v, d, r, h),
@@ -1419,7 +1419,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         Type (bool)),
         Match
-          (?, Variable (?, x),
+          (162, Variable (?, x),
             [
               (Constructor (Empty), Constructor (162, true));
               (Constructor (Node, l, v, d, r, Any),
@@ -1487,7 +1487,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         Type (bool)),
         Match
-          (?, Variable (?, x),
+          (167, Variable (?, x),
             [
               (Constructor (Empty), Constructor (167, false));
               (Constructor (Node, l, v, d, r, Any),
@@ -1554,7 +1554,7 @@ Value
       ((add_min_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
         Type (t, A)),
         Match
-          (?, Variable (?, x),
+          (180, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -1613,7 +1613,7 @@ Value
       ((add_max_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
         Type (t, A)),
         Match
-          (?, Variable (?, x),
+          (186, Variable (?, x),
             [
               (Constructor (Empty),
                 Apply
@@ -2049,7 +2049,7 @@ Value
       ((split, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ],
         (Type (t, A) * Type (option, A) * Type (t, A))),
         Match
-          (?, Variable (?, x_1),
+          (221, Variable (?, x_1),
             [
               (Constructor (Empty),
                 Tuple
@@ -2617,7 +2617,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         Type (t, A)),
         Match
-          (?, Variable (?, x),
+          (243, Variable (?, x),
             [
               (Constructor (Empty), Constructor (243, Empty));
               (Constructor (Node, l, v, d, r, Any),
@@ -2714,7 +2714,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         (Type (t, A) * Type (t, A))),
         Match
-          (?, Variable (?, x),
+          (253, Variable (?, x),
             [
               (Constructor (Empty),
                 Tuple
@@ -3423,7 +3423,7 @@ Value
     [
       ((cardinal, [ A ], [ (x, Type (t, A)) ], Type (Z)),
         Match
-          (?, Variable (?, x),
+          (298, Variable (?, x),
             [
               (Constructor (Empty), Constant (298, Int(0)));
               (Constructor (Node, l, Any, Any, r, Any),
@@ -3475,7 +3475,7 @@ Value
         [ (accu, Type (list, (Type (key) * A))); (x, Type (t, A)) ],
         Type (list, (Type (key) * A))),
         Match
-          (?, Variable (?, x),
+          (303, Variable (?, x),
             [
               (Constructor (Empty), Variable (303, accu));
               (Constructor (Node, l, v, d, r, Any),

@@ -88,7 +88,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
     match item.str_desc with
     | Tstr_value (_, cases) when Reference.is_reference loc cases ->
       let r = Reference.of_ocaml env loc cases in
-      let (env, r) = Reference.update_env (fun _ exp -> exp) r env in
+      let (env, r) = Reference.update_env (fun _ _ exp -> exp) r env in
       (env, [Reference (loc, r)])
     | Tstr_value (is_rec, cases) ->
       let (env, defs) =
@@ -166,7 +166,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     match def with
     | Require _ -> (env, [def])
     | Value (loc, def) ->
-      let (env, defs) = Exp.monadise_let_rec_definition env def in
+      let (env, defs) = Exp.monadise_let_rec_definition Name.Set.empty env def in
       (env, defs |> List.rev |> List.map (fun def -> Value (loc, def)))
     | Primitive (loc, prim) ->
       (PrimitiveDeclaration.update_env prim env, [def])
@@ -266,7 +266,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
     | Exception (loc, exn) ->
       (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) ->
-      let (env, r) = Reference.update_env Exp.monadise r env in
+      let (env, r) = Reference.update_env (fun _ -> Exp.monadise) r env in
       (env, Reference (loc, r))
     | Open (loc, o) -> (* Don't update the environment; it likely doesn't contain our module *)
       (env, Open (loc, o))

@@ -1,0 +1,703 @@
+2 Exception (Ex1, raise_Ex1, ())
+
+3 Exception (Ex2, raise_Ex2, (Type (Z)))
+
+5
+Value
+  (non_rec, @.,
+    [
+      ((f, [ A ], [ (x, Type (unit)) ], Monad ([ Type (Ex1) ], A)),
+        Match
+          ((5, Effect ([ Type (Ex1) ], .)),
+            Variable ((?, Effect ([ ], .)), x),
+            [
+              (Constructor (tt),
+                Apply
+                  ((5,
+                    Effect
+                      ([
+                        Type
+                          (Ex1)
+                      ],
+                        .)),
+                    Variable
+                      ((5,
+                        Effect
+                          ([
+                          ],
+                            .
+                              -[
+                                Type
+                                  (Ex1)
+                              ]->
+                              .)),
+                        raise_Ex1),
+                    [
+                      Tuple
+                        ((?,
+                          Effect
+                            ([
+                            ],
+                              .)))
+                    ]))
+            ]))
+    ])
+
+6
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ (y, Type (Z)) ], Monad ([ Type (Ex2) ], A)),
+        Apply
+          ((6, Effect ([ Type (Ex2) ], .)),
+            Variable ((6, Effect ([ ], . -[ Type (Ex2) ]-> .)), raise_Ex2),
+            [
+              Tuple
+                ((?, Effect ([ ], .)),
+                  Variable
+                    ((6,
+                      Effect
+                        ([
+                        ],
+                          .)),
+                      y))
+            ]))
+    ])
+
+7
+Value
+  (non_rec, @.,
+    [
+      ((h, [ A ], [ (x, Type (unit)) ],
+        (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A)))),
+        Match
+          ((7, Effect ([ ], . -> . -[ Type (Ex2) ]-> .)),
+            Variable ((?, Effect ([ ], .)), x),
+            [
+              (Constructor (tt),
+                Function
+                  ((7,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            -[
+                              Type
+                                (Ex2)
+                            ]->
+                            .)),
+                    y,
+                    Function
+                      ((7,
+                        Effect
+                          ([
+                          ],
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                        x_1,
+                        Match
+                          ((7,
+                            Effect
+                              ([
+                                Type
+                                  (Ex2)
+                              ],
+                                .)),
+                            Variable
+                              ((?,
+                                Effect
+                                  ([
+                                  ],
+                                    .)),
+                                x_1),
+                            [
+                              (Constructor
+                                (tt),
+                                Apply
+                                  ((7,
+                                    Effect
+                                      ([
+                                        Type
+                                          (Ex2)
+                                      ],
+                                        .)),
+                                    Variable
+                                      ((7,
+                                        Effect
+                                          ([
+                                          ],
+                                            .
+                                              -[
+                                                Type
+                                                  (Ex2)
+                                              ]->
+                                              .)),
+                                        raise_Ex2),
+                                    [
+                                      Tuple
+                                        ((?,
+                                          Effect
+                                            ([
+                                            ],
+                                              .)),
+                                          Variable
+                                            ((7,
+                                              Effect
+                                                ([
+                                                ],
+                                                  .)),
+                                              y))
+                                    ]))
+                            ]))))
+            ]))
+    ])
+
+9
+Value
+  (non_rec, @.,
+    [
+      ((x, [ A; B; C ], [ ],
+        ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
+          (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+          (Type (unit) ->
+            (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+        Tuple
+          ((9, Effect ([ ], .)),
+            Variable ((9, Effect ([ ], . -[ Type (Ex1) ]-> .)), f),
+            Variable ((9, Effect ([ ], . -[ Type (Ex2) ]-> .)), g),
+            Variable
+              ((9, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)), h)))
+    ])
+
+11
+Value
+  (non_rec, @.,
+    [
+      ((f', [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+        Match
+          ((11, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((11, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (f, Any, Any),
+                Variable
+                  ((11,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex1)
+                          ]->
+                          .)),
+                    f))
+            ]))
+    ])
+
+12
+Value
+  (non_rec, @.,
+    [
+      ((g', [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+        Match
+          ((12, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((12, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], A)) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (Any, g, Any),
+                Variable
+                  ((12,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex2)
+                          ]->
+                          .)),
+                    g))
+            ]))
+    ])
+
+13
+Value
+  (non_rec, @.,
+    [
+      ((h', [ A ], [ ],
+        (Type (unit) ->
+          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+        Match
+          ((13, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((13, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) -> Monad ([ Type (Ex2) ], A)))))),
+            [
+              (Tuple (Any, Any, h),
+                Variable
+                  ((13,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                    h))
+            ]))
+    ])
+
+15
+Value
+  (non_rec, @.,
+    [
+      ((temp, [ A; B; C ], [ ],
+        ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
+          (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+          (Type (unit) ->
+            (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+        Variable ((15, Effect ([ ], .)), x))
+    ])
+
+15
+Value
+  (non_rec, @.,
+    [
+      ((f'', [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+        Match
+          ((?, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((?, Effect ([ ], .)), temp),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (f'', g'', h''),
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex1)
+                          ]->
+                          .)),
+                    f''))
+            ]))
+    ])
+
+15
+Value
+  (non_rec, @.,
+    [
+      ((g'', [ B ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], B))),
+        Match
+          ((?, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((?, Effect ([ ], .)), temp),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (f'', g'', h''),
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex2)
+                          ]->
+                          .)),
+                    g''))
+            ]))
+    ])
+
+15
+Value
+  (non_rec, @.,
+    [
+      ((h'', [ C ], [ ],
+        (Type (unit) ->
+          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C))))),
+        Match
+          ((?, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((?, Effect ([ ], .)), temp),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+            [
+              (Tuple (f'', g'', h''),
+                Variable
+                  ((?,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                    h''))
+            ]))
+    ])
+
+17
+Value
+  (non_rec, @.,
+    [
+      ((ff, [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+        Match
+          ((17, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((17, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (f, Any, Any),
+                Variable
+                  ((17,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex1)
+                          ]->
+                          .)),
+                    f))
+            ]))
+    ])
+
+18
+Value
+  (non_rec, @.,
+    [
+      ((gg, [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+        Match
+          ((18, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((18, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], A)) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (Any, g, Any),
+                Variable
+                  ((18,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex2)
+                          ]->
+                          .)),
+                    g))
+            ]))
+    ])
+
+19
+Value
+  (non_rec, @.,
+    [
+      ((hh, [ A ], [ ],
+        (Type (unit) ->
+          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+        Match
+          ((19, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((19, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) -> Monad ([ Type (Ex2) ], A)))))),
+            [
+              (Tuple (Any, Any, h),
+                Variable
+                  ((19,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                    h))
+            ]))
+    ])
+
+21
+Value
+  (non_rec, @.,
+    [
+      ((fff, [ ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], Type (unit)))),
+        Match
+          ((21, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((21, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], Type (unit)))
+                  * (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (f, Any, Any),
+                Variable
+                  ((21,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex1)
+                          ]->
+                          .)),
+                    f))
+            ]))
+    ])
+
+22
+Value
+  (non_rec, @.,
+    [
+      ((ggg, [ ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], Type (unit)))),
+        Match
+          ((22, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((22, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], Type (unit)))
+                  *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], ())))))),
+            [
+              (Tuple (Any, g, Any),
+                Variable
+                  ((22,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex2)
+                          ]->
+                          .)),
+                    g))
+            ]))
+    ])
+
+23
+Value
+  (non_rec, @.,
+    [
+      ((hhh, [ ], [ ],
+        (Type (unit) ->
+          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], Type (unit)))))),
+        Match
+          ((23, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], .)),
+                Variable ((23, Effect ([ ], .)), x),
+                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
+                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                  (Type (unit) ->
+                    (Type (Z) ->
+                      (Type (unit) ->
+                        Monad ([ Type (Ex2) ], Type (unit))))))),
+            [
+              (Tuple (Any, Any, h),
+                Variable
+                  ((23,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                    h))
+            ]))
+    ])
+
+25
+Value
+  (non_rec, @.,
+    [
+      ((f1, [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+        Match
+          ((25, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], . -[ Type (Ex1) ]-> .)),
+                Variable
+                  ((25, Effect ([ ], . -[ Type (Ex1) ]-> .)), f),
+                (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+            [
+              (x,
+                Variable
+                  ((25,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex1)
+                          ]->
+                          .)),
+                    x))
+            ]))
+    ])
+
+26
+Value
+  (non_rec, @.,
+    [
+      ((g1, [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+        Match
+          ((26, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], . -[ Type (Ex2) ]-> .)),
+                Variable
+                  ((26, Effect ([ ], . -[ Type (Ex2) ]-> .)), g),
+                (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+            [
+              (x,
+                Variable
+                  ((26,
+                    Effect
+                      ([
+                      ],
+                        .
+                          -[
+                            Type
+                              (Ex2)
+                          ]->
+                          .)),
+                    x))
+            ]))
+    ])
+
+27
+Value
+  (non_rec, @.,
+    [
+      ((h1, [ A ], [ ],
+        (Type (unit) ->
+          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+        Match
+          ((27, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+            Coerce
+              ((?, Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+                Variable
+                  ((27,
+                    Effect ([ ], . -> . -> . -[ Type (Ex2) ]-> .)),
+                    h),
+                (Type (unit) ->
+                  (Type (Z) ->
+                    (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+            [
+              (x,
+                Variable
+                  ((27,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .
+                            ->
+                            .
+                              -[
+                                Type
+                                  (Ex2)
+                              ]->
+                              .)),
+                    x))
+            ]))
+    ])

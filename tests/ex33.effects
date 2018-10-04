@@ -7,7 +7,7 @@
       [
         ((compare, [ ], [ (x, Type (Ord/t)) ], (Type (Ord/t) -> Type (Z))),
           Match
-            ((?, Effect ([ ], . -> .)),
+            ((5, Effect ([ ], . -> .)),
               Variable ((?, Effect ([ ], .)), Ord/x),
               [
                 (Any,
@@ -21,7 +21,7 @@
                             .)),
                       x_1,
                       Match
-                        ((?,
+                        ((5,
                           Effect
                             ([
                             ],
@@ -62,7 +62,7 @@ Value
     [
       ((height, [ A ], [ (x, Type (t, A)) ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((15, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constant ((15, Effect ([ ], .)), Int(0)));
@@ -1161,7 +1161,7 @@ Value
     [
       ((is_empty, [ A ], [ (x, Type (t, A)) ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((57, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor
@@ -1178,7 +1178,7 @@ Value
       ((add, [ A ], [ (x, Type (key)); (data, A); (x_1, Type (t, A)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t, A))),
         Match
-          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((60, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x_1),
             [
               (Constructor (Empty),
@@ -1590,7 +1590,7 @@ Value
       ((find, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ],
         Monad ([ Type (OCaml.Not_found) ], A)),
         Match
-          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((73, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x_1),
             [
               (Constructor (Empty),
@@ -1807,7 +1807,7 @@ Value
     [
       ((mem, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x_1),
+          ((82, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Constructor (Empty),
                 Constructor
@@ -1986,7 +1986,7 @@ Value
       ((min_binding, [ A ], [ (x, Type (t, A)) ],
         Monad ([ Type (OCaml.Not_found) ], (Type (key) * A))),
         Match
-          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((90, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
@@ -2075,7 +2075,7 @@ Value
       ((max_binding, [ A ], [ (x, Type (t, A)) ],
         Monad ([ Type (OCaml.Not_found) ], (Type (key) * A))),
         Match
-          ((?, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((96, Effect ([ Type (OCaml.Not_found) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
@@ -2164,7 +2164,7 @@ Value
       ((remove_min_binding, [ A ], [ (x, Type (t, A)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t, A))),
         Match
-          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((102, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
@@ -2438,7 +2438,7 @@ Value
           ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
             Type (t, A))),
         Match
-          ((?,
+          ((116,
             Effect
               ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
                 .)), Variable ((?, Effect ([ ], .)), x_1),
@@ -2817,7 +2817,7 @@ Value
       ((iter, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
         Type (unit)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((129, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor ((129, Effect ([ ], .)), tt));
@@ -2946,7 +2946,7 @@ Value
     [
       ((map, [ A; B ], [ (f, (A -> B)); (x, Type (t, A)) ], Type (t, B)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((135, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor
@@ -3101,7 +3101,7 @@ Value
       ((mapi, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
         Type (t, B)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((145, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor
@@ -3406,7 +3406,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((162, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor
@@ -3565,7 +3565,7 @@ Value
         [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
         Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((167, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constructor
@@ -3723,7 +3723,7 @@ Value
       ((add_min_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t, A))),
         Match
-          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((180, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
@@ -3863,7 +3863,7 @@ Value
       ((add_max_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
         Monad ([ Type (OCaml.Invalid_argument) ], Type (t, A))),
         Match
-          ((?, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((186, Effect ([ Type (OCaml.Invalid_argument) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
@@ -5061,7 +5061,7 @@ Value
             Type (OCaml.Invalid_argument)
           ], (Type (t, A) * Type (option, A) * Type (t, A)))),
         Match
-          ((?,
+          ((221,
             Effect
               ([
                 Type (Counter);
@@ -6768,7 +6768,7 @@ Value
             Type (OCaml.Not_found)
           ], Type (t, A))),
         Match
-          ((?,
+          ((243,
             Effect
               ([
                 Type (Counter);
@@ -7123,7 +7123,7 @@ Value
             Type (OCaml.Not_found)
           ], (Type (t, A) * Type (t, A)))),
         Match
-          ((?,
+          ((253,
             Effect
               ([
                 Type (Counter);
@@ -8900,7 +8900,7 @@ Value
     [
       ((cardinal, [ A ], [ (x, Type (t, A)) ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((298, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Constant
@@ -9007,7 +9007,7 @@ Value
         [ (accu, Type (list, (Type (key) * A))); (x, Type (t, A)) ],
         Type (list, (Type (key) * A))),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
+          ((303, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (Empty),
                 Variable ((303, Effect ([ ], .)), accu));
