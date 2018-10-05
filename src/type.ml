@@ -92,15 +92,10 @@ let is_function (typ : t) : bool =
 
 let equal (typ1 : t) (typ2 : t) : bool = CommonType.equal typ1 typ2
 
-let set_type_extension (loc : Loc.t) (env : 'a FullEnvi.t) (typ : t)
-  (constr : BoundName.t) : t =
+let is_open (typ : t) : bool =
   match typ with
-  | OpenApply (name, open_typs, []) ->
-    let (typ, index) = FullEnvi.Constructor.find loc constr env in
-    let bound_typ = FullEnvi.Typ.localize env typ.PathName.path
-      typ.PathName.base in
-    OpenApply (name, open_typs, [bound_typ])
-  | _ -> typ
+  | OpenApply _ -> true
+  | _ -> false
 
 let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
 
