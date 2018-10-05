@@ -1,0 +1,76 @@
+2 Open t
+
+4
+Value
+  (non_rec, @.,
+    [
+      ((f, [ ], [ (x, Type (unit)) ],
+        Monad ([ Type (OCaml.Assert_failure) ], OpenApply (t, {}))),
+        Match
+          (4, Variable (?, x),
+            [
+              (Constructor (tt),
+                Apply
+                  (4,
+                    Variable
+                      (4,
+                        OCaml.assert),
+                    [
+                      Constructor
+                        (4,
+                          false)
+                    ]))
+            ]))
+    ])
+
+6 Open u
+
+8
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ (x, A) ],
+        Monad ([ Type (OCaml.Failure) ], OpenApply (u, {}, A))),
+        Apply
+          (8, Variable (8, OCaml.Pervasives.failwith),
+            [ Constant (8, String("fail")) ]))
+    ])
+
+10 TypeExt
+(t,
+  Inductive t_1:
+    ([ ], [ (Test1, [ ]); (Test2, [ Type (bool) ]) ]))
+
+12 TypeExt
+(t,
+  Inductive t_2:
+    ([ ], [ (Test3, [ Type (Z) ]); (Test4, [ Type (option, Type (Z)) ]) ]))
+
+14 TypeExt
+(u,
+  Inductive u_1:
+    ([ b ], [ (Test5, [ b ]); (Test6, [ Type (Z) ]) ]))
+
+16
+Value
+  (non_rec, @.,
+    [
+      ((x, [ ], [ ], OpenApply (t, {t_1})),
+        Constructor (?, inl, Constructor (16, Test1)))
+    ])
+
+18
+Value
+  (non_rec, @.,
+    [
+      ((y, [ ], [ ], OpenApply (u, {u_1}, Type (Z))),
+        Constructor (?, inl, Constructor (18, Test5, Constant (18, Int(5)))))
+    ])
+
+20
+Value
+  (non_rec, @.,
+    [
+      ((z, [ A ], [ ], OpenApply (u, {u_1}, A)),
+        Constructor (?, inl, Constructor (20, Test6, Constant (20, Int(6)))))
+    ])
