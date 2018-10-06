@@ -105,12 +105,7 @@ module Descriptor = struct
     }
 
   let map_type_vars (vars_map : typ Name.Map.t) (d : t) : t =
-    { d with
-      with_args = d.with_args |> List.map
-        (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
-      no_args = d.no_args |> List.map
-        (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
-    }
+    CommonType.map_desc_vars (fun x -> Name.Map.find x vars_map) d
 
   let to_json (d : t) : json = CommonType.desc_to_json d
 

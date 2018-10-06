@@ -113,7 +113,7 @@ let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
   | Arrow (typ_x, typ_y) -> Arrow (map f typ_x, map f typ_y)
   | Tuple typs -> Tuple (List.map (map f) typs)
   | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
-  | Monad (x, typ) -> Monad (x, map f typ)
+  | Monad (d, typ) -> Monad (d, map f typ)
 
 let rec map_vars (f : Name.t -> t) (typ : t) : t =
   match typ with
@@ -121,7 +121,13 @@ let rec map_vars (f : Name.t -> t) (typ : t) : t =
   | Arrow (typ1, typ2) -> Arrow (map_vars f typ1, map_vars f typ2)
   | Tuple typs -> Tuple (List.map (map_vars f) typs)
   | Apply (x, typs) -> Apply (x, List.map (map_vars f) typs)
-  | Monad (x, typ) -> Monad (x, map_vars f typ)
+  | Monad (d, typ) -> Monad (map_desc_vars f d, map_vars f typ)
+
+and map_desc_vars (f : Name.t -> t) (d : desc) : desc =
+  { d with
+    with_args = List.map (map_vars f) d.with_args;
+    no_args = List.map (map_vars f) d.no_args;
+  }
 
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with
