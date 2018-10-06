@@ -19,7 +19,7 @@ module Descriptor = struct
     List.compare_length_with d.with_args 0 = 0 &&
     List.compare_length_with d.no_args 0 = 0
 
-  let eq (d1 : t) (d2 : t) : bool = CommonType.eq_desc d1 d2
+  let eq (d1 : t) (d2 : t) : bool = CommonType.compare_desc d1 d2 = 0
 
   let singleton (x : BoundName.t) (typs : typ list) : t =
     if typs = [] then {

@@ -40,37 +40,46 @@ let rec pp (typ : t) : SmartPrint.t =
 and pp_desc (d : desc) : SmartPrint.t =
   OCaml.list pp @@ d.with_args @ d.no_args
 
-let compare (typ1 : t) (typ2 : t) : int =
+let rec compare (typ1 : t) (typ2 : t) : int =
   match typ1, typ2 with
-  | Apply (x, typ1), Apply (y, typ2) ->
+  | Variable x, Variable y -> Pervasives.compare x y
+  | Variable _, _ -> -1
+  | _, Variable _ -> 1
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    compare_list [typ1a; typ1b] [typ2a; typ2b]
+  | Arrow _, _ -> -1
+  | _, Arrow _ -> 1
+  | Tuple typs1, Tuple typs2 -> compare_list typs1 typs2
+  | Tuple _, _ -> -1
+  | _, Tuple _ -> 1
+  | Apply (x, typs1), Apply (y, typs2) ->
     let cmp = BoundName.stable_compare x y in
-    if cmp == 0 then compare typ1 typ2 else cmp
-  | _, _ -> compare typ1 typ2
+    if cmp = 0 then compare_list typs1 typs2 else cmp
+  | Apply _, _ -> -1
+  | _, Apply _ -> 1
+  | Monad (d1, typ1), Monad (d2, typ2) ->
+    let cmp = compare_desc d1 d2 in
+    if cmp = 0 then compare typ1 typ2 else cmp
+
+and compare_list (typs1 : t list) (typs2 : t list) : int =
+  match typs1, typs2 with
+  | [], [] -> 0
+  | [], _ -> -1
+  | _, [] -> 1
+  | typ1 :: typs1, typ2 :: typs2 ->
+    let cmp = compare typ1 typ2 in
+    if cmp = 0 then compare_list typs1 typs2 else cmp
+
+and compare_desc (d1 : desc) (d2 : desc) : int =
+  let cmp = compare_list d1.with_args d2.with_args in
+  if cmp = 0 then compare_list d1.no_args d2.no_args else cmp
 
 module Set = Set.Make (struct
   type t = typ
   let compare x y = compare x y
 end)
 
-let rec equal (typ1 : t) (typ2 : t) : bool =
-  match typ1, typ2 with
-  | Variable x, Variable y -> x = y
-  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
-    equal typ1a typ2a && equal typ1b typ2b
-  | Tuple typs1, Tuple typs2 -> equal_list typs1 typs2
-  | Apply (x, typs1), Apply (y, typs2) ->
-    BoundName.stable_compare x y = 0 && equal_list typs1 typs2
-  | Monad (d1, typ1), Monad (d2, typ2) -> eq_desc d1 d2 && equal typ1 typ2
-  | _, _ -> false
-
-and equal_list (l1 : t list) (l2 : t list) =
-  match l1, l2 with
-  | [], [] -> true
-  | (x :: l1), (y :: l2) -> equal x y && equal_list l1 l2
-  | _, _ -> false
-
-and eq_desc (d1 : desc) (d2 : desc) : bool =
-  equal_list d1.with_args d2.with_args && equal_list d1.no_args d2.no_args
+let equal (typ1 : t) (typ2 : t) : bool = compare typ1 typ2 = 0
 
 let rec unify (typ1 : t) (typ2 : t) : t Name.Map.t =
   let union = Name.Map.union (fun _ typ _ -> Some typ) in
