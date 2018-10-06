@@ -134,11 +134,14 @@ let rec typ_args (typ : t) : Name.Set.t =
   | Variable x -> Name.Set.singleton x
   | Arrow (typ1, typ2) -> typ_args_of_typs [typ1; typ2]
   | Tuple typs | Apply (_, typs) -> typ_args_of_typs typs
-  | Monad (_, typ) -> typ_args typ
+  | Monad (d, typ) -> Name.Set.union (desc_typ_args d) (typ_args typ)
 
 and typ_args_of_typs (typs : t list) : Name.Set.t =
   List.fold_left (fun args typ -> Name.Set.union args (typ_args typ))
     Name.Set.empty typs
+
+and desc_typ_args (d : desc) : Name.Set.t =
+  Name.Set.union (typ_args_of_typs d.with_args) (typ_args_of_typs d.no_args)
 
 let rec to_json (typ : t) : json =
   match typ with
