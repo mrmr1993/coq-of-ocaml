@@ -1,11 +1,11 @@
 open SmartPrint
-open Kerneltypes
+open CommonType.Types
 open Utils
 
 module Value = struct
   type 'a t =
     | Variable of 'a
-    | Type of Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
+    | Type of Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
     | Descriptor
     | Exception of PathName.t
     | Constructor of PathName.t * int
@@ -323,8 +323,8 @@ module Typ = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  type 'a t = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
-  type 'a t' = Effect.Descriptor.t Kerneltypes.TypeDefinition.t'
+  type 'a t = Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
+  type 'a t' = Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
 
   let value (def : 'a t) : 'a Value.t = Type def
 

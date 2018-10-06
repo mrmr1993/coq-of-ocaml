@@ -192,8 +192,8 @@ module Lift = struct
 end
 
 module Type = struct
-  include Kerneltypes.Type
-  type t = Descriptor.t Kerneltypes.Type.t'
+  include CommonType.Types.Type
+  type t = Descriptor.t CommonType.t
 
   let pure : t = Variable "_"
   let arrow (d : Descriptor.t) (typ : t) : t =
@@ -318,7 +318,7 @@ module Type = struct
     | _ -> raise (Error.Json "List expected.")
 end
 
-type t = Descriptor.t Kerneltypes.Type.t'
+type t = Descriptor.t CommonType.t'
 
 let join (d : Descriptor.t) (typ : Type.t) =
   if Descriptor.is_pure d then typ

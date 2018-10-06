@@ -3,7 +3,7 @@ open Types
 open SmartPrint
 open Yojson.Basic
 
-include Kerneltypes.Type
+include CommonType.Types.Type
 type t = Effect.Descriptor.t t'
 
 let pp (typ : t) : SmartPrint.t = CommonType.pp Effect.Descriptor.pp typ
