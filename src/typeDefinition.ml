@@ -4,8 +4,8 @@ open SmartPrint
 open Yojson.Basic
 open Utils
 
-include Kerneltypes.TypeDefinition
-type t = Effect.Descriptor.t t'
+include CommonType.TypeDefinition
+type t = typ_def
 
 let pp (def : t) : SmartPrint.t =
   match def with

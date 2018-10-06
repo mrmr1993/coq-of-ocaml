@@ -3,10 +3,10 @@ open Types
 open SmartPrint
 open Yojson.Basic
 
-include Kerneltypes.Type
-type t = Effect.Descriptor.t t'
+include CommonType.Type
+type t = typ
 
-let pp (typ : t) : SmartPrint.t = CommonType.pp Effect.Descriptor.pp typ
+let pp (typ : t) : SmartPrint.t = CommonType.pp typ
 
 (** Import an OCaml type. Add to the environment all the new free type variables. *)
 let rec of_type_expr_new_typ_vars (env : 'a FullEnvi.t) (loc : Loc.t)
@@ -87,8 +87,7 @@ let is_function (typ : t) : bool =
   | Arrow _ -> true
   | _ -> false
 
-let equal (typ1 : t) (typ2 : t) : bool =
-  CommonType.equal Effect.Descriptor.eq typ1 typ2
+let equal (typ1 : t) (typ2 : t) : bool = CommonType.equal typ1 typ2
 
 let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
 
@@ -129,10 +128,9 @@ let allocate_implicits_for_monad (implicit_args : (CoqName.t * 'a) list)
       (implicit_args, Monad (d, typ))
   | _ -> (implicit_args, typ)
 
-let to_json (typ : t) : json = CommonType.to_json Effect.Descriptor.to_json typ
+let to_json (typ : t) : json = CommonType.to_json typ
 
-let of_json (json : json) : t =
-  CommonType.of_json Effect.Descriptor.of_json json
+let of_json (json : json) : t = CommonType.of_json json
 
 let to_coq (paren : bool) (typ : t) : SmartPrint.t =
   CommonType.to_coq Effect.Descriptor.to_coq paren typ
