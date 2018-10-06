@@ -1,11 +1,12 @@
 open SmartPrint
-open CommonType.Types
+open CommonType.Type
+open CommonType.TypeDefinition
 open Utils
 
 module Value = struct
   type 'a t =
     | Variable of 'a
-    | Type of Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
+    | Type of typ_def
     | Descriptor
     | Exception of PathName.t
     | Constructor of PathName.t * int
@@ -323,12 +324,12 @@ module Typ = ValueCarrier(struct
   let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
     { m with Mod.typs = PathName.Map.add x y m.Mod.typs }
 
-  type 'a t = Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
-  type 'a t' = Effect.Descriptor.t CommonType.Types.TypeDefinition.t'
+  type 'a t = typ_def
+  type 'a t' = typ_def
 
-  let value (def : 'a t) : 'a Value.t = Type def
+  let value (def : typ_def) : 'a Value.t = Type def
 
-  let unpack (v : 'a Value.t) : 'a t' =
+  let unpack (v : 'a Value.t) : typ_def =
     match v with
     | Type def -> def
     | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as a type."

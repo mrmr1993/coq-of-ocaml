@@ -4,22 +4,10 @@ open Yojson.Basic
 open Utils
 
 module Descriptor = struct
-  type t = {
-    args_arg : Name.t option;
-    with_args : t CommonType.t list;
-    no_args : t CommonType.t list;
-  }
+  include CommonType.Type
+  type t = desc
 
-  type desc = t
-  type typ = t CommonType.t
-
-  module CommonTypeSet = Set.Make (struct
-    type t = desc CommonType.t
-    let compare x y = CommonType.compare x y
-  end)
-
-  let rec pp (d : t) : SmartPrint.t =
-    OCaml.list (CommonType.pp pp) @@ d.with_args @ d.no_args
+  let rec pp (d : t) : SmartPrint.t = CommonType.pp_desc d
 
   let pure : t = {
     args_arg = None;
@@ -31,8 +19,7 @@ module Descriptor = struct
     List.compare_length_with d.with_args 0 = 0 &&
     List.compare_length_with d.no_args 0 = 0
 
-  let eq (d1 : t) (d2 : t) : bool =
-    d1.with_args = d2.with_args && d1.no_args = d2.no_args
+  let eq (d1 : t) (d2 : t) : bool = CommonType.eq_desc d1 d2
 
   let singleton (x : BoundName.t) (typs : typ list) : t =
     if typs = [] then {
@@ -49,13 +36,13 @@ module Descriptor = struct
 
   let union (ds : t list) : t =
     let (compound, simple) = List.fold_left (fun (compound, simple) d ->
-        (CommonTypeSet.union compound (CommonTypeSet.of_list d.with_args),
-        CommonTypeSet.union simple (CommonTypeSet.of_list d.no_args)))
-      (CommonTypeSet.empty, CommonTypeSet.empty) ds in
+        (CommonType.Set.union compound (CommonType.Set.of_list d.with_args),
+        CommonType.Set.union simple (CommonType.Set.of_list d.no_args)))
+      (CommonType.Set.empty, CommonType.Set.empty) ds in
     {
       args_arg = None;
-      with_args = CommonTypeSet.elements compound;
-      no_args = CommonTypeSet.elements simple;
+      with_args = CommonType.Set.elements compound;
+      no_args = CommonType.Set.elements simple;
     }
 
   let remove (x : BoundName.t) (d : t) : t =
@@ -125,29 +112,9 @@ module Descriptor = struct
         (CommonType.map_vars (fun x -> Name.Map.find x vars_map));
     }
 
-  let rec to_json (d : t) : json =
-    let unioned = List.map (CommonType.to_json to_json) d.with_args in
-    let simple = d.no_args |> List.map (fun typ ->
-      match typ with
-      | CommonType.Apply (name, []) -> BoundName.to_json name
-      | _ -> failwith "Unexpected format of simple effect descriptor.") in
-    match unioned, simple with
-    | [], [] -> `List []
-    | [], _ -> `List simple
-    | _, [] -> `List unioned
-    | _, _ -> `List [`List unioned; `List simple]
+  let to_json (d : t) : json = CommonType.desc_to_json d
 
-  let rec of_json (json : json) : t =
-    let (unioned, simple) =
-    match json with
-    | `List [`List unioned; `List simple] -> (unioned, simple)
-    | `List ((`List _ :: _) as unioned) -> (unioned, [])
-    | `List simple -> ([], simple)
-    | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
-    let unioned = List.map (CommonType.of_json of_json) unioned in
-    let simple = simple |> List.map (fun json ->
-      CommonType.Apply (BoundName.of_json json, [])) in
-    { args_arg = None; with_args = unioned; no_args = simple }
+  let of_json (json : json) : t = CommonType.desc_of_json json
 end
 
 module Lift = struct
@@ -192,8 +159,8 @@ module Lift = struct
 end
 
 module Type = struct
-  include CommonType.Types.Type
-  type t = Descriptor.t CommonType.t
+  include CommonType.Type
+  type t = typ
 
   let pure : t = Variable "_"
   let arrow (d : Descriptor.t) (typ : t) : t =
@@ -318,7 +285,7 @@ module Type = struct
     | _ -> raise (Error.Json "List expected.")
 end
 
-type t = Descriptor.t CommonType.t'
+type t = CommonType.typ
 
 let join (d : Descriptor.t) (typ : Type.t) =
   if Descriptor.is_pure d then typ
