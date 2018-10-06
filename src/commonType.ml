@@ -123,14 +123,6 @@ let rec map_vars (f : Name.t -> t) (typ : t) : t =
   | Apply (x, typs) -> Apply (x, List.map (map_vars f) typs)
   | Monad (x, typ) -> Monad (x, map_vars f typ)
 
-let rec has_vars (typ : t) : bool =
-  match typ with
-  | Variable _ -> true
-  | Arrow (typ_x, typ_y) -> has_vars typ_x || has_vars typ_y
-  | Tuple typs -> List.exists has_vars typs
-  | Apply (_, typs) -> List.exists has_vars typs
-  | Monad (x, typ) -> has_vars typ
-
 let rec typ_args (typ : t) : Name.Set.t =
   match typ with
   | Variable x -> Name.Set.singleton x
