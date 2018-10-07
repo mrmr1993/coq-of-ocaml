@@ -164,14 +164,11 @@ let rec to_json (typ : t) : json =
     `List [`String "Monad"; desc_to_json descriptor; to_json typ]
 
 and desc_to_json (d : desc) : json =
-  let unioned = List.map to_json d.with_args in
-  let simple = d.no_args |> List.map (fun typ ->
-    match typ with
-    | Apply (name, []) -> BoundName.to_json name
-    | _ -> failwith "Unexpected format of simple effect descriptor.") in
+  let unioned = `String "union" :: List.map to_json d.with_args in
+  let simple = List.map to_json d.no_args in
   match unioned, simple with
-  | [], [] -> `List []
-  | [], _ -> `List simple
+  | [_], [] -> `List []
+  | [_], _ -> `List simple
   | _, [] -> `List unioned
   | _, _ -> `List [`List unioned; `List simple]
 
@@ -190,13 +187,12 @@ let rec of_json (json : json) : t =
 and desc_of_json (json : json) : desc =
   let (unioned, simple) =
   match json with
-  | `List [`List unioned; `List simple] -> (unioned, simple)
-  | `List ((`List _ :: _) as unioned) -> (unioned, [])
+  | `List [`List (`String "union" :: unioned); `List simple] -> (unioned, simple)
+  | `List (`String "union" :: unioned) -> (unioned, [])
   | `List simple -> ([], simple)
   | _ -> raise (Error.Json "Invalid JSON for Effect.Type") in
   let unioned = List.map of_json unioned in
-  let simple = simple |> List.map (fun json ->
-    Apply (BoundName.of_json json, [])) in
+  let simple = List.map of_json simple in
   { args_arg = None; with_args = unioned; no_args = simple }
 
 (** Pretty-print a type (inside parenthesis if the [paren] flag is set). *)
