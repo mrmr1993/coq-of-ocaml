@@ -75,67 +75,31 @@ Definition exception (A : Type) : Effect.t :=
   Effect.make unit A.
 
 Definition Match_failure : Type := (string * Z * Z).
- Definition raise_Match_failure {A : Type} (x : string * Z * Z)
-  : M [ exception Match_failure ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Assert_failure : Type := (string * Z * Z).
-Definition raise_Assert_failure {A : Type} (x : string * Z * Z)
-  : M [ exception Assert_failure ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Invalid_argument : Type := string.
-Definition raise_Invalid_argument {A : Type} (x : string)
-  : M [ exception Invalid_argument ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Failure : Type := string.
-Definition raise_Failure {A : Type} (x : string)
-  : M [ exception Failure ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Not_found : Type := unit.
-Definition raise_Not_found {A : Type} (x : unit)
-  : M [ exception Not_found ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Out_of_memory : Type := unit.
-Definition raise_Out_of_memory {A : Type} (x : unit)
-  : M [ exception Out_of_memory ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Stack_overflow : Type := unit.
-Definition raise_Stack_overflow {A : Type} (x : unit)
-  : M [ exception Stack_overflow ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Sys_error : Type := string.
-Definition raise_Sys_error {A : Type} (x : string)
-  : M [ exception Sys_error ] A :=
-  fun s => (inr (inl x), s).
 
 Definition End_of_file : Type := unit.
-Definition raise_End_of_file {A : Type} (x : unit)
-  : M [ exception End_of_file ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Division_by_zero : Type := unit.
-Definition raise_Division_by_zero {A : Type} (x : unit)
-  : M [ exception Division_by_zero ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Sys_blocked_io : Type := unit.
-Definition raise_Sys_blocked_io {A : Type} (x : unit)
-  : M [ exception Sys_blocked_io ] A :=
-  fun s => (inr (inl x), s).
 
 Definition Undefined_recursive_module : Type := (string * Z * Z).
-Definition raise_Undefined_recursive_module {A : Type} (x : string * Z * Z)
-  : M [ exception Undefined_recursive_module ] A :=
-  fun s => (inr (inl x), s).
 
 Definition assert {A : Type} (b : bool) : M [exception Assert_failure] A :=
-  raise_Assert_failure ("coq" % string, 0, 0).
+  fun s => (inr (inl ("coq" % string, 0, 0)), s).
 
 Definition for_to {A : Type} {es : list Effect.t} (start_value end_value : Z)
   (f : Z -> M es A) : M es unit :=
@@ -174,15 +138,13 @@ Module Pervasives.
 
   Definition invalid_arg {A : Type} (message : string)
     : M [exception Invalid_argument] A :=
-    raise_Invalid_argument message.
+    raise message.
 
   Definition failwith {A : Type} (message : string)
     : M [exception Failure] A :=
-    raise_Failure message.
+    raise message.
 
   Definition Exit : Type := unit.
-  Definition raise_Exit {A : Type} (x : unit) : M [ exception Exit ] A :=
-    fun s => (inr (inl x), s).
 
   (** * Comparisons *)
   Definition lt {A : Type} {R} `{OrderDec A R} (x y : A) : bool :=
@@ -257,7 +219,7 @@ Module Pervasives.
     if andb (le 0 n) (le n 255) then
       ret (ascii_of_nat (Z.to_nat n))
     else
-      raise_Invalid_argument "char_of_int".
+      raise "char_of_int"%string.
 
   (** * Unit operations *)
   Definition ignore {A : Type} (_ : A) : unit :=

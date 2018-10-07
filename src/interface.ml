@@ -85,7 +85,7 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
   | Typ typ -> TypeDefinition.update_env typ env
   | Descriptor x -> FullEnvi.Descriptor.assoc x () env
   | Exception (name, raise_name) ->
-    env |> Exception.update_env_with_effects
+    env |> Exception.update_env
       { Exception.name; raise_name; typ = Type.Variable "_" }
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->

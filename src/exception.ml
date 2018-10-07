@@ -23,35 +23,11 @@ let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   let (name, _, env) = FullEnvi.Var.create name () env in
   { name; raise_name; typ }
 
-let update_env (exn : t) (env : unit FullEnvi.t) : unit FullEnvi.t =
+let update_env (exn : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
   let raise_path = {PathName.path = FullEnvi.coq_path env;
     base = snd (CoqName.assoc_names exn.raise_name)} in
-  env
-  |> FullEnvi.Exception.assoc exn.name raise_path
-  |> FullEnvi.Var.assoc exn.raise_name ()
-
-let update_env_with_effects (exn : t) (env : Type.t FullEnvi.t)
-  : Type.t FullEnvi.t =
-  let raise_path = {PathName.path = FullEnvi.coq_path env;
-    base = snd (CoqName.assoc_names exn.raise_name)} in
-  let env = FullEnvi.Exception.assoc exn.name raise_path env in
-  let bound_exception = FullEnvi.Descriptor.localize env ["OCaml"]
-    "exception" in
-  let bound_effect = Type.Apply (FullEnvi.Descriptor.bound Loc.Unknown
-    (PathName.of_name [] (CoqName.ocaml_name exn.name)) env, []) in
-  let effect_typ =
-    Effect.Type.Arrow (Effect.Type.Variable "_", Effect.Type.Monad
-      (Effect.Descriptor.singleton ~simple:true bound_exception [bound_effect],
-      Effect.Type.pure)) in
-  FullEnvi.Var.assoc exn.raise_name (Effect.eff effect_typ) env
+  FullEnvi.Exception.assoc exn.name raise_path env
 
 let to_coq (exn : t) : SmartPrint.t =
   !^ "Definition" ^^ CoqName.to_coq exn.name ^^ !^ ":" ^^ !^ "Type" ^^ !^ ":=" ^^
-    Type.to_coq true exn.typ ^-^ !^ "." ^^
-  newline ^^ newline ^^
-  !^ "Definition" ^^ CoqName.to_coq exn.raise_name ^^ !^ "{A : Type}" ^^
-    nest (parens (!^ "x" ^^ !^ ":" ^^ Type.to_coq false exn.typ)) ^^ !^ ":" ^^
-    !^ "M" ^^ !^ "[" ^^ !^ "OCaml.exception" ^^ CoqName.to_coq exn.name ^^ !^ "]" ^^
-    !^ "A" ^^ !^ ":=" ^^
-  newline ^^ indent (
-    !^ "fun s => (inr (inl x), s).")
+    Type.to_coq true exn.typ ^-^ !^ "."

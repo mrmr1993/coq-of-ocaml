@@ -214,7 +214,7 @@ let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | TypeDefinition (loc, typ_def) ->
       (TypeDefinition.update_env typ_def env, TypeDefinition (loc, typ_def))
     | Exception (loc, exn) ->
-      (Exception.update_env_with_effects exn env, Exception (loc, exn))
+      (Exception.update_env exn env, Exception (loc, exn))
     | Reference (loc, r) ->
       let (env, r) = Reference.update_env_with_effects r env in
       (env, Reference (loc, r))

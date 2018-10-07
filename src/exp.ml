@@ -407,10 +407,10 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     | Some _ ->
       let string_t = Type.Apply (FullEnvi.Typ.localize env [] "string", []) in
       let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
-      let match_fail = FullEnvi.Var.localize env ["OCaml"]
-        "raise_Match_failure" in
-      let match_fail_t = Type.Arrow (
-        Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
+      let match_fail =
+        FullEnvi.Var.localize env ["OCaml"; "Pervasives"] "raise" in
+      let match_fail_t = Type.Arrow (Type.Apply (
+        FullEnvi.Exception.localize env ["OCaml"] "Match_failure", []),
         typ) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any (Type.Tuple [snd @@ annotation e; int_t]),

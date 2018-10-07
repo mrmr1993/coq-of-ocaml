@@ -221,7 +221,7 @@ Fixpoint mem {A : Type} `{EqDec A} (x : A) (l : list A) : bool :=
 Fixpoint find {A : Type} (p : A -> bool) (x : list A)
   : M [ exception Not_found ] A :=
   match x with
-  | [] => raise_Not_found tt
+  | [] => Pervasives.raise tt
   | cons x l =>
     if p x then
       ret x
@@ -260,7 +260,7 @@ Definition partition {A : Type} (p : A -> bool) (l : list A)
 Fixpoint assoc {A B : Type} `{EqDec A} (x : A) (l : list (A * B))
   : M [ exception Not_found ] B :=
   match l with
-  | [] => raise_Not_found ()
+  | [] => Pervasives.raise ()
   | (y, v) :: l =>
     if equiv_decb x y then
       ret v
