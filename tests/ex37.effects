@@ -8,15 +8,24 @@
   Value
     (non_rec, @.,
       [
-        ((c, [ A ], [ (x, Type (string)) ], Monad ([ Type (OCaml.Failure) ], A)),
+        ((c, [ A ], [ (x, Type (string)) ],
+          Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], A)),
           Apply
-            ((6, Effect ([ Type (OCaml.Failure) ], .)),
+            ((6,
+              Effect
+                ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                  .)),
               Variable
                 ((6,
                   Effect
                     ([ ],
-                      . -[ Type (OCaml.Failure) ]->
-                        .)),
+                      .
+                        -[
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
+                        ]-> .)),
                   OCaml.Pervasives.failwith),
               [ Variable ((6, Effect ([ ], .)), A/x) ]))
       ])
@@ -41,22 +50,43 @@ Value
 Value
   (non_rec, @.,
     [
-      ((d, [ A ], [ (b, Type (bool)) ], Monad ([ Type (OCaml.Failure) ], A)),
+      ((d, [ A ], [ (b, Type (bool)) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], A)),
         IfThenElse
-          ((13, Effect ([ Type (OCaml.Failure) ], .)),
+          ((13, Effect ([ Type (OCaml.exception, Type (OCaml.Failure)) ], .)),
             Variable ((13, Effect ([ ], .)), b),
             Apply
-              ((13, Effect ([ Type (OCaml.Failure) ], .)),
+              ((13,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    .)),
                 Variable
                   ((13,
-                    Effect ([ ], . -[ Type (OCaml.Failure) ]-> .)),
-                    c),
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (OCaml.Failure))
+                          ]-> .)), c),
                 [ Constant ((13, Effect ([ ], .)), String("true")) ]),
             Apply
-              ((13, Effect ([ Type (OCaml.Failure) ], .)),
+              ((13,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    .)),
                 Variable
                   ((13,
-                    Effect ([ ], . -[ Type (OCaml.Failure) ]-> .)),
-                    c),
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (OCaml.Failure))
+                          ]-> .)), c),
                 [ Constant ((13, Effect ([ ], .)), String("false")) ])))
     ])

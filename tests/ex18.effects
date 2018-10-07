@@ -106,7 +106,7 @@ Value
           ([
             Type (OCaml.Effect.State.state, Type (string));
             Type (s_state);
-            Type (OCaml.Failure)
+            Type (OCaml.exception, Type (OCaml.Failure))
           ], B)),
         Match
           ((8,
@@ -114,7 +114,7 @@ Value
               ([
                 Type (OCaml.Effect.State.state, Type (string));
                 Type (s_state);
-                Type (OCaml.Failure)
+                Type (OCaml.exception, Type (OCaml.Failure))
               ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -129,7 +129,9 @@ Value
                         Type
                           (s_state);
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
                       ],
                         .)),
                     Variable
@@ -140,7 +142,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
                               ]->
                               .)),
                         OCaml.Pervasives.failwith),

@@ -1483,26 +1483,44 @@ Value
     [
       ((raises, [ ], [ (b, Type (bool)) ],
         Monad
-          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
-            Type (unit))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.exception, Type (OCaml.Failure))
+          ], Type (unit))),
         While
           ((30,
             Effect
               ([
                 Type (Counter);
                 Type (NonTermination);
-                Type (OCaml.Failure)
+                Type (OCaml.exception, Type (OCaml.Failure))
               ], .)), Variable ((30, Effect ([ ], .)), b),
             Coerce
-              ((?, Effect ([ Type (OCaml.Failure) ], .)),
+              ((?,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    .)),
                 Apply
-                  ((31, Effect ([ Type (OCaml.Failure) ], .)),
+                  ((31,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
+                      ], .)),
                     Variable
                       ((31,
                         Effect
                           ([ ],
-                            . -[ Type (OCaml.Failure) ]->
-                              .)),
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
+                              ]-> .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -1512,7 +1530,10 @@ Value
                             ],
                               .)),
                           String("b is true"))
-                    ]), Monad ([ Type (OCaml.Failure) ], ()))))
+                    ]),
+                Monad
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    ()))))
     ])
 
 34
@@ -1521,15 +1542,18 @@ Value
     [
       ((complex_raises, [ ], [ (b, Type (bool)) ],
         Monad
-          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
-            Type (unit))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.exception, Type (OCaml.Failure))
+          ], Type (unit))),
         LetFun
           (35,
             Effect
               ([
                 Type (Counter);
                 Type (NonTermination);
-                Type (OCaml.Failure)
+                Type (OCaml.exception, Type (OCaml.Failure))
               ], .))
           (non_rec, @.,
             [
@@ -1537,14 +1561,18 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.Failure))
                   ], (A * Type (Z) * B))),
                 Tuple
                   ((35,
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
                       ],
                         .)),
                     Variable
@@ -1566,7 +1594,9 @@ Value
                         Effect
                           ([
                             Type
-                              (OCaml.Failure)
+                              (OCaml.exception,
+                                Type
+                                  (OCaml.Failure))
                           ],
                             .)),
                         Variable
@@ -1577,7 +1607,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Failure)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.Failure))
                                   ]->
                                   .)),
                             OCaml.Pervasives.failwith),
@@ -1597,21 +1629,36 @@ Value
               ([
                 Type (Counter);
                 Type (NonTermination);
-                Type (OCaml.Failure)
+                Type (OCaml.exception, Type (OCaml.Failure))
               ], .)), Variable ((36, Effect ([ ], .)), b),
             Coerce
-              ((?, Effect ([ Type (OCaml.Failure) ], .)),
+              ((?,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    .)),
                 Apply
-                  ((37, Effect ([ Type (OCaml.Failure) ], .)),
+                  ((37,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
+                      ], .)),
                     Variable
                       ((37,
                         Effect
                           ([ ],
-                            . -[ Type (OCaml.Failure) ]->
-                              .)), f),
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
+                              ]-> .)), f),
                     [ Constructor ((37, Effect ([ ], .)), true) ]),
                 Monad
-                  ([ Type (OCaml.Failure) ],
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
                     (Type (bool) * Type (Z) * ())))))
     ])
 

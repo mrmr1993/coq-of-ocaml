@@ -8,12 +8,24 @@ Value
         Match
           ((6, Effect ([ ], .)),
             Run
-              ((?, Effect ([ ], .)), Error, [ ],
+              ((?, Effect ([ ], .)),
+                Type (OCaml.exception, Type (Error)), [ ],
                 Apply
-                  ((6, Effect ([ Type (Error) ], .)),
+                  ((6,
+                    Effect
+                      ([ Type (OCaml.exception, Type (Error)) ],
+                        .)),
                     Variable
-                      ((6, Effect ([ ], . -[ Type (Error) ]-> .)),
-                        raise_Error),
+                      ((6,
+                        Effect
+                          ([ ],
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (Error))
+                              ]-> .)), raise_Error),
                     [ Tuple ((?, Effect ([ ], .))) ])),
             [
               (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
@@ -26,9 +38,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x2, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((x2, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
-          ((9, Effect ([ Type (OCaml.Failure) ], .)),
+          ((9, Effect ([ Type (OCaml.exception, Type (OCaml.Failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -37,7 +50,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
                       ],
                         .)),
                     Run
@@ -46,7 +61,10 @@ Value
                           ([
                           ],
                             .)),
-                        Error,
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (Error)),
                         [
                         ],
                         Apply
@@ -54,7 +72,9 @@ Value
                             Effect
                               ([
                                 Type
-                                  (Error)
+                                  (OCaml.exception,
+                                    Type
+                                      (Error))
                               ],
                                 .)),
                             Variable
@@ -65,7 +85,9 @@ Value
                                     .
                                       -[
                                         Type
-                                          (Error)
+                                          (OCaml.exception,
+                                            Type
+                                              (Error))
                                       ]->
                                       .)),
                                 raise_Error),
@@ -97,7 +119,9 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
                               ],
                                 .)),
                             Variable
@@ -108,7 +132,9 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Failure)
+                                          (OCaml.exception,
+                                            Type
+                                              (OCaml.Failure))
                                       ]->
                                       .)),
                                 OCaml.Pervasives.failwith),
@@ -130,18 +156,35 @@ Value
   (non_rec, @.,
     [
       ((x3, [ ], [ (b, Type (bool)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (Z))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], Type (Z))),
         Match
-          ((14, Effect ([ Type (OCaml.Failure) ], .)),
+          ((14, Effect ([ Type (OCaml.exception, Type (OCaml.Failure)) ], .)),
             Run
-              ((?, Effect ([ Type (OCaml.Failure) ], .)), Error, [ ],
+              ((?,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                    .)), Type (OCaml.exception, Type (Error)),
+                [ ],
                 IfThenElse
                   ((14,
                     Effect
-                      ([ Type (Error); Type (OCaml.Failure) ], .)),
+                      ([
+                        Type (OCaml.exception, Type (Error));
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
+                      ], .)),
                     Variable ((14, Effect ([ ], .)), b),
                     Apply
-                      ((14, Effect ([ Type (OCaml.Failure) ], .)),
+                      ((14,
+                        Effect
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (OCaml.Failure))
+                          ], .)),
                         Variable
                           ((14,
                             Effect
@@ -149,7 +192,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Failure)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.Failure))
                                   ]-> .)),
                             OCaml.Pervasives.failwith),
                         [
@@ -162,13 +207,26 @@ Value
                               String("arg"))
                         ]),
                     Apply
-                      ((14, Effect ([ Type (Error) ], .)),
+                      ((14,
+                        Effect
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (Error))
+                          ], .)),
                         Variable
                           ((14,
                             Effect
                               ([ ],
-                                . -[ Type (Error) ]->
-                                  .)), raise_Error),
+                                .
+                                  -[
+                                    Type
+                                      (OCaml.exception,
+                                        Type
+                                          (Error))
+                                  ]-> .)),
+                            raise_Error),
                         [ Tuple ((?, Effect ([ ], .))) ]))),
             [
               (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));

@@ -8,7 +8,7 @@ Value
         Match
           (6,
             Run
-              (?, Error, [ ],
+              (?, Type (OCaml.exception, Type (Error)), [ ],
                 Apply (6, Variable (6, raise_Error), [ Tuple (?) ])),
             [
               (Constructor (inl, x), Variable (?, x));
@@ -20,7 +20,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x2, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((x2, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
           (9, Variable (?, x),
             [
@@ -29,7 +30,10 @@ Value
                   (10,
                     Run
                       (?,
-                        Error,
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (Error)),
                         [
                         ],
                         Apply
@@ -73,16 +77,35 @@ Value
   (non_rec, @.,
     [
       ((x3, [ ], [ (b, Type (bool)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (Z))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], Type (Z))),
         Bind
           (?,
             Run
-              (?, Error, [ Type (Error); Type (OCaml.Failure) ],
+              (?, Type (OCaml.exception, Type (Error)),
+                [
+                  Type (OCaml.exception, Type (Error));
+                  Type (OCaml.exception, Type (OCaml.Failure))
+                ],
                 IfThenElse
                   (14, Variable (14, b),
                     Lift
-                      (?, [ Type (OCaml.Failure) ],
-                        [ Type (Error); Type (OCaml.Failure) ],
+                      (?,
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
+                        ],
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (Error));
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
+                        ],
                         Apply
                           (14,
                             Variable
@@ -94,8 +117,23 @@ Value
                                   String("arg"))
                             ])),
                     Lift
-                      (?, [ Type (Error) ],
-                        [ Type (Error); Type (OCaml.Failure) ],
+                      (?,
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (Error))
+                        ],
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (Error));
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
+                        ],
                         Apply
                           (14, Variable (14, raise_Error),
                             [ Tuple (?) ])))), Some x,

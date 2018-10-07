@@ -52,7 +52,11 @@
           Match
             (9,
               Run
-                (?, OCaml.Assert_failure, [ ],
+                (?,
+                  Type
+                    (OCaml.exception,
+                      Type (OCaml.Assert_failure)),
+                  [ ],
                   Apply
                     (9, Variable (9, N/f),
                       [ Constructor (9, tt) ])),
@@ -73,7 +77,10 @@
           Match
             (11,
               Run
-                (?, OCaml.Failure, [ ],
+                (?,
+                  Type
+                    (OCaml.exception,
+                      Type (OCaml.Failure)), [ ],
                   Apply
                     (11, Variable (11, M.f),
                       [ Constructor (11, tt) ])),
@@ -93,7 +100,8 @@ Value
         Match
           (14,
             Run
-              (?, OCaml.Assert_failure, [ ],
+              (?, Type (OCaml.exception, Type (OCaml.Assert_failure)),
+                [ ],
                 Apply
                   (14, Variable (14, N.f), [ Constructor (14, tt) ])),
             [
@@ -112,7 +120,8 @@ Value
         Match
           (16,
             Run
-              (?, OCaml.Assert_failure, [ ],
+              (?, Type (OCaml.exception, Type (OCaml.Assert_failure)),
+                [ ],
                 Apply
                   (16, Variable (16, N.f), [ Constructor (16, tt) ])),
             [

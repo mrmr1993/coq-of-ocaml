@@ -4,9 +4,9 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition Error := Effect.make unit unit.
+Definition Error : Type := unit.
 
-Definition raise_Error {A : Type} (x : unit) : M [ Error ] A :=
+Definition raise_Error {A : Type} (x : unit) : M [ OCaml.exception Error ] A :=
   fun s => (inr (inl x), s).
 
 Definition x1 : Z :=
@@ -15,7 +15,7 @@ Definition x1 : Z :=
   | inr tt => 12
   end.
 
-Definition x2 {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+Definition x2 {A B : Type} (x : A) : M [ OCaml.exception OCaml.Failure ] B :=
   match x with
   | _ =>
     match Exception.run 0 (raise_Error tt) tt with
@@ -24,7 +24,7 @@ Definition x2 {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
     end
   end.
 
-Definition x3 (b : bool) : M [ OCaml.Failure ] Z :=
+Definition x3 (b : bool) : M [ OCaml.exception OCaml.Failure ] Z :=
   let! x :=
     Exception.run 0
       (if b then

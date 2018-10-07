@@ -62,7 +62,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_match, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Match_failure) ], B)),
+      ((e_match, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Match_failure)) ], B)),
         Match
           (26, Variable (?, x),
             [
@@ -95,7 +96,7 @@ Value
   (non_rec, @.,
     [
       ((e_assert, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Assert_failure) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Assert_failure)) ], B)),
         Match
           (27, Variable (?, x),
             [
@@ -128,7 +129,7 @@ Value
   (non_rec, @.,
     [
       ((e_invalid, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ], B)),
         Match
           (28, Variable (?, x),
             [
@@ -152,7 +153,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
           (29, Variable (?, x),
             [
@@ -176,7 +178,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_not_found, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Not_found) ], B)),
+      ((e_not_found, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Not_found)) ], B)),
         Match
           (30, Variable (?, x),
             [
@@ -198,7 +201,7 @@ Value
   (non_rec, @.,
     [
       ((e_out_of_mem, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Out_of_memory) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Out_of_memory)) ], B)),
         Match
           (31, Variable (?, x),
             [
@@ -220,7 +223,7 @@ Value
   (non_rec, @.,
     [
       ((e_overflow, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Stack_overflow) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Stack_overflow)) ], B)),
         Match
           (32, Variable (?, x),
             [
@@ -241,7 +244,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_sys_err, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Sys_error) ], B)),
+      ((e_sys_err, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Sys_error)) ], B)),
         Match
           (33, Variable (?, x),
             [
@@ -265,7 +269,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_EOF, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.End_of_file) ], B)),
+      ((e_EOF, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.End_of_file)) ], B)),
         Match
           (34, Variable (?, x),
             [
@@ -287,7 +292,7 @@ Value
   (non_rec, @.,
     [
       ((e_div, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Division_by_zero) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Division_by_zero)) ], B)),
         Match
           (35, Variable (?, x),
             [
@@ -309,7 +314,7 @@ Value
   (non_rec, @.,
     [
       ((e_sys_blocked, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Sys_blocked_io) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Sys_blocked_io)) ], B)),
         Match
           (36, Variable (?, x),
             [
@@ -331,7 +336,13 @@ Value
   (non_rec, @.,
     [
       ((e_rec_module, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Undefined_recursive_module) ], B)),
+        Monad
+          ([
+            Type
+              (OCaml.exception,
+                Type
+                  (OCaml.Undefined_recursive_module))
+          ], B)),
         Match
           (37, Variable (?, x),
             [

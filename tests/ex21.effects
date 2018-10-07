@@ -3,9 +3,17 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B; C ], [ (x, A) ],
-        Monad ([ Type (IO) ], (B -> Monad ([ Type (OCaml.Failure) ], C)))),
+        Monad
+          ([ Type (IO) ],
+            (B ->
+              Monad
+                ([ Type (OCaml.exception, Type (OCaml.Failure)) ], C)))),
         Sequence
-          ((4, Effect ([ Type (IO) ], . -[ Type (OCaml.Failure) ]-> .)),
+          ((4,
+            Effect
+              ([ Type (IO) ],
+                . -[ Type (OCaml.exception, Type (OCaml.Failure)) ]->
+                  .)),
             Apply
               ((4, Effect ([ Type (IO) ], .)),
                 Variable
@@ -13,15 +21,36 @@ Value
                     OCaml.Pervasives.print_string),
                 [ Constant ((4, Effect ([ ], .)), String("Hi")) ]),
             Function
-              ((5, Effect ([ ], . -[ Type (OCaml.Failure) ]-> .)), y,
+              ((5,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
+                      ]-> .)), y,
                 Apply
-                  ((5, Effect ([ Type (OCaml.Failure) ], .)),
+                  ((5,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
+                      ], .)),
                     Variable
                       ((5,
                         Effect
                           ([ ],
-                            . -[ Type (OCaml.Failure) ]->
-                              .)),
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
+                              ]-> .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -38,10 +67,15 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], Monad ([ Type (IO); Type (OCaml.Failure) ], B)),
+      ((r, [ A; B ], [ (x, A) ],
+        Monad ([ Type (IO); Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
-          ((7, Effect ([ Type (IO); Type (OCaml.Failure) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((7,
+            Effect
+              ([
+                Type (IO);
+                Type (OCaml.exception, Type (OCaml.Failure))
+              ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -51,7 +85,9 @@ Value
                         Type
                           (IO);
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Failure))
                       ],
                         .)),
                     Apply
@@ -64,7 +100,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Failure))
                               ]->
                               .)),
                         Variable
@@ -80,7 +118,9 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.Failure)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.Failure))
                                     ]->
                                     .)),
                             f),

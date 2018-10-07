@@ -4,9 +4,10 @@
 Value
   (non_rec, @.,
     [
-      ((div, [ ], [ (n, Type (Z)) ], Monad ([ Type (Fail) ], Type (Z))),
+      ((div, [ ], [ (n, Type (Z)) ],
+        Monad ([ Type (OCaml.exception, Type (Fail)) ], Type (Z))),
         IfThenElse
-          ((6, Effect ([ Type (Fail) ], .)),
+          ((6, Effect ([ Type (OCaml.exception, Type (Fail)) ], .)),
             Apply
               ((6, Effect ([ ], .)),
                 Variable ((6, Effect ([ ], . -> . -> .)), equiv_decb),
@@ -15,10 +16,18 @@ Value
                   Constant ((6, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((7, Effect ([ Type (Fail) ], .)),
+              ((7, Effect ([ Type (OCaml.exception, Type (Fail)) ], .)),
                 Variable
-                  ((7, Effect ([ ], . -[ Type (Fail) ]-> .)),
-                    raise_Fail),
+                  ((7,
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (Fail))
+                          ]-> .)), raise_Fail),
                 [
                   Tuple
                     ((?, Effect ([ ], .)),

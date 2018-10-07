@@ -56,7 +56,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], Type (Z))),
+      ((h, [ A ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], Type (Z))),
         Match
           (9, Variable (?, x),
             [
@@ -79,7 +80,9 @@ Value
   (non_rec, @.,
     [
       ((t, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Failure) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+            Type (list, Type (Z)))),
         Match
           (10, Variable (?, x),
             [
@@ -103,7 +106,10 @@ Value
     [
       ((x, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ], Type (Z))),
+          ([
+            Type (OCaml.exception, Type (OCaml.Failure));
+            Type (OCaml.exception, Type (OCaml.Invalid_argument))
+          ], Type (Z))),
         Match
           (11, Variable (?, x),
             [
@@ -371,7 +377,9 @@ Value
   (non_rec, @.,
     [
       ((m2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (list, Type (Z)))),
         Match
           (29, Variable (?, x_1),
             [
@@ -416,7 +424,9 @@ Value
   (non_rec, @.,
     [
       ((rm2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (list, Type (Z)))),
         Match
           (30, Variable (?, x_1),
             [
@@ -461,7 +471,9 @@ Value
   (non_rec, @.,
     [
       ((fl2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (Z))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (Z))),
         Match
           (31, Variable (?, x_1),
             [
@@ -522,7 +534,9 @@ Value
   (non_rec, @.,
     [
       ((fr2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (Z))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (Z))),
         Match
           (32, Variable (?, x_1),
             [
@@ -637,7 +651,9 @@ Value
   (non_rec, @.,
     [
       ((all2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (bool))),
         Match
           (37, Variable (?, x_1),
             [
@@ -682,7 +698,9 @@ Value
   (non_rec, @.,
     [
       ((ex2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
+            Type (bool))),
         Match
           (38, Variable (?, x_1),
             [
@@ -736,7 +754,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fin, [ A ], [ (x_1, A) ], Monad ([ Type (OCaml.Not_found) ], Type (Z))),
+      ((fin, [ A ], [ (x_1, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Not_found)) ], Type (Z))),
         Match
           (43, Variable (?, x_1),
             [
@@ -856,7 +875,8 @@ Value
   (non_rec, @.,
     [
       ((asso, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Not_found) ], Type (string))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.Not_found)) ], Type (string))),
         Match
           (49, Variable (?, x_1),
             [
@@ -941,7 +961,7 @@ Value
     [
       ((com, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.Invalid_argument) ],
+          ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ],
             Type (list, (Type (Z) * Type (Z))))),
         Match
           (58, Variable (?, x_1),

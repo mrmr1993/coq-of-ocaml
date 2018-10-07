@@ -34,18 +34,19 @@ Definition nested (x : Z) (y : Z)
         OCaml.Effect.State.write a x_1) in
   OCaml.Effect.State.read a.
 
-Definition raises (x : Z) : M [ OCaml.Failure ] unit :=
+Definition raises (x : Z) : M [ OCaml.exception OCaml.Failure ] unit :=
   OCaml.Basics.for_to 0 x
     (fun i =>
       (OCaml.Pervasives.failwith "x is not less than 0" % string) :
-        M [ OCaml.Failure ] unit).
+        M [ OCaml.exception OCaml.Failure ] unit).
 
-Definition complex_raises (x : Z) : M [ OCaml.Failure ] unit :=
-  let f {A B : Type} (a : A) : M [ OCaml.Failure ] (A * Z * B) :=
+Definition complex_raises (x : Z) : M [ OCaml.exception OCaml.Failure ] unit :=
+  let f {A B : Type} (a : A)
+    : M [ OCaml.exception OCaml.Failure ] (A * Z * B) :=
     let! x_1 := OCaml.Pervasives.failwith "x is not less than 0" % string in
     ret (a, 15, x_1) in
   OCaml.Basics.for_to 0 x
-    (fun i => (f true) : M [ OCaml.Failure ] (bool * Z * unit)).
+    (fun i => (f true) : M [ OCaml.exception OCaml.Failure ] (bool * Z * unit)).
 
 Definition argument_effects (x : OCaml.Effect.State.t Z) (y : Z)
   : M [ OCaml.Effect.State.state Z ] Z :=

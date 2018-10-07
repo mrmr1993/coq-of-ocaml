@@ -4,20 +4,23 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition Outside := Effect.make unit unit.
+Definition Outside : Type := unit.
 
-Definition raise_Outside {A : Type} (x : unit) : M [ Outside ] A :=
+Definition raise_Outside {A : Type} (x : unit) : M [ OCaml.exception Outside ] A
+:=
   fun s => (inr (inl x), s).
 
-Definition f {A B : Type} (x : A) : M [ Outside ] B := raise_Outside tt.
+Definition f {A B : Type} (x : A) : M [ OCaml.exception Outside ] B :=
+  raise_Outside tt.
 
 Module G.
-  Definition Inside := Effect.make unit (Z * string).
+  Definition Inside : Type := (Z * string).
   
-  Definition raise_Inside {A : Type} (x : Z * string) : M [ Inside ] A :=
+  Definition raise_Inside {A : Type} (x : Z * string) : M [ OCaml.exception Inside ] A :=
     fun s => (inr (inl x), s).
   
-  Definition g {A : Type} (b : bool) : M [ Outside; Inside ] A :=
+  Definition g {A : Type} (b : bool)
+    : M [ OCaml.exception Outside; OCaml.exception Inside ] A :=
     if b then
       lift [_;_] "01" (raise_Inside (12, "no" % string))
     else
@@ -25,7 +28,8 @@ Module G.
 End G.
 
 Fixpoint h_rec {A B : Type} (counter : nat) (l : list A)
-  : M [ IO; NonTermination; Outside; G.Inside ] B :=
+  : M [ IO; NonTermination; OCaml.exception Outside; OCaml.exception G.Inside ]
+    B :=
   match counter with
   | O => lift [_;_;_;_] "0100" (not_terminated tt)
   | S counter =>
@@ -42,6 +46,13 @@ Fixpoint h_rec {A B : Type} (counter : nat) (l : list A)
   end.
 
 Definition h {A B : Type} (l : list A)
-  : M [ Counter; IO; NonTermination; Outside; G.Inside ] B :=
+  : M
+    [
+      Counter;
+      IO;
+      NonTermination;
+      OCaml.exception Outside;
+      OCaml.exception G.Inside
+    ] B :=
   let! x := lift [_;_;_;_;_] "10000" (read_counter tt) in
   lift [_;_;_;_;_] "01111" (h_rec x l).

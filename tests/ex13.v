@@ -4,7 +4,8 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition tail {A : Type} (l : list A) : M [ OCaml.Failure ] (list A) :=
+Definition tail {A : Type} (l : list A)
+  : M [ OCaml.exception OCaml.Failure ] (list A) :=
   match l with
   | cons _ xs => ret xs
   | [] =>
@@ -33,7 +34,7 @@ Definition f : (list string) -> M [ Counter; IO; NonTermination ] unit :=
   print_list.
 
 Definition x {A : Type} (z : A)
-  : M [ Counter; IO; NonTermination; OCaml.Failure ] unit :=
+  : M [ Counter; IO; NonTermination; OCaml.exception OCaml.Failure ] unit :=
   let! x :=
     lift [_;_;_;_] "0001"
       (tail

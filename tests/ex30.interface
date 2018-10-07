@@ -4,24 +4,36 @@
     "Interface",
     "Ex30",
     [
-      [ "Interface", "M", [ [ "Var", "f", [ [ [ [ "Apply", "OCaml.Failure" ] ] ] ] ] ] ],
+      [
+        "Interface",
+        "M",
+        [ [ "Var", "f", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Failure" ] ] ] ] ] ] ]
+      ],
       [
         "Interface",
         "N",
-        [ [ "Var", "f", [ [ [ [ "Apply", "OCaml.Assert_failure" ] ] ] ] ], [ "Var", "x", [] ], [ "Var", "y", [] ] ]
+        [
+          [ "Var", "f", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Assert_failure" ] ] ] ] ] ],
+          [ "Var", "x", [] ],
+          [ "Var", "y", [] ]
+        ]
       ],
       [ "Var", "b", [] ],
       [ "Var", "b'", [] ],
       [ "Var", "x", [] ],
-      [ "Interface", "A", [ [ "Var", "x", [ [ [ [ "Apply", "OCaml.Assert_failure" ] ] ] ] ] ] ],
+      [
+        "Interface",
+        "A",
+        [ [ "Var", "x", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Assert_failure" ] ] ] ] ] ] ]
+      ],
       [
         "Interface",
         "B",
         [
           [ "Var", "a", [] ],
-          [ "Var", "b", [ [ [ [ "Apply", "OCaml.Assert_failure" ] ] ] ] ],
-          [ "Var", "x", [ [ [ [ "Apply", "OCaml.Failure" ] ] ] ] ],
-          [ "Var", "c", [ [ [ [ "Apply", "OCaml.Failure" ] ] ] ] ]
+          [ "Var", "b", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Assert_failure" ] ] ] ] ] ],
+          [ "Var", "x", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Failure" ] ] ] ] ] ],
+          [ "Var", "c", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Failure" ] ] ] ] ] ]
         ]
       ],
       [
@@ -29,9 +41,9 @@
         "C",
         [
           [ "Var", "a", [] ],
-          [ "Var", "x", [ [ [ [ "Apply", "OCaml.Failure" ] ] ] ] ],
-          [ "Var", "b", [ [ [ [ "Apply", "OCaml.Failure" ] ] ] ] ],
-          [ "Var", "c", [ [ [ [ "Apply", "OCaml.Assert_failure" ] ] ] ] ]
+          [ "Var", "x", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Failure" ] ] ] ] ] ],
+          [ "Var", "b", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Failure" ] ] ] ] ] ],
+          [ "Var", "c", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Assert_failure" ] ] ] ] ] ]
         ]
       ],
       [

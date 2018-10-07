@@ -78,7 +78,7 @@ Value
           ([
             Type (OCaml.Effect.State.state, Type (string));
             Type (s_state);
-            Type (OCaml.Failure)
+            Type (OCaml.exception, Type (OCaml.Failure))
           ], B)),
         Match
           (8, Variable (?, x),
@@ -104,7 +104,9 @@ Value
                           Type
                             (s_state);
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         Bind
                           (?,
@@ -145,7 +147,9 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         [
                           Type
@@ -155,7 +159,9 @@ Value
                           Type
                             (s_state);
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         Apply
                           (8,

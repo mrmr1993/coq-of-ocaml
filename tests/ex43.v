@@ -152,8 +152,9 @@ Definition nested {es_in : list Effect.t} (x : unit)
   end.
 
 Definition raises (b : bool)
-  : M [ Counter; NonTermination; OCaml.Failure ] unit :=
-  let fix while (counter : nat) : M [ NonTermination; OCaml.Failure ] unit :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.Failure ] unit :=
+  let fix while (counter : nat)
+    : M [ NonTermination; OCaml.exception OCaml.Failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -162,7 +163,7 @@ Definition raises (b : bool)
         let! _ :=
           lift [_;_] "01"
             ((OCaml.Pervasives.failwith "b is true" % string) :
-              M [ OCaml.Failure ] unit) in
+              M [ OCaml.exception OCaml.Failure ] unit) in
         while counter
       else
         ret tt
@@ -171,18 +172,22 @@ Definition raises (b : bool)
   lift [_;_;_] "011" (while counter).
 
 Definition complex_raises (b : bool)
-  : M [ Counter; NonTermination; OCaml.Failure ] unit :=
-  let f {A B : Type} (a : A) : M [ OCaml.Failure ] (A * Z * B) :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.Failure ] unit :=
+  let f {A B : Type} (a : A)
+    : M [ OCaml.exception OCaml.Failure ] (A * Z * B) :=
     let! x := OCaml.Pervasives.failwith "b is true" % string in
     ret (a, 15, x) in
-  let fix while (counter : nat) : M [ NonTermination; OCaml.Failure ] unit :=
+  let fix while (counter : nat)
+    : M [ NonTermination; OCaml.exception OCaml.Failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       let check := b in
       if check then
         let! _ :=
-          lift [_;_] "01" ((f true) : M [ OCaml.Failure ] (bool * Z * unit)) in
+          lift [_;_] "01"
+            ((f true) : M [ OCaml.exception OCaml.Failure ] (bool * Z * unit))
+          in
         while counter
       else
         ret tt

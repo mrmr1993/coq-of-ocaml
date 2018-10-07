@@ -5,14 +5,15 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Module M.
-  Definition f {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+  Definition f {A B : Type} (x : A) : M [ OCaml.exception OCaml.Failure ] B :=
     match x with
     | _ => OCaml.Pervasives.failwith "failure" % string
     end.
 End M.
 
 Module N.
-  Definition f {A B : Type} (x : A) : M [ OCaml.Assert_failure ] B :=
+  Definition f {A B : Type} (x : A)
+    : M [ OCaml.exception OCaml.Assert_failure ] B :=
     match x with
     | _ => OCaml.assert false
     end.
@@ -49,7 +50,8 @@ Definition b' : unit :=
 Definition x : Z := 15.
 
 Module A.
-  Definition x {A B : Type} (x : A) : M [ OCaml.Assert_failure ] B :=
+  Definition x {A B : Type} (x : A)
+    : M [ OCaml.exception OCaml.Assert_failure ] B :=
     match x with
     | _ => OCaml.assert false
     end.
@@ -60,29 +62,31 @@ Module B.
   
   Import A.
   
-  Definition b {A B : Type} : A -> M [ OCaml.Assert_failure ] B := x.
+  Definition b {A B : Type}
+    : A -> M [ OCaml.exception OCaml.Assert_failure ] B := x.
   
-  Definition x {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+  Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.Failure ] B :=
     match x with
     | _ => OCaml.Pervasives.failwith "failure" % string
     end.
   
-  Definition c {A B : Type} : A -> M [ OCaml.Failure ] B := x.
+  Definition c {A B : Type} : A -> M [ OCaml.exception OCaml.Failure ] B := x.
 End B.
 
 Module C.
   Definition a : Z := x.
   
-  Definition x {A B : Type} (x : A) : M [ OCaml.Failure ] B :=
+  Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.Failure ] B :=
     match x with
     | _ => OCaml.Pervasives.failwith "failure" % string
     end.
   
-  Definition b {A B : Type} : A -> M [ OCaml.Failure ] B := x.
+  Definition b {A B : Type} : A -> M [ OCaml.exception OCaml.Failure ] B := x.
   
   Import A.
   
-  Definition c {A B : Type} : A -> M [ OCaml.Assert_failure ] B := A.x.
+  Definition c {A B : Type}
+    : A -> M [ OCaml.exception OCaml.Assert_failure ] B := A.x.
 End C.
 
 Module D.

@@ -4,7 +4,8 @@
 Value
   (non_rec, @.,
     [
-      ((f, [ A; B ], [ (x, A) ], Monad ([ Type (Outside) ], B)),
+      ((f, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (Outside)) ], B)),
         Apply (5, Variable (5, raise_Outside), [ Tuple (?) ]))
     ])
 
@@ -16,12 +17,25 @@ Value
     (non_rec, @.,
       [
         ((g, [ A ], [ (b, Type (bool)) ],
-          Monad ([ Type (Outside); Type (G/Inside) ], A)),
+          Monad
+            ([
+              Type (OCaml.exception, Type (Outside));
+              Type (OCaml.exception, Type (G/Inside))
+            ], A)),
           IfThenElse
             (11, Variable (11, G/b),
               Lift
-                (?, [ Type (G/Inside) ],
-                  [ Type (Outside); Type (G/Inside) ],
+                (?, [ Type (OCaml.exception, Type (G/Inside)) ],
+                  [
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (Outside));
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (G/Inside))
+                  ],
                   Apply
                     (12, Variable (12, G/raise_Inside),
                       [
@@ -35,8 +49,17 @@ Value
                                 String("no")))
                       ])),
               Lift
-                (?, [ Type (Outside) ],
-                  [ Type (Outside); Type (G/Inside) ],
+                (?, [ Type (OCaml.exception, Type (Outside)) ],
+                  [
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (Outside));
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (G/Inside))
+                  ],
                   Apply
                     (14, Variable (14, raise_Outside),
                       [ Tuple (?) ]))))
@@ -51,8 +74,8 @@ Value
           ([
             Type (IO);
             Type (NonTermination);
-            Type (Outside);
-            Type (G.Inside)
+            Type (OCaml.exception, Type (Outside));
+            Type (OCaml.exception, Type (G.Inside))
           ], B)),
         Match
           (?, Variable (?, counter),
@@ -70,9 +93,13 @@ Value
                       Type
                         (NonTermination);
                       Type
-                        (Outside);
+                        (OCaml.exception,
+                          Type
+                            (Outside));
                       Type
-                        (G.Inside)
+                        (OCaml.exception,
+                          Type
+                            (G.Inside))
                     ],
                     Apply
                       (?,
@@ -95,9 +122,13 @@ Value
                               Type
                                 (IO);
                               Type
-                                (Outside);
+                                (OCaml.exception,
+                                  Type
+                                    (Outside));
                               Type
-                                (G.Inside)
+                                (OCaml.exception,
+                                  Type
+                                    (G.Inside))
                             ],
                             [
                               Type
@@ -105,9 +136,13 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (Outside);
+                                (OCaml.exception,
+                                  Type
+                                    (Outside));
                               Type
-                                (G.Inside)
+                                (OCaml.exception,
+                                  Type
+                                    (G.Inside))
                             ],
                             Bind
                               (?,
@@ -121,9 +156,13 @@ Value
                                       Type
                                         (IO);
                                       Type
-                                        (Outside);
+                                        (OCaml.exception,
+                                          Type
+                                            (Outside));
                                       Type
-                                        (G.Inside)
+                                        (OCaml.exception,
+                                          Type
+                                            (G.Inside))
                                     ],
                                     Apply
                                       (19,
@@ -140,17 +179,25 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (Outside);
+                                        (OCaml.exception,
+                                          Type
+                                            (Outside));
                                       Type
-                                        (G.Inside)
+                                        (OCaml.exception,
+                                          Type
+                                            (G.Inside))
                                     ],
                                     [
                                       Type
                                         (IO);
                                       Type
-                                        (Outside);
+                                        (OCaml.exception,
+                                          Type
+                                            (Outside));
                                       Type
-                                        (G.Inside)
+                                        (OCaml.exception,
+                                          Type
+                                            (G.Inside))
                                     ],
                                     Apply
                                       (19,
@@ -171,7 +218,9 @@ Value
                           (?,
                             [
                               Type
-                                (G.Inside)
+                                (OCaml.exception,
+                                  Type
+                                    (G.Inside))
                             ],
                             [
                               Type
@@ -179,9 +228,13 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (Outside);
+                                (OCaml.exception,
+                                  Type
+                                    (Outside));
                               Type
-                                (G.Inside)
+                                (OCaml.exception,
+                                  Type
+                                    (G.Inside))
                             ],
                             Apply
                               (20,
@@ -233,8 +286,8 @@ Value
             Type (Counter);
             Type (IO);
             Type (NonTermination);
-            Type (Outside);
-            Type (G.Inside)
+            Type (OCaml.exception, Type (Outside));
+            Type (OCaml.exception, Type (G.Inside))
           ], B)),
         Bind
           (?,
@@ -244,8 +297,8 @@ Value
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (Outside);
-                  Type (G.Inside)
+                  Type (OCaml.exception, Type (Outside));
+                  Type (OCaml.exception, Type (G.Inside))
                 ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
@@ -254,15 +307,15 @@ Value
                 [
                   Type (IO);
                   Type (NonTermination);
-                  Type (Outside);
-                  Type (G.Inside)
+                  Type (OCaml.exception, Type (Outside));
+                  Type (OCaml.exception, Type (G.Inside))
                 ],
                 [
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (Outside);
-                  Type (G.Inside)
+                  Type (OCaml.exception, Type (Outside));
+                  Type (OCaml.exception, Type (G.Inside))
                 ],
                 Apply
                   (?, Variable (?, h_rec),

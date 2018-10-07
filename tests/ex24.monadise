@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((e_invalid, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Invalid_argument)) ], B)),
         Match
           (5, Variable (?, x),
             [
@@ -25,7 +25,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
           (6, Variable (?, x),
             [
@@ -48,7 +49,7 @@ Value
   (non_rec, @.,
     [
       ((e_exit1, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.Exit)) ], B)),
         Match
           (7, Variable (?, x),
             [
@@ -70,7 +71,7 @@ Value
   (non_rec, @.,
     [
       ((e_exit2, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.Exit)) ], B)),
         Match
           (8, Variable (?, x),
             [
@@ -429,7 +430,8 @@ Value
   (non_rec, @.,
     [
       ((char_n, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (ascii))),
+        Monad
+          ([ Type (OCaml.exception, Type (Invalid_argument)) ], Type (ascii))),
         Match
           (68, Variable (?, x),
             [

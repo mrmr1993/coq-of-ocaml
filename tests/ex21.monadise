@@ -3,7 +3,11 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B; C ], [ (x, A) ],
-        Monad ([ Type (IO) ], (B -> Monad ([ Type (OCaml.Failure) ], C)))),
+        Monad
+          ([ Type (IO) ],
+            (B ->
+              Monad
+                ([ Type (OCaml.exception, Type (OCaml.Failure)) ], C)))),
         Bind
           (?,
             Apply
@@ -24,7 +28,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((r, [ A; B ], [ (x, A) ], Monad ([ Type (IO); Type (OCaml.Failure) ], B)),
+      ((r, [ A; B ], [ (x, A) ],
+        Monad ([ Type (IO); Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
         Match
           (7, Variable (?, x),
             [
@@ -41,7 +46,9 @@ Value
                           Type
                             (IO);
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         Apply
                           (7,
@@ -59,13 +66,17 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         [
                           Type
                             (IO);
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.Failure))
                         ],
                         Apply
                           (7,

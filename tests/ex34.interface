@@ -17,27 +17,62 @@
       ],
       [ "Var", "height", [] ],
       [ "Var", "create", [] ],
-      [ "Var", "bal", [ [ [], [], [ [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ],
-      [ "Var", "add", [ [ [], [ [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ],
+      [ "Var", "bal", [ [ [], [], [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ] ],
+      [ "Var", "add", [ [ [], [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ] ],
       [ "Var", "singleton", [] ],
-      [ "Var", "add_min_element", [ [ [], [ [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ],
-      [ "Var", "add_max_element", [ [ [], [ [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ],
+      [
+        "Var",
+        "add_min_element",
+        [ [ [], [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ]
+      ],
+      [
+        "Var",
+        "add_max_element",
+        [ [ [], [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ]
+      ],
       [
         "Var",
         "join_rec",
-        [ [ [], [], [], [ [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Invalid_argument" ] ] ] ]
+        [
+          [
+            [],
+            [],
+            [],
+            [ [ "Apply", "NonTermination" ], [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ]
+          ]
+        ]
       ],
       [
         "Var",
         "join",
         [
-          [ [], [], [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Invalid_argument" ] ] ]
+          [
+            [],
+            [],
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ]
+            ]
+          ]
         ]
       ],
-      [ "Var", "min_elt", [ [ [ [ "Apply", "OCaml.Not_found" ] ] ] ] ],
-      [ "Var", "max_elt", [ [ [ [ "Apply", "OCaml.Not_found" ] ] ] ] ],
-      [ "Var", "remove_min_elt", [ [ [ [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ],
-      [ "Var", "merge", [ [ [], [ [ "Apply", "OCaml.Invalid_argument" ], [ "Apply", "OCaml.Not_found" ] ] ] ] ],
+      [ "Var", "min_elt", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ] ] ] ] ],
+      [ "Var", "max_elt", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ] ] ] ] ],
+      [ "Var", "remove_min_elt", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ] ] ] ] ],
+      [
+        "Var",
+        "merge",
+        [
+          [
+            [],
+            [
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
+            ]
+          ]
+        ]
+      ],
       [
         "Var",
         "concat",
@@ -47,8 +82,8 @@
             [
               [ "Apply", "Counter" ],
               [ "Apply", "NonTermination" ],
-              [ "Apply", "OCaml.Invalid_argument" ],
-              [ "Apply", "OCaml.Not_found" ]
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
             ]
           ]
         ]
@@ -56,23 +91,61 @@
       [
         "Var",
         "split",
-        [ [ [], [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Invalid_argument" ] ] ] ]
+        [
+          [
+            [],
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ]
+            ]
+          ]
+        ]
       ],
       [ "Var", "empty", [] ],
       [ "Var", "is_empty", [] ],
       [ "Var", "mem", [] ],
-      [ "Var", "remove", [ [ [], [ [ "Apply", "OCaml.Invalid_argument" ], [ "Apply", "OCaml.Not_found" ] ] ] ] ],
+      [
+        "Var",
+        "remove",
+        [
+          [
+            [],
+            [
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
+            ]
+          ]
+        ]
+      ],
       [
         "Var",
         "union_rec",
         [
-          [ [], [], [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Invalid_argument" ] ] ]
+          [
+            [],
+            [],
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ]
+            ]
+          ]
         ]
       ],
       [
         "Var",
         "union",
-        [ [ [], [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Invalid_argument" ] ] ] ]
+        [
+          [
+            [],
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ]
+            ]
+          ]
+        ]
       ],
       [
         "Var",
@@ -83,8 +156,8 @@
             [
               [ "Apply", "Counter" ],
               [ "Apply", "NonTermination" ],
-              [ "Apply", "OCaml.Invalid_argument" ],
-              [ "Apply", "OCaml.Not_found" ]
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
             ]
           ]
         ]
@@ -98,8 +171,8 @@
             [
               [ "Apply", "Counter" ],
               [ "Apply", "NonTermination" ],
-              [ "Apply", "OCaml.Invalid_argument" ],
-              [ "Apply", "OCaml.Not_found" ]
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
             ]
           ]
         ]
@@ -133,8 +206,8 @@
             [
               [ "Apply", "Counter" ],
               [ "Apply", "NonTermination" ],
-              [ "Apply", "OCaml.Invalid_argument" ],
-              [ "Apply", "OCaml.Not_found" ]
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
             ]
           ]
         ]
@@ -148,8 +221,8 @@
             [
               [ "Apply", "Counter" ],
               [ "Apply", "NonTermination" ],
-              [ "Apply", "OCaml.Invalid_argument" ],
-              [ "Apply", "OCaml.Not_found" ]
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Invalid_argument" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ]
             ]
           ]
         ]
@@ -157,12 +230,20 @@
       [ "Var", "cardinal", [] ],
       [ "Var", "elements_aux", [] ],
       [ "Var", "elements", [] ],
-      [ "Var", "choose", [ [ [ [ "Apply", "OCaml.Not_found" ] ] ] ] ],
-      [ "Var", "find", [ [ [], [ [ "Apply", "OCaml.Not_found" ] ] ] ] ],
+      [ "Var", "choose", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ] ] ] ] ],
+      [ "Var", "find", [ [ [], [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Not_found" ] ] ] ] ] ],
       [
         "Var",
         "of_sorted_list",
-        [ [ [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ], [ "Apply", "OCaml.Assert_failure" ] ] ] ]
+        [
+          [
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.Assert_failure" ] ]
+            ]
+          ]
+        ]
       ]
     ]
   ]
