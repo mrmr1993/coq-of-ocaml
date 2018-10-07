@@ -21,26 +21,26 @@ Admitted.
 Lemma length_is_pos {A : Type} (l : list A) : 0 <= length l.
 Admitted.
 
-Definition hd {A : Type} (x : list A) : M [ Failure ] A :=
+Definition hd {A : Type} (x : list A) : M [ exception Failure ] A :=
   match x with
   | [] => Pervasives.failwith "hd" % string
   | cons a l => ret a
   end.
 
-Definition tl {A : Type} (x : list A) : M [ Failure ] (list A) :=
+Definition tl {A : Type} (x : list A) : M [ exception Failure ] (list A) :=
   match x with
   | [] => Pervasives.failwith "tl" % string
   | cons a l => ret l
   end.
 
 Definition nth {A : Type} (l : list A) (n : Z)
-  : M [ Failure; Invalid_argument ] A :=
+  : M [ exception Failure; exception Invalid_argument ] A :=
   if Pervasives.lt n 0 then
     lift [_;_] "01" (Pervasives.invalid_arg "List.nth" % string)
   else
     lift [_;_] "10"
       (let fix nth_aux {B : Type} (l : list B) (n : Z)
-        : M [ Failure ] B :=
+        : M [ exception Failure ] B :=
         match l with
         | [] => Pervasives.failwith "nth" % string
         | cons a l =>
@@ -127,7 +127,7 @@ Fixpoint fold_right {A B : Type} (f : A -> B -> B) (l : list A) (accu : B)
   end.
 
 Fixpoint map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] (list C) :=
+  : M [ exception Invalid_argument ] (list C) :=
   match (l1, l2) with
   | ([], []) => ret []
   | (cons a1 l1, cons a2 l2) =>
@@ -138,9 +138,9 @@ Fixpoint map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
   end.
 
 Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] (list C) :=
+  : M [ exception Invalid_argument ] (list C) :=
   let fix rmap2_f (accu : list C) (l1 : list A) (l2 : list B)
-    : M [ Invalid_argument ] (list C) :=
+    : M [ exception Invalid_argument ] (list C) :=
     match (l1, l2) with
     | ([], []) => ret accu
     | (cons a1 l1, cons a2 l2) => rmap2_f (cons (f a1 a2) accu) l1 l2
@@ -149,7 +149,7 @@ Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
   rmap2_f [] l1 l2.
 
 Fixpoint iter2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] unit :=
+  : M [ exception Invalid_argument ] unit :=
   match (l1, l2) with
   | ([], []) => ret tt
   | (cons a1 l1, cons a2 l2) => iter2 f l1 l2
@@ -158,7 +158,7 @@ Fixpoint iter2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
 
 Fixpoint fold_left2 {A B C : Type}
   (f : A -> B -> C -> A) (accu : A) (l1 : list B) (l2 : list C)
-  : M [ Invalid_argument ] A :=
+  : M [ exception Invalid_argument ] A :=
   match (l1, l2) with
   | ([], []) => ret accu
   | (cons a1 l1, cons a2 l2) => fold_left2 f (f accu a1 a2) l1 l2
@@ -167,7 +167,7 @@ Fixpoint fold_left2 {A B C : Type}
 
 Fixpoint fold_right2 {A B C : Type}
   (f : A -> B -> C -> C) (l1 : list A) (l2 : list B) (accu : C)
-  : M [ Invalid_argument ] C :=
+  : M [ exception Invalid_argument ] C :=
   match (l1, l2) with
   | ([], []) => ret accu
   | (cons a1 l1, cons a2 l2) =>
@@ -189,7 +189,7 @@ Fixpoint _exists {A : Type} (p : A -> bool) (x : list A) : bool :=
   end.
 
 Fixpoint for_all2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] bool :=
+  : M [ exception Invalid_argument ] bool :=
   match (l1, l2) with
   | ([], []) => ret true
   | (cons a1 l1, cons a2 l2) =>
@@ -199,7 +199,7 @@ Fixpoint for_all2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
   end.
 
 Fixpoint _exists2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] bool :=
+  : M [ exception Invalid_argument ] bool :=
   match (l1, l2) with
   | ([], []) => ret false
   | (cons a1 l1, cons a2 l2) =>
@@ -219,7 +219,7 @@ Fixpoint mem {A : Type} `{EqDec A} (x : A) (l : list A) : bool :=
   end.
 
 Fixpoint find {A : Type} (p : A -> bool) (x : list A)
-  : M [ Not_found ] A :=
+  : M [ exception Not_found ] A :=
   match x with
   | [] => raise_Not_found tt
   | cons x l =>
@@ -258,7 +258,7 @@ Definition partition {A : Type} (p : A -> bool) (l : list A)
   part [] [] l.
 
 Fixpoint assoc {A B : Type} `{EqDec A} (x : A) (l : list (A * B))
-  : M [ Not_found ] B :=
+  : M [ exception Not_found ] B :=
   match l with
   | [] => raise_Not_found ()
   | (y, v) :: l =>
@@ -299,7 +299,7 @@ Fixpoint split {A B : Type} (x : list (A * B)) : (list A) * (list B) :=
   end.
 
 Fixpoint combine {A B : Type} (l1 : list A) (l2 : list B)
-  : M [ Invalid_argument ] (list (A * B)) :=
+  : M [ exception Invalid_argument ] (list (A * B)) :=
   match (l1, l2) with
   | ([], []) => ret []
   | (cons a1 l1, cons a2 l2) =>

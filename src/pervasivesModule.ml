@@ -25,6 +25,12 @@ let env_with_effects (interfaces : (Name.t * string) list)
   let arrow xs = List.fold_right (fun x typ ->
     Effect.Type.arrow (d x) typ) xs Effect.pure in
   let pure = Effect.pure in
+  let mk_exn typ = {
+      Effect.Descriptor.args_arg = None; 
+      with_args = [];
+      no_args = [Type.Apply (bound_name ["OCaml"] [] "exception",
+        [typ])];
+    } in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
   |> TypeDefinition.update_env
@@ -105,8 +111,12 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   |> enter_module (CoqName.Name "OCaml")
   (* Values specific to the translation to Coq *)
-  |> Var.add [] "assert" (arrow [[["OCaml"], [], "Assert_failure"]])
+  |> Var.add [] "assert"
+    (Type.Arrow (Type.Apply (bound_name [] [] "bool", []), Type.Monad (
+      mk_exn (Type.Apply (bound_name ["OCaml"] ["OCaml"] "Assert_failure", [])),
+      Type.Variable "A")))
   (* Predefined exceptions *)
+  |> Descriptor.add [] "exception" ()
   |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
   |> add_exn [] "Match_failure"
   |> add_exn [] "Assert_failure"
@@ -132,8 +142,20 @@ let env_with_effects (interfaces : (Name.t * string) list)
 
   (* Pervasives *)
   (* Exceptions *)
-  |> Var.add ["Pervasives"] "invalid_arg" (arrow [[["OCaml"], [], "Invalid_argument"]])
-  |> Var.add ["Pervasives"] "failwith" (arrow [[["OCaml"], [], "Failure"]])
+  |> Descriptor.add [] "exception" ()
+  |> Var.add ["Pervasives"] "raise"
+    (Type.Arrow (Type.Variable "A",
+      Type.Monad (mk_exn (Type.Variable "A"), Type.Variable "B")))
+  |> Var.add ["Pervasives"] "invalid_arg"
+    (Type.Arrow (Type.Apply (bound_name [] [] "string", []),
+      Type.Monad (
+        mk_exn (Type.Apply (bound_name ["OCaml"] [] "Invalid_argument", [])),
+        Type.Variable "A")))
+  |> Var.add ["Pervasives"] "failwith"
+    (Type.Arrow (Type.Apply (bound_name [] [] "string", []),
+      Type.Monad (
+        mk_exn (Type.Apply (bound_name ["OCaml"] [] "Failure", [])),
+        Type.Variable "A")))
   |> add_exn ["Pervasives"] "Exit"
   (* Comparisons *)
   |> Var.add ["Pervasives"] "lt" pure
@@ -148,7 +170,11 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Floating-point arithmetic *)
   (* Character operations *)
   |> Var.add ["Pervasives"] "int_of_char" pure
-  |> Var.add ["Pervasives"] "char_of_int" (arrow [[["OCaml"], [], "Invalid_argument"]])
+  |> Var.add ["Pervasives"] "char_of_int"
+    (Type.Arrow (Type.Apply (bound_name [] [] "Z", []),
+      Type.Monad (
+        mk_exn (Type.Apply (bound_name [] ["OCaml"] "Invalid_argument", [])),
+        Type.Apply (bound_name [] [] "ascii", []))))
   (* Unit operations *)
   |> Var.add ["Pervasives"] "ignore" pure
   (* String conversion functions *)

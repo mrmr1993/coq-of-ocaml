@@ -528,10 +528,13 @@ let add_exception_with_effects (path : Name.t list) (base : Name.t)
   let raise_path = {PathName.path = coq_path env @ path;
     base = "raise_" ^ base} in
   let env = Exception.add path base raise_path env in
+  let bound_exception = Descriptor.localize env ["OCaml"] "exception" in
   let descriptor = PathName.of_name path base in
-  let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
+  let bound_descriptor = Effect.Type.Apply
+    (Descriptor.bound Loc.Unknown descriptor env, []) in
   let effect =
     Effect.eff @@ Effect.Type.Arrow (Effect.Type.pure, Effect.Type.Monad (
-      Effect.Descriptor.singleton bound_descriptor [],
+      Effect.Descriptor.singleton ~simple:true bound_exception
+        [bound_descriptor],
       Effect.Type.pure)) in
   Var.add path ("raise_" ^ base) effect env

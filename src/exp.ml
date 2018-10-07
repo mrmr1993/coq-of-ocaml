@@ -81,7 +81,7 @@ type 'a t =
   | Bind of 'a * 'a t * CoqName.t option * 'a t (** Monadic bind. *)
   | Lift of 'a * Effect.Descriptor.t * Effect.Descriptor.t * 'a t
     (** Monadic lift. *)
-  | Run of 'a * BoundName.t * Effect.Descriptor.t * 'a t
+  | Run of 'a * Type.t * Effect.Descriptor.t * 'a t
 
 let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
   let pp = pp pp_a in
@@ -136,7 +136,7 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
       pp_a a; Effect.Descriptor.pp d1; Effect.Descriptor.pp d2; pp e])
   | Run (a, x, d, e) ->
     nest (!^ "Run" ^^ OCaml.tuple [
-      pp_a a; BoundName.pp x; Effect.Descriptor.pp d; pp e])
+      pp_a a; Type.pp x; Effect.Descriptor.pp d; pp e])
 
 let annotation (e : 'a t) : 'a =
   match e with
@@ -493,6 +493,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e1 = of_expression env typ_vars e1 in
     let typ1 = snd @@ annotation e1 in
     let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
+    let exception_bound = FullEnvi.Descriptor.localize env ["OCaml"]
+      "exception" in
+    let x = Type.Apply (exception_bound, [Type.Apply (x, [])]) in
     let ps = List.map (Pattern.of_pattern false env typ_vars) ps in
     let typ_p = List.map Pattern.typ ps in
     let p = Pattern.Tuple (Type.Tuple typ_p, ps) in
