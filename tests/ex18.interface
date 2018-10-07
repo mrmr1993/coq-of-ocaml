@@ -5,17 +5,47 @@
     "Ex18",
     [
       [ "Descriptor", "r_state" ],
-      [ "Var", "r", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ], [] ] ],
-      [ "Var", "plus_one", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ],
+      [
+        "Var",
+        "r",
+        [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "r_state" ] ] ], [] ]
+      ],
+      [
+        "Var",
+        "plus_one",
+        [ [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "r_state" ] ] ] ] ]
+      ],
       [ "Descriptor", "s_state" ],
-      [ "Var", "s", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ "s_state" ] ], [] ] ],
+      [
+        "Var",
+        "s",
+        [
+          [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ [ "Apply", "s_state" ] ] ],
+          []
+        ]
+      ],
       [
         "Var",
         "fail",
-        [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ "s_state", "OCaml.Failure" ] ] ] ]
+        [
+          [
+            [
+              [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ],
+              [ [ "Apply", "s_state" ], [ "Apply", "OCaml.Failure" ] ]
+            ]
+          ]
+        ]
       ],
-      [ "Var", "reset", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ],
-      [ "Var", "incr", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "r_state" ] ] ] ] ]
+      [
+        "Var",
+        "reset",
+        [ [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "r_state" ] ] ] ] ]
+      ],
+      [
+        "Var",
+        "incr",
+        [ [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "r_state" ] ] ] ] ]
+      ]
     ]
   ]
 }

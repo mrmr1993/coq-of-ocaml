@@ -5,14 +5,37 @@
     "Ex17",
     [
       [ "Exception", "Outside", "raise_Outside" ],
-      [ "Var", "f", [ [ [ "Outside" ] ] ] ],
+      [ "Var", "f", [ [ [ [ "Apply", "Outside" ] ] ] ] ],
       [
         "Interface",
         "G",
-        [ [ "Exception", "Inside", "raise_Inside" ], [ "Var", "g", [ [ [ "Outside", "G.Inside" ] ] ] ] ]
+        [
+          [ "Exception", "Inside", "raise_Inside" ],
+          [ "Var", "g", [ [ [ [ "Apply", "Outside" ], [ "Apply", "G.Inside" ] ] ] ] ]
+        ]
       ],
-      [ "Var", "h_rec", [ [ [], [ "IO", "NonTermination", "Outside", "G.Inside" ] ] ] ],
-      [ "Var", "h", [ [ [ "Counter", "IO", "NonTermination", "Outside", "G.Inside" ] ] ] ]
+      [
+        "Var",
+        "h_rec",
+        [
+          [ [], [ [ "Apply", "IO" ], [ "Apply", "NonTermination" ], [ "Apply", "Outside" ], [ "Apply", "G.Inside" ] ] ]
+        ]
+      ],
+      [
+        "Var",
+        "h",
+        [
+          [
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "IO" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "Outside" ],
+              [ "Apply", "G.Inside" ]
+            ]
+          ]
+        ]
+      ]
     ]
   ]
 }

@@ -5,15 +5,37 @@
     "Ex40",
     [
       [ "Descriptor", "a_state" ],
-      [ "Var", "a", [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "a_state" ] ], [] ] ],
-      [ "Var", "b", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "a_state" ] ] ] ] ],
+      [
+        "Var",
+        "a",
+        [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "a_state" ] ] ], [] ]
+      ],
+      [
+        "Var",
+        "b",
+        [ [ [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ [ "Apply", "a_state" ] ] ] ] ]
+      ],
       [ "Descriptor", "a_state_1" ],
       [
         "Var",
         [ "a", "a_1" ],
-        [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ "a_state_1" ] ], [] ]
+        [
+          [ [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ [ "Apply", "a_state_1" ] ] ],
+          []
+        ]
       ],
-      [ "Var", "c", [ [ [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ], [ "a_state_1" ] ] ] ] ],
+      [
+        "Var",
+        "c",
+        [
+          [
+            [
+              [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "string" ] ] ],
+              [ [ "Apply", "a_state_1" ] ]
+            ]
+          ]
+        ]
+      ],
       [ "Var", "d", [] ],
       [ "Var", "e", [] ],
       [ "Var", [ "d", "d_1" ], [] ],
