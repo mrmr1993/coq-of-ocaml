@@ -363,21 +363,18 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
           let l_exn = Loc.of_location e_x.exp_loc in
-          let t_exn = Type.Arrow (
-            Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
-            Variable "_") in
           let x = PathName.of_loc x in
           let x = FullEnvi.Exception.bound l_exn x env in
-          let raise_path = FullEnvi.Exception.find l_exn x env in
-          let raise_dsc = FullEnvi.localize (FullEnvi.has_value env) env
-            { BoundName.full_path = raise_path; local_path = raise_path } in
+          let raise_path = FullEnvi.Var.localize env ["OCaml"; "Pervasives"]
+            "raise" in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
             t_arg) es in
+          let t_f = Type.Arrow (Type.Apply (x, []), Variable "_") in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_exn, t_exn), raise_dsc),
-            [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
+          Apply (a, Variable ((l_f, t_f), raise_path),
+            [Tuple ((l_exn, Type.Tuple typs), es)])
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")
       | _ -> Error.raise l "Expected one argument for 'raise'.")

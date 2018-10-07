@@ -169,6 +169,9 @@ Definition for_downto {A : Type} {es : list Effect.t}
     possible. *)
 Module Pervasives.
   (** * Exceptions *)
+  Definition raise {A B : Type} (x : A) : M [ exception A ] B :=
+    fun s => (inr (inl x), s).
+
   Definition invalid_arg {A : Type} (message : string)
     : M [exception Invalid_argument] A :=
     raise_Invalid_argument message.
