@@ -98,7 +98,8 @@ let of_ocaml (interfaces : (Name.t * string) list)
   (structure : Typedtree.structure) (mode : string option)
   (mode_files : mode_files) (module_name : string) : unit =
   try
-    let env_with_effects = PervasivesModule.env_with_effects interfaces in
+    let env_with_effects = PervasivesModule.env_with_effects interfaces |>
+      FullEnvi.enter_module (CoqName.Name module_name) in
     let env = FullEnvi.map (fun _ -> ()) env_with_effects in
     let (exp_l, effects_l, interface_l, monadise_l, coq_l) =
       if stropt_eq "exp" mode then
@@ -218,9 +219,10 @@ let main () =
   | None -> Arg.usage options usage_msg
   | Some file_name ->
     let bare_file_name = bare_file_name file_name in
+    let module_name = module_name bare_file_name in
     if !output_all then
       mode_files := {
-        v = !mode_files.v @ [module_name bare_file_name ^ ".v"];
+        v = !mode_files.v @ [module_name ^ ".v"];
         interface = !mode_files.interface @ [bare_file_name ^ ".interface"];
         exp = !mode_files.exp @ [bare_file_name ^ ".exp"];
         effects = !mode_files.effects @ [bare_file_name ^ ".effects"];
@@ -229,12 +231,11 @@ let main () =
     else if !output_default_force ||
            (!mode_files == empty_mode_files && !mode == None) then
       mode_files := {!mode_files with
-        v = !mode_files.v @ [module_name bare_file_name ^ ".v"];
+        v = !mode_files.v @ [module_name ^ ".v"];
         interface = !mode_files.interface @ [bare_file_name ^ ".interface"]
       };
     if !output_dir != "" then
       mode_files := mode_files_localise !output_dir !mode_files;
-    of_ocaml !interfaces (parse_cmt file_name) !mode !mode_files
-      (module_name bare_file_name);
+    of_ocaml !interfaces (parse_cmt file_name) !mode !mode_files module_name;
 
 ;;main ()

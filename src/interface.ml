@@ -72,20 +72,10 @@ and of_structure (def : ('a * Type.t) Structure.t) : t list =
   | Structure.Signature (_, name, decls) ->
     [Signature (name, of_signatures decls)]
 
-let rec to_full_envi (top_name : Name.t option) (interface : t)
-  (env : Type.t FullEnvi.t) : Type.t FullEnvi.t =
+let rec to_full_envi (interface : t) (env : Type.t FullEnvi.t)
+  : Type.t FullEnvi.t =
   match interface with
-  | Var (x, effect) ->
-    let effect = match top_name with
-      | None -> effect
-      | Some top_name ->
-        effect |> Effect.map (fun ({full_path} as bound_path) ->
-          let full_path' = { full_path with
-            PathName.path = top_name :: full_path.PathName.path } in
-          FullEnvi.localize_path (FullEnvi.has_value env) env @@
-            if FullEnvi.has_global_value env full_path' then full_path'
-            else bound_path.BoundName.full_path) in
-    FullEnvi.Var.assoc x effect env
+  | Var (x, effect) -> FullEnvi.Var.assoc x effect env
   | Typ typ -> TypeDefinition.update_env typ env
   | TypeExt (typ, typ_def) ->
     let typ = FullEnvi.Typ.localize env typ.PathName.path typ.PathName.base in
@@ -97,12 +87,12 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module x env in
-    let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
+    let env = List.fold_left (fun env def -> to_full_envi def env) env
       defs in
     FullEnvi.leave_module FullEnvi.localize_effects env
   | Signature (x, decls) ->
     let env = FullEnvi.enter_module x env in
-    let env = List.fold_left (fun env def -> to_full_envi top_name def env) env
+    let env = List.fold_left (fun env def -> to_full_envi def env) env
       decls in
     FullEnvi.leave_signature env
 
@@ -113,13 +103,8 @@ let load_interface (coq_prefix : Name.t) (interface : t)
     | _ -> "" in
   let coq_name = if coq_prefix == "" || name == "" then coq_prefix ^ name
     else coq_prefix ^ "." ^ name in
-  let env = FullEnvi.enter_module (CoqName.of_names name coq_name) env in
-  let env = match interface with
-    | Interface (_, defs) ->
-      List.fold_left (fun env def -> to_full_envi (Some coq_name) def env) env
-        defs
-    | _ -> to_full_envi (Some coq_name) interface env in
-  (coq_name, FullEnvi.leave_module FullEnvi.localize_effects env)
+  let env = to_full_envi interface env in
+  (coq_name, env)
 
 let rec to_json (interface : t) : json =
   match interface with
