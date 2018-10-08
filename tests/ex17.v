@@ -4,31 +4,26 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition Outside : Type := unit.
+Inductive outside : Type :=
+| Outside : unit -> outside.
 
-Definition raise_Outside {A : Type} (x : unit) : M [ OCaml.exception Outside ] A
-:=
-  fun s => (inr (inl x), s).
-
-Definition f {A B : Type} (x : A) : M [ OCaml.exception Outside ] B :=
-  raise_Outside tt.
+Definition f {A B : Type} (x : A) : M [ OCaml.exception outside ] B :=
+  OCaml.Pervasives.raise (Outside tt).
 
 Module G.
-  Definition Inside : Type := (Z * string).
-  
-  Definition raise_Inside {A : Type} (x : Z * string) : M [ OCaml.exception Inside ] A :=
-    fun s => (inr (inl x), s).
+  Inductive inside : Type :=
+  | Inside : (Z * string) -> inside.
   
   Definition g {A : Type} (b : bool)
-    : M [ OCaml.exception Outside; OCaml.exception Inside ] A :=
+    : M [ OCaml.exception outside; OCaml.exception inside ] A :=
     if b then
-      lift [_;_] "01" (raise_Inside (12, "no" % string))
+      lift [_;_] "01" (OCaml.Pervasives.raise (Inside (12, "no" % string)))
     else
-      lift [_;_] "10" (raise_Outside tt).
+      lift [_;_] "10" (OCaml.Pervasives.raise (Outside tt)).
 End G.
 
 Fixpoint h_rec {A B : Type} (counter : nat) (l : list A)
-  : M [ IO; NonTermination; OCaml.exception Outside; OCaml.exception G.Inside ]
+  : M [ IO; NonTermination; OCaml.exception outside; OCaml.exception G.inside ]
     B :=
   match counter with
   | O => lift [_;_;_;_] "0100" (not_terminated tt)
@@ -40,7 +35,9 @@ Fixpoint h_rec {A B : Type} (counter : nat) (l : list A)
           lift [_;_;_] "100" (OCaml.Pervasives.print_string "no tail" % string)
           in
         lift [_;_;_] "011" (G.g false))
-    | cons x [] => lift [_;_;_;_] "0001" (G.raise_Inside (0, "gg" % string))
+    | cons x [] =>
+      lift [_;_;_;_] "0001"
+        (OCaml.Pervasives.raise (G.Inside (0, "gg" % string)))
     | cons _ xs => (h_rec counter) xs
     end
   end.
@@ -51,8 +48,8 @@ Definition h {A B : Type} (l : list A)
       Counter;
       IO;
       NonTermination;
-      OCaml.exception Outside;
-      OCaml.exception G.Inside
+      OCaml.exception outside;
+      OCaml.exception G.inside
     ] B :=
   let! x := lift [_;_;_;_;_] "10000" (read_counter tt) in
   lift [_;_;_;_;_] "01111" (h_rec x l).

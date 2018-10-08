@@ -1,6 +1,6 @@
-2 Exception (Ex1, raise_Ex1, ())
+2 Exception (Ex1, ex1, ())
 
-3 Exception (Ex2, raise_Ex2, (Type (Z)))
+3 Exception (Ex2, ex2, (Type (Z)))
 
 5
 Value
@@ -15,10 +15,13 @@ Value
                   (5,
                     Variable
                       (5,
-                        raise_Ex1),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        (?)
+                      Constructor
+                        (5,
+                          Ex1,
+                          Tuple
+                            (?))
                     ]))
             ]))
     ])
@@ -28,7 +31,9 @@ Value
   (non_rec, @.,
     [
       ((g, [ A ], [ (y, Type (Z)) ], A),
-        Apply (6, Variable (6, raise_Ex2), [ Tuple (?, Variable (6, y)) ]))
+        Apply
+          (6, Variable (6, OCaml.Pervasives.raise),
+            [ Constructor (6, Ex2, Tuple (?, Variable (6, y))) ]))
     ])
 
 7
@@ -57,13 +62,16 @@ Value
                                   (7,
                                     Variable
                                       (7,
-                                        raise_Ex2),
+                                        OCaml.Pervasives.raise),
                                     [
-                                      Tuple
-                                        (?,
-                                          Variable
-                                            (7,
-                                              y))
+                                      Constructor
+                                        (7,
+                                          Ex2,
+                                          Tuple
+                                            (?,
+                                              Variable
+                                                (7,
+                                                  y)))
                                     ]))
                             ]))))
             ]))

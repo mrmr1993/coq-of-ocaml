@@ -5,27 +5,27 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Definition e_invalid {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.Invalid_argument ] B :=
+  : M [ OCaml.exception OCaml.invalid_argument ] B :=
   match x with
   | _ => OCaml.Pervasives.invalid_arg "error" % string
   end.
 
 Definition e_failure {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.Failure ] B :=
+  : M [ OCaml.exception OCaml.failure ] B :=
   match x with
   | _ => OCaml.Pervasives.failwith "error" % string
   end.
 
 Definition e_exit1 {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.Pervasives.Exit ] B :=
+  : M [ OCaml.exception OCaml.Pervasives.exit ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise_Exit tt
+  | _ => OCaml.Pervasives.raise (OCaml.Pervasives.Exit tt)
   end.
 
 Definition e_exit2 {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.Pervasives.Exit ] B :=
+  : M [ OCaml.exception OCaml.Pervasives.exit ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise_Exit tt
+  | _ => OCaml.Pervasives.raise (OCaml.Pervasives.Exit tt)
   end.
 
 Definition b_eq : bool := equiv_decb 1 2.
@@ -101,7 +101,7 @@ Definition ss : string := String.append "begin" % string "end" % string.
 Definition n_char : Z := OCaml.Pervasives.int_of_char "c" % char.
 
 Definition char_n {A : Type} (x : A)
-  : M [ OCaml.exception Invalid_argument ] ascii :=
+  : M [ OCaml.exception invalid_argument ] ascii :=
   match x with
   | _ => OCaml.Pervasives.char_of_int 23
   end.

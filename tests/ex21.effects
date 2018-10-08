@@ -7,12 +7,12 @@ Value
           ([ Type (IO) ],
             (B ->
               Monad
-                ([ Type (OCaml.exception, Type (OCaml.Failure)) ], C)))),
+                ([ Type (OCaml.exception, Type (OCaml.failure)) ], C)))),
         Sequence
           ((4,
             Effect
               ([ Type (IO) ],
-                . -[ Type (OCaml.exception, Type (OCaml.Failure)) ]->
+                . -[ Type (OCaml.exception, Type (OCaml.failure)) ]->
                   .)),
             Apply
               ((4, Effect ([ Type (IO) ], .)),
@@ -29,7 +29,7 @@ Value
                         Type
                           (OCaml.exception,
                             Type
-                              (OCaml.Failure))
+                              (OCaml.failure))
                       ]-> .)), y,
                 Apply
                   ((5,
@@ -38,7 +38,7 @@ Value
                         Type
                           (OCaml.exception,
                             Type
-                              (OCaml.Failure))
+                              (OCaml.failure))
                       ], .)),
                     Variable
                       ((5,
@@ -49,7 +49,7 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (OCaml.Failure))
+                                      (OCaml.failure))
                               ]-> .)),
                         OCaml.Pervasives.failwith),
                     [
@@ -68,13 +68,13 @@ Value
   (non_rec, @.,
     [
       ((r, [ A; B ], [ (x, A) ],
-        Monad ([ Type (IO); Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
+        Monad ([ Type (IO); Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
           ((7,
             Effect
               ([
                 Type (IO);
-                Type (OCaml.exception, Type (OCaml.Failure))
+                Type (OCaml.exception, Type (OCaml.failure))
               ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -87,7 +87,7 @@ Value
                         Type
                           (OCaml.exception,
                             Type
-                              (OCaml.Failure))
+                              (OCaml.failure))
                       ],
                         .)),
                     Apply
@@ -102,7 +102,7 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (OCaml.Failure))
+                                      (OCaml.failure))
                               ]->
                               .)),
                         Variable
@@ -120,7 +120,7 @@ Value
                                       Type
                                         (OCaml.exception,
                                           Type
-                                            (OCaml.Failure))
+                                            (OCaml.failure))
                                     ]->
                                     .)),
                             f),

@@ -24,7 +24,7 @@ Definition s : M [ OCaml.Effect.State.state string; s_state ]
 
 Definition fail {A B : Type} (x : A)
   : M
-    [ OCaml.Effect.State.state string; s_state; OCaml.exception OCaml.Failure ]
+    [ OCaml.Effect.State.state string; s_state; OCaml.exception OCaml.failure ]
     B :=
   match x with
   | _ =>

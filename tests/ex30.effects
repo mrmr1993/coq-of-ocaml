@@ -4,11 +4,11 @@
     (non_rec, @.,
       [
         ((f, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
+          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
           Match
             ((4,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
                   .)), Variable ((?, Effect ([ ], .)), M/x),
               [
                 (Any,
@@ -19,7 +19,7 @@
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Failure))
+                                (OCaml.failure))
                         ],
                           .)),
                       Variable
@@ -32,7 +32,7 @@
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Failure))
+                                        (OCaml.failure))
                                 ]->
                                 .)),
                           OCaml.Pervasives.failwith),
@@ -54,7 +54,7 @@
     (non_rec, @.,
       [
         ((f, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.Assert_failure)) ], B)),
+          Monad ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ], B)),
           Match
             ((8,
               Effect
@@ -62,7 +62,7 @@
                   Type
                     (OCaml.exception,
                       Type
-                        (OCaml.Assert_failure))
+                        (OCaml.assert_failure))
                 ], .)), Variable ((?, Effect ([ ], .)), N/x),
               [
                 (Any,
@@ -73,7 +73,7 @@
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Assert_failure))
+                                (OCaml.assert_failure))
                         ],
                           .)),
                       Variable
@@ -86,7 +86,7 @@
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Assert_failure))
+                                        (OCaml.assert_failure))
                                 ]->
                                 .)),
                           OCaml.assert),
@@ -113,7 +113,7 @@
                 ((?, Effect ([ ], .)),
                   Type
                     (OCaml.exception,
-                      Type (OCaml.Assert_failure)),
+                      Type (OCaml.assert_failure)),
                   [ ],
                   Apply
                     ((9,
@@ -122,7 +122,7 @@
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Assert_failure))
+                                (OCaml.assert_failure))
                         ], .)),
                       Variable
                         ((9,
@@ -133,7 +133,7 @@
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Assert_failure))
+                                        (OCaml.assert_failure))
                                 ]->
                                 .)),
                           N/f),
@@ -155,7 +155,12 @@
                         ],
                           .)),
                       N/x));
-                (Constructor (inr, Tuple (Any)),
+                (Constructor
+                  (inr,
+                    Constructor
+                      (OCaml.Assert_failure,
+                        Tuple
+                          (Any))),
                   Constructor
                     ((9,
                       Effect
@@ -179,7 +184,7 @@
                 ((?, Effect ([ ], .)),
                   Type
                     (OCaml.exception,
-                      Type (OCaml.Failure)), [ ],
+                      Type (OCaml.failure)), [ ],
                   Apply
                     ((11,
                       Effect
@@ -187,7 +192,7 @@
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Failure))
+                                (OCaml.failure))
                         ], .)),
                       Variable
                         ((11,
@@ -198,7 +203,7 @@
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Failure))
+                                        (OCaml.failure))
                                 ]->
                                 .)),
                           M.f),
@@ -220,7 +225,12 @@
                         ],
                           .)),
                       N/x_1));
-                (Constructor (inr, Tuple (Any)),
+                (Constructor
+                  (inr,
+                    Constructor
+                      (OCaml.Failure,
+                        Tuple
+                          (Any))),
                   Constructor
                     ((11,
                       Effect
@@ -240,7 +250,7 @@ Value
           ((14, Effect ([ ], .)),
             Run
               ((?, Effect ([ ], .)),
-                Type (OCaml.exception, Type (OCaml.Assert_failure)),
+                Type (OCaml.exception, Type (OCaml.assert_failure)),
                 [ ],
                 Apply
                   ((14,
@@ -249,7 +259,7 @@ Value
                         Type
                           (OCaml.exception,
                             Type
-                              (OCaml.Assert_failure))
+                              (OCaml.assert_failure))
                       ], .)),
                     Variable
                       ((14,
@@ -260,12 +270,17 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (OCaml.Assert_failure))
+                                      (OCaml.assert_failure))
                               ]-> .)), N.f),
                     [ Constructor ((14, Effect ([ ], .)), tt) ])),
             [
               (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
-              (Constructor (inr, Tuple (Any)),
+              (Constructor
+                (inr,
+                  Constructor
+                    (OCaml.Assert_failure,
+                      Tuple
+                        (Any))),
                 Constructor ((14, Effect ([ ], .)), tt))
             ]))
     ])
@@ -281,7 +296,7 @@ Value
           ((16, Effect ([ ], .)),
             Run
               ((?, Effect ([ ], .)),
-                Type (OCaml.exception, Type (OCaml.Assert_failure)),
+                Type (OCaml.exception, Type (OCaml.assert_failure)),
                 [ ],
                 Apply
                   ((16,
@@ -290,7 +305,7 @@ Value
                         Type
                           (OCaml.exception,
                             Type
-                              (OCaml.Assert_failure))
+                              (OCaml.assert_failure))
                       ], .)),
                     Variable
                       ((16,
@@ -301,12 +316,17 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (OCaml.Assert_failure))
+                                      (OCaml.assert_failure))
                               ]-> .)), N.f),
                     [ Constructor ((16, Effect ([ ], .)), tt) ])),
             [
               (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
-              (Constructor (inr, Tuple (Any)),
+              (Constructor
+                (inr,
+                  Constructor
+                    (OCaml.Assert_failure,
+                      Tuple
+                        (Any))),
                 Constructor ((16, Effect ([ ], .)), tt))
             ]))
     ])
@@ -322,7 +342,7 @@ Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.Assert_failure)) ], B)),
+          Monad ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ], B)),
           Match
             ((21,
               Effect
@@ -330,7 +350,7 @@ Value
                   Type
                     (OCaml.exception,
                       Type
-                        (OCaml.Assert_failure))
+                        (OCaml.assert_failure))
                 ], .)), Variable ((?, Effect ([ ], .)), A/x),
               [
                 (Any,
@@ -341,7 +361,7 @@ Value
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Assert_failure))
+                                (OCaml.assert_failure))
                         ],
                           .)),
                       Variable
@@ -354,7 +374,7 @@ Value
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Assert_failure))
+                                        (OCaml.assert_failure))
                                 ]->
                                 .)),
                           OCaml.assert),
@@ -389,7 +409,7 @@ Value
                 Type
                   (OCaml.exception,
                     Type
-                      (OCaml.Assert_failure))
+                      (OCaml.assert_failure))
               ], B))),
           Variable
             ((27,
@@ -400,7 +420,7 @@ Value
                       Type
                         (OCaml.exception,
                           Type
-                            (OCaml.Assert_failure))
+                            (OCaml.assert_failure))
                     ]-> .)), A/x))
       ])
   
@@ -409,11 +429,11 @@ Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
+          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
           Match
             ((28,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
                   .)), Variable ((?, Effect ([ ], .)), B/x),
               [
                 (Any,
@@ -424,7 +444,7 @@ Value
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Failure))
+                                (OCaml.failure))
                         ],
                           .)),
                       Variable
@@ -437,7 +457,7 @@ Value
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Failure))
+                                        (OCaml.failure))
                                 ]->
                                 .)),
                           OCaml.Pervasives.failwith),
@@ -458,7 +478,7 @@ Value
     (non_rec, @.,
       [
         ((c, [ A; B ], [ ],
-          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B))),
+          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B))),
           Variable
             ((29,
               Effect
@@ -468,7 +488,7 @@ Value
                       Type
                         (OCaml.exception,
                           Type
-                            (OCaml.Failure))
+                            (OCaml.failure))
                     ]-> .)), B/x))
       ])
 
@@ -483,11 +503,11 @@ Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B)),
+          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
           Match
             ((34,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.Failure)) ],
+                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
                   .)), Variable ((?, Effect ([ ], .)), C/x),
               [
                 (Any,
@@ -498,7 +518,7 @@ Value
                           Type
                             (OCaml.exception,
                               Type
-                                (OCaml.Failure))
+                                (OCaml.failure))
                         ],
                           .)),
                       Variable
@@ -511,7 +531,7 @@ Value
                                   Type
                                     (OCaml.exception,
                                       Type
-                                        (OCaml.Failure))
+                                        (OCaml.failure))
                                 ]->
                                 .)),
                           OCaml.Pervasives.failwith),
@@ -532,7 +552,7 @@ Value
     (non_rec, @.,
       [
         ((b, [ A; B ], [ ],
-          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.Failure)) ], B))),
+          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B))),
           Variable
             ((35,
               Effect
@@ -542,7 +562,7 @@ Value
                       Type
                         (OCaml.exception,
                           Type
-                            (OCaml.Failure))
+                            (OCaml.failure))
                     ]-> .)), C/x))
       ])
   
@@ -559,7 +579,7 @@ Value
                 Type
                   (OCaml.exception,
                     Type
-                      (OCaml.Assert_failure))
+                      (OCaml.assert_failure))
               ], B))),
           Variable
             ((37,
@@ -570,7 +590,7 @@ Value
                       Type
                         (OCaml.exception,
                           Type
-                            (OCaml.Assert_failure))
+                            (OCaml.assert_failure))
                     ]-> .)), A.x))
       ])
 

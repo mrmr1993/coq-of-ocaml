@@ -49,7 +49,7 @@ Definition create (l : t) (v : elt) (r : t) : t :=
       Z.add hr 1).
 
 Definition bal (l : t) (v : elt) (r : t)
-  : M [ OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ OCaml.exception OCaml.invalid_argument ] t :=
   let hl :=
     match l with
     | Empty => 0
@@ -96,7 +96,7 @@ Definition bal (l : t) (v : elt) (r : t)
             Z.add hr 1)).
 
 Fixpoint add (x : elt) (x_1 : t)
-  : M [ OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ OCaml.exception OCaml.invalid_argument ] t :=
   match x_1 with
   | Empty => ret (Node Empty x Empty 1)
   | Node l v r _ as t_1 =>
@@ -115,7 +115,7 @@ Fixpoint add (x : elt) (x_1 : t)
 Definition singleton (x : elt) : t := Node Empty x Empty 1.
 
 Fixpoint add_min_element (v : elt) (x : t)
-  : M [ OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ OCaml.exception OCaml.invalid_argument ] t :=
   match x with
   | Empty => ret (singleton v)
   | Node l x r h =>
@@ -124,7 +124,7 @@ Fixpoint add_min_element (v : elt) (x : t)
   end.
 
 Fixpoint add_max_element (v : elt) (x : t)
-  : M [ OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ OCaml.exception OCaml.invalid_argument ] t :=
   match x with
   | Empty => ret (singleton v)
   | Node l x r h =>
@@ -133,7 +133,7 @@ Fixpoint add_max_element (v : elt) (x : t)
   end.
 
 Fixpoint join_rec (counter : nat) (l : t) (v : elt) (r : t)
-  : M [ NonTermination; OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ NonTermination; OCaml.exception OCaml.invalid_argument ] t :=
   match counter with
   | O => lift [_;_] "10" (not_terminated tt)
   | S counter =>
@@ -154,26 +154,26 @@ Fixpoint join_rec (counter : nat) (l : t) (v : elt) (r : t)
   end.
 
 Definition join (l : t) (v : elt) (r : t)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.invalid_argument ] t :=
   let! x := lift [_;_;_] "100" (read_counter tt) in
   lift [_;_;_] "011" (join_rec x l v r).
 
-Fixpoint min_elt (x : t) : M [ OCaml.exception OCaml.Not_found ] elt :=
+Fixpoint min_elt (x : t) : M [ OCaml.exception OCaml.not_found ] elt :=
   match x with
-  | Empty => OCaml.raise_Not_found tt
+  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
   | Node Empty v r _ => ret v
   | Node l v r _ => min_elt l
   end.
 
-Fixpoint max_elt (x : t) : M [ OCaml.exception OCaml.Not_found ] elt :=
+Fixpoint max_elt (x : t) : M [ OCaml.exception OCaml.not_found ] elt :=
   match x with
-  | Empty => OCaml.raise_Not_found tt
+  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
   | Node l v Empty _ => ret v
   | Node l v r _ => max_elt r
   end.
 
 Fixpoint remove_min_elt (x : t)
-  : M [ OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ OCaml.exception OCaml.invalid_argument ] t :=
   match x with
   | Empty => OCaml.Pervasives.invalid_arg "Set.remove_min_elt" % string
   | Node Empty v r _ => ret r
@@ -184,7 +184,7 @@ Fixpoint remove_min_elt (x : t)
 
 Definition merge (t1 : t) (t2 : t)
   : M
-    [ OCaml.exception OCaml.Invalid_argument; OCaml.exception OCaml.Not_found ]
+    [ OCaml.exception OCaml.invalid_argument; OCaml.exception OCaml.not_found ]
     t :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
@@ -200,8 +200,8 @@ Definition concat (t1 : t) (t2 : t)
     [
       Counter;
       NonTermination;
-      OCaml.exception OCaml.Invalid_argument;
-      OCaml.exception OCaml.Not_found
+      OCaml.exception OCaml.invalid_argument;
+      OCaml.exception OCaml.not_found
     ] t :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
@@ -213,7 +213,7 @@ Definition concat (t1 : t) (t2 : t)
   end.
 
 Fixpoint split (x : Ord.t) (x_1 : t)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.Invalid_argument ]
+  : M [ Counter; NonTermination; OCaml.exception OCaml.invalid_argument ]
     (t * bool * t) :=
   match x_1 with
   | Empty => ret (Empty, false, Empty)
@@ -261,7 +261,7 @@ Fixpoint mem (x : Ord.t) (x_1 : t) : bool :=
 
 Fixpoint remove (x : Ord.t) (x_1 : t)
   : M
-    [ OCaml.exception OCaml.Invalid_argument; OCaml.exception OCaml.Not_found ]
+    [ OCaml.exception OCaml.invalid_argument; OCaml.exception OCaml.not_found ]
     t :=
   match x_1 with
   | Empty => ret Empty
@@ -279,7 +279,7 @@ Fixpoint remove (x : Ord.t) (x_1 : t)
   end.
 
 Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.invalid_argument ] t :=
   match counter with
   | O => lift [_;_;_] "010" (not_terminated tt)
   | S counter =>
@@ -313,7 +313,7 @@ Fixpoint union_rec (counter : nat) (s1 : t) (s2 : t)
   end.
 
 Definition union (s1 : t) (s2 : t)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.Invalid_argument ] t :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.invalid_argument ] t :=
   let! x := lift [_;_;_] "100" (read_counter tt) in
   union_rec x s1 s2.
 
@@ -322,8 +322,8 @@ Fixpoint inter (s1 : t) (s2 : t)
     [
       Counter;
       NonTermination;
-      OCaml.exception OCaml.Invalid_argument;
-      OCaml.exception OCaml.Not_found
+      OCaml.exception OCaml.invalid_argument;
+      OCaml.exception OCaml.not_found
     ] t :=
   match (s1, s2) with
   | (Empty, t2) => ret Empty
@@ -347,8 +347,8 @@ Fixpoint diff (s1 : t) (s2 : t)
     [
       Counter;
       NonTermination;
-      OCaml.exception OCaml.Invalid_argument;
-      OCaml.exception OCaml.Not_found
+      OCaml.exception OCaml.invalid_argument;
+      OCaml.exception OCaml.not_found
     ] t :=
   match (s1, s2) with
   | (Empty, t2) => ret Empty
@@ -466,8 +466,8 @@ Fixpoint filter (p : elt -> bool) (x : t)
     [
       Counter;
       NonTermination;
-      OCaml.exception OCaml.Invalid_argument;
-      OCaml.exception OCaml.Not_found
+      OCaml.exception OCaml.invalid_argument;
+      OCaml.exception OCaml.not_found
     ] t :=
   match x with
   | Empty => ret Empty
@@ -486,8 +486,8 @@ Fixpoint partition (p : elt -> bool) (x : t)
     [
       Counter;
       NonTermination;
-      OCaml.exception OCaml.Invalid_argument;
-      OCaml.exception OCaml.Not_found
+      OCaml.exception OCaml.invalid_argument;
+      OCaml.exception OCaml.not_found
     ] (t * t) :=
   match x with
   | Empty => ret (Empty, Empty)
@@ -525,12 +525,12 @@ Fixpoint elements_aux (accu : list elt) (x : t) : list elt :=
 
 Definition elements (s : t) : list elt := elements_aux [] s.
 
-Definition choose : t -> M [ OCaml.exception OCaml.Not_found ] elt := min_elt.
+Definition choose : t -> M [ OCaml.exception OCaml.not_found ] elt := min_elt.
 
 Fixpoint find (x : Ord.t) (x_1 : t)
-  : M [ OCaml.exception OCaml.Not_found ] elt :=
+  : M [ OCaml.exception OCaml.not_found ] elt :=
   match x_1 with
-  | Empty => OCaml.raise_Not_found tt
+  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
   | Node l v r _ =>
     let c := Ord.compare x v in
     if equiv_decb c 0 then
@@ -544,9 +544,9 @@ Fixpoint find (x : Ord.t) (x_1 : t)
   end.
 
 Definition of_sorted_list (l : list elt)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.Assert_failure ] t :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ] t :=
   let fix sub_rec (counter : nat) (n : Z) (l : list elt)
-    : M [ NonTermination; OCaml.exception OCaml.Assert_failure ]
+    : M [ NonTermination; OCaml.exception OCaml.assert_failure ]
       (t * (list elt)) :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
@@ -575,7 +575,7 @@ Definition of_sorted_list (l : list elt)
       end
     end in
   let sub (n : Z) (l : list elt)
-    : M [ Counter; NonTermination; OCaml.exception OCaml.Assert_failure ]
+    : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
       (t * (list elt)) :=
     let! x := lift [_;_;_] "100" (read_counter tt) in
     lift [_;_;_] "011" (sub_rec x n l) in

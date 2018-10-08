@@ -55,14 +55,19 @@
                 (?,
                   Type
                     (OCaml.exception,
-                      Type (OCaml.Assert_failure)),
+                      Type (OCaml.assert_failure)),
                   [ ],
                   Apply
                     (9, Variable (9, N/f),
                       [ Constructor (9, tt) ])),
               [
                 (Constructor (inl, x), Variable (?, N/x));
-                (Constructor (inr, Tuple (Any)),
+                (Constructor
+                  (inr,
+                    Constructor
+                      (OCaml.Assert_failure,
+                        Tuple
+                          (Any))),
                   Constructor (9, tt))
               ]))
       ])
@@ -80,14 +85,19 @@
                 (?,
                   Type
                     (OCaml.exception,
-                      Type (OCaml.Failure)), [ ],
+                      Type (OCaml.failure)), [ ],
                   Apply
                     (11, Variable (11, M.f),
                       [ Constructor (11, tt) ])),
               [
                 (Constructor (inl, x (= x_1)),
                   Variable (?, N/x_1));
-                (Constructor (inr, Tuple (Any)),
+                (Constructor
+                  (inr,
+                    Constructor
+                      (OCaml.Failure,
+                        Tuple
+                          (Any))),
                   Constructor (11, tt))
               ]))
       ])
@@ -100,13 +110,19 @@ Value
         Match
           (14,
             Run
-              (?, Type (OCaml.exception, Type (OCaml.Assert_failure)),
+              (?, Type (OCaml.exception, Type (OCaml.assert_failure)),
                 [ ],
                 Apply
                   (14, Variable (14, N.f), [ Constructor (14, tt) ])),
             [
               (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Tuple (Any)), Constructor (14, tt))
+              (Constructor
+                (inr,
+                  Constructor
+                    (OCaml.Assert_failure,
+                      Tuple
+                        (Any))),
+                Constructor (14, tt))
             ]))
     ])
 
@@ -120,13 +136,19 @@ Value
         Match
           (16,
             Run
-              (?, Type (OCaml.exception, Type (OCaml.Assert_failure)),
+              (?, Type (OCaml.exception, Type (OCaml.assert_failure)),
                 [ ],
                 Apply
                   (16, Variable (16, N.f), [ Constructor (16, tt) ])),
             [
               (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Tuple (Any)), Constructor (16, tt))
+              (Constructor
+                (inr,
+                  Constructor
+                    (OCaml.Assert_failure,
+                      Tuple
+                        (Any))),
+                Constructor (16, tt))
             ]))
     ])
 
