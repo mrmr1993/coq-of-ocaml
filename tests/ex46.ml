@@ -18,3 +18,5 @@ let x = Test1
 let y = Test5 5
 
 let z = Test6 6
+
+let failure = Failure ""

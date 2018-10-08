@@ -5,7 +5,9 @@ Value
   (non_rec, @.,
     [
       ((f, [ ], [ (x, Type (unit)) ],
-        Monad ([ Type (OCaml.Assert_failure) ], OpenApply (t, {}))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+            OpenApply (t, {}))),
         Match
           (4, Variable (?, x),
             [
@@ -30,7 +32,9 @@ Value
   (non_rec, @.,
     [
       ((g, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Failure) ], OpenApply (u, {}, A))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+            OpenApply (u, {}, A))),
         Apply
           (8, Variable (8, OCaml.Pervasives.failwith),
             [ Constant (8, String("fail")) ]))
@@ -73,4 +77,14 @@ Value
     [
       ((z, [ A ], [ ], OpenApply (u, {u_1}, A)),
         Constructor (?, inl, Constructor (20, Test6, Constant (20, Int(6)))))
+    ])
+
+22
+Value
+  (non_rec, @.,
+    [
+      ((failure, [ ], [ ], OpenApply (OCaml.exn, {OCaml.failure})),
+        Constructor
+          (?, inl,
+            Constructor (22, OCaml.Failure, Constant (22, String("")))))
     ])

@@ -5,10 +5,14 @@ Value
   (non_rec, @.,
     [
       ((f, [ ], [ (x, Type (unit)) ],
-        Monad ([ Type (OCaml.Assert_failure) ], OpenApply (t, {}))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+            OpenApply (t, {}))),
         Match
-          ((4, Effect ([ Type (OCaml.Assert_failure) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((4,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Constructor (tt),
                 Apply
@@ -16,7 +20,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Assert_failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.assert_failure))
                       ],
                         .)),
                     Variable
@@ -27,7 +33,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Assert_failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.assert_failure))
                               ]->
                               .)),
                         OCaml.assert),
@@ -50,12 +58,22 @@ Value
   (non_rec, @.,
     [
       ((g, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Failure) ], OpenApply (u, {}, A))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+            OpenApply (u, {}, A))),
         Apply
-          ((8, Effect ([ Type (OCaml.Failure) ], .)),
+          ((8, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             Variable
-              ((8, Effect ([ ], . -[ Type (OCaml.Failure) ]-> .)),
-                OCaml.Pervasives.failwith),
+              ((8,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
+                      ]-> .)), OCaml.Pervasives.failwith),
             [ Constant ((8, Effect ([ ], .)), String("fail")) ]))
     ])
 
@@ -106,4 +124,16 @@ Value
             Constructor
               ((20, Effect ([ ], .)), Test6,
                 Constant ((20, Effect ([ ], .)), Int(6)))))
+    ])
+
+22
+Value
+  (non_rec, @.,
+    [
+      ((failure, [ ], [ ], OpenApply (OCaml.exn, {OCaml.failure})),
+        Constructor
+          ((?, Effect ([ ], .)), inl,
+            Constructor
+              ((22, Effect ([ ], .)), OCaml.Failure,
+                Constant ((22, Effect ([ ], .)), String("")))))
     ])
