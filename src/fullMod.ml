@@ -93,14 +93,18 @@ let localize (has_name : PathName.t -> Mod.t -> bool) (env : t)
     match env with
     | [] -> None
     | Module m :: env | Include m :: env | Open m :: env ->
-      match strip_prefix m.Mod.coq_path path with
-      | None -> localize_name path base env (m :: env')
-      | Some path' ->
-        let path_name = PathName.of_name path' base in
-        if List.exists (has_name path_name) env' then
-          localize_name path base env (m :: env')
-        else
-          Some path_name in
+      let coq_path = m.Mod.coq_path in
+      match coq_path with
+      | [] -> localize_name path base env (m :: env')
+      | _ ->
+        match strip_prefix coq_path path with
+        | None -> localize_name path base env (m :: env')
+        | Some path' ->
+          let path_name = PathName.of_name path' base in
+          if List.exists (has_name path_name) env' then
+            localize_name path base env (m :: env')
+          else
+            Some path_name in
   match localize_name x.PathName.path x.PathName.base env [] with
   | Some name -> name
   | None -> x
