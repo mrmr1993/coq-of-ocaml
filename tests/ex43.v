@@ -7,12 +7,12 @@ Import ListNotations.
 Require OCaml.List.
 
 Definition slow_div (a : Z) (b : Z)
-  : M [ OCaml.Effect.State.state Z; Counter; NonTermination ] Z :=
+  : M [ Effect.State.state Z; Counter; NonTermination ] Z :=
   let! y := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! c := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! _ :=
     let fix while (counter : nat)
-      : M [ OCaml.Effect.State.state Z; NonTermination ] unit :=
+      : M [ Effect.State.state Z; NonTermination ] unit :=
       match counter with
       | O => lift [_;_] "01" (not_terminated tt)
       | S counter =>
@@ -47,8 +47,8 @@ Definition nested {es_in : list Effect.t} (x : unit)
     [
       OCaml.Effect.Union.union es_in
         [
-          (OCaml.Effect.State.state (list Z));
-          (OCaml.Effect.State.state (list (Effect.State.t (list Z))))
+          (Effect.State.state (list Z));
+          (Effect.State.state (list (Effect.State.t (list Z))))
         ];
       Counter;
       NonTermination
@@ -76,8 +76,8 @@ Definition nested {es_in : list Effect.t} (x : unit)
           [
             OCaml.Effect.Union.union _
               [
-                (OCaml.Effect.State.state (list Z));
-                (OCaml.Effect.State.state
+                (Effect.State.state (list Z));
+                (Effect.State.state
                   (list
                     (Effect.State.t
                       (list
@@ -107,8 +107,7 @@ Definition nested {es_in : list Effect.t} (x : unit)
                 let! _ :=
                   @Union.lift _ _ _ [_;_] 0
                     (let fix while_1 (counter_1 : nat)
-                      : M [ OCaml.Effect.State.state (list Z); NonTermination ]
-                        unit :=
+                      : M [ Effect.State.state (list Z); NonTermination ] unit :=
                       match counter_1 with
                       | O => lift [_;_] "01" (not_terminated tt)
                       | S counter_1 =>
@@ -151,9 +150,9 @@ Definition nested {es_in : list Effect.t} (x : unit)
   end.
 
 Definition raises (b : bool)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.failure ] unit :=
+  : M [ Counter; NonTermination; exception failure ] unit :=
   let fix while (counter : nat)
-    : M [ NonTermination; OCaml.exception OCaml.failure ] unit :=
+    : M [ NonTermination; exception failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -162,7 +161,7 @@ Definition raises (b : bool)
         let! _ :=
           lift [_;_] "01"
             ((Pervasives.failwith "b is true" % string) :
-              M [ OCaml.exception OCaml.failure ] unit) in
+              M [ exception failure ] unit) in
         while counter
       else
         ret tt
@@ -171,21 +170,19 @@ Definition raises (b : bool)
   lift [_;_;_] "011" (while counter).
 
 Definition complex_raises (b : bool)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.failure ] unit :=
-  let f {A B : Type} (a : A)
-    : M [ OCaml.exception OCaml.failure ] (A * Z * B) :=
+  : M [ Counter; NonTermination; exception failure ] unit :=
+  let f {A B : Type} (a : A) : M [ exception failure ] (A * Z * B) :=
     let! x := Pervasives.failwith "b is true" % string in
     ret (a, 15, x) in
   let fix while (counter : nat)
-    : M [ NonTermination; OCaml.exception OCaml.failure ] unit :=
+    : M [ NonTermination; exception failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
       let check := b in
       if check then
         let! _ :=
-          lift [_;_] "01"
-            ((f true) : M [ OCaml.exception OCaml.failure ] (bool * Z * unit))
+          lift [_;_] "01" ((f true) : M [ exception failure ] (bool * Z * unit))
           in
         while counter
       else
@@ -195,13 +192,13 @@ Definition complex_raises (b : bool)
   lift [_;_;_] "011" (while counter).
 
 Definition argument_effects (x : Effect.State.t Z) (y : Z)
-  : M [ OCaml.Effect.State.state Z; Counter; NonTermination ] Z :=
+  : M [ Effect.State.state Z; Counter; NonTermination ] Z :=
   let! y := lift [_;_;_] "100" (Pervasives.ref y) in
   let! z := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! i := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! _ :=
     let fix while (counter : nat)
-      : M [ OCaml.Effect.State.state Z; Counter; NonTermination ] unit :=
+      : M [ Effect.State.state Z; Counter; NonTermination ] unit :=
       match counter with
       | O => lift [_;_;_] "001" (not_terminated tt)
       | S counter =>
@@ -215,7 +212,7 @@ Definition argument_effects (x : Effect.State.t Z) (y : Z)
             let! j := lift [_;_;_] "100" (Pervasives.ref 0) in
             let! _ :=
               let fix while_1 (counter_1 : nat)
-                : M [ OCaml.Effect.State.state Z; NonTermination ] unit :=
+                : M [ Effect.State.state Z; NonTermination ] unit :=
                 match counter_1 with
                 | O => lift [_;_] "01" (not_terminated tt)
                 | S counter_1 =>

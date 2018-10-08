@@ -33,71 +33,66 @@ Definition o : option Z :=
   else
     Some n.
 
-Definition e_match {A B : Type} (x : A)
-  : M [ OCaml.exception match_failure ] B :=
+Definition e_match {A B : Type} (x : A) : M [ exception match_failure ] B :=
   match x with
   | _ => Pervasives.raise (Match_failure (("error" % string, 1, 2)))
   end.
 
-Definition e_assert {A B : Type} (x : A)
-  : M [ OCaml.exception assert_failure ] B :=
+Definition e_assert {A B : Type} (x : A) : M [ exception assert_failure ] B :=
   match x with
   | _ => Pervasives.raise (Assert_failure (("error" % string, 1, 2)))
   end.
 
 Definition e_invalid {A B : Type} (x : A)
-  : M [ OCaml.exception invalid_argument ] B :=
+  : M [ exception invalid_argument ] B :=
   match x with
   | _ => Pervasives.raise (Invalid_argument ("error" % string))
   end.
 
-Definition e_failure {A B : Type} (x : A) : M [ OCaml.exception failure ] B :=
+Definition e_failure {A B : Type} (x : A) : M [ exception failure ] B :=
   match x with
   | _ => Pervasives.raise (Failure ("error" % string))
   end.
 
-Definition e_not_found {A B : Type} (x : A)
-  : M [ OCaml.exception not_found ] B :=
+Definition e_not_found {A B : Type} (x : A) : M [ exception not_found ] B :=
   match x with
   | _ => Pervasives.raise (Not_found tt)
   end.
 
 Definition e_out_of_mem {A B : Type} (x : A)
-  : M [ OCaml.exception out_of_memory ] B :=
+  : M [ exception out_of_memory ] B :=
   match x with
   | _ => Pervasives.raise (Out_of_memory tt)
   end.
 
-Definition e_overflow {A B : Type} (x : A)
-  : M [ OCaml.exception stack_overflow ] B :=
+Definition e_overflow {A B : Type} (x : A) : M [ exception stack_overflow ] B :=
   match x with
   | _ => Pervasives.raise (Stack_overflow tt)
   end.
 
-Definition e_sys_err {A B : Type} (x : A) : M [ OCaml.exception sys_error ] B :=
+Definition e_sys_err {A B : Type} (x : A) : M [ exception sys_error ] B :=
   match x with
   | _ => Pervasives.raise (Sys_error ("error" % string))
   end.
 
-Definition e_EOF {A B : Type} (x : A) : M [ OCaml.exception end_of_file ] B :=
+Definition e_EOF {A B : Type} (x : A) : M [ exception end_of_file ] B :=
   match x with
   | _ => Pervasives.raise (End_of_file tt)
   end.
 
-Definition e_div {A B : Type} (x : A)
-  : M [ OCaml.exception division_by_zero ] B :=
+Definition e_div {A B : Type} (x : A) : M [ exception division_by_zero ] B :=
   match x with
   | _ => Pervasives.raise (Division_by_zero tt)
   end.
 
 Definition e_sys_blocked {A B : Type} (x : A)
-  : M [ OCaml.exception sys_blocked_io ] B :=
+  : M [ exception sys_blocked_io ] B :=
   match x with
   | _ => Pervasives.raise (Sys_blocked_io tt)
   end.
 
 Definition e_rec_module {A B : Type} (x : A)
-  : M [ OCaml.exception undefined_recursive_module ] B :=
+  : M [ exception undefined_recursive_module ] B :=
   match x with
   | _ =>
     Pervasives.raise (Undefined_recursive_module (("error" % string, 1, 2)))

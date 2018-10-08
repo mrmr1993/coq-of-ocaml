@@ -49,7 +49,7 @@ Value
   (non_rec, @.,
     [
       ((hd, [ A ], [ (x, Type (list, A)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], A)),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], A)),
         Match
           (24, Variable (?, Ex27/x),
             [
@@ -75,7 +75,7 @@ Value
     [
       ((tl, [ A ], [ (x, Type (list, A)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (list, A))),
+          ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (list, A))),
         Match
           (28, Variable (?, Ex27/x),
             [
@@ -102,8 +102,8 @@ Value
       ((nth, [ A ], [ (l, Type (list, A)); (n, Type (Z)) ],
         Monad
           ([
-            Type (OCaml.exception, Type (OCaml.failure));
-            Type (OCaml.exception, Type (OCaml.invalid_argument))
+            Type (OCaml/exception, Type (OCaml/failure));
+            Type (OCaml/exception, Type (OCaml/invalid_argument))
           ], A)),
         IfThenElse
           (32,
@@ -114,28 +114,28 @@ Value
               (?,
                 [
                   Type
-                    (OCaml.exception,
+                    (OCaml/exception,
                       Type
-                        (OCaml.invalid_argument))
+                        (OCaml/invalid_argument))
                 ],
                 [
-                  Type (OCaml.exception, Type (OCaml.failure));
+                  Type (OCaml/exception, Type (OCaml/failure));
                   Type
-                    (OCaml.exception,
+                    (OCaml/exception,
                       Type
-                        (OCaml.invalid_argument))
+                        (OCaml/invalid_argument))
                 ],
                 Apply
                   (32, Variable (32, OCaml/Pervasives.invalid_arg),
                     [ Constant (32, String("List.nth")) ])),
             Lift
-              (?, [ Type (OCaml.exception, Type (OCaml.failure)) ],
+              (?, [ Type (OCaml/exception, Type (OCaml/failure)) ],
                 [
-                  Type (OCaml.exception, Type (OCaml.failure));
+                  Type (OCaml/exception, Type (OCaml/failure));
                   Type
-                    (OCaml.exception,
+                    (OCaml/exception,
                       Type
-                        (OCaml.invalid_argument))
+                        (OCaml/invalid_argument))
                 ],
                 LetFun 33
                   (rec, @coq_rec,
@@ -153,9 +153,9 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.exception,
+                              (OCaml/exception,
                                 Type
-                                  (OCaml.failure))
+                                  (OCaml/failure))
                           ],
                             B)),
                         Match
@@ -676,7 +676,7 @@ Value
       ((map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, C))),
         Match
           (99, Tuple (99, Variable (99, Ex27/l1), Variable (99, Ex27/l2)),
@@ -756,7 +756,7 @@ Value
       ((rev_map2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, C))),
         LetFun 106
           (rec, @coq_rec,
@@ -770,9 +770,9 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.invalid_argument))
+                          (OCaml/invalid_argument))
                   ], Type (list, C))),
                 Match
                   (107,
@@ -867,7 +867,7 @@ Value
       ((iter2, [ A; B; C ],
         [ (f, (A -> (B -> C))); (l1, Type (list, A)); (l2, Type (list, B)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (unit))),
         Match
           (114,
@@ -922,7 +922,7 @@ Value
           (l1, Type (list, B));
           (l2, Type (list, C))
         ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ], A)),
+        Monad ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ], A)),
         Match
           (121,
             Tuple (121, Variable (121, Ex27/l1), Variable (121, Ex27/l2)),
@@ -992,7 +992,7 @@ Value
           (l2, Type (list, B));
           (accu, C)
         ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ], C)),
+        Monad ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ], C)),
         Match
           (128,
             Tuple (128, Variable (128, Ex27/l1), Variable (128, Ex27/l2)),
@@ -1159,7 +1159,7 @@ Value
           (l2, Type (list, B))
         ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (bool))),
         Match
           (145,
@@ -1243,7 +1243,7 @@ Value
           (l2, Type (list, B))
         ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (bool))),
         Match
           (152,
@@ -1321,7 +1321,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ A ], [ (p, (A -> Type (bool))); (x, Type (list, A)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml/not_found)) ], A)),
+        Monad ([ Type (OCaml/exception, Type (OCaml/not_found)) ], A)),
         Match
           (192, Variable (?, Ex27/x),
             [
@@ -1648,7 +1648,7 @@ Value
     [
       ((combine, [ A; B ], [ (l1, Type (list, A)); (l2, Type (list, B)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, (A * B)))),
         Match
           (221,
@@ -1834,7 +1834,7 @@ Value
     [
       ((chop, [ A ], [ (k, Type (Z)); (l, Type (list, A)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+          ([ Type (OCaml/exception, Type (OCaml/assert_failure)) ],
             Type (list, A))),
         IfThenElse
           (241,
@@ -2216,7 +2216,7 @@ Value
           Monad
             ([
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Match
             (?, Variable (?, Ex27.StableSort/counter),
@@ -2232,9 +2232,9 @@ Value
                         Type
                           (NonTermination);
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ],
                       Apply
                         (?,
@@ -2633,17 +2633,17 @@ Value
                                 (?,
                                   [
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   [
                                     Type
                                       (NonTermination);
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   Apply
                                     (290,
@@ -2747,7 +2747,7 @@ Value
           Monad
             ([
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Match
             (?, Variable (?, Ex27.StableSort/counter),
@@ -2763,9 +2763,9 @@ Value
                         Type
                           (NonTermination);
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ],
                       Apply
                         (?,
@@ -3164,17 +3164,17 @@ Value
                                 (?,
                                   [
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   [
                                     Type
                                       (NonTermination);
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   Apply
                                     (312,
@@ -3284,7 +3284,7 @@ Value
             ([
               Type (Counter);
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Bind
             (?,
@@ -3294,9 +3294,9 @@ Value
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?, Variable (?, read_counter),
@@ -3306,17 +3306,17 @@ Value
                   [
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   [
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?,
@@ -3353,7 +3353,7 @@ Value
             ([
               Type (Counter);
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Bind
             (?,
@@ -3363,9 +3363,9 @@ Value
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?, Variable (?, read_counter),
@@ -3375,17 +3375,17 @@ Value
                   [
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   [
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?,
@@ -3898,7 +3898,7 @@ Value
           Monad
             ([
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Match
             (?, Variable (?, Ex27.SortUniq/counter),
@@ -3914,9 +3914,9 @@ Value
                         Type
                           (NonTermination);
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ],
                       Apply
                         (?,
@@ -4609,17 +4609,17 @@ Value
                                 (?,
                                   [
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   [
                                     Type
                                       (NonTermination);
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   Apply
                                     (387,
@@ -4723,7 +4723,7 @@ Value
           Monad
             ([
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Match
             (?, Variable (?, Ex27.SortUniq/counter),
@@ -4739,9 +4739,9 @@ Value
                         Type
                           (NonTermination);
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ],
                       Apply
                         (?,
@@ -5434,17 +5434,17 @@ Value
                                 (?,
                                   [
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   [
                                     Type
                                       (NonTermination);
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.assert_failure))
+                                          (OCaml/assert_failure))
                                   ],
                                   Apply
                                     (424,
@@ -5554,7 +5554,7 @@ Value
             ([
               Type (Counter);
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Bind
             (?,
@@ -5564,9 +5564,9 @@ Value
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?, Variable (?, read_counter),
@@ -5576,17 +5576,17 @@ Value
                   [
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   [
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?,
@@ -5623,7 +5623,7 @@ Value
             ([
               Type (Counter);
               Type (NonTermination);
-              Type (OCaml.exception, Type (OCaml.assert_failure))
+              Type (OCaml/exception, Type (OCaml/assert_failure))
             ], Type (list, A))),
           Bind
             (?,
@@ -5633,9 +5633,9 @@ Value
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?, Variable (?, read_counter),
@@ -5645,17 +5645,17 @@ Value
                   [
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   [
                     Type (Counter);
                     Type (NonTermination);
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.assert_failure))
+                          (OCaml/assert_failure))
                   ],
                   Apply
                     (?,

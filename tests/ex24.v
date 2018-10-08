@@ -5,25 +5,22 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Definition e_invalid {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.invalid_argument ] B :=
+  : M [ exception invalid_argument ] B :=
   match x with
   | _ => Pervasives.invalid_arg "error" % string
   end.
 
-Definition e_failure {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.failure ] B :=
+Definition e_failure {A B : Type} (x : A) : M [ exception failure ] B :=
   match x with
   | _ => Pervasives.failwith "error" % string
   end.
 
-Definition e_exit1 {A B : Type} (x : A)
-  : M [ OCaml.exception Pervasives.exit ] B :=
+Definition e_exit1 {A B : Type} (x : A) : M [ exception Pervasives.exit ] B :=
   match x with
   | _ => Pervasives.raise (Pervasives.Exit tt)
   end.
 
-Definition e_exit2 {A B : Type} (x : A)
-  : M [ OCaml.exception Pervasives.exit ] B :=
+Definition e_exit2 {A B : Type} (x : A) : M [ exception Pervasives.exit ] B :=
   match x with
   | _ => Pervasives.raise (Pervasives.Exit tt)
   end.
@@ -100,8 +97,7 @@ Definition ss : string := String.append "begin" % string "end" % string.
 
 Definition n_char : Z := Pervasives.int_of_char "c" % char.
 
-Definition char_n {A : Type} (x : A)
-  : M [ OCaml.exception invalid_argument ] ascii :=
+Definition char_n {A : Type} (x : A) : M [ exception invalid_argument ] ascii :=
   match x with
   | _ => Pervasives.char_of_int 23
   end.

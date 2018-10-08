@@ -6,17 +6,17 @@ Import ListNotations.
 
 Require OCaml.List.
 
-Definition get_local_ref (tt : unit) : M [ OCaml.Effect.State.state Z ] Z :=
+Definition get_local_ref (tt : unit) : M [ Effect.State.state Z ] Z :=
   let! x := Pervasives.ref 12 in
   Effect.State.read x.
 
-Definition set_local_ref (tt : unit) : M [ OCaml.Effect.State.state Z ] Z :=
+Definition set_local_ref (tt : unit) : M [ Effect.State.state Z ] Z :=
   let! x := Pervasives.ref 12 in
   let! _ := Effect.State.write x 15 in
   Effect.State.read x.
 
 Definition add_multiple_by_refs (a : Z) (b : Z) (c : Z) (d : Z)
-  : M [ OCaml.Effect.State.state Z ] Z :=
+  : M [ Effect.State.state Z ] Z :=
   let! x := Pervasives.ref a in
   let! _ :=
     let! x_1 :=
@@ -37,35 +37,35 @@ Definition add_multiple_by_refs (a : Z) (b : Z) (c : Z) (d : Z)
     Pervasives.ref x_1 in
   Effect.State.read z.
 
-Definition set_ref (x : Effect.State.t Z)
-  : M [ OCaml.Effect.State.state Z ] unit := Effect.State.write x 15.
+Definition set_ref (x : Effect.State.t Z) : M [ Effect.State.state Z ] unit :=
+  Effect.State.write x 15.
 
-Definition get_ref (x : Effect.State.t Z)
-  : M [ OCaml.Effect.State.state Z ] Z := Effect.State.read x.
+Definition get_ref (x : Effect.State.t Z) : M [ Effect.State.state Z ] Z :=
+  Effect.State.read x.
 
 Definition update_ref (x : Effect.State.t Z)
-  : M [ OCaml.Effect.State.state Z ] unit :=
+  : M [ Effect.State.state Z ] unit :=
   let! x_1 :=
     let! x_1 := Effect.State.read x in
     ret (Z.add x_1 5) in
   Effect.State.write x x_1.
 
-Definition new_ref (x : unit)
-  : M [ OCaml.Effect.State.state Z ] (Effect.State.t Z) := Pervasives.ref 15.
+Definition new_ref (x : unit) : M [ Effect.State.state Z ] (Effect.State.t Z) :=
+  Pervasives.ref 15.
 
 Definition r_state := OCaml.Effect.State.global_state.
 Definition r : M [ OCaml.Effect.State.state Z; r_state ]
   (OCaml.Effect.State.t Z) := OCaml.Effect.State.global 18.
 
-Definition set_r (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] unit :=
+Definition set_r (x : unit) : M [ Effect.State.state Z; r_state ] unit :=
   let! x_1 := r in
   lift [_;_] "10" (set_ref x_1).
 
-Definition get_r (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] Z :=
+Definition get_r (x : unit) : M [ Effect.State.state Z; r_state ] Z :=
   let! x_1 := r in
   lift [_;_] "10" (get_ref x_1).
 
-Definition r_add_15 (x : unit) : M [ OCaml.Effect.State.state Z; r_state ] Z :=
+Definition r_add_15 (x : unit) : M [ Effect.State.state Z; r_state ] Z :=
   let! i := get_r tt in
   let! _ := set_r tt in
   let! j := get_r tt in
@@ -80,9 +80,9 @@ Definition mixed_type {es_in : list Effect.t} (x : unit)
     [
       OCaml.Effect.Union.union es_in
         [
-          (OCaml.Effect.State.state Z);
-          (OCaml.Effect.State.state bool);
-          (OCaml.Effect.State.state string)
+          (Effect.State.state Z);
+          (Effect.State.state bool);
+          (Effect.State.state string)
         ];
       r_state
     ] (bool * string * Z) :=
@@ -95,10 +95,7 @@ Definition mixed_type {es_in : list Effect.t} (x : unit)
     : M
       [
         OCaml.Effect.Union.union _
-          [
-            (OCaml.Effect.State.state bool);
-            (OCaml.Effect.State.state string)
-          ]
+          [ (Effect.State.state bool); (Effect.State.state string) ]
       ] unit :=
     match x_1 with
     | tt =>
@@ -135,13 +132,13 @@ Definition partials_test {es_in : list Effect.t} (x : unit)
   : M
     [
       OCaml.Effect.Union.union es_in
-        [ (OCaml.Effect.State.state Z); (OCaml.Effect.State.state (list Z)) ];
+        [ (Effect.State.state Z); (Effect.State.state (list Z)) ];
       r_state
     ] (Effect.State.t Z) :=
   match x with
   | tt =>
     let f1 (x : Effect.State.t Z) (y : Z)
-      : M [ OCaml.Effect.State.state Z ] (Effect.State.t Z) :=
+      : M [ Effect.State.state Z ] (Effect.State.t Z) :=
       let! _ := Effect.State.write x y in
       ret x in
     let! f1_test :=
@@ -154,10 +151,7 @@ Definition partials_test {es_in : list Effect.t} (x : unit)
         : M
           [
             OCaml.Effect.Union.union _
-              [
-                (OCaml.Effect.State.state Z);
-                (OCaml.Effect.State.state (list Z))
-              ]
+              [ (Effect.State.state Z); (Effect.State.state (list Z)) ]
           ] (Effect.State.t Z) :=
         let! x_1 :=
           @Union.lift _ _ _ [_;_] 1
@@ -177,15 +171,14 @@ Definition partials_test {es_in : list Effect.t} (x : unit)
   end.
 
 Definition multiple_returns_test (x : unit)
-  : M [ OCaml.Effect.State.state Z ] (Z * (Effect.State.t Z)) :=
+  : M [ Effect.State.state Z ] (Z * (Effect.State.t Z)) :=
   match x with
   | tt =>
     let f (x : Effect.State.t Z) (y : Z)
-      : M [ OCaml.Effect.State.state Z ]
+      : M [ Effect.State.state Z ]
         (Z ->
-          M [ OCaml.Effect.State.state Z ]
-            ((Effect.State.t Z) ->
-              M [ OCaml.Effect.State.state Z ] (Effect.State.t Z))) :=
+          M [ Effect.State.state Z ]
+            ((Effect.State.t Z) -> M [ Effect.State.state Z ] (Effect.State.t Z))) :=
       let! _ := Effect.State.write x y in
       ret
         (fun z =>
@@ -220,25 +213,23 @@ Definition type_vars_test {A B : Type} {es_in : list Effect.t}
   : M
     [
       OCaml.Effect.Union.union es_in
-        [ (OCaml.Effect.State.state A); (OCaml.Effect.State.state B) ]
+        [ (Effect.State.state A); (Effect.State.state B) ]
     ] unit :=
   let! _ := @Union.lift _ _ _ [_;_] 0 (Effect.State.write x a) in
   @Union.lift _ _ _ [_;_] 1 (Effect.State.write y b).
 
 Definition resolves_test1 {A : Type} (x : Effect.State.t A) (a : A) (b : A)
-  : M [ OCaml.Effect.State.state A ] unit :=
-  Union.inject 2 (type_vars_test x x a b).
+  : M [ Effect.State.state A ] unit := Union.inject 2 (type_vars_test x x a b).
 
 Definition resolves_test2 {A : Type} {es_in : list Effect.t}
   (x : Effect.State.t Z) (y : Effect.State.t A) (a : Z) (b : A)
   : M
     [
       OCaml.Effect.Union.union es_in
-        [ (OCaml.Effect.State.state A); (OCaml.Effect.State.state Z) ]
+        [ (Effect.State.state A); (Effect.State.state Z) ]
     ] unit :=
   @Union.mix _ _ _ _ [_;_] [1;0]%nat eq_refl eq_refl (type_vars_test x y a b).
 
 Definition resolves_test3
   (x : Effect.State.t Z) (y : Effect.State.t Z) (a : Z) (b : Z)
-  : M [ OCaml.Effect.State.state Z ] unit :=
-  Union.inject 2 (type_vars_test x y a b).
+  : M [ Effect.State.state Z ] unit := Union.inject 2 (type_vars_test x y a b).

@@ -3,7 +3,7 @@ Value
   (non_rec, @.,
     [
       ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
@@ -76,7 +76,7 @@ Value
     [
       ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (list, Type (bool))) ],
+          ([ Type (OCaml/Effect.State.state, Type (list, Type (bool))) ],
             Type (list, Type (bool)))),
         Bind
           (?,
@@ -206,7 +206,7 @@ Value
   (non_rec, @.,
     [
       ((raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (unit))),
         Apply
           (20, Variable (?, OCaml/Basics.for_to),
             [
@@ -229,9 +229,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           ())))
             ]))
@@ -242,7 +242,7 @@ Value
   (non_rec, @.,
     [
       ((complex_raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (unit))),
         LetFun 25
           (non_rec, @.,
             [
@@ -250,9 +250,9 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.failure))
+                          (OCaml/failure))
                   ], (A * Type (Z) * B))),
                 Bind
                   (?,
@@ -304,9 +304,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           (Type
                             (bool)
@@ -324,7 +324,7 @@ Value
     [
       ((argument_effects, [ ],
         [ (x, Type (OCaml/Effect.State.t, Type (Z))); (y, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply

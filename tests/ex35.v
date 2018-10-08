@@ -7,7 +7,7 @@ Import ListNotations.
 Inductive fail : Type :=
 | Fail : (string) -> fail.
 
-Definition div (n : Z) : M [ OCaml.exception fail ] Z :=
+Definition div (n : Z) : M [ exception fail ] Z :=
   if equiv_decb n 0 then
     Pervasives.raise (Fail ("n is null" % string))
   else

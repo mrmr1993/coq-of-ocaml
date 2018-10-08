@@ -7,7 +7,7 @@ Import ListNotations.
 Inductive outside : Type :=
 | Outside : unit -> outside.
 
-Definition f {A B : Type} (x : A) : M [ OCaml.exception outside ] B :=
+Definition f {A B : Type} (x : A) : M [ exception outside ] B :=
   Pervasives.raise (Outside tt).
 
 Module G.
@@ -15,7 +15,7 @@ Module G.
   | Inside : (Z * string) -> inside.
   
   Definition g {A : Type} (b : bool)
-    : M [ OCaml.exception outside; OCaml.exception inside ] A :=
+    : M [ exception outside; exception inside ] A :=
     if b then
       lift [_;_] "01" (Pervasives.raise (Inside (12, "no" % string)))
     else

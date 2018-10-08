@@ -6,14 +6,14 @@ Import ListNotations.
 
 Definition t := Effect.Open_Type.t.
 
-Definition f (x : unit) : M [ OCaml.exception OCaml.assert_failure ] (t [ ]) :=
+Definition f (x : unit) : M [ exception assert_failure ] (t [ ]) :=
   match x with
   | tt => assert false
   end.
 
 Definition u := Effect.Open_Type.t.
 
-Definition g {A : Type} (x : A) : M [ OCaml.exception OCaml.failure ] (u [ ]) :=
+Definition g {A : Type} (x : A) : M [ exception failure ] (u [ ]) :=
   Pervasives.failwith "fail" % string.
 
 Polymorphic

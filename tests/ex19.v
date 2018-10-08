@@ -13,7 +13,7 @@ Definition x1 : Z :=
   | inr (Error tt) => 12
   end.
 
-Definition x2 {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
+Definition x2 {A B : Type} (x : A) : M [ exception failure ] B :=
   match x with
   | _ =>
     match Exception.run 0 (Pervasives.raise (Error tt)) tt with
@@ -22,7 +22,7 @@ Definition x2 {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
     end
   end.
 
-Definition x3 (b : bool) : M [ OCaml.exception OCaml.failure ] Z :=
+Definition x3 (b : bool) : M [ exception failure ] Z :=
   let! x :=
     Exception.run 0
       (if b then

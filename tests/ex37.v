@@ -7,8 +7,8 @@ Import ListNotations.
 Module A.
   Definition a : Z := 5.
   
-  Definition c {A : Type} (x : string)
-    : M [ OCaml.exception OCaml.failure ] A := Pervasives.failwith x.
+  Definition c {A : Type} (x : string) : M [ exception failure ] A :=
+    Pervasives.failwith x.
 End A.
 
 Include A.

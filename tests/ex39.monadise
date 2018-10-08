@@ -5,7 +5,7 @@ Value
   (non_rec, @.,
     [
       ((get_local_ref, [ ], [ (tt, Type (unit)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
@@ -21,7 +21,7 @@ Value
   (non_rec, @.,
     [
       ((set_local_ref, [ ], [ (tt, Type (unit)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
@@ -44,7 +44,7 @@ Value
     [
       ((add_multiple_by_refs, [ ],
         [ (a, Type (Z)); (b, Type (Z)); (c, Type (Z)); (d, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
@@ -207,7 +207,7 @@ Value
   (non_rec, @.,
     [
       ((set_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Apply
           (21, Variable (21, OCaml/Effect.State.write),
             [ Variable (21, Ex39/x); Constant (21, Int(15)) ]))
@@ -218,7 +218,7 @@ Value
   (non_rec, @.,
     [
       ((get_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Apply
           (24, Variable (24, OCaml/Effect.State.read),
             [ Variable (24, Ex39/x) ]))
@@ -229,7 +229,7 @@ Value
   (non_rec, @.,
     [
       ((update_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Bind
           (?,
             Bind
@@ -256,7 +256,7 @@ Value
     [
       ((new_ref, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)) ],
             Type (OCaml/Effect.State.t, Type (Z)))),
         Apply
           (30, Variable (30, OCaml/Pervasives.ref),
@@ -271,14 +271,14 @@ Value
     [
       ((set_r, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (unit))),
         Bind
           (?, Variable (34, Ex39/r), Some x_1,
             Lift
-              (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
+              (?, [ Type (OCaml/Effect.State.state, Type (Z)) ],
                 [
-                  Type (OCaml.Effect.State.state, Type (Z));
+                  Type (OCaml/Effect.State.state, Type (Z));
                   Type (Ex39/r_state)
                 ],
                 Apply
@@ -292,14 +292,14 @@ Value
     [
       ((get_r, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (Z))),
         Bind
           (?, Variable (36, Ex39/r), Some x_1,
             Lift
-              (?, [ Type (OCaml.Effect.State.state, Type (Z)) ],
+              (?, [ Type (OCaml/Effect.State.state, Type (Z)) ],
                 [
-                  Type (OCaml.Effect.State.state, Type (Z));
+                  Type (OCaml/Effect.State.state, Type (Z));
                   Type (Ex39/r_state)
                 ],
                 Apply
@@ -313,7 +313,7 @@ Value
     [
       ((r_add_15, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (Z))),
         Bind
           (?,
@@ -339,13 +339,13 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z));
                                   Type
@@ -381,13 +381,13 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z));
                                   Type
@@ -412,19 +412,19 @@ Value
       ((mixed_type, [ ], [ (es_in, list Effect.t); (x, Type (unit)) ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, Type (Z));
-            Type (OCaml.Effect.State.state, Type (bool));
-            Type (OCaml.Effect.State.state, Type (string));
+            Type (OCaml/Effect.State.state, Type (Z));
+            Type (OCaml/Effect.State.state, Type (bool));
+            Type (OCaml/Effect.State.state, Type (string));
             Type (Ex39/r_state)
           ], (Type (bool) * Type (string) * Type (Z)))),
         Bind
           (?,
             Lift
-              (?, [ Type (OCaml.Effect.State.state, Type (bool)) ],
+              (?, [ Type (OCaml/Effect.State.state, Type (bool)) ],
                 [
-                  Type (OCaml.Effect.State.state, Type (Z));
-                  Type (OCaml.Effect.State.state, Type (bool));
-                  Type (OCaml.Effect.State.state, Type (string));
+                  Type (OCaml/Effect.State.state, Type (Z));
+                  Type (OCaml/Effect.State.state, Type (bool));
+                  Type (OCaml/Effect.State.state, Type (string));
                   Type (Ex39/r_state)
                 ],
                 Apply
@@ -436,18 +436,18 @@ Value
                   (?,
                     [
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (string))
                     ],
                     [
-                      Type (OCaml.Effect.State.state, Type (Z));
+                      Type (OCaml/Effect.State.state, Type (Z));
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (bool));
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (string));
                       Type (Ex39/r_state)
@@ -463,11 +463,11 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (bool));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (string))
                           ],
@@ -487,17 +487,17 @@ Value
                                       (?,
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (bool))
                                         ],
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (bool));
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string))
                                         ],
@@ -533,17 +533,17 @@ Value
                                       (?,
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string))
                                         ],
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (bool));
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string))
                                         ],
@@ -601,25 +601,25 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (bool));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (string))
                         ],
                         [
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (bool));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (string));
                           Type (Ex39/r_state)
@@ -634,25 +634,25 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (bool));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (string))
                             ],
                             [
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (bool));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (string));
                               Type (Ex39/r_state)
@@ -672,25 +672,25 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (bool));
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (string))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z));
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (bool));
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (string));
                                   Type
@@ -712,21 +712,21 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (bool))
                                     ],
                                     [
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z));
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (bool));
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (string));
                                       Type
@@ -749,21 +749,21 @@ Value
                                       (?,
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string))
                                         ],
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (Z));
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (bool));
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string));
                                           Type
@@ -786,7 +786,7 @@ Value
                                           (?,
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z));
                                               Type
@@ -794,15 +794,15 @@ Value
                                             ],
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z));
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (bool));
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (string));
                                               Type
@@ -819,13 +819,13 @@ Value
                                                   (?,
                                                     [
                                                       Type
-                                                        (OCaml.Effect.State.state,
+                                                        (OCaml/Effect.State.state,
                                                           Type
                                                             (Z))
                                                     ],
                                                     [
                                                       Type
-                                                        (OCaml.Effect.State.state,
+                                                        (OCaml/Effect.State.state,
                                                           Type
                                                             (Z));
                                                       Type
@@ -865,8 +865,8 @@ Value
       ((partials_test, [ ], [ (es_in, list Effect.t); (x, Type (unit)) ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, Type (Z));
-            Type (OCaml.Effect.State.state, Type (list, Type (Z)));
+            Type (OCaml/Effect.State.state, Type (Z));
+            Type (OCaml/Effect.State.state, Type (list, Type (Z)));
             Type (Ex39/r_state)
           ], Type (OCaml/Effect.State.t, Type (Z)))),
         Match
@@ -892,7 +892,7 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
@@ -937,11 +937,11 @@ Value
                         ],
                         [
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (list,
                                   Type
@@ -974,11 +974,11 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (list,
                                   Type
@@ -986,11 +986,11 @@ Value
                         ],
                         [
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (list,
                                   Type
@@ -1004,17 +1004,17 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z));
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (list,
                                           Type
@@ -1057,11 +1057,11 @@ Value
                                     Monad
                                       ([
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z));
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (list,
                                                 Type
@@ -1077,7 +1077,7 @@ Value
                                           (?,
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (list,
                                                       Type
@@ -1085,11 +1085,11 @@ Value
                                             ],
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z));
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (list,
                                                       Type
@@ -1153,17 +1153,17 @@ Value
                                           (?,
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z))
                                             ],
                                             [
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z));
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (list,
                                                       Type
@@ -1187,7 +1187,7 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (list,
                                               Type
@@ -1195,11 +1195,11 @@ Value
                                     ],
                                     [
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z));
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (list,
                                               Type
@@ -1281,17 +1281,17 @@ Value
                                       (?,
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (Z))
                                         ],
                                         [
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (Z));
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (list,
                                                   Type
@@ -1333,7 +1333,7 @@ Value
     [
       ((multiple_returns_test, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)) ],
             (Type (Z) * Type (OCaml/Effect.State.t, Type (Z))))),
         Match
           (68, Variable (?, Ex39/x),
@@ -1358,7 +1358,7 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
@@ -1368,7 +1368,7 @@ Value
                               Monad
                                 ([
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ],
@@ -1380,7 +1380,7 @@ Value
                                     Monad
                                       ([
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ],
@@ -1676,16 +1676,16 @@ Value
         ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, A);
-            Type (OCaml.Effect.State.state, B)
+            Type (OCaml/Effect.State.state, A);
+            Type (OCaml/Effect.State.state, B)
           ], Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ Type (OCaml.Effect.State.state, A) ],
+              (?, [ Type (OCaml/Effect.State.state, A) ],
                 [
-                  Type (OCaml.Effect.State.state, A);
-                  Type (OCaml.Effect.State.state, B)
+                  Type (OCaml/Effect.State.state, A);
+                  Type (OCaml/Effect.State.state, B)
                 ],
                 Apply
                   (88, Variable (88, OCaml/Effect.State.write),
@@ -1694,10 +1694,10 @@ Value
                       Variable (88, Ex39/a)
                     ])), None,
             Lift
-              (?, [ Type (OCaml.Effect.State.state, B) ],
+              (?, [ Type (OCaml/Effect.State.state, B) ],
                 [
-                  Type (OCaml.Effect.State.state, A);
-                  Type (OCaml.Effect.State.state, B)
+                  Type (OCaml/Effect.State.state, A);
+                  Type (OCaml/Effect.State.state, B)
                 ],
                 Apply
                   (89, Variable (89, OCaml/Effect.State.write),
@@ -1713,13 +1713,13 @@ Value
     [
       ((resolves_test1, [ A ],
         [ (x, Type (OCaml/Effect.State.t, A)); (a, A); (b, A) ],
-        Monad ([ Type (OCaml.Effect.State.state, A) ], Type (unit))),
+        Monad ([ Type (OCaml/Effect.State.state, A) ], Type (unit))),
         Lift
           (?,
             [
-              Type (OCaml.Effect.State.state, A);
-              Type (OCaml.Effect.State.state, A)
-            ], [ Type (OCaml.Effect.State.state, A) ],
+              Type (OCaml/Effect.State.state, A);
+              Type (OCaml/Effect.State.state, A)
+            ], [ Type (OCaml/Effect.State.state, A) ],
             Apply
               (92, Variable (92, Ex39/type_vars_test),
                 [
@@ -1744,18 +1744,18 @@ Value
         ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, A);
-            Type (OCaml.Effect.State.state, Type (Z))
+            Type (OCaml/Effect.State.state, A);
+            Type (OCaml/Effect.State.state, Type (Z))
           ], Type (unit))),
         Lift
           (?,
             [
-              Type (OCaml.Effect.State.state, Type (Z));
-              Type (OCaml.Effect.State.state, A)
+              Type (OCaml/Effect.State.state, Type (Z));
+              Type (OCaml/Effect.State.state, A)
             ],
             [
-              Type (OCaml.Effect.State.state, A);
-              Type (OCaml.Effect.State.state, Type (Z))
+              Type (OCaml/Effect.State.state, A);
+              Type (OCaml/Effect.State.state, Type (Z))
             ],
             Apply
               (95, Variable (95, Ex39/type_vars_test),
@@ -1777,13 +1777,13 @@ Value
           (y, Type (OCaml/Effect.State.t, Type (Z)));
           (a, Type (Z));
           (b, Type (Z))
-        ], Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+        ], Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Lift
           (?,
             [
-              Type (OCaml.Effect.State.state, Type (Z));
-              Type (OCaml.Effect.State.state, Type (Z))
-            ], [ Type (OCaml.Effect.State.state, Type (Z)) ],
+              Type (OCaml/Effect.State.state, Type (Z));
+              Type (OCaml/Effect.State.state, Type (Z))
+            ], [ Type (OCaml/Effect.State.state, Type (Z)) ],
             Apply
               (98, Variable (98, Ex39/type_vars_test),
                 [

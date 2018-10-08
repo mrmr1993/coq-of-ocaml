@@ -5,15 +5,14 @@ Local Open Scope type_scope.
 Import ListNotations.
 
 Module M.
-  Definition f {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
+  Definition f {A B : Type} (x : A) : M [ exception failure ] B :=
     match x with
     | _ => Pervasives.failwith "failure" % string
     end.
 End M.
 
 Module N.
-  Definition f {A B : Type} (x : A)
-    : M [ OCaml.exception OCaml.assert_failure ] B :=
+  Definition f {A B : Type} (x : A) : M [ exception assert_failure ] B :=
     match x with
     | _ => assert false
     end.
@@ -50,8 +49,7 @@ Definition b' : unit :=
 Definition x : Z := 15.
 
 Module A.
-  Definition x {A B : Type} (x : A)
-    : M [ OCaml.exception OCaml.assert_failure ] B :=
+  Definition x {A B : Type} (x : A) : M [ exception assert_failure ] B :=
     match x with
     | _ => assert false
     end.
@@ -64,23 +62,23 @@ Module B.
   
   Definition b {A B : Type} : A -> M [ exception assert_failure ] B := x.
   
-  Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
+  Definition x {A B : Type} (x : A) : M [ exception failure ] B :=
     match x with
     | _ => Pervasives.failwith "failure" % string
     end.
   
-  Definition c {A B : Type} : A -> M [ OCaml.exception OCaml.failure ] B := x.
+  Definition c {A B : Type} : A -> M [ exception failure ] B := x.
 End B.
 
 Module C.
   Definition a : Z := x.
   
-  Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
+  Definition x {A B : Type} (x : A) : M [ exception failure ] B :=
     match x with
     | _ => Pervasives.failwith "failure" % string
     end.
   
-  Definition b {A B : Type} : A -> M [ OCaml.exception OCaml.failure ] B := x.
+  Definition b {A B : Type} : A -> M [ exception failure ] B := x.
   
   Import A.
   

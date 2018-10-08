@@ -20,8 +20,7 @@ Definition n5 : Z := Z.add (Z.shiftl 156 4) (Z.shiftr 12 1).
 
 Definition s : string := String.append "ghj" % string "klm" % string.
 
-Definition c {A : Type} (x : A)
-  : M [ OCaml.exception invalid_argument ] ascii :=
+Definition c {A : Type} (x : A) : M [ exception invalid_argument ] ascii :=
   match x with
   | _ => Pervasives.char_of_int (Z.add (Pervasives.int_of_char "c" % char) 1)
   end.

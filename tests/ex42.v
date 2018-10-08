@@ -4,7 +4,7 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition x (a : Z) (b : Z) : M [ OCaml.Effect.State.state Z ] Z :=
+Definition x (a : Z) (b : Z) : M [ Effect.State.state Z ] Z :=
   let! y := Pervasives.ref 0 in
   let! _ :=
     Basics.for_to a b
@@ -16,7 +16,7 @@ Definition x (a : Z) (b : Z) : M [ OCaml.Effect.State.state Z ] Z :=
   Effect.State.read y.
 
 Definition nested (x : Z) (y : Z)
-  : M [ OCaml.Effect.State.state (list bool) ] (list bool) :=
+  : M [ Effect.State.state (list bool) ] (list bool) :=
   let! a := Pervasives.ref [] in
   let! _ :=
     Basics.for_to 0 x
@@ -34,22 +34,21 @@ Definition nested (x : Z) (y : Z)
         Effect.State.write a x_1) in
   Effect.State.read a.
 
-Definition raises (x : Z) : M [ OCaml.exception OCaml.failure ] unit :=
+Definition raises (x : Z) : M [ exception failure ] unit :=
   Basics.for_to 0 x
     (fun i =>
       (Pervasives.failwith "x is not less than 0" % string) :
-        M [ OCaml.exception OCaml.failure ] unit).
+        M [ exception failure ] unit).
 
-Definition complex_raises (x : Z) : M [ OCaml.exception OCaml.failure ] unit :=
-  let f {A B : Type} (a : A)
-    : M [ OCaml.exception OCaml.failure ] (A * Z * B) :=
+Definition complex_raises (x : Z) : M [ exception failure ] unit :=
+  let f {A B : Type} (a : A) : M [ exception failure ] (A * Z * B) :=
     let! x_1 := Pervasives.failwith "x is not less than 0" % string in
     ret (a, 15, x_1) in
   Basics.for_to 0 x
-    (fun i => (f true) : M [ OCaml.exception OCaml.failure ] (bool * Z * unit)).
+    (fun i => (f true) : M [ exception failure ] (bool * Z * unit)).
 
 Definition argument_effects (x : Effect.State.t Z) (y : Z)
-  : M [ OCaml.Effect.State.state Z ] Z :=
+  : M [ Effect.State.state Z ] Z :=
   let! y := Pervasives.ref y in
   let! z := Pervasives.ref 0 in
   let! _ :=

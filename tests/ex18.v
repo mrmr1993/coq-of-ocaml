@@ -9,7 +9,7 @@ Definition r : M [ OCaml.Effect.State.state Z; r_state ]
   (OCaml.Effect.State.t Z) := OCaml.Effect.State.global 12.
 
 Definition plus_one {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; r_state ] Z :=
+  : M [ Effect.State.state Z; r_state ] Z :=
   match x with
   | _ =>
     let! x_1 :=
@@ -23,9 +23,7 @@ Definition s : M [ OCaml.Effect.State.state string; s_state ]
   (OCaml.Effect.State.t string) := OCaml.Effect.State.global "Hi" % string.
 
 Definition fail {A B : Type} (x : A)
-  : M
-    [ OCaml.Effect.State.state string; s_state; OCaml.exception OCaml.failure ]
-    B :=
+  : M [ Effect.State.state string; s_state; exception failure ] B :=
   match x with
   | _ =>
     let! x_1 :=
@@ -36,15 +34,14 @@ Definition fail {A B : Type} (x : A)
   end.
 
 Definition reset {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; r_state ] unit :=
+  : M [ Effect.State.state Z; r_state ] unit :=
   match x with
   | _ =>
     let! x_1 := r in
     lift [_;_] "10" (Effect.State.write x_1 0)
   end.
 
-Definition incr {A : Type} (x : A)
-  : M [ OCaml.Effect.State.state Z; r_state ] unit :=
+Definition incr {A : Type} (x : A) : M [ Effect.State.state Z; r_state ] unit :=
   match x with
   | _ =>
     let! x_1 := r in
