@@ -3,10 +3,12 @@ Value
   (non_rec, @.,
     [
       ((e_invalid, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ], B)),
         Match
-          ((5, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((5,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -14,7 +16,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -25,7 +29,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Invalid_argument)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.invalid_argument))
                               ]->
                               .)),
                         OCaml.Pervasives.invalid_arg),
@@ -45,9 +51,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
-          ((6, Effect ([ Type (OCaml.Failure) ], .)),
+          ((6, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -56,7 +63,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
                       ],
                         .)),
                     Variable
@@ -67,7 +76,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
                               ]->
                               .)),
                         OCaml.Pervasives.failwith),
@@ -88,10 +99,12 @@ Value
   (non_rec, @.,
     [
       ((e_exit1, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ], B)),
         Match
-          ((7, Effect ([ Type (OCaml.Pervasives.Exit) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((7,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -99,7 +112,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Pervasives.Exit)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Pervasives.exit))
                       ],
                         .)),
                     Variable
@@ -110,17 +125,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Pervasives.Exit)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Pervasives.exit))
                               ]->
                               .)),
-                        OCaml.Pervasives.raise_Exit),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((7,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Pervasives.Exit,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -130,10 +154,12 @@ Value
   (non_rec, @.,
     [
       ((e_exit2, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Pervasives.Exit) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ], B)),
         Match
-          ((8, Effect ([ Type (OCaml.Pervasives.Exit) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((8,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -141,7 +167,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Pervasives.Exit)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.Pervasives.exit))
                       ],
                         .)),
                     Variable
@@ -152,17 +180,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Pervasives.Exit)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.Pervasives.exit))
                               ]->
                               .)),
-                        OCaml.Pervasives.raise_Exit),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((8,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Pervasives.Exit,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -664,9 +701,12 @@ Value
   (non_rec, @.,
     [
       ((char_n, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (ascii))),
+        Monad
+          ([ Type (OCaml.exception, Type (invalid_argument)) ], Type (ascii))),
         Match
-          ((68, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((68,
+            Effect
+              ([ Type (OCaml.exception, Type (invalid_argument)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -675,7 +715,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (invalid_argument))
                       ],
                         .)),
                     Variable
@@ -686,7 +728,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Invalid_argument)
+                                  (OCaml.exception,
+                                    Type
+                                      (invalid_argument))
                               ]->
                               .)),
                         OCaml.Pervasives.char_of_int),

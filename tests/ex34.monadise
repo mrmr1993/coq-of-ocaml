@@ -89,7 +89,9 @@ Value
   (non_rec, @.,
     [
       ((bal, [ ], [ (l, Type (t)); (v, Type (elt)); (r, Type (t)) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (t))),
         LetVar ? hl =
           Match
             (34, Variable (34, l),
@@ -475,7 +477,9 @@ Value
   (rec, @coq_rec,
     [
       ((add, [ ], [ (x, Type (elt)); (x_1, Type (t)) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (t))),
         Match
           (66, Variable (?, x_1),
             [
@@ -632,7 +636,9 @@ Value
   (rec, @coq_rec,
     [
       ((add_min_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (t))),
         Match
           (83, Variable (?, x),
             [
@@ -691,7 +697,9 @@ Value
   (rec, @coq_rec,
     [
       ((add_max_element, [ ], [ (v, Type (elt)); (x, Type (t)) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (t))),
         Match
           (89, Variable (?, x),
             [
@@ -757,8 +765,10 @@ Value
           (r, Type (t))
         ],
         Monad
-          ([ Type (NonTermination); Type (OCaml.Invalid_argument) ],
-            Type (t))),
+          ([
+            Type (NonTermination);
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
+          ], Type (t))),
         Match
           (?, Variable (?, counter),
             [
@@ -773,7 +783,9 @@ Value
                       Type
                         (NonTermination);
                       Type
-                        (OCaml.Invalid_argument)
+                        (OCaml.exception,
+                          Type
+                            (OCaml.invalid_argument))
                     ],
                     Apply
                       (?,
@@ -804,13 +816,17 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             Apply
                               (99,
@@ -833,13 +849,17 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             Apply
                               (100,
@@ -923,13 +943,17 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     [
                                       Type
                                         (NonTermination);
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     Apply
                                       (102,
@@ -1003,13 +1027,17 @@ Value
                                       (?,
                                         [
                                           Type
-                                            (OCaml.Invalid_argument)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument))
                                         ],
                                         [
                                           Type
                                             (NonTermination);
                                           Type
-                                            (OCaml.Invalid_argument)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument))
                                         ],
                                         Apply
                                           (103,
@@ -1058,7 +1086,7 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument)
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
           ], Type (t))),
         Bind
           (?,
@@ -1067,7 +1095,10 @@ Value
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Invalid_argument)
+                  Type
+                    (OCaml.exception,
+                      Type
+                        (OCaml.invalid_argument))
                 ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
@@ -1075,12 +1106,18 @@ Value
               (?,
                 [
                   Type (NonTermination);
-                  Type (OCaml.Invalid_argument)
+                  Type
+                    (OCaml.exception,
+                      Type
+                        (OCaml.invalid_argument))
                 ],
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Invalid_argument)
+                  Type
+                    (OCaml.exception,
+                      Type
+                        (OCaml.invalid_argument))
                 ],
                 Apply
                   (?, Variable (?, join_rec),
@@ -1097,7 +1134,7 @@ Value
   (rec, @coq_rec,
     [
       ((min_elt, [ ], [ (x, Type (t)) ],
-        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (elt))),
         Match
           (109, Variable (?, x),
             [
@@ -1106,10 +1143,13 @@ Value
                   (109,
                     Variable
                       (109,
-                        OCaml.raise_Not_found),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        (?)
+                      Constructor
+                        (109,
+                          OCaml.Not_found,
+                          Tuple
+                            (?))
                     ]));
               (Constructor (Node, Constructor (Empty), v, r, Any),
                 Return (?, Variable (110, v)));
@@ -1132,7 +1172,7 @@ Value
   (rec, @coq_rec,
     [
       ((max_elt, [ ], [ (x, Type (t)) ],
-        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (elt))),
         Match
           (115, Variable (?, x),
             [
@@ -1141,10 +1181,13 @@ Value
                   (115,
                     Variable
                       (115,
-                        OCaml.raise_Not_found),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        (?)
+                      Constructor
+                        (115,
+                          OCaml.Not_found,
+                          Tuple
+                            (?))
                     ]));
               (Constructor (Node, l, v, Constructor (Empty), Any),
                 Return (?, Variable (116, v)));
@@ -1167,7 +1210,9 @@ Value
   (rec, @coq_rec,
     [
       ((remove_min_elt, [ ], [ (x, Type (t)) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (t))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (t))),
         Match
           (123, Variable (?, x),
             [
@@ -1224,8 +1269,10 @@ Value
     [
       ((merge, [ ], [ (t1, Type (t)); (t2, Type (t)) ],
         Monad
-          ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
-            Type (t))),
+          ([
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
+          ], Type (t))),
         Match
           (133, Tuple (133, Variable (133, t1), Variable (133, t2)),
             [
@@ -1240,13 +1287,19 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         [
                           Type
-                            (OCaml.Invalid_argument);
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument));
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         Apply
                           (136,
@@ -1266,13 +1319,19 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
-                                (OCaml.Invalid_argument);
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument));
                               Type
-                                (OCaml.Not_found)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.not_found))
                             ],
                             Apply
                               (136,
@@ -1290,13 +1349,19 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
-                                (OCaml.Invalid_argument);
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument));
                               Type
-                                (OCaml.Not_found)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.not_found))
                             ],
                             Apply
                               (136,
@@ -1326,8 +1391,8 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument);
-            Type (OCaml.Not_found)
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
           ], Type (t))),
         Match
           (143, Tuple (143, Variable (143, t1), Variable (143, t2)),
@@ -1343,7 +1408,9 @@ Value
                       (?,
                         [
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         [
                           Type
@@ -1351,9 +1418,13 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Invalid_argument);
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument));
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         Apply
                           (146,
@@ -1373,7 +1444,9 @@ Value
                           (?,
                             [
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
@@ -1381,9 +1454,13 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Invalid_argument);
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument));
                               Type
-                                (OCaml.Not_found)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.not_found))
                             ],
                             Apply
                               (146,
@@ -1405,7 +1482,9 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Invalid_argument)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument))
                             ],
                             [
                               Type
@@ -1413,9 +1492,13 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Invalid_argument);
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.invalid_argument));
                               Type
-                                (OCaml.Not_found)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.not_found))
                             ],
                             Apply
                               (146,
@@ -1445,7 +1528,7 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument)
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
           ], (Type (t) * Type (bool) * Type (t)))),
         Match
           (155, Variable (?, x_1),
@@ -1749,8 +1832,10 @@ Value
     [
       ((remove, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
         Monad
-          ([ Type (OCaml.Invalid_argument); Type (OCaml.Not_found) ],
-            Type (t))),
+          ([
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
+          ], Type (t))),
         Match
           (180, Variable (?, x_1),
             [
@@ -1836,13 +1921,19 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Invalid_argument)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Invalid_argument);
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument));
                                   Type
-                                    (OCaml.Not_found)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.not_found))
                                 ],
                                 Apply
                                   (184,
@@ -1881,13 +1972,19 @@ Value
                               (?,
                                 [
                                   Type
-                                    (OCaml.Invalid_argument)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument))
                                 ],
                                 [
                                   Type
-                                    (OCaml.Invalid_argument);
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument));
                                   Type
-                                    (OCaml.Not_found)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.not_found))
                                 ],
                                 Apply
                                   (184,
@@ -1918,7 +2015,7 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument)
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
           ], Type (t))),
         Match
           (?, Variable (?, counter),
@@ -1936,7 +2033,9 @@ Value
                       Type
                         (NonTermination);
                       Type
-                        (OCaml.Invalid_argument)
+                        (OCaml.exception,
+                          Type
+                            (OCaml.invalid_argument))
                     ],
                     Apply
                       (?,
@@ -2024,7 +2123,9 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     [
                                       Type
@@ -2032,7 +2133,9 @@ Value
                                       Type
                                         (NonTermination);
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     Apply
                                       (193,
@@ -2158,7 +2261,9 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     [
                                       Type
@@ -2166,7 +2271,9 @@ Value
                                       Type
                                         (NonTermination);
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ],
                                     Apply
                                       (198,
@@ -2286,7 +2393,7 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument)
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
           ], Type (t))),
         Bind
           (?,
@@ -2295,7 +2402,10 @@ Value
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Invalid_argument)
+                  Type
+                    (OCaml.exception,
+                      Type
+                        (OCaml.invalid_argument))
                 ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
@@ -2313,8 +2423,8 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument);
-            Type (OCaml.Not_found)
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
           ], Type (t))),
         Match
           (204, Tuple (204, Variable (204, s1), Variable (204, s2)),
@@ -2334,7 +2444,9 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Invalid_argument)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument))
                         ],
                         [
                           Type
@@ -2342,9 +2454,13 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Invalid_argument);
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument));
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         Apply
                           (208,
@@ -2466,7 +2582,9 @@ Value
                                           Type
                                             (NonTermination);
                                           Type
-                                            (OCaml.Invalid_argument)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument))
                                         ],
                                         [
                                           Type
@@ -2474,9 +2592,13 @@ Value
                                           Type
                                             (NonTermination);
                                           Type
-                                            (OCaml.Invalid_argument);
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument));
                                           Type
-                                            (OCaml.Not_found)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.not_found))
                                         ],
                                         Apply
                                           (212,
@@ -2507,8 +2629,8 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument);
-            Type (OCaml.Not_found)
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
           ], Type (t))),
         Match
           (216, Tuple (216, Variable (216, s1), Variable (216, s2)),
@@ -2528,7 +2650,9 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Invalid_argument)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument))
                         ],
                         [
                           Type
@@ -2536,9 +2660,13 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Invalid_argument);
+                            (OCaml.exception,
+                              Type
+                                (OCaml.invalid_argument));
                           Type
-                            (OCaml.Not_found)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.not_found))
                         ],
                         Apply
                           (220,
@@ -2608,7 +2736,9 @@ Value
                                           Type
                                             (NonTermination);
                                           Type
-                                            (OCaml.Invalid_argument)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument))
                                         ],
                                         [
                                           Type
@@ -2616,9 +2746,13 @@ Value
                                           Type
                                             (NonTermination);
                                           Type
-                                            (OCaml.Invalid_argument);
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.invalid_argument));
                                           Type
-                                            (OCaml.Not_found)
+                                            (OCaml.exception,
+                                              Type
+                                                (OCaml.not_found))
                                         ],
                                         Apply
                                           (222,
@@ -3535,8 +3669,8 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument);
-            Type (OCaml.Not_found)
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
           ], Type (t))),
         Match
           (289, Variable (?, x),
@@ -3606,7 +3740,9 @@ Value
                                   Type
                                     (NonTermination);
                                   Type
-                                    (OCaml.Invalid_argument)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument))
                                 ],
                                 [
                                   Type
@@ -3614,9 +3750,13 @@ Value
                                   Type
                                     (NonTermination);
                                   Type
-                                    (OCaml.Invalid_argument);
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument));
                                   Type
-                                    (OCaml.Not_found)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.not_found))
                                 ],
                                 Apply
                                   (295,
@@ -3659,8 +3799,8 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Invalid_argument);
-            Type (OCaml.Not_found)
+            Type (OCaml.exception, Type (OCaml.invalid_argument));
+            Type (OCaml.exception, Type (OCaml.not_found))
           ], (Type (t) * Type (t)))),
         Match
           (299, Variable (?, x),
@@ -3759,7 +3899,9 @@ Value
                                                       Type
                                                         (NonTermination);
                                                       Type
-                                                        (OCaml.Invalid_argument)
+                                                        (OCaml.exception,
+                                                          Type
+                                                            (OCaml.invalid_argument))
                                                     ],
                                                     [
                                                       Type
@@ -3767,9 +3909,13 @@ Value
                                                       Type
                                                         (NonTermination);
                                                       Type
-                                                        (OCaml.Invalid_argument);
+                                                        (OCaml.exception,
+                                                          Type
+                                                            (OCaml.invalid_argument));
                                                       Type
-                                                        (OCaml.Not_found)
+                                                        (OCaml.exception,
+                                                          Type
+                                                            (OCaml.not_found))
                                                     ],
                                                     Apply
                                                       (306,
@@ -3843,7 +3989,9 @@ Value
                                                           Type
                                                             (NonTermination);
                                                           Type
-                                                            (OCaml.Invalid_argument)
+                                                            (OCaml.exception,
+                                                              Type
+                                                                (OCaml.invalid_argument))
                                                         ],
                                                         [
                                                           Type
@@ -3851,9 +3999,13 @@ Value
                                                           Type
                                                             (NonTermination);
                                                           Type
-                                                            (OCaml.Invalid_argument);
+                                                            (OCaml.exception,
+                                                              Type
+                                                                (OCaml.invalid_argument));
                                                           Type
-                                                            (OCaml.Not_found)
+                                                            (OCaml.exception,
+                                                              Type
+                                                                (OCaml.not_found))
                                                         ],
                                                         Apply
                                                           (307,
@@ -3996,8 +4148,10 @@ Value
   (non_rec, @.,
     [
       ((choose, [ ], [ ],
-        (Type (t) -> Monad ([ Type (OCaml.Not_found) ], Type (elt)))),
-        Variable (323, min_elt))
+        (Type (t) ->
+          Monad
+            ([ Type (OCaml.exception, Type (OCaml.not_found)) ],
+              Type (elt)))), Variable (323, min_elt))
     ])
 
 325
@@ -4005,7 +4159,7 @@ Value
   (rec, @coq_rec,
     [
       ((find, [ ], [ (x, Type (Ord.t)); (x_1, Type (t)) ],
-        Monad ([ Type (OCaml.Not_found) ], Type (elt))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (elt))),
         Match
           (326, Variable (?, x_1),
             [
@@ -4014,10 +4168,13 @@ Value
                   (326,
                     Variable
                       (326,
-                        OCaml.raise_Not_found),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        (?)
+                      Constructor
+                        (326,
+                          OCaml.Not_found,
+                          Tuple
+                            (?))
                     ]));
               (Constructor (Node, l, v, r, Any),
                 LetVar ? c =
@@ -4098,7 +4255,7 @@ Value
           ([
             Type (Counter);
             Type (NonTermination);
-            Type (OCaml.Assert_failure)
+            Type (OCaml.exception, Type (OCaml.assert_failure))
           ], Type (t))),
         LetFun 334
           (rec, @.,
@@ -4118,7 +4275,9 @@ Value
                     Type
                       (NonTermination);
                     Type
-                      (OCaml.Assert_failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.assert_failure))
                   ],
                     (Type
                       (t)
@@ -4145,7 +4304,9 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Assert_failure)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.assert_failure))
                             ],
                             Apply
                               (?,
@@ -4378,13 +4539,17 @@ Value
                                                       (?,
                                                         [
                                                           Type
-                                                            (OCaml.Assert_failure)
+                                                            (OCaml.exception,
+                                                              Type
+                                                                (OCaml.assert_failure))
                                                         ],
                                                         [
                                                           Type
                                                             (NonTermination);
                                                           Type
-                                                            (OCaml.Assert_failure)
+                                                            (OCaml.exception,
+                                                              Type
+                                                                (OCaml.assert_failure))
                                                         ],
                                                         Apply
                                                           (344,
@@ -4501,7 +4666,9 @@ Value
                     Type
                       (NonTermination);
                     Type
-                      (OCaml.Assert_failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.assert_failure))
                   ],
                     (Type
                       (t)
@@ -4524,7 +4691,9 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Assert_failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.assert_failure))
                         ],
                         Apply
                           (?,
@@ -4543,7 +4712,9 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Assert_failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.assert_failure))
                         ],
                         [
                           Type
@@ -4551,7 +4722,9 @@ Value
                           Type
                             (NonTermination);
                           Type
-                            (OCaml.Assert_failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.assert_failure))
                         ],
                         Apply
                           (?,

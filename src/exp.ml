@@ -81,7 +81,7 @@ type 'a t =
   | Bind of 'a * 'a t * CoqName.t option * 'a t (** Monadic bind. *)
   | Lift of 'a * Effect.Descriptor.t * Effect.Descriptor.t * 'a t
     (** Monadic lift. *)
-  | Run of 'a * BoundName.t * Effect.Descriptor.t * 'a t
+  | Run of 'a * Type.t * Effect.Descriptor.t * 'a t
 
 let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
   let pp = pp pp_a in
@@ -136,7 +136,7 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
       pp_a a; Effect.Descriptor.pp d1; Effect.Descriptor.pp d2; pp e])
   | Run (a, x, d, e) ->
     nest (!^ "Run" ^^ OCaml.tuple [
-      pp_a a; BoundName.pp x; Effect.Descriptor.pp d; pp e])
+      pp_a a; Type.pp x; Effect.Descriptor.pp d; pp e])
 
 let annotation (e : 'a t) : 'a =
   match e with
@@ -362,22 +362,24 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
       | [(_, Some e_x)] ->
         (match e_x.exp_desc with
         | Texp_construct (x, _, es) ->
-          let l_exn = Loc.of_location e_x.exp_loc in
-          let t_exn = Type.Arrow (
-            Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
-            Variable "_") in
+          let l_x = Loc.of_location e_x.exp_loc in
           let x = PathName.of_loc x in
-          let x = FullEnvi.Exception.bound l_exn x env in
-          let raise_path = FullEnvi.Exception.find l_exn x env in
-          let raise_dsc = FullEnvi.localize (FullEnvi.has_value env) env
-            { BoundName.full_path = raise_path; local_path = raise_path } in
+          let x = FullEnvi.Constructor.bound l_x x env in
+          let (typ_path, _) = FullEnvi.Constructor.find l_x x env in
+          let typ_path = FullEnvi.localize (FullEnvi.has_value env) env
+            { BoundName.full_path = typ_path; local_path = typ_path } in
+          let raise_path = FullEnvi.Var.localize env ["OCaml"; "Pervasives"]
+            "raise" in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
             t_arg) es in
+          let t_x = Type.Apply (typ_path, []) in
+          let t_f = Type.Arrow (t_x, typ) in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_exn, t_exn), raise_dsc),
-            [Tuple ((Loc.Unknown, Type.Tuple typs), es)])
+          Apply (a, Variable ((l_f, t_f), raise_path),
+            [Constructor ((l_x, t_x), x,
+              [Tuple ((Loc.Unknown, Type.Tuple typs), es)])])
         | _ ->
           Error.raise l "Constructor of an exception expected after a 'raise'.")
       | _ -> Error.raise l "Expected one argument for 'raise'.")
@@ -410,19 +412,22 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     | Some _ ->
       let string_t = Type.Apply (FullEnvi.Typ.localize env [] "string", []) in
       let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
-      let match_fail = FullEnvi.Var.localize env ["OCaml"]
-        "raise_Match_failure" in
-      let match_fail_t = Type.Arrow (
-        Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []),
-        typ) in
+      let raise_bound =
+        FullEnvi.Var.localize env ["OCaml"; "Pervasives"] "raise" in
+      let match_fail =
+        FullEnvi.Constructor.localize env ["OCaml"] "Match_failure" in
+      let match_fail_t = Type.Apply
+        (FullEnvi.Typ.localize env ["OCaml"] "match_failure", []) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any (Type.Tuple [snd @@ annotation e; int_t]),
           Apply ((Loc.Unknown, typ),
-          Variable ((Loc.Unknown, match_fail_t), match_fail),
-            [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
-              [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
-              Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
-              Constant ((Loc.Unknown, int_t), Constant.Int fail_char)])])) in
+            Variable ((Loc.Unknown, Type.Arrow (match_fail_t, typ)),
+              raise_bound),
+            [Constructor ((Loc.Unknown, match_fail_t), match_fail,
+              [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
+                [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
+                Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
+                Constant ((Loc.Unknown, int_t), Constant.Int fail_char)])])])) in
       let (index_pattern, pattern) = rev_cases
         |> List.fold_left (fun (index_pattern, pattern) (p, g, e) ->
           let pattern_typ = Type.Tuple [Pattern.typ p; int_t] in
@@ -492,26 +497,33 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     [{c_lhs = {pat_desc = Tpat_construct (x, _, ps)}; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
     let typ1 = snd @@ annotation e1 in
-    let x = FullEnvi.Descriptor.bound l (PathName.of_loc x) env in
+    let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
+    let (typ_path, _) = FullEnvi.Constructor.find l x env in
+    let typ_bound = FullEnvi.localize (FullEnvi.has_value env) env
+      { BoundName.full_path = typ_path; local_path = typ_path } in
+    let t_exn = Type.Apply (typ_bound, []) in
+    let match_d = Type.Apply (
+      FullEnvi.Descriptor.localize env ["OCaml"] "exception", [t_exn]) in
     let ps = List.map (Pattern.of_pattern false env typ_vars) ps in
     let typ_p = List.map Pattern.typ ps in
-    let p = Pattern.Tuple (Type.Tuple typ_p, ps) in
-    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
+    let p = Pattern.Constructor (t_exn, x,
+      [Pattern.Tuple (Type.Tuple typ_p, ps)]) in
     let typ_sum = Type.Apply (FullEnvi.Typ.localize env [] "sum",
-      [typ1; exn]) in
-    Match (a, Run ((Loc.Unknown, typ_sum), x, Effect.Descriptor.pure, e1), [
-      (let p = Pattern.Constructor (typ_sum,
-        FullEnvi.Constructor.localize env [] "inl",
-        [Pattern.Variable (typ1, FullEnvi.Var.coq_name "x" env)]) in
-      let env = Pattern.add_to_env p env in
-      let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
-      (p, Variable ((Loc.Unknown, typ), x)));
-      (let p = Pattern.Constructor (typ_sum,
-        FullEnvi.Constructor.localize env [] "inr",
-        [p]) in
-      let env = Pattern.add_to_env p env in
-      let e2 = of_expression env typ_vars e2 in
-      (p, e2))])
+      [typ1; t_exn]) in
+    Match (a, Run ((Loc.Unknown, typ_sum), match_d,
+      Effect.Descriptor.pure, e1), [
+        (let p = Pattern.Constructor (typ_sum,
+          FullEnvi.Constructor.localize env [] "inl",
+          [Pattern.Variable (typ1, FullEnvi.Var.coq_name "x" env)]) in
+        let env = Pattern.add_to_env p env in
+        let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
+        (p, Variable ((Loc.Unknown, typ), x)));
+        (let p = Pattern.Constructor (typ_sum,
+          FullEnvi.Constructor.localize env [] "inr",
+          [p]) in
+        let env = Pattern.add_to_env p env in
+        let e2 = of_expression env typ_vars e2 in
+        (p, e2))])
   | Texp_for (_, p, e1, e2, dir, e) ->
     let down = match dir with
       | Asttypes.Upto -> true
@@ -1108,7 +1120,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Run ((l, typ), x, d, e) ->
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd @@ annotation e in
-    let exn = Type.Apply (FullEnvi.Typ.localize env ["OCaml"] "exn", []) in
+    let exn = Type.Variable "_" in
     let typ = Effect.Type.unify typ @@
       Effect.join (Effect.Descriptor.remove x d_e) @@
       Type.Apply (FullEnvi.Typ.localize env [] "sum", [typ_e; exn]) in

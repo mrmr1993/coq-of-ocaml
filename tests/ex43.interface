@@ -7,7 +7,15 @@
       [
         "Var",
         "slow_div",
-        [ [ [], [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "Counter", "NonTermination" ] ] ] ]
+        [
+          [
+            [],
+            [
+              [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ],
+              [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ] ]
+            ]
+          ]
+        ]
       ],
       [
         "Var",
@@ -16,6 +24,7 @@
           [
             [
               [
+                "union",
                 [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "Z" ] ] ],
                 [
                   "Apply",
@@ -23,17 +32,49 @@
                   [ "Apply", "list", [ "Apply", "OCaml.Effect.State.t", [ "Apply", "list", [ "Apply", "Z" ] ] ] ]
                 ]
               ],
-              [ "Counter", "NonTermination" ]
+              [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ] ]
             ]
           ]
         ]
       ],
-      [ "Var", "raises", [ [ [ "Counter", "NonTermination", "OCaml.Failure" ] ] ] ],
-      [ "Var", "complex_raises", [ [ [ "Counter", "NonTermination", "OCaml.Failure" ] ] ] ],
+      [
+        "Var",
+        "raises",
+        [
+          [
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.failure" ] ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "Var",
+        "complex_raises",
+        [
+          [
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "OCaml.failure" ] ]
+            ]
+          ]
+        ]
+      ],
       [
         "Var",
         "argument_effects",
-        [ [ [], [ [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ], [ "Counter", "NonTermination" ] ] ] ]
+        [
+          [
+            [],
+            [
+              [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ],
+              [ [ "Apply", "Counter" ], [ "Apply", "NonTermination" ] ]
+            ]
+          ]
+        ]
       ]
     ]
   ]

@@ -1,12 +1,13 @@
-3 Exception (Fail, raise_Fail, (Type (string)))
+3 Exception (Fail, fail, (Type (string)))
 
 5
 Value
   (non_rec, @.,
     [
-      ((div, [ ], [ (n, Type (Z)) ], Monad ([ Type (Fail) ], Type (Z))),
+      ((div, [ ], [ (n, Type (Z)) ],
+        Monad ([ Type (OCaml.exception, Type (fail)) ], Type (Z))),
         IfThenElse
-          ((6, Effect ([ Type (Fail) ], .)),
+          ((6, Effect ([ Type (OCaml.exception, Type (fail)) ], .)),
             Apply
               ((6, Effect ([ ], .)),
                 Variable ((6, Effect ([ ], . -> . -> .)), equiv_decb),
@@ -15,20 +16,35 @@ Value
                   Constant ((6, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((7, Effect ([ Type (Fail) ], .)),
+              ((7, Effect ([ Type (OCaml.exception, Type (fail)) ], .)),
                 Variable
-                  ((7, Effect ([ ], . -[ Type (Fail) ]-> .)),
-                    raise_Fail),
+                  ((7,
+                    Effect
+                      ([ ],
+                        .
+                          -[
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (fail))
+                          ]-> .)), OCaml.Pervasives.raise),
                 [
-                  Tuple
-                    ((?, Effect ([ ], .)),
-                      Constant
-                        ((7,
+                  Constructor
+                    ((7, Effect ([ ], .)),
+                      Fail,
+                      Tuple
+                        ((?,
                           Effect
                             ([
                             ],
                               .)),
-                          String("n is null")))
+                          Constant
+                            ((7,
+                              Effect
+                                ([
+                                ],
+                                  .)),
+                              String("n is null"))))
                 ]),
             Apply
               ((9, Effect ([ ], .)),

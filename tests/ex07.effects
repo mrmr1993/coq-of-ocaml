@@ -481,9 +481,12 @@ Value
   (non_rec, @.,
     [
       ((c, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (ascii))),
+        Monad
+          ([ Type (OCaml.exception, Type (invalid_argument)) ], Type (ascii))),
         Match
-          ((17, Effect ([ Type (OCaml.Invalid_argument) ], .)),
+          ((17,
+            Effect
+              ([ Type (OCaml.exception, Type (invalid_argument)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -492,7 +495,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (invalid_argument))
                       ],
                         .)),
                     Variable
@@ -503,7 +508,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Invalid_argument)
+                                  (OCaml.exception,
+                                    Type
+                                      (invalid_argument))
                               ]->
                               .)),
                         OCaml.Pervasives.char_of_int),

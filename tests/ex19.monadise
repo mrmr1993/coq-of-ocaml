@@ -1,4 +1,4 @@
-3 Exception (Error, raise_Error, ())
+3 Exception (Error, error, ())
 
 5
 Value
@@ -8,11 +8,14 @@ Value
         Match
           (6,
             Run
-              (?, Error, [ ],
-                Apply (6, Variable (6, raise_Error), [ Tuple (?) ])),
+              (?, Type (OCaml.exception, Type (error)), [ ],
+                Apply
+                  (6, Variable (6, OCaml.Pervasives.raise),
+                    [ Constructor (6, Error, Tuple (?)) ])),
             [
               (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Tuple ()), Constant (7, Int(12)))
+              (Constructor (inr, Constructor (Error, Tuple ())),
+                Constant (7, Int(12)))
             ]))
     ])
 
@@ -20,7 +23,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x2, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((x2, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
           (9, Variable (?, x),
             [
@@ -29,17 +33,23 @@ Value
                   (10,
                     Run
                       (?,
-                        Error,
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (error)),
                         [
                         ],
                         Apply
                           (10,
                             Variable
                               (10,
-                                raise_Error),
+                                OCaml.Pervasives.raise),
                             [
-                              Tuple
-                                (?)
+                              Constructor
+                                (10,
+                                  Error,
+                                  Tuple
+                                    (?))
                             ])),
                     [
                       (Constructor
@@ -52,8 +62,10 @@ Value
                                 x)));
                       (Constructor
                         (inr,
-                          Tuple
-                            ()),
+                          Constructor
+                            (Error,
+                              Tuple
+                                ())),
                         Apply
                           (11,
                             Variable
@@ -73,16 +85,35 @@ Value
   (non_rec, @.,
     [
       ((x3, [ ], [ (b, Type (bool)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (Z))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (Z))),
         Bind
           (?,
             Run
-              (?, Error, [ Type (Error); Type (OCaml.Failure) ],
+              (?, Type (OCaml.exception, Type (error)),
+                [
+                  Type (OCaml.exception, Type (error));
+                  Type (OCaml.exception, Type (OCaml.failure))
+                ],
                 IfThenElse
                   (14, Variable (14, b),
                     Lift
-                      (?, [ Type (OCaml.Failure) ],
-                        [ Type (Error); Type (OCaml.Failure) ],
+                      (?,
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.failure))
+                        ],
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (error));
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.failure))
+                        ],
                         Apply
                           (14,
                             Variable
@@ -94,11 +125,35 @@ Value
                                   String("arg"))
                             ])),
                     Lift
-                      (?, [ Type (Error) ],
-                        [ Type (Error); Type (OCaml.Failure) ],
+                      (?,
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (error))
+                        ],
+                        [
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (error));
+                          Type
+                            (OCaml.exception,
+                              Type
+                                (OCaml.failure))
+                        ],
                         Apply
-                          (14, Variable (14, raise_Error),
-                            [ Tuple (?) ])))), Some x,
+                          (14,
+                            Variable
+                              (14,
+                                OCaml.Pervasives.raise),
+                            [
+                              Constructor
+                                (14,
+                                  Error,
+                                  Tuple
+                                    (?))
+                            ])))), Some x,
             Match
               (14, Variable (?, x),
                 [
@@ -108,7 +163,7 @@ Value
                         Variable
                           (?,
                             x)));
-                  (Constructor (inr, Tuple ()),
+                  (Constructor (inr, Constructor (Error, Tuple ())),
                     Return
                       (?,
                         Constant

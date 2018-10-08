@@ -5,7 +5,8 @@
   Value
     (non_rec, @.,
       [
-        ((c, [ A ], [ (x, Type (string)) ], Monad ([ Type (OCaml.Failure) ], A)),
+        ((c, [ A ], [ (x, Type (string)) ],
+          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], A)),
           Apply
             (6, Variable (6, OCaml.Pervasives.failwith),
               [ Variable (6, A/x) ]))
@@ -27,7 +28,8 @@ Value
 Value
   (non_rec, @.,
     [
-      ((d, [ A ], [ (b, Type (bool)) ], Monad ([ Type (OCaml.Failure) ], A)),
+      ((d, [ A ], [ (b, Type (bool)) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], A)),
         IfThenElse
           (13, Variable (13, b),
             Apply

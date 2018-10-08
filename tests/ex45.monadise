@@ -1,12 +1,13 @@
-2 Exception (Ex1, raise_Ex1, ())
+2 Exception (Ex1, ex1, ())
 
-3 Exception (Ex2, raise_Ex2, (Type (Z)))
+3 Exception (Ex2, ex2, (Type (Z)))
 
 5
 Value
   (non_rec, @.,
     [
-      ((f, [ A ], [ (x, Type (unit)) ], Monad ([ Type (Ex1) ], A)),
+      ((f, [ A ], [ (x, Type (unit)) ],
+        Monad ([ Type (OCaml.exception, Type (ex1)) ], A)),
         Match
           (5, Variable (?, x),
             [
@@ -15,10 +16,13 @@ Value
                   (5,
                     Variable
                       (5,
-                        raise_Ex1),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        (?)
+                      Constructor
+                        (5,
+                          Ex1,
+                          Tuple
+                            (?))
                     ]))
             ]))
     ])
@@ -27,8 +31,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((g, [ A ], [ (y, Type (Z)) ], Monad ([ Type (Ex2) ], A)),
-        Apply (6, Variable (6, raise_Ex2), [ Tuple (?, Variable (6, y)) ]))
+      ((g, [ A ], [ (y, Type (Z)) ],
+        Monad ([ Type (OCaml.exception, Type (ex2)) ], A)),
+        Apply
+          (6, Variable (6, OCaml.Pervasives.raise),
+            [ Constructor (6, Ex2, Tuple (?, Variable (6, y))) ]))
     ])
 
 7
@@ -36,7 +43,8 @@ Value
   (non_rec, @.,
     [
       ((h, [ A ], [ (x, Type (unit)) ],
-        (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A)))),
+        (Type (Z) ->
+          (Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], A)))),
         Match
           (7, Variable (?, x),
             [
@@ -58,13 +66,16 @@ Value
                                   (7,
                                     Variable
                                       (7,
-                                        raise_Ex2),
+                                        OCaml.Pervasives.raise),
                                     [
-                                      Tuple
-                                        (?,
-                                          Variable
-                                            (7,
-                                              y))
+                                      Constructor
+                                        (7,
+                                          Ex2,
+                                          Tuple
+                                            (?,
+                                              Variable
+                                                (7,
+                                                  y)))
                                     ]))
                             ]))))
             ]))
@@ -75,10 +86,12 @@ Value
   (non_rec, @.,
     [
       ((x, [ A; B; C ], [ ],
-        ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
-          (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+        ((Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A)) *
+          (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], B)) *
           (Type (unit) ->
-            (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+            (Type (Z) ->
+              (Type (unit) ->
+                Monad ([ Type (OCaml.exception, Type (ex2)) ], C)))))),
         Tuple (9, Variable (9, f), Variable (9, g), Variable (9, h)))
     ])
 
@@ -86,17 +99,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f', [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+      ((f', [ A ], [ ],
+        (Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A))),
         Match
           (11,
             Coerce
               (?, Variable (11, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], A))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (f, Any, Any), Variable (11, f)) ]))
     ])
 
@@ -104,17 +129,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((g', [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+      ((g', [ A ], [ ],
+        (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], A))),
         Match
           (12,
             Coerce
               (?, Variable (12, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], A)) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ], A))
+                  *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (Any, g, Any), Variable (12, g)) ]))
     ])
 
@@ -124,16 +161,30 @@ Value
     [
       ((h', [ A ], [ ],
         (Type (unit) ->
-          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+          (Type (Z) ->
+            (Type (unit) ->
+              Monad ([ Type (OCaml.exception, Type (ex2)) ], A))))),
         Match
           (13,
             Coerce
               (?, Variable (13, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
-                      (Type (unit) -> Monad ([ Type (Ex2) ], A)))))),
+                      (Type (unit) ->
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], A)))))),
             [ (Tuple (Any, Any, h), Variable (13, h)) ]))
     ])
 
@@ -142,10 +193,12 @@ Value
   (non_rec, @.,
     [
       ((temp, [ A; B; C ], [ ],
-        ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
-          (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+        ((Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A)) *
+          (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], B)) *
           (Type (unit) ->
-            (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+            (Type (Z) ->
+              (Type (unit) ->
+                Monad ([ Type (OCaml.exception, Type (ex2)) ], C)))))),
         Variable (15, x))
     ])
 
@@ -153,17 +206,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f'', [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+      ((f'', [ A ], [ ],
+        (Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A))),
         Match
           (?,
             Coerce
               (?, Variable (?, temp),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], A))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (f'', g'', h''), Variable (?, f'')) ]))
     ])
 
@@ -171,17 +236,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((g'', [ B ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], B))),
+      ((g'', [ B ], [ ],
+        (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], B))),
         Match
           (?,
             Coerce
               (?, Variable (?, temp),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], B)) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ], B))
+                  *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (f'', g'', h''), Variable (?, g'')) ]))
     ])
 
@@ -191,16 +268,30 @@ Value
     [
       ((h'', [ C ], [ ],
         (Type (unit) ->
-          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], C))))),
+          (Type (Z) ->
+            (Type (unit) ->
+              Monad ([ Type (OCaml.exception, Type (ex2)) ], C))))),
         Match
           (?,
             Coerce
               (?, Variable (?, temp),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
-                      (Type (unit) -> Monad ([ Type (Ex2) ], C)))))),
+                      (Type (unit) ->
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], C)))))),
             [ (Tuple (f'', g'', h''), Variable (?, h'')) ]))
     ])
 
@@ -208,17 +299,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ff, [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+      ((ff, [ A ], [ ],
+        (Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A))),
         Match
           (17,
             Coerce
               (?, Variable (17, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], A)) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], A))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (f, Any, Any), Variable (17, f)) ]))
     ])
 
@@ -226,17 +329,29 @@ Value
 Value
   (non_rec, @.,
     [
-      ((gg, [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+      ((gg, [ A ], [ ],
+        (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], A))),
         Match
           (18,
             Coerce
               (?, Variable (18, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], A)) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ], A))
+                  *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (Any, g, Any), Variable (18, g)) ]))
     ])
 
@@ -246,16 +361,30 @@ Value
     [
       ((hh, [ A ], [ ],
         (Type (unit) ->
-          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+          (Type (Z) ->
+            (Type (unit) ->
+              Monad ([ Type (OCaml.exception, Type (ex2)) ], A))))),
         Match
           (19,
             Coerce
               (?, Variable (19, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
-                      (Type (unit) -> Monad ([ Type (Ex2) ], A)))))),
+                      (Type (unit) ->
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], A)))))),
             [ (Tuple (Any, Any, h), Variable (19, h)) ]))
     ])
 
@@ -263,17 +392,31 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fff, [ ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], Type (unit)))),
+      ((fff, [ ], [ ],
+        (Type (unit) ->
+          Monad ([ Type (OCaml.exception, Type (ex1)) ], Type (unit)))),
         Match
           (21,
             Coerce
               (?, Variable (21, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], Type (unit)))
-                  * (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad
+                    ([ Type (OCaml.exception, Type (ex1)) ],
+                      Type (unit))) *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (f, Any, Any), Variable (21, f)) ]))
     ])
 
@@ -281,18 +424,30 @@ Value
 Value
   (non_rec, @.,
     [
-      ((ggg, [ ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], Type (unit)))),
+      ((ggg, [ ], [ ],
+        (Type (Z) ->
+          Monad ([ Type (OCaml.exception, Type (ex2)) ], Type (unit)))),
         Match
           (22,
             Coerce
               (?, Variable (22, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], Type (unit)))
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
                   *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        Type (unit))) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], ())))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], ())))))),
             [ (Tuple (Any, g, Any), Variable (22, g)) ]))
     ])
 
@@ -302,17 +457,31 @@ Value
     [
       ((hhh, [ ], [ ],
         (Type (unit) ->
-          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], Type (unit)))))),
+          (Type (Z) ->
+            (Type (unit) ->
+              Monad
+                ([ Type (OCaml.exception, Type (ex2)) ], Type (unit)))))),
         Match
           (23,
             Coerce
               (?, Variable (23, x),
-                ((Type (unit) -> Monad ([ Type (Ex1) ], ())) *
-                  (Type (Z) -> Monad ([ Type (Ex2) ], ())) *
+                ((Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], ()))
+                  *
+                  (Type (Z) ->
+                    Monad
+                      ([ Type (OCaml.exception, Type (ex2)) ],
+                        ())) *
                   (Type (unit) ->
                     (Type (Z) ->
                       (Type (unit) ->
-                        Monad ([ Type (Ex2) ], Type (unit))))))),
+                        Monad
+                          ([
+                            Type
+                              (OCaml.exception,
+                                Type
+                                  (ex2))
+                          ], Type (unit))))))),
             [ (Tuple (Any, Any, h), Variable (23, h)) ]))
     ])
 
@@ -320,12 +489,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f1, [ A ], [ ], (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+      ((f1, [ A ], [ ],
+        (Type (unit) -> Monad ([ Type (OCaml.exception, Type (ex1)) ], A))),
         Match
           (25,
             Coerce
               (?, Variable (25, f),
-                (Type (unit) -> Monad ([ Type (Ex1) ], A))),
+                (Type (unit) ->
+                  Monad ([ Type (OCaml.exception, Type (ex1)) ], A))),
             [ (x, Variable (25, x)) ]))
     ])
 
@@ -333,12 +504,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((g1, [ A ], [ ], (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+      ((g1, [ A ], [ ],
+        (Type (Z) -> Monad ([ Type (OCaml.exception, Type (ex2)) ], A))),
         Match
           (26,
             Coerce
               (?, Variable (26, g),
-                (Type (Z) -> Monad ([ Type (Ex2) ], A))),
+                (Type (Z) ->
+                  Monad ([ Type (OCaml.exception, Type (ex2)) ], A))),
             [ (x, Variable (26, x)) ]))
     ])
 
@@ -348,13 +521,17 @@ Value
     [
       ((h1, [ A ], [ ],
         (Type (unit) ->
-          (Type (Z) -> (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
+          (Type (Z) ->
+            (Type (unit) ->
+              Monad ([ Type (OCaml.exception, Type (ex2)) ], A))))),
         Match
           (27,
             Coerce
               (?, Variable (27, h),
                 (Type (unit) ->
                   (Type (Z) ->
-                    (Type (unit) -> Monad ([ Type (Ex2) ], A))))),
-            [ (x, Variable (27, x)) ]))
+                    (Type (unit) ->
+                      Monad
+                        ([ Type (OCaml.exception, Type (ex2)) ],
+                          A))))), [ (x, Variable (27, x)) ]))
     ])

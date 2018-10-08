@@ -206,7 +206,7 @@ Value
   (non_rec, @.,
     [
       ((raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (unit))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
         Apply
           (20, Variable (?, OCaml.Basics.for_to),
             [
@@ -229,7 +229,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.failure))
                         ],
                           ())))
             ]))
@@ -240,7 +242,7 @@ Value
   (non_rec, @.,
     [
       ((complex_raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (unit))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
         LetFun 25
           (non_rec, @.,
             [
@@ -248,7 +250,9 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.failure))
                   ], (A * Type (Z) * B))),
                 Bind
                   (?,
@@ -300,7 +304,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.Failure)
+                            (OCaml.exception,
+                              Type
+                                (OCaml.failure))
                         ],
                           (Type
                             (bool)

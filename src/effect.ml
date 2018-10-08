@@ -21,11 +21,11 @@ module Descriptor = struct
 
   let eq (d1 : t) (d2 : t) : bool = CommonType.compare_desc d1 d2 = 0
 
-  let singleton (x : BoundName.t) (typs : typ list) : t =
-    if typs = [] then {
+  let singleton ?simple:(simple=false)(x : BoundName.t) (typs : typ list) : t =
+    if typs = [] || simple then {
         args_arg = None;
         with_args = [];
-        no_args = [CommonType.Apply (x, [])];
+        no_args = [CommonType.Apply (x, typs)];
       }
     else {
         args_arg = None;
@@ -45,10 +45,9 @@ module Descriptor = struct
       no_args = CommonType.Set.elements simple;
     }
 
-  let remove (x : BoundName.t) (d : t) : t =
+  let remove (x : CommonType.t) (d : t) : t =
     { d with
-      no_args = d.no_args |> List.filter (fun y ->
-        compare y (CommonType.Apply (x, [])) <> 0)
+      no_args = d.no_args |> List.filter (fun y -> compare x y <> 0)
     }
 
   let elements (d : t) : BoundName.t list =
@@ -57,12 +56,12 @@ module Descriptor = struct
       | CommonType.Apply (name, []) -> name
       | _ -> failwith "Unexpected format of simple effect descriptor.")
 
-  let index (x : BoundName.t) (d : t) : int =
+  let index (x : CommonType.t) (d : t) : int =
     let rec find_index l f =
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index d.no_args (fun y -> CommonType.Apply (x, []) = y)
+    find_index d.no_args (fun y -> compare x y = 0)
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
     { d with args_arg = Some arg }

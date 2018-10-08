@@ -75,9 +75,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((h, [ A ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], Type (Z))),
+      ((h, [ A ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (Z))),
         Match
-          ((9, Effect ([ Type (OCaml.Failure) ], .)),
+          ((9, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -86,7 +87,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
                       ],
                         .)),
                     Variable
@@ -97,7 +100,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
                               ]->
                               .)),
                         OCaml.List.hd),
@@ -118,9 +123,11 @@ Value
   (non_rec, @.,
     [
       ((t, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.Failure) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+            Type (list, Type (Z)))),
         Match
-          ((10, Effect ([ Type (OCaml.Failure) ], .)),
+          ((10, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -129,7 +136,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
                       ],
                         .)),
                     Variable
@@ -140,7 +149,9 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
                               ]->
                               .)),
                         OCaml.List.tl),
@@ -162,12 +173,17 @@ Value
     [
       ((x, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ], Type (Z))),
+          ([
+            Type (OCaml.exception, Type (OCaml.failure));
+            Type (OCaml.exception, Type (OCaml.invalid_argument))
+          ], Type (Z))),
         Match
           ((11,
             Effect
-              ([ Type (OCaml.Failure); Type (OCaml.Invalid_argument) ],
-                .)), Variable ((?, Effect ([ ], .)), x),
+              ([
+                Type (OCaml.exception, Type (OCaml.failure));
+                Type (OCaml.exception, Type (OCaml.invalid_argument))
+              ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -175,9 +191,13 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure);
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure));
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -190,9 +210,13 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Failure);
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.failure));
                                   Type
-                                    (OCaml.Invalid_argument)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument))
                                 ]->
                                 .)),
                         OCaml.List.nth),
@@ -673,10 +697,14 @@ Value
   (non_rec, @.,
     [
       ((m2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (list, Type (Z)))),
         Match
-          ((29, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((29,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -684,7 +712,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -699,7 +729,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Invalid_argument)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.invalid_argument))
                                   ]->
                                   .)),
                         OCaml.List.map2),
@@ -780,10 +812,14 @@ Value
   (non_rec, @.,
     [
       ((rm2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (list, Type (Z)))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (list, Type (Z)))),
         Match
-          ((30, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((30,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -791,7 +827,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -806,7 +844,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Invalid_argument)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.invalid_argument))
                                   ]->
                                   .)),
                         OCaml.List.rev_map2),
@@ -887,10 +927,14 @@ Value
   (non_rec, @.,
     [
       ((fl2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (Z))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (Z))),
         Match
-          ((31, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((31,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -898,7 +942,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -915,7 +961,9 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ]->
                                     .)),
                         OCaml.List.fold_left2),
@@ -1042,10 +1090,14 @@ Value
   (non_rec, @.,
     [
       ((fr2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (Z))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (Z))),
         Match
-          ((32, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((32,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -1053,7 +1105,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1070,7 +1124,9 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.Invalid_argument)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.invalid_argument))
                                     ]->
                                     .)),
                         OCaml.List.fold_right2),
@@ -1293,10 +1349,14 @@ Value
   (non_rec, @.,
     [
       ((all2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (bool))),
         Match
-          ((37, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((37,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -1304,7 +1364,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1319,7 +1381,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Invalid_argument)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.invalid_argument))
                                   ]->
                                   .)),
                         OCaml.List.for_all2),
@@ -1400,10 +1464,14 @@ Value
   (non_rec, @.,
     [
       ((ex2, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], Type (bool))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+            Type (bool))),
         Match
-          ((38, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((38,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -1411,7 +1479,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1426,7 +1496,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Invalid_argument)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.invalid_argument))
                                   ]->
                                   .)),
                         OCaml.List._exists2),
@@ -1520,9 +1592,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((fin, [ A ], [ (x_1, A) ], Monad ([ Type (OCaml.Not_found) ], Type (Z))),
+      ((fin, [ A ], [ (x_1, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (Z))),
         Match
-          ((43, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((43,
+            Effect ([ Type (OCaml.exception, Type (OCaml.not_found)) ], .)),
             Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
@@ -1531,7 +1605,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Not_found)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.not_found))
                       ],
                         .)),
                     Variable
@@ -1544,7 +1620,9 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Not_found)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.not_found))
                                 ]->
                                 .)),
                         OCaml.List.find),
@@ -1753,9 +1831,11 @@ Value
   (non_rec, @.,
     [
       ((asso, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.Not_found) ], Type (string))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (string))),
         Match
-          ((49, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((49,
+            Effect ([ Type (OCaml.exception, Type (OCaml.not_found)) ], .)),
             Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
@@ -1764,7 +1844,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Not_found)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.not_found))
                       ],
                         .)),
                     Variable
@@ -1777,7 +1859,9 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Not_found)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.not_found))
                                 ]->
                                 .)),
                         OCaml.List.assoc),
@@ -1899,11 +1983,13 @@ Value
     [
       ((com, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.Invalid_argument) ],
+          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (list, (Type (Z) * Type (Z))))),
         Match
-          ((58, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+          ((58,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x_1),
             [
               (Any,
                 Apply
@@ -1911,7 +1997,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1924,7 +2012,9 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Invalid_argument)
+                                    (OCaml.exception,
+                                      Type
+                                        (OCaml.invalid_argument))
                                 ]->
                                 .)),
                         OCaml.List.combine),

@@ -102,9 +102,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_match, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Match_failure) ], B)),
+      ((e_match, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.match_failure)) ], B)),
         Match
-          ((26, Effect ([ Type (OCaml.Match_failure) ], .)),
+          ((26,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.match_failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -113,7 +116,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Match_failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.match_failure))
                       ],
                         .)),
                     Variable
@@ -124,44 +129,53 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Match_failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.match_failure))
                               ]->
                               .)),
-                        OCaml.raise_Match_failure),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((26,
                           Effect
                             ([
                             ],
                               .)),
+                          OCaml.Match_failure,
                           Tuple
-                            ((26,
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              Constant
+                              Tuple
                                 ((26,
                                   Effect
                                     ([
                                     ],
                                       .)),
-                                  String("error")),
-                              Constant
-                                ((26,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(1)),
-                              Constant
-                                ((26,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(2))))
+                                  Constant
+                                    ((26,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      String("error")),
+                                  Constant
+                                    ((26,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(1)),
+                                  Constant
+                                    ((26,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(2)))))
                     ]))
             ]))
     ])
@@ -171,10 +185,12 @@ Value
   (non_rec, @.,
     [
       ((e_assert, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Assert_failure) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ], B)),
         Match
-          ((27, Effect ([ Type (OCaml.Assert_failure) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((27,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -182,7 +198,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Assert_failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.assert_failure))
                       ],
                         .)),
                     Variable
@@ -193,44 +211,53 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Assert_failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.assert_failure))
                               ]->
                               .)),
-                        OCaml.raise_Assert_failure),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((27,
                           Effect
                             ([
                             ],
                               .)),
+                          OCaml.Assert_failure,
                           Tuple
-                            ((27,
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              Constant
+                              Tuple
                                 ((27,
                                   Effect
                                     ([
                                     ],
                                       .)),
-                                  String("error")),
-                              Constant
-                                ((27,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(1)),
-                              Constant
-                                ((27,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(2))))
+                                  Constant
+                                    ((27,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      String("error")),
+                                  Constant
+                                    ((27,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(1)),
+                                  Constant
+                                    ((27,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(2)))))
                     ]))
             ]))
     ])
@@ -240,10 +267,12 @@ Value
   (non_rec, @.,
     [
       ((e_invalid, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Invalid_argument) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ], B)),
         Match
-          ((28, Effect ([ Type (OCaml.Invalid_argument) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((28,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -251,7 +280,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Invalid_argument)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.invalid_argument))
                       ],
                         .)),
                     Variable
@@ -262,24 +293,33 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Invalid_argument)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.invalid_argument))
                               ]->
                               .)),
-                        OCaml.raise_Invalid_argument),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((28,
                           Effect
                             ([
                             ],
                               .)),
-                          Constant
-                            ((28,
+                          OCaml.Invalid_argument,
+                          Tuple
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              String("error")))
+                              Constant
+                                ((28,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  String("error"))))
                     ]))
             ]))
     ])
@@ -288,9 +328,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_failure, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Failure) ], B)),
+      ((e_failure, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
-          ((29, Effect ([ Type (OCaml.Failure) ], .)),
+          ((29, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -299,7 +340,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
                       ],
                         .)),
                     Variable
@@ -310,24 +353,33 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Failure)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
                               ]->
                               .)),
-                        OCaml.raise_Failure),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((29,
                           Effect
                             ([
                             ],
                               .)),
-                          Constant
-                            ((29,
+                          OCaml.Failure,
+                          Tuple
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              String("error")))
+                              Constant
+                                ((29,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  String("error"))))
                     ]))
             ]))
     ])
@@ -336,9 +388,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_not_found, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Not_found) ], B)),
+      ((e_not_found, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], B)),
         Match
-          ((30, Effect ([ Type (OCaml.Not_found) ], .)),
+          ((30,
+            Effect ([ Type (OCaml.exception, Type (OCaml.not_found)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -347,7 +401,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Not_found)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.not_found))
                       ],
                         .)),
                     Variable
@@ -358,17 +414,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Not_found)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.not_found))
                               ]->
                               .)),
-                        OCaml.raise_Not_found),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((30,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Not_found,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -378,9 +443,11 @@ Value
   (non_rec, @.,
     [
       ((e_out_of_mem, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Out_of_memory) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.out_of_memory)) ], B)),
         Match
-          ((31, Effect ([ Type (OCaml.Out_of_memory) ], .)),
+          ((31,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.out_of_memory)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -389,7 +456,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Out_of_memory)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.out_of_memory))
                       ],
                         .)),
                     Variable
@@ -400,17 +469,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Out_of_memory)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.out_of_memory))
                               ]->
                               .)),
-                        OCaml.raise_Out_of_memory),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((31,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Out_of_memory,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -420,10 +498,12 @@ Value
   (non_rec, @.,
     [
       ((e_overflow, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Stack_overflow) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.stack_overflow)) ], B)),
         Match
-          ((32, Effect ([ Type (OCaml.Stack_overflow) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((32,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.stack_overflow)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -431,7 +511,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Stack_overflow)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.stack_overflow))
                       ],
                         .)),
                     Variable
@@ -442,17 +524,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Stack_overflow)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.stack_overflow))
                               ]->
                               .)),
-                        OCaml.raise_Stack_overflow),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((32,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Stack_overflow,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -461,9 +552,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_sys_err, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.Sys_error) ], B)),
+      ((e_sys_err, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.sys_error)) ], B)),
         Match
-          ((33, Effect ([ Type (OCaml.Sys_error) ], .)),
+          ((33,
+            Effect ([ Type (OCaml.exception, Type (OCaml.sys_error)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -472,7 +565,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Sys_error)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.sys_error))
                       ],
                         .)),
                     Variable
@@ -483,24 +578,33 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Sys_error)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.sys_error))
                               ]->
                               .)),
-                        OCaml.raise_Sys_error),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((33,
                           Effect
                             ([
                             ],
                               .)),
-                          Constant
-                            ((33,
+                          OCaml.Sys_error,
+                          Tuple
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              String("error")))
+                              Constant
+                                ((33,
+                                  Effect
+                                    ([
+                                    ],
+                                      .)),
+                                  String("error"))))
                     ]))
             ]))
     ])
@@ -509,9 +613,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((e_EOF, [ A; B ], [ (x, A) ], Monad ([ Type (OCaml.End_of_file) ], B)),
+      ((e_EOF, [ A; B ], [ (x, A) ],
+        Monad ([ Type (OCaml.exception, Type (OCaml.end_of_file)) ], B)),
         Match
-          ((34, Effect ([ Type (OCaml.End_of_file) ], .)),
+          ((34,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.end_of_file)) ], .)),
             Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
@@ -520,7 +627,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.End_of_file)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.end_of_file))
                       ],
                         .)),
                     Variable
@@ -531,17 +640,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.End_of_file)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.end_of_file))
                               ]->
                               .)),
-                        OCaml.raise_End_of_file),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((34,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.End_of_file,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -551,10 +669,12 @@ Value
   (non_rec, @.,
     [
       ((e_div, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Division_by_zero) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.division_by_zero)) ], B)),
         Match
-          ((35, Effect ([ Type (OCaml.Division_by_zero) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((35,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.division_by_zero)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -562,7 +682,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Division_by_zero)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.division_by_zero))
                       ],
                         .)),
                     Variable
@@ -573,17 +695,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Division_by_zero)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.division_by_zero))
                               ]->
                               .)),
-                        OCaml.raise_Division_by_zero),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((35,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Division_by_zero,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -593,10 +724,12 @@ Value
   (non_rec, @.,
     [
       ((e_sys_blocked, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Sys_blocked_io) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml.sys_blocked_io)) ], B)),
         Match
-          ((36, Effect ([ Type (OCaml.Sys_blocked_io) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((36,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.sys_blocked_io)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -604,7 +737,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Sys_blocked_io)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.sys_blocked_io))
                       ],
                         .)),
                     Variable
@@ -615,17 +750,26 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Sys_blocked_io)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.sys_blocked_io))
                               ]->
                               .)),
-                        OCaml.raise_Sys_blocked_io),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((36,
                           Effect
                             ([
                             ],
-                              .)))
+                              .)),
+                          OCaml.Sys_blocked_io,
+                          Tuple
+                            ((?,
+                              Effect
+                                ([
+                                ],
+                                  .))))
                     ]))
             ]))
     ])
@@ -635,10 +779,22 @@ Value
   (non_rec, @.,
     [
       ((e_rec_module, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.Undefined_recursive_module) ], B)),
+        Monad
+          ([
+            Type
+              (OCaml.exception,
+                Type
+                  (OCaml.undefined_recursive_module))
+          ], B)),
         Match
-          ((37, Effect ([ Type (OCaml.Undefined_recursive_module) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((37,
+            Effect
+              ([
+                Type
+                  (OCaml.exception,
+                    Type
+                      (OCaml.undefined_recursive_module))
+              ], .)), Variable ((?, Effect ([ ], .)), x),
             [
               (Any,
                 Apply
@@ -646,7 +802,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Undefined_recursive_module)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.undefined_recursive_module))
                       ],
                         .)),
                     Variable
@@ -657,44 +815,53 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Undefined_recursive_module)
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.undefined_recursive_module))
                               ]->
                               .)),
-                        OCaml.raise_Undefined_recursive_module),
+                        OCaml.Pervasives.raise),
                     [
-                      Tuple
-                        ((?,
+                      Constructor
+                        ((37,
                           Effect
                             ([
                             ],
                               .)),
+                          OCaml.Undefined_recursive_module,
                           Tuple
-                            ((37,
+                            ((?,
                               Effect
                                 ([
                                 ],
                                   .)),
-                              Constant
+                              Tuple
                                 ((37,
                                   Effect
                                     ([
                                     ],
                                       .)),
-                                  String("error")),
-                              Constant
-                                ((37,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(1)),
-                              Constant
-                                ((37,
-                                  Effect
-                                    ([
-                                    ],
-                                      .)),
-                                  Int(2))))
+                                  Constant
+                                    ((37,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      String("error")),
+                                  Constant
+                                    ((37,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(1)),
+                                  Constant
+                                    ((37,
+                                      Effect
+                                        ([
+                                        ],
+                                          .)),
+                                      Int(2)))))
                     ]))
             ]))
     ])

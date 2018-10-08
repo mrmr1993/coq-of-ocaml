@@ -4,15 +4,15 @@
     "Interface",
     "Ex42",
     [
-      [ "Var", "x", [ [ [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
+      [ "Var", "x", [ [ [], [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ],
       [
         "Var",
         "nested",
-        [ [ [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "bool" ] ] ] ] ] ]
+        [ [ [], [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "list", [ "Apply", "bool" ] ] ] ] ] ]
       ],
-      [ "Var", "raises", [ [ [ "OCaml.Failure" ] ] ] ],
-      [ "Var", "complex_raises", [ [ [ "OCaml.Failure" ] ] ] ],
-      [ "Var", "argument_effects", [ [ [], [ [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ]
+      [ "Var", "raises", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.failure" ] ] ] ] ] ],
+      [ "Var", "complex_raises", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "OCaml.failure" ] ] ] ] ] ],
+      [ "Var", "argument_effects", [ [ [], [ "union", [ "Apply", "OCaml.Effect.State.state", [ "Apply", "Z" ] ] ] ] ] ]
     ]
   ]
 }

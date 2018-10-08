@@ -8,7 +8,6 @@ module Value = struct
     | Variable of 'a
     | Type of typ_def
     | Descriptor
-    | Exception of PathName.t
     | Constructor of PathName.t * int
     | Field of PathName.t * int
 
@@ -17,7 +16,6 @@ module Value = struct
     | Variable a -> Variable (f a)
     | Type def -> Type def
     | Descriptor -> Descriptor
-    | Exception raise_name -> Exception raise_name
     | Constructor (typ, index) -> Constructor (typ, index)
     | Field (typ, index) -> Field (typ, index)
 
@@ -26,7 +24,6 @@ module Value = struct
     | Variable _ -> "variable"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
-    | Exception _ -> "exception"
     | Constructor _ -> "constructor"
     | Field _ -> "field"
 end
@@ -350,24 +347,6 @@ module Descriptor = ValueCarrier(struct
   let unpack (v : 'a Value.t) : 'a t' = ()
 end)
 
-module Exception = ValueCarrier(struct
-  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
-    PathName.Map.find_opt x m.Mod.descriptors
-
-  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
-    { m with Mod.descriptors = PathName.Map.add x y m.Mod.descriptors }
-
-  type 'a t = PathName.t
-  type 'a t' = PathName.t
-
-  let value (raise_name : PathName.t) : 'a Value.t = Exception raise_name
-
-  let unpack (v : 'a Value.t) : PathName.t =
-    match v with
-    | Exception raise_name -> raise_name
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as an exception."
-end)
-
 module Constructor = ValueCarrier(struct
   let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
     PathName.Map.find_opt x m.Mod.constructors
@@ -516,22 +495,11 @@ let leave_signature (env : 'a t) : 'a t =
   Module.raw_add (PathName.of_name [] module_name)
     (PathName.of_name_list m.coq_path) m env
 
-let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
-  let raise_path = {PathName.path = coq_path env @ path;
-    base = "raise_" ^ base} in
+let add_exception (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
+  let typ_name = String.uncapitalize_ascii base in
+  let typ_path = {PathName.path = coq_path env @ path; base = typ_name} in
+  let typ_def = Inductive (CoqName.Name typ_name, [],
+    [(CoqName.Name base, [Variable "_"])]) in
   env
-  |> Exception.add path base raise_path
-  |> Var.add path ("raise_" ^ base) ()
-
-let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (env : Effect.t t) : Effect.t t =
-  let raise_path = {PathName.path = coq_path env @ path;
-    base = "raise_" ^ base} in
-  let env = Exception.add path base raise_path env in
-  let descriptor = PathName.of_name path base in
-  let bound_descriptor = Descriptor.bound Loc.Unknown descriptor env in
-  let effect =
-    Effect.eff @@ Effect.Type.Arrow (Effect.Type.pure, Effect.Type.Monad (
-      Effect.Descriptor.singleton bound_descriptor [],
-      Effect.Type.pure)) in
-  Var.add path ("raise_" ^ base) effect env
+  |> Constructor.add path base (typ_path, 0)
+  |> Typ.add path typ_name typ_def

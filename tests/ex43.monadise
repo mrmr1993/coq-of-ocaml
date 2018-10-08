@@ -1469,8 +1469,11 @@ Value
     [
       ((raises, [ ], [ (b, Type (bool)) ],
         Monad
-          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
-            Type (unit))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.exception, Type (OCaml.failure))
+          ], Type (unit))),
         LetFun 30
           (rec, @.,
             [
@@ -1480,7 +1483,9 @@ Value
                     Type
                       (NonTermination);
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.failure))
                   ], ())),
                 Match
                   (?,
@@ -1500,7 +1505,9 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Failure)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.failure))
                             ],
                             Apply
                               (?,
@@ -1534,13 +1541,17 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Failure)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.failure))
                                     ],
                                     [
                                       Type
                                         (NonTermination);
                                       Type
-                                        (OCaml.Failure)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.failure))
                                     ],
                                     Coerce
                                       (?,
@@ -1557,7 +1568,9 @@ Value
                                         Monad
                                           ([
                                             Type
-                                              (OCaml.Failure)
+                                              (OCaml.exception,
+                                                Type
+                                                  (OCaml.failure))
                                           ],
                                             ()))),
                                 None,
@@ -1585,17 +1598,21 @@ Value
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 Apply
                   (?, Variable (?, read_counter),
                     [ Constructor (?, tt) ])), Some counter,
             Lift
-              (?, [ Type (NonTermination); Type (OCaml.Failure) ],
+              (?,
+                [
+                  Type (NonTermination);
+                  Type (OCaml.exception, Type (OCaml.failure))
+                ],
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 Apply
                   (?, Variable (?, while), [ Variable (?, counter) ]))))
@@ -1607,8 +1624,11 @@ Value
     [
       ((complex_raises, [ ], [ (b, Type (bool)) ],
         Monad
-          ([ Type (Counter); Type (NonTermination); Type (OCaml.Failure) ],
-            Type (unit))),
+          ([
+            Type (Counter);
+            Type (NonTermination);
+            Type (OCaml.exception, Type (OCaml.failure))
+          ], Type (unit))),
         LetFun 35
           (non_rec, @.,
             [
@@ -1616,7 +1636,9 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.failure))
                   ], (A * Type (Z) * B))),
                 Bind
                   (?,
@@ -1655,7 +1677,9 @@ Value
                     Type
                       (NonTermination);
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.failure))
                   ], ())),
                 Match
                   (?,
@@ -1675,7 +1699,9 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.Failure)
+                                (OCaml.exception,
+                                  Type
+                                    (OCaml.failure))
                             ],
                             Apply
                               (?,
@@ -1709,13 +1735,17 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.Failure)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.failure))
                                     ],
                                     [
                                       Type
                                         (NonTermination);
                                       Type
-                                        (OCaml.Failure)
+                                        (OCaml.exception,
+                                          Type
+                                            (OCaml.failure))
                                     ],
                                     Coerce
                                       (?,
@@ -1732,7 +1762,9 @@ Value
                                         Monad
                                           ([
                                             Type
-                                              (OCaml.Failure)
+                                              (OCaml.exception,
+                                                Type
+                                                  (OCaml.failure))
                                           ],
                                             (Type
                                               (bool)
@@ -1766,17 +1798,21 @@ Value
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 Apply
                   (?, Variable (?, read_counter),
                     [ Constructor (?, tt) ])), Some counter,
             Lift
-              (?, [ Type (NonTermination); Type (OCaml.Failure) ],
+              (?,
+                [
+                  Type (NonTermination);
+                  Type (OCaml.exception, Type (OCaml.failure))
+                ],
                 [
                   Type (Counter);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 Apply
                   (?, Variable (?, while), [ Variable (?, counter) ]))))

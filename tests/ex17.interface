@@ -4,15 +4,57 @@
     "Interface",
     "Ex17",
     [
-      [ "Exception", "Outside", "raise_Outside" ],
-      [ "Var", "f", [ [ [ "Outside" ] ] ] ],
+      [ "Exception", "Outside", "outside" ],
+      [ "Var", "f", [ [ [ [ "Apply", "OCaml.exception", [ "Apply", "outside" ] ] ] ] ] ],
       [
         "Interface",
         "G",
-        [ [ "Exception", "Inside", "raise_Inside" ], [ "Var", "g", [ [ [ "Outside", "G.Inside" ] ] ] ] ]
+        [
+          [ "Exception", "Inside", "inside" ],
+          [
+            "Var",
+            "g",
+            [
+              [
+                [
+                  [ "Apply", "OCaml.exception", [ "Apply", "outside" ] ],
+                  [ "Apply", "OCaml.exception", [ "Apply", "G.inside" ] ]
+                ]
+              ]
+            ]
+          ]
+        ]
       ],
-      [ "Var", "h_rec", [ [ [], [ "IO", "NonTermination", "Outside", "G.Inside" ] ] ] ],
-      [ "Var", "h", [ [ [ "Counter", "IO", "NonTermination", "Outside", "G.Inside" ] ] ] ]
+      [
+        "Var",
+        "h_rec",
+        [
+          [
+            [],
+            [
+              [ "Apply", "IO" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "outside" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "G.inside" ] ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "Var",
+        "h",
+        [
+          [
+            [
+              [ "Apply", "Counter" ],
+              [ "Apply", "IO" ],
+              [ "Apply", "NonTermination" ],
+              [ "Apply", "OCaml.exception", [ "Apply", "outside" ] ],
+              [ "Apply", "OCaml.exception", [ "Apply", "G.inside" ] ]
+            ]
+          ]
+        ]
+      ]
     ]
   ]
 }

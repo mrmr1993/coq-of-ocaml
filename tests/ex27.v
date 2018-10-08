@@ -12,26 +12,28 @@ Fixpoint length_aux {A : Type} (len : Z) (x : list A) : Z :=
 
 Definition length {A : Type} (l : list A) : Z := length_aux 0 l.
 
-Definition hd {A : Type} (x : list A) : M [ OCaml.Failure ] A :=
+Definition hd {A : Type} (x : list A) : M [ OCaml.exception OCaml.failure ] A :=
   match x with
   | [] => OCaml.Pervasives.failwith "hd" % string
   | cons a l => ret a
   end.
 
-Definition tl {A : Type} (x : list A) : M [ OCaml.Failure ] (list A) :=
+Definition tl {A : Type} (x : list A)
+  : M [ OCaml.exception OCaml.failure ] (list A) :=
   match x with
   | [] => OCaml.Pervasives.failwith "tl" % string
   | cons a l => ret l
   end.
 
 Definition nth {A : Type} (l : list A) (n : Z)
-  : M [ OCaml.Failure; OCaml.Invalid_argument ] A :=
+  : M [ OCaml.exception OCaml.failure; OCaml.exception OCaml.invalid_argument ]
+    A :=
   if OCaml.Pervasives.lt n 0 then
     lift [_;_] "01" (OCaml.Pervasives.invalid_arg "List.nth" % string)
   else
     lift [_;_] "10"
       (let fix nth_aux_coq_rec {B : Type} (l : list B) (n : Z)
-        : M [ OCaml.Failure ] B :=
+        : M [ OCaml.exception OCaml.failure ] B :=
         match l with
         | [] => OCaml.Pervasives.failwith "nth" % string
         | cons a l =>
@@ -118,7 +120,7 @@ Fixpoint fold_right {A B : Type} (f : A -> B -> B) (l : list A) (accu : B)
   end.
 
 Fixpoint map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] (list C) :=
+  : M [ OCaml.exception OCaml.invalid_argument ] (list C) :=
   match (l1, l2) with
   | ([], []) => ret []
   | (cons a1 l1, cons a2 l2) =>
@@ -129,9 +131,9 @@ Fixpoint map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
   end.
 
 Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] (list C) :=
+  : M [ OCaml.exception OCaml.invalid_argument ] (list C) :=
   let fix rmap2_f_coq_rec (accu : list C) (l1 : list A) (l2 : list B)
-    : M [ OCaml.Invalid_argument ] (list C) :=
+    : M [ OCaml.exception OCaml.invalid_argument ] (list C) :=
     match (l1, l2) with
     | ([], []) => ret accu
     | (cons a1 l1, cons a2 l2) => rmap2_f_coq_rec (cons (f a1 a2) accu) l1 l2
@@ -140,7 +142,7 @@ Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
   rmap2_f_coq_rec [] l1 l2.
 
 Fixpoint iter2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] unit :=
+  : M [ OCaml.exception OCaml.invalid_argument ] unit :=
   match (l1, l2) with
   | ([], []) => ret tt
   | (cons a1 l1, cons a2 l2) => iter2 f l1 l2
@@ -149,7 +151,7 @@ Fixpoint iter2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
 
 Fixpoint fold_left2 {A B C : Type}
   (f : A -> B -> C -> A) (accu : A) (l1 : list B) (l2 : list C)
-  : M [ OCaml.Invalid_argument ] A :=
+  : M [ OCaml.exception OCaml.invalid_argument ] A :=
   match (l1, l2) with
   | ([], []) => ret accu
   | (cons a1 l1, cons a2 l2) => fold_left2 f (f accu a1 a2) l1 l2
@@ -158,7 +160,7 @@ Fixpoint fold_left2 {A B C : Type}
 
 Fixpoint fold_right2 {A B C : Type}
   (f : A -> B -> C -> C) (l1 : list A) (l2 : list B) (accu : C)
-  : M [ OCaml.Invalid_argument ] C :=
+  : M [ OCaml.exception OCaml.invalid_argument ] C :=
   match (l1, l2) with
   | ([], []) => ret accu
   | (cons a1 l1, cons a2 l2) =>
@@ -180,7 +182,7 @@ Fixpoint _exists {A : Type} (p : A -> bool) (x : list A) : bool :=
   end.
 
 Fixpoint for_all2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] bool :=
+  : M [ OCaml.exception OCaml.invalid_argument ] bool :=
   match (l1, l2) with
   | ([], []) => ret true
   | (cons a1 l1, cons a2 l2) =>
@@ -190,7 +192,7 @@ Fixpoint for_all2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
   end.
 
 Fixpoint _exists2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] bool :=
+  : M [ OCaml.exception OCaml.invalid_argument ] bool :=
   match (l1, l2) with
   | ([], []) => ret false
   | (cons a1 l1, cons a2 l2) =>
@@ -200,9 +202,9 @@ Fixpoint _exists2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
   end.
 
 Fixpoint find {A : Type} (p : A -> bool) (x : list A)
-  : M [ OCaml.Not_found ] A :=
+  : M [ OCaml.exception OCaml.not_found ] A :=
   match x with
-  | [] => OCaml.raise_Not_found tt
+  | [] => OCaml.Pervasives.raise (OCaml.Not_found tt)
   | cons x l =>
     if p x then
       ret x
@@ -248,7 +250,7 @@ Fixpoint split {A B : Type} (x : list (A * B)) : (list A) * (list B) :=
   end.
 
 Fixpoint combine {A B : Type} (l1 : list A) (l2 : list B)
-  : M [ OCaml.Invalid_argument ] (list (A * B)) :=
+  : M [ OCaml.exception OCaml.invalid_argument ] (list (A * B)) :=
   match (l1, l2) with
   | ([], []) => ret []
   | (cons a1 l1, cons a2 l2) =>
@@ -272,7 +274,7 @@ Fixpoint merge {A : Type} (cmp : A -> A -> Z) (l1 : list A) (l2 : list A)
   rev_merge_aux_coq_rec l2.
 
 Fixpoint chop {A : Type} (k : Z) (l : list A)
-  : M [ OCaml.Assert_failure ] (list A) :=
+  : M [ OCaml.exception OCaml.assert_failure ] (list A) :=
   if equiv_decb k 0 then
     ret l
   else
@@ -312,7 +314,7 @@ Module StableSort.
   
   Fixpoint sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -353,7 +355,7 @@ Module StableSort.
   
   with rev_sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -393,18 +395,20 @@ Module StableSort.
     end.
   
   Definition sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+      (list A) :=
     let! x := lift [_;_;_] "100" (read_counter tt) in
     lift [_;_;_] "011" (sort_rec x cmp n l).
   
   Definition rev_sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+      (list A) :=
     let! x := lift [_;_;_] "100" (read_counter tt) in
     lift [_;_;_] "011" (rev_sort_rec x cmp n l).
 End StableSort.
 
 Definition stable_sort {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
   let len := length l in
   if OCaml.Pervasives.lt len 2 then
     ret l
@@ -413,13 +417,15 @@ Definition stable_sort {A : Type} (cmp : A -> A -> Z) (l : list A)
 
 Definition sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) -> M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
-  stable_sort.
+    (list A) ->
+      M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+        (list A) := stable_sort.
 
 Definition fast_sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) -> M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
-  stable_sort.
+    (list A) ->
+      M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+        (list A) := stable_sort.
 
 Module SortUniq.
   Fixpoint rev_merge {A : Type}
@@ -460,7 +466,7 @@ Module SortUniq.
   
   Fixpoint sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -532,7 +538,7 @@ Module SortUniq.
   
   with rev_sort_rec {A : Type}
     (counter : nat) (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
@@ -603,18 +609,20 @@ Module SortUniq.
     end.
   
   Definition sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+      (list A) :=
     let! x := lift [_;_;_] "100" (read_counter tt) in
     lift [_;_;_] "011" (sort_rec x cmp n l).
   
   Definition rev_sort {A : Type} (cmp : A -> A -> Z) (n : Z) (l : list A)
-    : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+    : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
+      (list A) :=
     let! x := lift [_;_;_] "100" (read_counter tt) in
     lift [_;_;_] "011" (rev_sort_rec x cmp n l).
 End SortUniq.
 
 Definition sort_uniq {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ Counter; NonTermination; OCaml.Assert_failure ] (list A) :=
+  : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
   let len := length l in
   if OCaml.Pervasives.lt len 2 then
     ret l

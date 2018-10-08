@@ -3,7 +3,8 @@ Value
   (non_rec, @.,
     [
       ((tail, [ A ], [ (l, Type (list, A)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (list, A))),
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (list, A))),
         Match
           (4, Variable (4, l),
             [
@@ -159,17 +160,17 @@ Value
             Type (Counter);
             Type (IO);
             Type (NonTermination);
-            Type (OCaml.Failure)
+            Type (OCaml.exception, Type (OCaml.failure))
           ], Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ Type (OCaml.Failure) ],
+              (?, [ Type (OCaml.exception, Type (OCaml.failure)) ],
                 [
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 Apply
                   (16, Variable (16, tail),
@@ -208,6 +209,6 @@ Value
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.Failure)
+                  Type (OCaml.exception, Type (OCaml.failure))
                 ], Apply (16, Variable (16, f), [ Variable (?, x) ]))))
     ])

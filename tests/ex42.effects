@@ -443,21 +443,36 @@ Value
   (non_rec, @.,
     [
       ((raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (unit))),
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
         For
-          ((20, Effect ([ Type (OCaml.Failure) ], .)), i, true,
-            Constant ((20, Effect ([ ], .)), Int(0)),
+          ((20, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
+            i, true, Constant ((20, Effect ([ ], .)), Int(0)),
             Variable ((20, Effect ([ ], .)), x),
             Coerce
-              ((?, Effect ([ Type (OCaml.Failure) ], .)),
+              ((?,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+                    .)),
                 Apply
-                  ((21, Effect ([ Type (OCaml.Failure) ], .)),
+                  ((21,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
+                      ], .)),
                     Variable
                       ((21,
                         Effect
                           ([ ],
-                            . -[ Type (OCaml.Failure) ]->
-                              .)),
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
+                              ]-> .)),
                         OCaml.Pervasives.failwith),
                     [
                       Constant
@@ -467,7 +482,10 @@ Value
                             ],
                               .)),
                           String("x is not less than 0"))
-                    ]), Monad ([ Type (OCaml.Failure) ], ()))))
+                    ]),
+                Monad
+                  ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+                    ()))))
     ])
 
 24
@@ -475,22 +493,27 @@ Value
   (non_rec, @.,
     [
       ((complex_raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.Failure) ], Type (unit))),
-        LetFun (25, Effect ([ Type (OCaml.Failure) ], .))
+        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
+        LetFun
+          (25, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .))
           (non_rec, @.,
             [
               ((f, [ A; B ], [ (a, A) ],
                 Monad
                   ([
                     Type
-                      (OCaml.Failure)
+                      (OCaml.exception,
+                        Type
+                          (OCaml.failure))
                   ], (A * Type (Z) * B))),
                 Tuple
                   ((25,
                     Effect
                       ([
                         Type
-                          (OCaml.Failure)
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
                       ],
                         .)),
                     Variable
@@ -512,7 +535,9 @@ Value
                         Effect
                           ([
                             Type
-                              (OCaml.Failure)
+                              (OCaml.exception,
+                                Type
+                                  (OCaml.failure))
                           ],
                             .)),
                         Variable
@@ -523,7 +548,9 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Failure)
+                                      (OCaml.exception,
+                                        Type
+                                          (OCaml.failure))
                                   ]->
                                   .)),
                             OCaml.Pervasives.failwith),
@@ -538,22 +565,37 @@ Value
                         ])))
             ]) in
         For
-          ((26, Effect ([ Type (OCaml.Failure) ], .)), i, true,
-            Constant ((26, Effect ([ ], .)), Int(0)),
+          ((26, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
+            i, true, Constant ((26, Effect ([ ], .)), Int(0)),
             Variable ((26, Effect ([ ], .)), x),
             Coerce
-              ((?, Effect ([ Type (OCaml.Failure) ], .)),
+              ((?,
+                Effect
+                  ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+                    .)),
                 Apply
-                  ((27, Effect ([ Type (OCaml.Failure) ], .)),
+                  ((27,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
+                      ], .)),
                     Variable
                       ((27,
                         Effect
                           ([ ],
-                            . -[ Type (OCaml.Failure) ]->
-                              .)), f),
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.failure))
+                              ]-> .)), f),
                     [ Constructor ((27, Effect ([ ], .)), true) ]),
                 Monad
-                  ([ Type (OCaml.Failure) ],
+                  ([ Type (OCaml.exception, Type (OCaml.failure)) ],
                     (Type (bool) * Type (Z) * ())))))
     ])
 

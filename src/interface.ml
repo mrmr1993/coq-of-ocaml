@@ -17,8 +17,8 @@ let rec pp (interface : t) : SmartPrint.t =
     !^ "Var" ^^ OCaml.tuple [CoqName.pp x; Effect.pp shape]
   | Typ def -> !^ "Typ" ^^ TypeDefinition.pp def
   | Descriptor x -> !^ "Descriptor" ^^ CoqName.pp x
-  | Exception (x, raise_name) ->
-    !^ "Exception" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp raise_name]
+  | Exception (x, typ_name) ->
+    !^ "Exception" ^^ OCaml.tuple [CoqName.pp x; CoqName.pp typ_name]
   | Include x -> !^ "Include" ^^ PathName.pp x
   | Interface (x, defs) ->
     !^ "Interface" ^^ CoqName.pp x ^^ !^ "=" ^^ newline ^^ indent
@@ -56,7 +56,7 @@ and of_structure (def : ('a * Type.t) Structure.t) : t list =
     [Var (prim.PrimitiveDeclaration.name, Effect.pure)]
   | Structure.TypeDefinition (_, typ_def) -> [Typ typ_def]
   | Structure.Exception (_, exn) ->
-    [Exception (exn.Exception.name, exn.Exception.raise_name)]
+    [Exception (exn.Exception.name, exn.Exception.typ_name)]
   | Structure.Reference (_, r) ->
     [Descriptor r.Reference.state_name;
      Var (r.Reference.name, r.Reference.effect)]
@@ -84,9 +84,9 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
     FullEnvi.Var.assoc x effect env
   | Typ typ -> TypeDefinition.update_env typ env
   | Descriptor x -> FullEnvi.Descriptor.assoc x () env
-  | Exception (name, raise_name) ->
-    env |> Exception.update_env_with_effects
-      { Exception.name; raise_name; typ = Type.Variable "_" }
+  | Exception (name, typ_name) ->
+    env |> Exception.update_env
+      { Exception.name; typ_name; typ = Type.Variable "_" }
   | Include x -> Include.of_interface x env
   | Interface (x, defs) ->
     let env = FullEnvi.enter_module x env in
@@ -120,8 +120,8 @@ let rec to_json (interface : t) : json =
     `List [`String "Var"; CoqName.to_json x; Effect.to_json eff]
   | Typ x -> `List [`String "Typ"; TypeDefinition.to_json x]
   | Descriptor x -> `List [`String "Descriptor"; CoqName.to_json x]
-  | Exception (name, raise_name) ->
-    `List [`String "Exception"; CoqName.to_json name; CoqName.to_json raise_name]
+  | Exception (name, typ_name) ->
+    `List [`String "Exception"; CoqName.to_json name; CoqName.to_json typ_name]
   | Include x -> `List [`String "Include"; PathName.to_json x]
   | Interface (x, defs) ->
     `List [`String "Interface"; CoqName.to_json x; `List (List.map to_json defs)]
@@ -134,8 +134,8 @@ let rec of_json (json : json) : t =
     Var (CoqName.of_json x, Effect.of_json eff)
   | `List [`String "Typ"; x] -> Typ (TypeDefinition.of_json x)
   | `List [`String "Descriptor"; x] -> Descriptor (CoqName.of_json x)
-  | `List [`String "Exception"; name; raise_name] ->
-    Exception (CoqName.of_json name, CoqName.of_json raise_name)
+  | `List [`String "Exception"; name; typ_name] ->
+    Exception (CoqName.of_json name, CoqName.of_json typ_name)
   | `List [`String "Include"; x] -> Include (PathName.of_json x)
   | `List [`String "Interface"; x; `List defs] ->
       Interface (CoqName.of_json x, List.map of_json defs)

@@ -1,4 +1,4 @@
-3 Exception (Error, raise_Error, ())
+3 Exception (Error, error, ())
 
 5
 Value
@@ -8,11 +8,14 @@ Value
         Match
           (6,
             Run
-              (?, Error, [ ],
-                Apply (6, Variable (6, raise_Error), [ Tuple (?) ])),
+              (?, Type (OCaml.exception, Type (error)), [ ],
+                Apply
+                  (6, Variable (6, OCaml.Pervasives.raise),
+                    [ Constructor (6, Error, Tuple (?)) ])),
             [
               (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Tuple ()), Constant (7, Int(12)))
+              (Constructor (inr, Constructor (Error, Tuple ())),
+                Constant (7, Int(12)))
             ]))
     ])
 
@@ -29,17 +32,23 @@ Value
                   (10,
                     Run
                       (?,
-                        Error,
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (error)),
                         [
                         ],
                         Apply
                           (10,
                             Variable
                               (10,
-                                raise_Error),
+                                OCaml.Pervasives.raise),
                             [
-                              Tuple
-                                (?)
+                              Constructor
+                                (10,
+                                  Error,
+                                  Tuple
+                                    (?))
                             ])),
                     [
                       (Constructor
@@ -50,8 +59,10 @@ Value
                             x));
                       (Constructor
                         (inr,
-                          Tuple
-                            ()),
+                          Constructor
+                            (Error,
+                              Tuple
+                                ())),
                         Apply
                           (11,
                             Variable
@@ -74,7 +85,7 @@ Value
         Match
           (14,
             Run
-              (?, Error, [ ],
+              (?, Type (OCaml.exception, Type (error)), [ ],
                 IfThenElse
                   (14, Variable (14, b),
                     Apply
@@ -83,10 +94,12 @@ Value
                           (14, OCaml.Pervasives.failwith),
                         [ Constant (14, String("arg")) ]),
                     Apply
-                      (14, Variable (14, raise_Error),
-                        [ Tuple (?) ]))),
+                      (14,
+                        Variable (14, OCaml.Pervasives.raise),
+                        [ Constructor (14, Error, Tuple (?)) ]))),
             [
               (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Tuple ()), Constant (15, Int(12)))
+              (Constructor (inr, Constructor (Error, Tuple ())),
+                Constant (15, Int(12)))
             ]))
     ])
