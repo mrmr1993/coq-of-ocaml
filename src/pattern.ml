@@ -114,7 +114,10 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
         !^ "Could not find inductive type for constructor" ^^ BoundName.pp x in
     let var_map = List.fold_left2 (fun m n typ -> Name.Map.add n typ m)
       Name.Map.empty typ_args typ_vars in
-    let typs = List.map (Type.map_vars (fun x -> Name.Map.find x var_map)) @@
+    let typs = List.map (Type.map_vars (fun x ->
+      match Name.Map.find_opt x var_map with
+      | Some typ -> typ
+      | None -> Variable x)) @@
       snd @@ List.nth constructors index in
     Constructor (Effect.Type.unify typ' typ, x, List.map2 unify typs ps)
   | _, Alias (typ', p, x) -> Alias (Effect.Type.unify typ' typ, p, x)
@@ -130,7 +133,10 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
     let var_map = List.fold_left2 (fun m n typ -> Name.Map.add n typ m)
       Name.Map.empty typ_args typ_vars in
     let typs = field_typs |> List.map (fun (name, typ) ->
-      Type.map_vars (fun x -> Name.Map.find x var_map) typ) in
+      typ |> Type.map_vars (fun x ->
+        match Name.Map.find_opt x var_map with
+        | Some typ -> typ
+        | None -> Variable x)) in
     let fields = fields |> List.map (fun (field_name, p) ->
       let typ = FullEnvi.Field.find loc field_name env
         |> snd |> List.nth typs in

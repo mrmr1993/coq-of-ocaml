@@ -74,32 +74,44 @@ End Z.
 Definition exception (A : Type) : Effect.t :=
   Effect.make unit A.
 
-Definition Match_failure : Type := (string * Z * Z).
+Inductive match_failure : Type :=
+| Match_failure : (string * Z * Z) -> match_failure.
 
-Definition Assert_failure : Type := (string * Z * Z).
+Inductive assert_failure : Type :=
+| Assert_failure : (string * Z * Z) -> assert_failure.
 
-Definition Invalid_argument : Type := string.
+Inductive invalid_argument : Type :=
+| Invalid_argument : string -> invalid_argument.
 
-Definition Failure : Type := string.
+Inductive failure : Type :=
+| Failure : string -> failure.
 
-Definition Not_found : Type := unit.
+Inductive not_found : Type :=
+| Not_found : unit -> not_found.
 
-Definition Out_of_memory : Type := unit.
+Inductive out_of_memory : Type :=
+| Out_of_memory : unit -> out_of_memory.
 
-Definition Stack_overflow : Type := unit.
+Inductive stack_overflow : Type :=
+| Stack_overflow : unit -> stack_overflow.
 
-Definition Sys_error : Type := string.
+Inductive sys_error : Type :=
+| Sys_error : string -> sys_error.
 
-Definition End_of_file : Type := unit.
+Inductive end_of_file : Type :=
+| End_of_file : unit -> end_of_file.
 
-Definition Division_by_zero : Type := unit.
+Inductive division_by_zero : Type :=
+| Division_by_zero : unit -> division_by_zero.
 
-Definition Sys_blocked_io : Type := unit.
+Inductive sys_blocked_io : Type :=
+| Sys_blocked_io : unit -> sys_blocked_io.
 
-Definition Undefined_recursive_module : Type := (string * Z * Z).
+Inductive undefined_recursive_module : Type :=
+| Undefined_recursive_module : (string * Z * Z) -> undefined_recursive_module.
 
-Definition assert {A : Type} (b : bool) : M [exception Assert_failure] A :=
-  fun s => (inr (inl ("coq" % string, 0, 0)), s).
+Definition assert {A : Type} (b : bool) : M [exception assert_failure] A :=
+  fun s => (inr (inl (Assert_failure ("coq" % string, 0, 0))), s).
 
 Definition for_to {A : Type} {es : list Effect.t} (start_value end_value : Z)
   (f : Z -> M es A) : M es unit :=
@@ -137,14 +149,15 @@ Module Pervasives.
     fun s => (inr (inl x), s).
 
   Definition invalid_arg {A : Type} (message : string)
-    : M [exception Invalid_argument] A :=
-    raise message.
+    : M [exception invalid_argument] A :=
+    raise (Invalid_argument message).
 
   Definition failwith {A : Type} (message : string)
-    : M [exception Failure] A :=
-    raise message.
+    : M [exception failure] A :=
+    raise (Failure message).
 
-  Definition Exit : Type := unit.
+  Inductive exit : Type :=
+  | Exit : unit -> exit.
 
   (** * Comparisons *)
   Definition lt {A : Type} {R} `{OrderDec A R} (x y : A) : bool :=
@@ -215,11 +228,11 @@ Module Pervasives.
   Definition int_of_char (c : ascii) : Z :=
     Z.of_nat (nat_of_ascii c).
 
-  Definition char_of_int (n : Z) : M [ exception Invalid_argument ] ascii :=
+  Definition char_of_int (n : Z) : M [ exception invalid_argument ] ascii :=
     if andb (le 0 n) (le n 255) then
       ret (ascii_of_nat (Z.to_nat n))
     else
-      raise "char_of_int"%string.
+      raise (Invalid_argument "char_of_int").
 
   (** * Unit operations *)
   Definition ignore {A : Type} (_ : A) : unit :=

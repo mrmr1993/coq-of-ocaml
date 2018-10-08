@@ -516,15 +516,11 @@ let leave_signature (env : 'a t) : 'a t =
   Module.raw_add (PathName.of_name [] module_name)
     (PathName.of_name_list m.coq_path) m env
 
-let add_exception (path : Name.t list) (base : Name.t) (env : unit t) : unit t =
-  let raise_path = {PathName.path = coq_path env @ path;
-    base = "raise_" ^ base} in
+let add_exception (path : Name.t list) (base : Name.t) (env : 'a t) : 'a t =
+  let typ_name = String.uncapitalize_ascii base in
+  let typ_path = {PathName.path = coq_path env @ path; base = typ_name} in
+  let typ_def = Inductive (CoqName.Name typ_name, [],
+    [(CoqName.Name base, [Variable "_"])]) in
   env
-  |> Exception.add path base raise_path
-  |> Var.add path ("raise_" ^ base) ()
-
-let add_exception_with_effects (path : Name.t list) (base : Name.t)
-  (env : Effect.t t) : Effect.t t =
-  let raise_path = {PathName.path = coq_path env @ path;
-    base = "raise_" ^ base} in
-  Exception.add path base raise_path env
+  |> Constructor.add path base (typ_path, 0)
+  |> Typ.add path typ_name typ_def

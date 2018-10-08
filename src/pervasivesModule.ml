@@ -21,7 +21,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
     Type.Apply
       (bound_name ["OCaml"; "Effect"; "State"] ["Effect"; "State"] "t",
       [Type.Variable x]) in
-  let add_exn path base = add_exception_with_effects path base in
+  let add_exn path base = add_exception path base in
   let arrow xs = List.fold_right (fun x typ ->
     Effect.Type.arrow (d x) typ) xs Effect.pure in
   let pure = Effect.pure in
@@ -113,7 +113,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Values specific to the translation to Coq *)
   |> Var.add [] "assert"
     (Type.Arrow (Type.Apply (bound_name [] [] "bool", []), Type.Monad (
-      mk_exn (Type.Apply (bound_name ["OCaml"] ["OCaml"] "Assert_failure", [])),
+      mk_exn (Type.Apply (bound_name ["OCaml"] ["OCaml"] "assert_failure", [])),
       Type.Variable "A")))
   (* Predefined exceptions *)
   |> Descriptor.add [] "exception" ()
@@ -149,12 +149,12 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add ["Pervasives"] "invalid_arg"
     (Type.Arrow (Type.Apply (bound_name [] [] "string", []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name ["OCaml"] [] "Invalid_argument", [])),
+        mk_exn (Type.Apply (bound_name ["OCaml"] [] "invalid_argument", [])),
         Type.Variable "A")))
   |> Var.add ["Pervasives"] "failwith"
     (Type.Arrow (Type.Apply (bound_name [] [] "string", []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name ["OCaml"] [] "Failure", [])),
+        mk_exn (Type.Apply (bound_name ["OCaml"] [] "failure", [])),
         Type.Variable "A")))
   |> add_exn ["Pervasives"] "Exit"
   (* Comparisons *)
@@ -173,7 +173,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> Var.add ["Pervasives"] "char_of_int"
     (Type.Arrow (Type.Apply (bound_name [] [] "Z", []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name [] ["OCaml"] "Invalid_argument", [])),
+        mk_exn (Type.Apply (bound_name [] ["OCaml"] "invalid_argument", [])),
         Type.Apply (bound_name [] [] "ascii", []))))
   (* Unit operations *)
   |> Var.add ["Pervasives"] "ignore" pure
