@@ -25,12 +25,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
   let arrow xs = List.fold_right (fun x typ ->
     Effect.Type.arrow (d x) typ) xs Effect.pure in
   let pure = Effect.pure in
-  let mk_exn typ = {
-      Effect.Descriptor.args_arg = None; 
-      with_args = [];
-      no_args = [Type.Apply (bound_name ["OCaml"] [] "exception",
-        [typ])];
-    } in
+  let mk_exn typ = Effect.Descriptor.singleton ~simple:true
+    (bound_name ["OCaml"] [] "exception") [typ] in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
   |> TypeDefinition.update_env
