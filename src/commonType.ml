@@ -141,7 +141,13 @@ let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
   | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
   | OpenApply (x, typs, typ_defs) ->
     OpenApply (x, List.map (map f) typs, List.map f typ_defs)
-  | Monad (d, typ) -> Monad (d, map f typ)
+  | Monad (d, typ) -> Monad (map_desc f d, map f typ)
+
+and map_desc (f : BoundName.t -> BoundName.t) (d : desc) : desc =
+  { d with
+    with_args = List.map (map f) d.with_args;
+    no_args = List.map (map f) d.no_args;
+  }
 
 let rec map_vars (f : Name.t -> t) (typ : t) : t =
   match typ with

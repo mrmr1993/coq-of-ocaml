@@ -976,7 +976,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let typ' = FullEnvi.Var.find l x env in
+      let typ' = FullEnvi.Var.find l x env |>
+        Type.map (FullEnvi.localize (FullEnvi.has_value env) env) in
       let vars_map = Type.unify typ' typ in
       let typ' = Effect.map_type_vars vars_map typ' in
       let typ = Effect.Type.unify ~collapse:false typ typ' in
