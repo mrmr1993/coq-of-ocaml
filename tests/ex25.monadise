@@ -41,7 +41,7 @@ Value
   (non_rec, @.,
     [
       ((s1, [ ], [ ], Type (Z)),
-        Apply (7, Variable (7, OCaml.List.length), [ Variable (7, l1) ]))
+        Apply (7, Variable (7, List.length), [ Variable (7, Ex25/l1) ]))
     ])
 
 8
@@ -49,7 +49,7 @@ Value
   (non_rec, @.,
     [
       ((s2, [ ], [ ], Type (Z)),
-        Apply (8, Variable (8, OCaml.List.length), [ Variable (8, l2) ]))
+        Apply (8, Variable (8, List.length), [ Variable (8, Ex25/l2) ]))
     ])
 
 9
@@ -59,18 +59,18 @@ Value
       ((h, [ A ], [ (x, A) ],
         Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (Z))),
         Match
-          (9, Variable (?, x),
+          (9, Variable (?, Ex25/x),
             [
               (Any,
                 Apply
                   (9,
                     Variable
                       (9,
-                        OCaml.List.hd),
+                        List.hd),
                     [
                       Variable
                         (9,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -84,18 +84,18 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.failure)) ],
             Type (list, Type (Z)))),
         Match
-          (10, Variable (?, x),
+          (10, Variable (?, Ex25/x),
             [
               (Any,
                 Apply
                   (10,
                     Variable
                       (10,
-                        OCaml.List.tl),
+                        List.tl),
                     [
                       Variable
                         (10,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -111,18 +111,18 @@ Value
             Type (OCaml.exception, Type (OCaml.invalid_argument))
           ], Type (Z))),
         Match
-          (11, Variable (?, x),
+          (11, Variable (?, Ex25/x),
             [
               (Any,
                 Apply
                   (11,
                     Variable
                       (11,
-                        OCaml.List.nth),
+                        List.nth),
                     [
                       Variable
                         (11,
-                          l2);
+                          Ex25/l2);
                       Constant
                         (11,
                           Int(1))
@@ -135,7 +135,7 @@ Value
   (non_rec, @.,
     [
       ((rl, [ ], [ ], Type (list, Type (Z))),
-        Apply (12, Variable (12, OCaml.List.rev), [ Variable (12, l2) ]))
+        Apply (12, Variable (12, List.rev), [ Variable (12, Ex25/l2) ]))
     ])
 
 13
@@ -144,8 +144,8 @@ Value
     [
       ((ll, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (13, Variable (13, OCaml.List.append),
-            [ Variable (13, l2); Variable (13, l2) ]))
+          (13, Variable (13, List.append),
+            [ Variable (13, Ex25/l2); Variable (13, Ex25/l2) ]))
     ])
 
 14
@@ -154,8 +154,8 @@ Value
     [
       ((rll, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (14, Variable (14, OCaml.List.rev_append),
-            [ Variable (14, l2); Variable (14, l2) ]))
+          (14, Variable (14, List.rev_append),
+            [ Variable (14, Ex25/l2); Variable (14, Ex25/l2) ]))
     ])
 
 15
@@ -164,28 +164,28 @@ Value
     [
       ((lc, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (15, Variable (15, OCaml.List.concat),
+          (15, Variable (15, List.concat),
             [
               Constructor
-                (15, cons, Variable (15, l1),
+                (15, cons, Variable (15, Ex25/l1),
                   Constructor
                     (15,
                       cons,
                       Variable
                         (15,
-                          l2),
+                          Ex25/l2),
                       Constructor
                         (15,
                           cons,
                           Variable
                             (15,
-                              l1),
+                              Ex25/l1),
                           Constructor
                             (15,
                               cons,
                               Variable
                                 (15,
-                                  l2),
+                                  Ex25/l2),
                               Constructor
                                 (15,
                                   [])))))
@@ -198,28 +198,28 @@ Value
     [
       ((lf, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (16, Variable (16, OCaml.List.flatten),
+          (16, Variable (16, List.flatten),
             [
               Constructor
-                (16, cons, Variable (16, l1),
+                (16, cons, Variable (16, Ex25/l1),
                   Constructor
                     (16,
                       cons,
                       Variable
                         (16,
-                          l2),
+                          Ex25/l2),
                       Constructor
                         (16,
                           cons,
                           Variable
                             (16,
-                              l1),
+                              Ex25/l1),
                           Constructor
                             (16,
                               cons,
                               Variable
                                 (16,
-                                  l2),
+                                  Ex25/l2),
                               Constructor
                                 (16,
                                   [])))))
@@ -232,7 +232,7 @@ Value
     [
       ((m, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (21, Variable (21, OCaml.List.map),
+          (21, Variable (21, List.map),
             [
               Function
                 (21, x,
@@ -244,12 +244,12 @@ Value
                       [
                         Variable
                           (21,
-                            x);
+                            Ex25/x);
                         Constant
                           (21,
                             Int(1))
                       ]));
-              Variable (21, l2)
+              Variable (21, Ex25/l2)
             ]))
     ])
 
@@ -259,7 +259,7 @@ Value
     [
       ((mi, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (22, Variable (22, OCaml.List.mapi),
+          (22, Variable (22, List.mapi),
             [
               Function
                 (22, i,
@@ -274,12 +274,12 @@ Value
                           [
                             Variable
                               (22,
-                                x);
+                                Ex25/x);
                             Variable
                               (22,
-                                i)
+                                Ex25/i)
                           ])));
-              Variable (22, l2)
+              Variable (22, Ex25/l2)
             ]))
     ])
 
@@ -289,7 +289,7 @@ Value
     [
       ((rm, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (23, Variable (23, OCaml.List.rev_map),
+          (23, Variable (23, List.rev_map),
             [
               Function
                 (23, x,
@@ -301,12 +301,12 @@ Value
                       [
                         Variable
                           (23,
-                            x);
+                            Ex25/x);
                         Constant
                           (23,
                             Int(1))
                       ]));
-              Variable (23, l2)
+              Variable (23, Ex25/l2)
             ]))
     ])
 
@@ -316,7 +316,7 @@ Value
     [
       ((fl, [ ], [ ], Type (Z)),
         Apply
-          (24, Variable (24, OCaml.List.fold_left),
+          (24, Variable (24, List.fold_left),
             [
               Function
                 (24, s,
@@ -331,13 +331,13 @@ Value
                           [
                             Variable
                               (24,
-                                s);
+                                Ex25/s);
                             Variable
                               (24,
-                                x)
+                                Ex25/x)
                           ])));
               Constant (24, Int(0));
-              Variable (24, l2)
+              Variable (24, Ex25/l2)
             ]))
     ])
 
@@ -347,7 +347,7 @@ Value
     [
       ((fr, [ ], [ ], Type (Z)),
         Apply
-          (25, Variable (25, OCaml.List.fold_right),
+          (25, Variable (25, List.fold_right),
             [
               Function
                 (25, x,
@@ -362,12 +362,12 @@ Value
                           [
                             Variable
                               (25,
-                                s);
+                                Ex25/s);
                             Variable
                               (25,
-                                x)
+                                Ex25/x)
                           ])));
-              Variable (25, l2);
+              Variable (25, Ex25/l2);
               Constant (25, Int(0))
             ]))
     ])
@@ -381,14 +381,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (list, Type (Z)))),
         Match
-          (29, Variable (?, x_1),
+          (29, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (29,
                     Variable
                       (29,
-                        OCaml.List.map2),
+                        List.map2),
                     [
                       Function
                         (29,
@@ -404,17 +404,17 @@ Value
                                   [
                                     Variable
                                       (29,
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       (29,
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         (29,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (29,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -428,14 +428,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (list, Type (Z)))),
         Match
-          (30, Variable (?, x_1),
+          (30, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (30,
                     Variable
                       (30,
-                        OCaml.List.rev_map2),
+                        List.rev_map2),
                     [
                       Function
                         (30,
@@ -451,17 +451,17 @@ Value
                                   [
                                     Variable
                                       (30,
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       (30,
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         (30,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (30,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -475,14 +475,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (Z))),
         Match
-          (31, Variable (?, x_1),
+          (31, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (31,
                     Variable
                       (31,
-                        OCaml.List.fold_left2),
+                        List.fold_left2),
                     [
                       Function
                         (31,
@@ -507,24 +507,24 @@ Value
                                             [
                                               Variable
                                                 (31,
-                                                  s);
+                                                  Ex25/s);
                                               Variable
                                                 (31,
-                                                  x)
+                                                  Ex25/x)
                                             ]);
                                         Variable
                                           (31,
-                                            y)
+                                            Ex25/y)
                                       ]))));
                       Constant
                         (31,
                           Int(0));
                       Variable
                         (31,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (31,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -538,14 +538,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (Z))),
         Match
-          (32, Variable (?, x_1),
+          (32, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (32,
                     Variable
                       (32,
-                        OCaml.List.fold_right2),
+                        List.fold_right2),
                     [
                       Function
                         (32,
@@ -570,21 +570,21 @@ Value
                                             [
                                               Variable
                                                 (32,
-                                                  s);
+                                                  Ex25/s);
                                               Variable
                                                 (32,
-                                                  x)
+                                                  Ex25/x)
                                             ]);
                                         Variable
                                           (32,
-                                            y)
+                                            Ex25/y)
                                       ]))));
                       Variable
                         (32,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (32,
-                          l2);
+                          Ex25/l2);
                       Constant
                         (32,
                           Int(0))
@@ -598,7 +598,7 @@ Value
     [
       ((all, [ ], [ ], Type (bool)),
         Apply
-          (35, Variable (35, OCaml.List.for_all),
+          (35, Variable (35, List.for_all),
             [
               Function
                 (35, x,
@@ -610,12 +610,12 @@ Value
                       [
                         Variable
                           (35,
-                            x);
+                            Ex25/x);
                         Constant
                           (35,
                             Int(2))
                       ]));
-              Variable (35, l2)
+              Variable (35, Ex25/l2)
             ]))
     ])
 
@@ -625,7 +625,7 @@ Value
     [
       ((ex, [ ], [ ], Type (bool)),
         Apply
-          (36, Variable (36, OCaml.List._exists),
+          (36, Variable (36, List._exists),
             [
               Function
                 (36, x,
@@ -637,12 +637,12 @@ Value
                       [
                         Variable
                           (36,
-                            x);
+                            Ex25/x);
                         Constant
                           (36,
                             Int(2))
                       ]));
-              Variable (36, l2)
+              Variable (36, Ex25/l2)
             ]))
     ])
 
@@ -655,14 +655,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (bool))),
         Match
-          (37, Variable (?, x_1),
+          (37, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (37,
                     Variable
                       (37,
-                        OCaml.List.for_all2),
+                        List.for_all2),
                     [
                       Function
                         (37,
@@ -678,17 +678,17 @@ Value
                                   [
                                     Variable
                                       (37,
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       (37,
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         (37,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (37,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -702,14 +702,14 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (bool))),
         Match
-          (38, Variable (?, x_1),
+          (38, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (38,
                     Variable
                       (38,
-                        OCaml.List._exists2),
+                        List._exists2),
                     [
                       Function
                         (38,
@@ -725,17 +725,17 @@ Value
                                   [
                                     Variable
                                       (38,
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       (38,
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         (38,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (38,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -746,8 +746,8 @@ Value
     [
       ((me, [ ], [ ], Type (bool)),
         Apply
-          (39, Variable (39, OCaml.List.mem),
-            [ Constant (39, Int(2)); Variable (39, l2) ]))
+          (39, Variable (39, List.mem),
+            [ Constant (39, Int(2)); Variable (39, Ex25/l2) ]))
     ])
 
 43
@@ -757,14 +757,14 @@ Value
       ((fin, [ A ], [ (x_1, A) ],
         Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (Z))),
         Match
-          (43, Variable (?, x_1),
+          (43, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (43,
                     Variable
                       (43,
-                        OCaml.List.find),
+                        List.find),
                     [
                       Function
                         (43,
@@ -777,14 +777,14 @@ Value
                               [
                                 Variable
                                   (43,
-                                    x);
+                                    Ex25/x);
                                 Constant
                                   (43,
                                     Int(1))
                               ]));
                       Variable
                         (43,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -795,7 +795,7 @@ Value
     [
       ((fil, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (44, Variable (44, OCaml.List.filter),
+          (44, Variable (44, List.filter),
             [
               Function
                 (44, x,
@@ -803,16 +803,16 @@ Value
                     (44,
                       Variable
                         (44,
-                          OCaml.Pervasives.ge),
+                          OCaml/Pervasives.ge),
                       [
                         Variable
                           (44,
-                            x);
+                            Ex25/x);
                         Constant
                           (44,
                             Int(2))
                       ]));
-              Variable (44, l2)
+              Variable (44, Ex25/l2)
             ]))
     ])
 
@@ -822,7 +822,7 @@ Value
     [
       ((fina, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (45, Variable (45, OCaml.List.find_all),
+          (45, Variable (45, List.find_all),
             [
               Function
                 (45, x,
@@ -830,16 +830,16 @@ Value
                     (45,
                       Variable
                         (45,
-                          OCaml.Pervasives.ge),
+                          OCaml/Pervasives.ge),
                       [
                         Variable
                           (45,
-                            x);
+                            Ex25/x);
                         Constant
                           (45,
                             Int(2))
                       ]));
-              Variable (45, l2)
+              Variable (45, Ex25/l2)
             ]))
     ])
 
@@ -849,7 +849,7 @@ Value
     [
       ((par, [ ], [ ], (Type (list, Type (Z)) * Type (list, Type (Z)))),
         Apply
-          (46, Variable (46, OCaml.List.partition),
+          (46, Variable (46, List.partition),
             [
               Function
                 (46, x,
@@ -857,16 +857,16 @@ Value
                     (46,
                       Variable
                         (46,
-                          OCaml.Pervasives.gt),
+                          OCaml/Pervasives.gt),
                       [
                         Variable
                           (46,
-                            x);
+                            Ex25/x);
                         Constant
                           (46,
                             Int(2))
                       ]));
-              Variable (46, l2)
+              Variable (46, Ex25/l2)
             ]))
     ])
 
@@ -878,21 +878,21 @@ Value
         Monad
           ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (string))),
         Match
-          (49, Variable (?, x_1),
+          (49, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (49,
                     Variable
                       (49,
-                        OCaml.List.assoc),
+                        List.assoc),
                     [
                       Constant
                         (49,
                           Int(2));
                       Variable
                         (49,
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -903,21 +903,21 @@ Value
     [
       ((masso, [ A ], [ (x_1, A) ], Type (bool)),
         Match
-          (51, Variable (?, x_1),
+          (51, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (51,
                     Variable
                       (51,
-                        OCaml.List.mem_assoc),
+                        List.mem_assoc),
                     [
                       Constant
                         (51,
                           Int(2));
                       Variable
                         (51,
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -928,21 +928,21 @@ Value
     [
       ((rasso, [ A ], [ (x_1, A) ], Type (list, (Type (Z) * Type (string)))),
         Match
-          (53, Variable (?, x_1),
+          (53, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (53,
                     Variable
                       (53,
-                        OCaml.List.remove_assoc),
+                        List.remove_assoc),
                     [
                       Constant
                         (53,
                           Int(2));
                       Variable
                         (53,
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -952,7 +952,7 @@ Value
   (non_rec, @.,
     [
       ((sp, [ ], [ ], (Type (list, Type (Z)) * Type (list, Type (string)))),
-        Apply (57, Variable (57, OCaml.List.split), [ Variable (57, l3) ]))
+        Apply (57, Variable (57, List.split), [ Variable (57, Ex25/l3) ]))
     ])
 
 58
@@ -964,21 +964,21 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
             Type (list, (Type (Z) * Type (Z))))),
         Match
-          (58, Variable (?, x_1),
+          (58, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (58,
                     Variable
                       (58,
-                        OCaml.List.combine),
+                        List.combine),
                     [
                       Variable
                         (58,
-                          l2);
+                          Ex25/l2);
                       Variable
                         (58,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -991,14 +991,14 @@ Value
         Monad
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
-          (61, Variable (?, x_1),
+          (61, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (61,
                     Variable
                       (61,
-                        OCaml.List.sort),
+                        List.sort),
                     [
                       Function
                         (61,
@@ -1014,14 +1014,14 @@ Value
                                   [
                                     Variable
                                       (61,
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       (61,
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         (61,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1034,14 +1034,14 @@ Value
         Monad
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
-          (62, Variable (?, x_1),
+          (62, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (62,
                     Variable
                       (62,
-                        OCaml.List.stable_sort),
+                        List.stable_sort),
                     [
                       Function
                         (62,
@@ -1057,14 +1057,14 @@ Value
                                   [
                                     Variable
                                       (62,
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       (62,
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         (62,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1077,14 +1077,14 @@ Value
         Monad
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
-          (63, Variable (?, x_1),
+          (63, Variable (?, Ex25/x_1),
             [
               (Any,
                 Apply
                   (63,
                     Variable
                       (63,
-                        OCaml.List.fast_sort),
+                        List.fast_sort),
                     [
                       Function
                         (63,
@@ -1100,14 +1100,14 @@ Value
                                   [
                                     Variable
                                       (63,
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       (63,
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         (63,
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1118,7 +1118,7 @@ Value
     [
       ((mer, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (64, Variable (64, OCaml.List.merge),
+          (64, Variable (64, List.merge),
             [
               Function
                 (64, x,
@@ -1133,12 +1133,12 @@ Value
                           [
                             Variable
                               (64,
-                                y);
+                                Ex25/y);
                             Variable
                               (64,
-                                x)
+                                Ex25/x)
                           ])));
-              Variable (64, l2);
+              Variable (64, Ex25/l2);
               Constructor
                 (64, cons, Constant (64, Int(2)),
                   Constructor

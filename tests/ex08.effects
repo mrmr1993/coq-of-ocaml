@@ -6,9 +6,9 @@ Inductive t1:
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Type (t1)),
+      ((n, [ ], [ ], Type (Ex08/t1)),
         Constructor
-          ((8, Effect ([ ], .)), C2,
+          ((8, Effect ([ ], .)), Ex08/C2,
             Constructor ((8, Effect ([ ], .)), false),
             Constant ((8, Effect ([ ], .)), Int(3))))
     ])
@@ -19,27 +19,27 @@ Value
     [
       ((m, [ ], [ ], Type (bool)),
         Match
-          ((10, Effect ([ ], .)), Variable ((10, Effect ([ ], .)), n),
+          ((10, Effect ([ ], .)), Variable ((10, Effect ([ ], .)), Ex08/n),
             [
-              (Constructor (C2, b, Any),
-                Variable ((11, Effect ([ ], .)), b));
+              (Constructor (Ex08/C2, b, Any),
+                Variable ((11, Effect ([ ], .)), Ex08/b));
               (Any, Constructor ((12, Effect ([ ], .)), true))
             ]))
     ])
 
 14
 Inductive t2:
-  ([ a ], [ (D1, [ ]); (D2, [ a; Type (t2, a) ]) ])
+  ([ a ], [ (D1, [ ]); (D2, [ a; Type (Ex08/t2, a) ]) ])
 
 18
 Value
   (rec, @.,
     [
       ((of_list_rec, [ A ], [ (counter, Type (nat)); (l, Type (list, A)) ],
-        Monad ([ Type (NonTermination) ], Type (t2, A))),
+        Monad ([ Type (NonTermination) ], Type (Ex08/t2, A))),
         Match
           ((?, Effect ([ Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), counter),
+            Variable ((?, Effect ([ ], .)), Ex08/counter),
             [
               (Constructor (O),
                 Apply
@@ -85,7 +85,7 @@ Value
                           ([
                           ],
                             .)),
-                        l),
+                        Ex08/l),
                     [
                       (Constructor
                         ([]),
@@ -95,7 +95,7 @@ Value
                               ([
                               ],
                                 .)),
-                            D1));
+                            Ex08/D1));
                       (Constructor
                         (cons,
                           x,
@@ -108,14 +108,14 @@ Value
                                   (NonTermination)
                               ],
                                 .)),
-                            D2,
+                            Ex08/D2,
                             Variable
                               ((21,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                x),
+                                Ex08/x),
                             Apply
                               ((21,
                                 Effect
@@ -148,7 +148,7 @@ Value
                                                     (NonTermination)
                                                 ]->
                                                 .)),
-                                        of_list_rec),
+                                        Ex08/of_list_rec),
                                     [
                                       Variable
                                         ((?,
@@ -156,7 +156,7 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          counter)
+                                          Ex08/counter)
                                     ]),
                                 [
                                   Variable
@@ -165,7 +165,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      xs)
+                                      Ex08/xs)
                                 ])))
                     ]))
             ]))
@@ -176,12 +176,12 @@ Value
   (non_rec, @.,
     [
       ((of_list, [ A ], [ (l, Type (list, A)) ],
-        Monad ([ Type (Counter); Type (NonTermination) ], Type (t2, A))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Ex08/t2, A))),
         Apply
           ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
               ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
-                of_list_rec),
+                Ex08/of_list_rec),
             [
               Apply
                 ((?, Effect ([ Type (Counter) ], .)),
@@ -205,7 +205,7 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), l)
+              Variable ((?, Effect ([ ], .)), Ex08/l)
             ]))
     ])
 
@@ -213,11 +213,11 @@ Value
 Value
   (rec, @.,
     [
-      ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (t2, Type (Z))) ],
+      ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (Ex08/t2, Type (Z))) ],
         Monad ([ Type (NonTermination) ], Type (Z))),
         Match
           ((?, Effect ([ Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), counter),
+            Variable ((?, Effect ([ ], .)), Ex08/counter),
             [
               (Constructor (O),
                 Apply
@@ -263,10 +263,10 @@ Value
                           ([
                           ],
                             .)),
-                        l),
+                        Ex08/l),
                     [
                       (Constructor
-                        (D1),
+                        (Ex08/D1),
                         Constant
                           ((25,
                             Effect
@@ -275,7 +275,7 @@ Value
                                 .)),
                             Int(0)));
                       (Constructor
-                        (D2,
+                        (Ex08/D2,
                           x,
                           xs),
                         Apply
@@ -304,7 +304,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  x);
+                                  Ex08/x);
                               Apply
                                 ((26,
                                   Effect
@@ -337,7 +337,7 @@ Value
                                                       (NonTermination)
                                                   ]->
                                                   .)),
-                                          sum_rec),
+                                          Ex08/sum_rec),
                                       [
                                         Variable
                                           ((?,
@@ -345,7 +345,7 @@ Value
                                               ([
                                               ],
                                                 .)),
-                                            counter)
+                                            Ex08/counter)
                                       ]),
                                   [
                                     Variable
@@ -354,7 +354,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        xs)
+                                        Ex08/xs)
                                   ])
                             ]))
                     ]))
@@ -365,13 +365,13 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sum (= sum_1), [ ], [ (l, Type (t2, Type (Z))) ],
+      ((sum, [ ], [ (l, Type (Ex08/t2, Type (Z))) ],
         Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Apply
           ((?, Effect ([ Type (Counter); Type (NonTermination) ], .)),
             Variable
               ((?, Effect ([ ], . -> . -[ Type (NonTermination) ]-> .)),
-                sum_rec),
+                Ex08/sum_rec),
             [
               Apply
                 ((?, Effect ([ Type (Counter) ], .)),
@@ -395,7 +395,7 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), l)
+              Variable ((?, Effect ([ ], .)), Ex08/l)
             ]))
     ])
 
@@ -407,7 +407,7 @@ Value
         Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
           ((28, Effect ([ Type (Counter); Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+            Variable ((?, Effect ([ ], .)), Ex08/x),
             [
               (Any,
                 Apply
@@ -433,7 +433,7 @@ Value
                                   (NonTermination)
                               ]->
                               .)),
-                        sum_1),
+                        Ex08/sum),
                     [
                       Apply
                         ((28,
@@ -458,7 +458,7 @@ Value
                                         (NonTermination)
                                     ]->
                                     .)),
-                              of_list),
+                              Ex08/of_list),
                           [
                             Constructor
                               ((28,

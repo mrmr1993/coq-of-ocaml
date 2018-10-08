@@ -35,7 +35,7 @@ Definition create {A : Type} (l : t A) (x : key) (d : A) (r : t A) : t A :=
   let hl := height l in
   let hr := height r in
   Node l x d r
-    (if OCaml.Pervasives.ge hl hr then
+    (if Pervasives.ge hl hr then
       Z.add hl 1
     else
       Z.add hr 1).
@@ -55,29 +55,29 @@ Definition bal {A : Type} (l : t A) (x : key) (d : A) (r : t A)
     | Empty => 0
     | Node _ _ _ _ h => h
     end in
-  if OCaml.Pervasives.gt hl (Z.add hr 2) then
+  if Pervasives.gt hl (Z.add hr 2) then
     match l with
-    | Empty => OCaml.Pervasives.invalid_arg "Map.bal" % string
+    | Empty => Pervasives.invalid_arg "Map.bal" % string
     | Node ll lv ld lr _ =>
-      if OCaml.Pervasives.ge (height ll) (height lr) then
+      if Pervasives.ge (height ll) (height lr) then
         ret (create ll lv ld (create lr x d r))
       else
         match lr with
-        | Empty => OCaml.Pervasives.invalid_arg "Map.bal" % string
+        | Empty => Pervasives.invalid_arg "Map.bal" % string
         | Node lrl lrv lrd lrr _ =>
           ret (create (create ll lv ld lrl) lrv lrd (create lrr x d r))
         end
     end
   else
-    if OCaml.Pervasives.gt hr (Z.add hl 2) then
+    if Pervasives.gt hr (Z.add hl 2) then
       match r with
-      | Empty => OCaml.Pervasives.invalid_arg "Map.bal" % string
+      | Empty => Pervasives.invalid_arg "Map.bal" % string
       | Node rl rv rd rr _ =>
-        if OCaml.Pervasives.ge (height rr) (height rl) then
+        if Pervasives.ge (height rr) (height rl) then
           ret (create (create l x d rl) rv rd rr)
         else
           match rl with
-          | Empty => OCaml.Pervasives.invalid_arg "Map.bal" % string
+          | Empty => Pervasives.invalid_arg "Map.bal" % string
           | Node rll rlv rld rlr _ =>
             ret (create (create l x d rll) rlv rld (create rlr rv rd rr))
           end
@@ -85,7 +85,7 @@ Definition bal {A : Type} (l : t A) (x : key) (d : A) (r : t A)
     else
       ret
         (Node l x d r
-          (if OCaml.Pervasives.ge hl hr then
+          (if Pervasives.ge hl hr then
             Z.add hl 1
           else
             Z.add hr 1)).
@@ -107,7 +107,7 @@ Fixpoint add {A : Type} (x : key) (data : A) (x_1 : t A)
     if equiv_decb c 0 then
       ret (Node l x data r h)
     else
-      if OCaml.Pervasives.lt c 0 then
+      if Pervasives.lt c 0 then
         let! x_2 := add x data l in
         bal x_2 v d r
       else
@@ -116,16 +116,16 @@ Fixpoint add {A : Type} (x : key) (data : A) (x_1 : t A)
   end.
 
 Fixpoint find {A : Type} (x : Ord.t) (x_1 : t A)
-  : M [ OCaml.exception OCaml.not_found ] A :=
+  : M [ OCaml.exception not_found ] A :=
   match x_1 with
-  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
+  | Empty => Pervasives.raise (Not_found tt)
   | Node l v d r _ =>
     let c := Ord.compare x v in
     if equiv_decb c 0 then
       ret d
     else
       find x
-        (if OCaml.Pervasives.lt c 0 then
+        (if Pervasives.lt c 0 then
           l
         else
           r)
@@ -138,24 +138,24 @@ Fixpoint mem {A : Type} (x : Ord.t) (x_1 : t A) : bool :=
     let c := Ord.compare x v in
     orb (equiv_decb c 0)
       (mem x
-        (if OCaml.Pervasives.lt c 0 then
+        (if Pervasives.lt c 0 then
           l
         else
           r))
   end.
 
 Fixpoint min_binding {A : Type} (x : t A)
-  : M [ OCaml.exception OCaml.not_found ] (key * A) :=
+  : M [ OCaml.exception not_found ] (key * A) :=
   match x with
-  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
+  | Empty => Pervasives.raise (Not_found tt)
   | Node Empty x d r _ => ret (x, d)
   | Node l x d r _ => min_binding l
   end.
 
 Fixpoint max_binding {A : Type} (x : t A)
-  : M [ OCaml.exception OCaml.not_found ] (key * A) :=
+  : M [ OCaml.exception not_found ] (key * A) :=
   match x with
-  | Empty => OCaml.Pervasives.raise (OCaml.Not_found tt)
+  | Empty => Pervasives.raise (Not_found tt)
   | Node l x d Empty _ => ret (x, d)
   | Node l x d r _ => max_binding r
   end.
@@ -163,7 +163,7 @@ Fixpoint max_binding {A : Type} (x : t A)
 Fixpoint remove_min_binding {A : Type} (x : t A)
   : M [ OCaml.exception OCaml.invalid_argument ] (t A) :=
   match x with
-  | Empty => OCaml.Pervasives.invalid_arg "Map.remove_min_elt" % string
+  | Empty => Pervasives.invalid_arg "Map.remove_min_elt" % string
   | Node Empty x d r _ => ret r
   | Node l x d r _ =>
     let! x_1 := remove_min_binding l in
@@ -171,8 +171,7 @@ Fixpoint remove_min_binding {A : Type} (x : t A)
   end.
 
 Definition remove_merge {A : Type} (t1 : t A) (t2 : t A)
-  : M
-    [ OCaml.exception OCaml.invalid_argument; OCaml.exception OCaml.not_found ]
+  : M [ OCaml.exception OCaml.invalid_argument; OCaml.exception not_found ]
     (t A) :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
@@ -188,8 +187,7 @@ Definition remove_merge {A : Type} (t1 : t A) (t2 : t A)
   end.
 
 Fixpoint remove {A : Type} (x : Ord.t) (x_1 : t A)
-  : M
-    [ OCaml.exception OCaml.invalid_argument; OCaml.exception OCaml.not_found ]
+  : M [ OCaml.exception OCaml.invalid_argument; OCaml.exception not_found ]
     (t A) :=
   match x_1 with
   | Empty => ret Empty
@@ -198,7 +196,7 @@ Fixpoint remove {A : Type} (x : Ord.t) (x_1 : t A)
     if equiv_decb c 0 then
       remove_merge l r
     else
-      if OCaml.Pervasives.lt c 0 then
+      if Pervasives.lt c 0 then
         let! x_2 := remove x l in
         lift [_;_] "10" (bal x_2 v d r)
       else
@@ -278,11 +276,11 @@ Fixpoint join_rec {A : Type}
     | (Empty, _) => lift [_;_] "01" (add_min_binding v d r)
     | (_, Empty) => lift [_;_] "01" (add_max_binding v d l)
     | (Node ll lv ld lr lh, Node rl rv rd rr rh) =>
-      if OCaml.Pervasives.gt lh (Z.add rh 2) then
+      if Pervasives.gt lh (Z.add rh 2) then
         let! x := (join_rec counter) lr v d r in
         lift [_;_] "01" (bal ll lv ld x)
       else
-        if OCaml.Pervasives.gt rh (Z.add lh 2) then
+        if Pervasives.gt rh (Z.add lh 2) then
           let! x := (join_rec counter) l v d rl in
           lift [_;_] "01" (bal x rv rd rr)
         else
@@ -301,7 +299,7 @@ Definition concat {A : Type} (t1 : t A) (t2 : t A)
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.not_found
+      OCaml.exception not_found
     ] (t A) :=
   match (t1, t2) with
   | (Empty, t_1) => ret t_1
@@ -323,7 +321,7 @@ Definition concat_or_join {A : Type}
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.not_found
+      OCaml.exception not_found
     ] (t A) :=
   match d with
   | Some d => lift [_;_;_;_] "1110" (join t1 v d t2)
@@ -340,7 +338,7 @@ Fixpoint split {A : Type} (x : Ord.t) (x_1 : t A)
     if equiv_decb c 0 then
       ret (l, (Some d), r)
     else
-      if OCaml.Pervasives.lt c 0 then
+      if Pervasives.lt c 0 then
         let! x_2 := split x l in
         match x_2 with
         | (ll, pres, rl) =>
@@ -364,8 +362,8 @@ Fixpoint merge_rec {A B C : Type}
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.match_failure;
-      OCaml.exception OCaml.not_found
+      OCaml.exception match_failure;
+      OCaml.exception not_found
     ] (t C) :=
   match counter with
   | O => lift [_;_;_;_;_] "01000" (not_terminated tt)
@@ -374,7 +372,7 @@ Fixpoint merge_rec {A B C : Type}
       match (s1, s2) with
       | (Empty, Empty) => 0
       | (Node l1 v1 d1 r1 h1, _) =>
-        if OCaml.Pervasives.ge h1 (height s2) then
+        if Pervasives.ge h1 (height s2) then
           1
         else
           0
@@ -400,8 +398,7 @@ Fixpoint merge_rec {A B C : Type}
       end
     | _ =>
       lift [_;_;_;_;_] "00010"
-        (OCaml.Pervasives.raise
-          (OCaml.Match_failure ("tests/ex33.ml" % string, 233, 2)))
+        (Pervasives.raise (Match_failure ("tests/ex33.ml" % string, 233, 2)))
     end
   end.
 
@@ -412,8 +409,8 @@ Definition merge {A B C : Type}
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.match_failure;
-      OCaml.exception OCaml.not_found
+      OCaml.exception match_failure;
+      OCaml.exception not_found
     ] (t C) :=
   let! x := lift [_;_;_;_;_] "10000" (read_counter tt) in
   merge_rec x f s1 s2.
@@ -424,7 +421,7 @@ Fixpoint filter {A : Type} (p : key -> A -> bool) (x : t A)
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.not_found
+      OCaml.exception not_found
     ] (t A) :=
   match x with
   | Empty => ret Empty
@@ -444,7 +441,7 @@ Fixpoint partition {A : Type} (p : key -> A -> bool) (x : t A)
       Counter;
       NonTermination;
       OCaml.exception OCaml.invalid_argument;
-      OCaml.exception OCaml.not_found
+      OCaml.exception not_found
     ] ((t A) * (t A)) :=
   match x with
   | Empty => ret (Empty, Empty)
@@ -552,4 +549,4 @@ Fixpoint bindings_aux {A : Type} (accu : list (key * A)) (x : t A)
 Definition bindings {A : Type} (s : t A) : list (key * A) := bindings_aux [] s.
 
 Definition choose {A : Type}
-  : (t A) -> M [ OCaml.exception OCaml.not_found ] (key * A) := min_binding.
+  : (t A) -> M [ OCaml.exception not_found ] (key * A) := min_binding.

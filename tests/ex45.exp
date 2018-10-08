@@ -8,18 +8,18 @@ Value
     [
       ((f, [ A ], [ (x, Type (unit)) ], A),
         Match
-          (5, Variable (?, x),
+          (5, Variable (?, Ex45/x),
             [
               (Constructor (tt),
                 Apply
                   (5,
                     Variable
                       (5,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (5,
-                          Ex1,
+                          Ex45/Ex1,
                           Tuple
                             (?))
                     ]))
@@ -32,8 +32,8 @@ Value
     [
       ((g, [ A ], [ (y, Type (Z)) ], A),
         Apply
-          (6, Variable (6, OCaml.Pervasives.raise),
-            [ Constructor (6, Ex2, Tuple (?, Variable (6, y))) ]))
+          (6, Variable (6, OCaml/Pervasives.raise),
+            [ Constructor (6, Ex45/Ex2, Tuple (?, Variable (6, Ex45/y))) ]))
     ])
 
 7
@@ -42,7 +42,7 @@ Value
     [
       ((h, [ A ], [ (x, Type (unit)) ], (Type (Z) -> (Type (unit) -> A))),
         Match
-          (7, Variable (?, x),
+          (7, Variable (?, Ex45/x),
             [
               (Constructor (tt),
                 Function
@@ -54,7 +54,7 @@ Value
                           (7,
                             Variable
                               (?,
-                                x_1),
+                                Ex45/x_1),
                             [
                               (Constructor
                                 (tt),
@@ -62,16 +62,16 @@ Value
                                   (7,
                                     Variable
                                       (7,
-                                        OCaml.Pervasives.raise),
+                                        OCaml/Pervasives.raise),
                                     [
                                       Constructor
                                         (7,
-                                          Ex2,
+                                          Ex45/Ex2,
                                           Tuple
                                             (?,
                                               Variable
                                                 (7,
-                                                  y)))
+                                                  Ex45/y)))
                                     ]))
                             ]))))
             ]))
@@ -84,7 +84,9 @@ Value
       ((x, [ A; B; C ], [ ],
         ((Type (unit) -> A) * (Type (Z) -> B) *
           (Type (unit) -> (Type (Z) -> (Type (unit) -> C))))),
-        Tuple (9, Variable (9, f), Variable (9, g), Variable (9, h)))
+        Tuple
+          (9, Variable (9, Ex45/f), Variable (9, Ex45/g),
+            Variable (9, Ex45/h)))
     ])
 
 11
@@ -95,10 +97,10 @@ Value
         Match
           (11,
             Coerce
-              (?, Variable (11, x),
+              (?, Variable (11, Ex45/x),
                 ((Type (unit) -> A) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (f, Any, Any), Variable (11, f)) ]))
+            [ (Tuple (f, Any, Any), Variable (11, Ex45/f)) ]))
     ])
 
 12
@@ -109,10 +111,10 @@ Value
         Match
           (12,
             Coerce
-              (?, Variable (12, x),
+              (?, Variable (12, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> A) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (Any, g, Any), Variable (12, g)) ]))
+            [ (Tuple (Any, g, Any), Variable (12, Ex45/g)) ]))
     ])
 
 13
@@ -123,10 +125,10 @@ Value
         Match
           (13,
             Coerce
-              (?, Variable (13, x),
+              (?, Variable (13, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> A))))),
-            [ (Tuple (Any, Any, h), Variable (13, h)) ]))
+            [ (Tuple (Any, Any, h), Variable (13, Ex45/h)) ]))
     ])
 
 15
@@ -136,7 +138,7 @@ Value
       ((temp, [ A; B; C ], [ ],
         ((Type (unit) -> A) * (Type (Z) -> B) *
           (Type (unit) -> (Type (Z) -> (Type (unit) -> C))))),
-        Variable (15, x))
+        Variable (15, Ex45/x))
     ])
 
 15
@@ -147,10 +149,10 @@ Value
         Match
           (?,
             Coerce
-              (?, Variable (?, temp),
+              (?, Variable (?, Ex45/temp),
                 ((Type (unit) -> A) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (f'', g'', h''), Variable (?, f'')) ]))
+            [ (Tuple (f'', g'', h''), Variable (?, Ex45/f'')) ]))
     ])
 
 15
@@ -161,10 +163,10 @@ Value
         Match
           (?,
             Coerce
-              (?, Variable (?, temp),
+              (?, Variable (?, Ex45/temp),
                 ((Type (unit) -> ()) * (Type (Z) -> B) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (f'', g'', h''), Variable (?, g'')) ]))
+            [ (Tuple (f'', g'', h''), Variable (?, Ex45/g'')) ]))
     ])
 
 15
@@ -175,10 +177,10 @@ Value
         Match
           (?,
             Coerce
-              (?, Variable (?, temp),
+              (?, Variable (?, Ex45/temp),
                 ((Type (unit) -> ()) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> C))))),
-            [ (Tuple (f'', g'', h''), Variable (?, h'')) ]))
+            [ (Tuple (f'', g'', h''), Variable (?, Ex45/h'')) ]))
     ])
 
 17
@@ -189,10 +191,10 @@ Value
         Match
           (17,
             Coerce
-              (?, Variable (17, x),
+              (?, Variable (17, Ex45/x),
                 ((Type (unit) -> A) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (f, Any, Any), Variable (17, f)) ]))
+            [ (Tuple (f, Any, Any), Variable (17, Ex45/f)) ]))
     ])
 
 18
@@ -203,10 +205,10 @@ Value
         Match
           (18,
             Coerce
-              (?, Variable (18, x),
+              (?, Variable (18, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> A) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (Any, g, Any), Variable (18, g)) ]))
+            [ (Tuple (Any, g, Any), Variable (18, Ex45/g)) ]))
     ])
 
 19
@@ -217,10 +219,10 @@ Value
         Match
           (19,
             Coerce
-              (?, Variable (19, x),
+              (?, Variable (19, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> A))))),
-            [ (Tuple (Any, Any, h), Variable (19, h)) ]))
+            [ (Tuple (Any, Any, h), Variable (19, Ex45/h)) ]))
     ])
 
 21
@@ -231,10 +233,10 @@ Value
         Match
           (21,
             Coerce
-              (?, Variable (21, x),
+              (?, Variable (21, Ex45/x),
                 ((Type (unit) -> Type (unit)) * (Type (Z) -> ()) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (f, Any, Any), Variable (21, f)) ]))
+            [ (Tuple (f, Any, Any), Variable (21, Ex45/f)) ]))
     ])
 
 22
@@ -245,10 +247,10 @@ Value
         Match
           (22,
             Coerce
-              (?, Variable (22, x),
+              (?, Variable (22, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> Type (unit)) *
                   (Type (unit) -> (Type (Z) -> (Type (unit) -> ()))))),
-            [ (Tuple (Any, g, Any), Variable (22, g)) ]))
+            [ (Tuple (Any, g, Any), Variable (22, Ex45/g)) ]))
     ])
 
 23
@@ -260,11 +262,11 @@ Value
         Match
           (23,
             Coerce
-              (?, Variable (23, x),
+              (?, Variable (23, Ex45/x),
                 ((Type (unit) -> ()) * (Type (Z) -> ()) *
                   (Type (unit) ->
                     (Type (Z) -> (Type (unit) -> Type (unit)))))),
-            [ (Tuple (Any, Any, h), Variable (23, h)) ]))
+            [ (Tuple (Any, Any, h), Variable (23, Ex45/h)) ]))
     ])
 
 25
@@ -273,8 +275,8 @@ Value
     [
       ((f1, [ A ], [ ], (Type (unit) -> A)),
         Match
-          (25, Coerce (?, Variable (25, f), (Type (unit) -> A)),
-            [ (x, Variable (25, x)) ]))
+          (25, Coerce (?, Variable (25, Ex45/f), (Type (unit) -> A)),
+            [ (x, Variable (25, Ex45/x)) ]))
     ])
 
 26
@@ -283,8 +285,8 @@ Value
     [
       ((g1, [ A ], [ ], (Type (Z) -> A)),
         Match
-          (26, Coerce (?, Variable (26, g), (Type (Z) -> A)),
-            [ (x, Variable (26, x)) ]))
+          (26, Coerce (?, Variable (26, Ex45/g), (Type (Z) -> A)),
+            [ (x, Variable (26, Ex45/x)) ]))
     ])
 
 27
@@ -295,7 +297,7 @@ Value
         Match
           (27,
             Coerce
-              (?, Variable (27, h),
+              (?, Variable (27, Ex45/h),
                 (Type (unit) -> (Type (Z) -> (Type (unit) -> A)))),
-            [ (x, Variable (27, x)) ]))
+            [ (x, Variable (27, Ex45/x)) ]))
     ])

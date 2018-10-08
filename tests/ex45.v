@@ -12,11 +12,11 @@ Inductive ex2 : Type :=
 
 Definition f {A : Type} (x : unit) : M [ OCaml.exception ex1 ] A :=
   match x with
-  | tt => OCaml.Pervasives.raise (Ex1 tt)
+  | tt => Pervasives.raise (Ex1 tt)
   end.
 
 Definition g {A : Type} (y : Z) : M [ OCaml.exception ex2 ] A :=
-  OCaml.Pervasives.raise (Ex2 (y)).
+  Pervasives.raise (Ex2 (y)).
 
 Definition h {A : Type} (x : unit) : Z -> unit -> M [ OCaml.exception ex2 ] A :=
   match x with
@@ -24,7 +24,7 @@ Definition h {A : Type} (x : unit) : Z -> unit -> M [ OCaml.exception ex2 ] A :=
     fun y =>
       fun x_1 =>
         match x_1 with
-        | tt => OCaml.Pervasives.raise (Ex2 (y))
+        | tt => Pervasives.raise (Ex2 (y))
         end
   end.
 

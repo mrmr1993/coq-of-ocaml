@@ -7,7 +7,7 @@ Import ListNotations.
 Module M.
   Definition f {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
     match x with
-    | _ => OCaml.Pervasives.failwith "failure" % string
+    | _ => Pervasives.failwith "failure" % string
     end.
 End M.
 
@@ -15,13 +15,13 @@ Module N.
   Definition f {A B : Type} (x : A)
     : M [ OCaml.exception OCaml.assert_failure ] B :=
     match x with
-    | _ => OCaml.assert false
+    | _ => assert false
     end.
   
   Definition x : unit :=
     match Exception.run 0 (f tt) tt with
     | inl x => x
-    | inr (OCaml.Assert_failure (_)) => tt
+    | inr (Assert_failure (_)) => tt
     end.
   
   Import M.
@@ -29,14 +29,14 @@ Module N.
   Definition y : unit :=
     match Exception.run 0 (M.f tt) tt with
     | inl x_1 => x_1
-    | inr (OCaml.Failure (_)) => tt
+    | inr (Failure (_)) => tt
     end.
 End N.
 
 Definition b : unit :=
   match Exception.run 0 (N.f tt) tt with
   | inl x => x
-  | inr (OCaml.Assert_failure (_)) => tt
+  | inr (Assert_failure (_)) => tt
   end.
 
 Import N.
@@ -44,7 +44,7 @@ Import N.
 Definition b' : unit :=
   match Exception.run 0 (N.f tt) tt with
   | inl x => x
-  | inr (OCaml.Assert_failure (_)) => tt
+  | inr (Assert_failure (_)) => tt
   end.
 
 Definition x : Z := 15.
@@ -53,7 +53,7 @@ Module A.
   Definition x {A B : Type} (x : A)
     : M [ OCaml.exception OCaml.assert_failure ] B :=
     match x with
-    | _ => OCaml.assert false
+    | _ => assert false
     end.
 End A.
 
@@ -62,12 +62,11 @@ Module B.
   
   Import A.
   
-  Definition b {A B : Type}
-    : A -> M [ OCaml.exception OCaml.assert_failure ] B := x.
+  Definition b {A B : Type} : A -> M [ exception assert_failure ] B := x.
   
   Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
     match x with
-    | _ => OCaml.Pervasives.failwith "failure" % string
+    | _ => Pervasives.failwith "failure" % string
     end.
   
   Definition c {A B : Type} : A -> M [ OCaml.exception OCaml.failure ] B := x.
@@ -78,15 +77,14 @@ Module C.
   
   Definition x {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
     match x with
-    | _ => OCaml.Pervasives.failwith "failure" % string
+    | _ => Pervasives.failwith "failure" % string
     end.
   
   Definition b {A B : Type} : A -> M [ OCaml.exception OCaml.failure ] B := x.
   
   Import A.
   
-  Definition c {A B : Type}
-    : A -> M [ OCaml.exception OCaml.assert_failure ] B := A.x.
+  Definition c {A B : Type} : A -> M [ exception assert_failure ] B := A.x.
 End C.
 
 Module D.

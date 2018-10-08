@@ -6,8 +6,8 @@ Import ListNotations.
 
 Definition f {A B C : Type} (x : A)
   : M [ IO ] (B -> M [ OCaml.exception OCaml.failure ] C) :=
-  let! _ := OCaml.Pervasives.print_string "Hi" % string in
-  ret (fun y => OCaml.Pervasives.failwith "Bye" % string).
+  let! _ := Pervasives.print_string "Hi" % string in
+  ret (fun y => Pervasives.failwith "Bye" % string).
 
 Definition r {A B : Type} (x : A) : M [ IO; OCaml.exception OCaml.failure ] B :=
   match x with

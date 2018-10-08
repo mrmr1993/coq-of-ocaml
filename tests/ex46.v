@@ -8,13 +8,13 @@ Definition t := Effect.Open_Type.t.
 
 Definition f (x : unit) : M [ OCaml.exception OCaml.assert_failure ] (t [ ]) :=
   match x with
-  | tt => OCaml.assert false
+  | tt => assert false
   end.
 
 Definition u := Effect.Open_Type.t.
 
 Definition g {A : Type} (x : A) : M [ OCaml.exception OCaml.failure ] (u [ ]) :=
-  OCaml.Pervasives.failwith "fail" % string.
+  Pervasives.failwith "fail" % string.
 
 Polymorphic
 Inductive t_1 : Type :=
@@ -39,5 +39,4 @@ Definition y : u [ u_1 Z ] := inl (Test5 5).
 
 Definition z {A : Type} : u [ u_1 A ] := inl (Test6 6).
 
-Definition failure : OCaml.exn [ OCaml.failure : Type ] :=
-  inl (OCaml.Failure "" % string).
+Definition failure : exn [ failure : Type ] := inl (Failure "" % string).

@@ -6,10 +6,10 @@ Value
     [
       ((plus_one, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex18/r_state) ],
             Type (Z))),
         Match
-          (3, Variable (?, x),
+          (3, Variable (?, Ex18/x),
             [
               (Any,
                 Bind
@@ -18,7 +18,7 @@ Value
                       (?,
                         Variable
                           (4,
-                            r),
+                            Ex18/r),
                         Some
                           x_1,
                         Lift
@@ -35,17 +35,17 @@ Value
                                   Type
                                     (Z));
                               Type
-                                (r_state)
+                                (Ex18/r_state)
                             ],
                             Apply
                               (4,
                                 Variable
                                   (4,
-                                    OCaml.Effect.State.read),
+                                    OCaml/Effect.State.read),
                                 [
                                   Variable
                                     (?,
-                                      x_1)
+                                      Ex18/x_1)
                                 ]))),
                     Some
                       x_1,
@@ -59,7 +59,7 @@ Value
                             [
                               Variable
                                 (?,
-                                  x_1);
+                                  Ex18/x_1);
                               Constant
                                 (4,
                                   Int(1))
@@ -77,11 +77,11 @@ Value
         Monad
           ([
             Type (OCaml.Effect.State.state, Type (string));
-            Type (s_state);
+            Type (Ex18/s_state);
             Type (OCaml.exception, Type (OCaml.failure))
           ], B)),
         Match
-          (8, Variable (?, x),
+          (8, Variable (?, Ex18/x),
             [
               (Any,
                 Bind
@@ -94,7 +94,7 @@ Value
                               Type
                                 (string));
                           Type
-                            (s_state)
+                            (Ex18/s_state)
                         ],
                         [
                           Type
@@ -102,7 +102,7 @@ Value
                               Type
                                 (string));
                           Type
-                            (s_state);
+                            (Ex18/s_state);
                           Type
                             (OCaml.exception,
                               Type
@@ -112,7 +112,7 @@ Value
                           (?,
                             Variable
                               (8,
-                                s),
+                                Ex18/s),
                             Some
                               x_1,
                             Lift
@@ -129,17 +129,17 @@ Value
                                       Type
                                         (string));
                                   Type
-                                    (s_state)
+                                    (Ex18/s_state)
                                 ],
                                 Apply
                                   (8,
                                     Variable
                                       (8,
-                                        OCaml.Effect.State.read),
+                                        OCaml/Effect.State.read),
                                     [
                                       Variable
                                         (?,
-                                          x_1)
+                                          Ex18/x_1)
                                     ])))),
                     Some
                       x_1,
@@ -157,7 +157,7 @@ Value
                               Type
                                 (string));
                           Type
-                            (s_state);
+                            (Ex18/s_state);
                           Type
                             (OCaml.exception,
                               Type
@@ -167,11 +167,11 @@ Value
                           (8,
                             Variable
                               (8,
-                                OCaml.Pervasives.failwith),
+                                OCaml/Pervasives.failwith),
                             [
                               Variable
                                 (?,
-                                  x_1)
+                                  Ex18/x_1)
                             ]))))
             ]))
     ])
@@ -182,14 +182,17 @@ Value
     [
       ((reset, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex18/r_state) ],
             Type (unit))),
         Match
-          (10, Variable (?, x),
+          (10, Variable (?, Ex18/x),
             [
               (Any,
                 Bind
-                  (?, Variable (11, r),
+                  (?,
+                    Variable
+                      (11,
+                        Ex18/r),
                     Some
                       x_1,
                     Lift
@@ -206,17 +209,17 @@ Value
                               Type
                                 (Z));
                           Type
-                            (r_state)
+                            (Ex18/r_state)
                         ],
                         Apply
                           (11,
                             Variable
                               (11,
-                                OCaml.Effect.State.write),
+                                OCaml/Effect.State.write),
                             [
                               Variable
                                 (?,
-                                  x_1);
+                                  Ex18/x_1);
                               Constant
                                 (11,
                                   Int(0))
@@ -230,14 +233,17 @@ Value
     [
       ((incr, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (Ex18/r_state) ],
             Type (unit))),
         Match
-          (13, Variable (?, x),
+          (13, Variable (?, Ex18/x),
             [
               (Any,
                 Bind
-                  (?, Variable (14, r),
+                  (?,
+                    Variable
+                      (14,
+                        Ex18/r),
                     Some
                       x_1,
                     Bind
@@ -248,7 +254,7 @@ Value
                               (?,
                                 Variable
                                   (14,
-                                    r),
+                                    Ex18/r),
                                 Some
                                   x_2,
                                 Lift
@@ -265,17 +271,17 @@ Value
                                           Type
                                             (Z));
                                       Type
-                                        (r_state)
+                                        (Ex18/r_state)
                                     ],
                                     Apply
                                       (14,
                                         Variable
                                           (14,
-                                            OCaml.Effect.State.read),
+                                            OCaml/Effect.State.read),
                                         [
                                           Variable
                                             (?,
-                                              x_2)
+                                              Ex18/x_2)
                                         ]))),
                             Some
                               x_2,
@@ -289,7 +295,7 @@ Value
                                     [
                                       Variable
                                         (?,
-                                          x_2);
+                                          Ex18/x_2);
                                       Constant
                                         (14,
                                           Int(1))
@@ -310,20 +316,20 @@ Value
                                   Type
                                     (Z));
                               Type
-                                (r_state)
+                                (Ex18/r_state)
                             ],
                             Apply
                               (14,
                                 Variable
                                   (14,
-                                    OCaml.Effect.State.write),
+                                    OCaml/Effect.State.write),
                                 [
                                   Variable
                                     (?,
-                                      x_1);
+                                      Ex18/x_1);
                                   Variable
                                     (?,
-                                      x_2)
+                                      Ex18/x_2)
                                 ])))))
             ]))
     ])

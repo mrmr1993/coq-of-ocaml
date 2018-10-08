@@ -34,76 +34,71 @@ Definition o : option Z :=
     Some n.
 
 Definition e_match {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.match_failure ] B :=
+  : M [ OCaml.exception match_failure ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Match_failure (("error" % string, 1, 2)))
+  | _ => Pervasives.raise (Match_failure (("error" % string, 1, 2)))
   end.
 
 Definition e_assert {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.assert_failure ] B :=
+  : M [ OCaml.exception assert_failure ] B :=
   match x with
-  | _ =>
-    OCaml.Pervasives.raise (OCaml.Assert_failure (("error" % string, 1, 2)))
+  | _ => Pervasives.raise (Assert_failure (("error" % string, 1, 2)))
   end.
 
 Definition e_invalid {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.invalid_argument ] B :=
+  : M [ OCaml.exception invalid_argument ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Invalid_argument ("error" % string))
+  | _ => Pervasives.raise (Invalid_argument ("error" % string))
   end.
 
-Definition e_failure {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.failure ] B :=
+Definition e_failure {A B : Type} (x : A) : M [ OCaml.exception failure ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Failure ("error" % string))
+  | _ => Pervasives.raise (Failure ("error" % string))
   end.
 
 Definition e_not_found {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.not_found ] B :=
+  : M [ OCaml.exception not_found ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Not_found tt)
+  | _ => Pervasives.raise (Not_found tt)
   end.
 
 Definition e_out_of_mem {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.out_of_memory ] B :=
+  : M [ OCaml.exception out_of_memory ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Out_of_memory tt)
+  | _ => Pervasives.raise (Out_of_memory tt)
   end.
 
 Definition e_overflow {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.stack_overflow ] B :=
+  : M [ OCaml.exception stack_overflow ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Stack_overflow tt)
+  | _ => Pervasives.raise (Stack_overflow tt)
   end.
 
-Definition e_sys_err {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.sys_error ] B :=
+Definition e_sys_err {A B : Type} (x : A) : M [ OCaml.exception sys_error ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Sys_error ("error" % string))
+  | _ => Pervasives.raise (Sys_error ("error" % string))
   end.
 
-Definition e_EOF {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.end_of_file ] B :=
+Definition e_EOF {A B : Type} (x : A) : M [ OCaml.exception end_of_file ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.End_of_file tt)
+  | _ => Pervasives.raise (End_of_file tt)
   end.
 
 Definition e_div {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.division_by_zero ] B :=
+  : M [ OCaml.exception division_by_zero ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Division_by_zero tt)
+  | _ => Pervasives.raise (Division_by_zero tt)
   end.
 
 Definition e_sys_blocked {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.sys_blocked_io ] B :=
+  : M [ OCaml.exception sys_blocked_io ] B :=
   match x with
-  | _ => OCaml.Pervasives.raise (OCaml.Sys_blocked_io tt)
+  | _ => Pervasives.raise (Sys_blocked_io tt)
   end.
 
 Definition e_rec_module {A B : Type} (x : A)
-  : M [ OCaml.exception OCaml.undefined_recursive_module ] B :=
+  : M [ OCaml.exception undefined_recursive_module ] B :=
   match x with
   | _ =>
-    OCaml.Pervasives.raise
-      (OCaml.Undefined_recursive_module (("error" % string, 1, 2)))
+    Pervasives.raise (Undefined_recursive_module (("error" % string, 1, 2)))
   end.

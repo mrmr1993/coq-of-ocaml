@@ -9,12 +9,16 @@ Value
           ((6, Effect ([ ], .)),
             Run
               ((?, Effect ([ ], .)),
-                Type (OCaml.exception, Type (error)), [ ],
+                Type (OCaml/exception, Type (Ex19/error)), [ ],
                 Apply
                   ((6,
                     Effect
-                      ([ Type (OCaml.exception, Type (error)) ],
-                        .)),
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (Ex19/error))
+                      ], .)),
                     Variable
                       ((6,
                         Effect
@@ -24,9 +28,9 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (error))
+                                      (Ex19/error))
                               ]-> .)),
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         ((6,
@@ -34,7 +38,7 @@ Value
                             ([
                             ],
                               .)),
-                          Error,
+                          Ex19/Error,
                           Tuple
                             ((?,
                               Effect
@@ -43,8 +47,9 @@ Value
                                   .))))
                     ])),
             [
-              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
-              (Constructor (inr, Constructor (Error, Tuple ())),
+              (Constructor (inl, x),
+                Variable ((?, Effect ([ ], .)), Ex19/x));
+              (Constructor (inr, Constructor (Ex19/Error, Tuple ())),
                 Constant ((7, Effect ([ ], .)), Int(12)))
             ]))
     ])
@@ -57,7 +62,7 @@ Value
         Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
           ((9, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+            Variable ((?, Effect ([ ], .)), Ex19/x),
             [
               (Any,
                 Match
@@ -77,9 +82,9 @@ Value
                           ],
                             .)),
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (error)),
+                              (Ex19/error)),
                         [
                         ],
                         Apply
@@ -89,7 +94,7 @@ Value
                                 Type
                                   (OCaml.exception,
                                     Type
-                                      (error))
+                                      (Ex19/error))
                               ],
                                 .)),
                             Variable
@@ -102,10 +107,10 @@ Value
                                         Type
                                           (OCaml.exception,
                                             Type
-                                              (error))
+                                              (Ex19/error))
                                       ]->
                                       .)),
-                                OCaml.Pervasives.raise),
+                                OCaml/Pervasives.raise),
                             [
                               Constructor
                                 ((10,
@@ -113,7 +118,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  Error,
+                                  Ex19/Error,
                                   Tuple
                                     ((?,
                                       Effect
@@ -131,11 +136,11 @@ Value
                               ([
                               ],
                                 .)),
-                            x));
+                            Ex19/x));
                       (Constructor
                         (inr,
                           Constructor
-                            (Error,
+                            (Ex19/Error,
                               Tuple
                                 ())),
                         Apply
@@ -161,7 +166,7 @@ Value
                                               (OCaml.failure))
                                       ]->
                                       .)),
-                                OCaml.Pervasives.failwith),
+                                OCaml/Pervasives.failwith),
                             [
                               Constant
                                 ((11,
@@ -187,19 +192,22 @@ Value
               ((?,
                 Effect
                   ([ Type (OCaml.exception, Type (OCaml.failure)) ],
-                    .)), Type (OCaml.exception, Type (error)),
-                [ ],
+                    .)),
+                Type (OCaml/exception, Type (Ex19/error)), [ ],
                 IfThenElse
                   ((14,
                     Effect
                       ([
-                        Type (OCaml.exception, Type (error));
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (Ex19/error));
                         Type
                           (OCaml.exception,
                             Type
                               (OCaml.failure))
                       ], .)),
-                    Variable ((14, Effect ([ ], .)), b),
+                    Variable ((14, Effect ([ ], .)), Ex19/b),
                     Apply
                       ((14,
                         Effect
@@ -220,7 +228,7 @@ Value
                                         Type
                                           (OCaml.failure))
                                   ]-> .)),
-                            OCaml.Pervasives.failwith),
+                            OCaml/Pervasives.failwith),
                         [
                           Constant
                             ((14,
@@ -237,7 +245,7 @@ Value
                             Type
                               (OCaml.exception,
                                 Type
-                                  (error))
+                                  (Ex19/error))
                           ], .)),
                         Variable
                           ((14,
@@ -248,9 +256,9 @@ Value
                                     Type
                                       (OCaml.exception,
                                         Type
-                                          (error))
+                                          (Ex19/error))
                                   ]-> .)),
-                            OCaml.Pervasives.raise),
+                            OCaml/Pervasives.raise),
                         [
                           Constructor
                             ((14,
@@ -258,7 +266,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              Error,
+                              Ex19/Error,
                               Tuple
                                 ((?,
                                   Effect
@@ -267,8 +275,9 @@ Value
                                       .))))
                         ]))),
             [
-              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
-              (Constructor (inr, Constructor (Error, Tuple ())),
+              (Constructor (inl, x),
+                Variable ((?, Effect ([ ], .)), Ex19/x));
+              (Constructor (inr, Constructor (Ex19/Error, Tuple ())),
                 Constant
                   ((15, Effect ([ ], .)),
                     Int(12)))

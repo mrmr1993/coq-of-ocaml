@@ -8,8 +8,7 @@ Definition tail {A : Type} (l : list A)
   : M [ OCaml.exception OCaml.failure ] (list A) :=
   match l with
   | cons _ xs => ret xs
-  | [] =>
-    OCaml.Pervasives.failwith "Cannot take the tail of an empty list." % string
+  | [] => Pervasives.failwith "Cannot take the tail of an empty list." % string
   end.
 
 Fixpoint print_list_rec (counter : nat) (x : list string)
@@ -20,7 +19,7 @@ Fixpoint print_list_rec (counter : nat) (x : list string)
     match x with
     | [] => ret tt
     | cons x xs =>
-      let! _ := lift [_;_] "10" (OCaml.Pervasives.print_string x) in
+      let! _ := lift [_;_] "10" (Pervasives.print_string x) in
       (print_list_rec counter) xs
     end
   end.

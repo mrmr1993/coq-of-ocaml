@@ -7,16 +7,16 @@ Value
       ((f, [ ], [ (x, Type (unit)) ],
         Monad
           ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
-            OpenApply (t, {}))),
+            OpenApply (Ex46/t, {}))),
         Match
-          (4, Variable (?, x),
+          (4, Variable (?, Ex46/x),
             [
               (Constructor (tt),
                 Apply
                   (4,
                     Variable
                       (4,
-                        OCaml.assert),
+                        OCaml/assert),
                     [
                       Constructor
                         (4,
@@ -34,24 +34,24 @@ Value
       ((g, [ A ], [ (x, A) ],
         Monad
           ([ Type (OCaml.exception, Type (OCaml.failure)) ],
-            OpenApply (u, {}, A))),
+            OpenApply (Ex46/u, {}, A))),
         Apply
-          (8, Variable (8, OCaml.Pervasives.failwith),
+          (8, Variable (8, OCaml/Pervasives.failwith),
             [ Constant (8, String("fail")) ]))
     ])
 
 10 TypeExt
-(t,
+(Ex46/t,
   Inductive t_1:
     ([ ], [ (Test1, [ ]); (Test2, [ Type (bool) ]) ]))
 
 12 TypeExt
-(t,
+(Ex46/t,
   Inductive t_2:
     ([ ], [ (Test3, [ Type (Z) ]); (Test4, [ Type (option, Type (Z)) ]) ]))
 
 14 TypeExt
-(u,
+(Ex46/u,
   Inductive u_1:
     ([ b ], [ (Test5, [ b ]); (Test6, [ Type (Z) ]) ]))
 
@@ -59,32 +59,34 @@ Value
 Value
   (non_rec, @.,
     [
-      ((x, [ ], [ ], OpenApply (t, {t_1})),
-        Constructor (?, inl, Constructor (16, Test1)))
+      ((x, [ ], [ ], OpenApply (Ex46/t, {Ex46/t_1})),
+        Constructor (?, inl, Constructor (16, Ex46/Test1)))
     ])
 
 18
 Value
   (non_rec, @.,
     [
-      ((y, [ ], [ ], OpenApply (u, {u_1}, Type (Z))),
-        Constructor (?, inl, Constructor (18, Test5, Constant (18, Int(5)))))
+      ((y, [ ], [ ], OpenApply (Ex46/u, {Ex46/u_1}, Type (Z))),
+        Constructor
+          (?, inl, Constructor (18, Ex46/Test5, Constant (18, Int(5)))))
     ])
 
 20
 Value
   (non_rec, @.,
     [
-      ((z, [ A ], [ ], OpenApply (u, {u_1}, A)),
-        Constructor (?, inl, Constructor (20, Test6, Constant (20, Int(6)))))
+      ((z, [ A ], [ ], OpenApply (Ex46/u, {Ex46/u_1}, A)),
+        Constructor
+          (?, inl, Constructor (20, Ex46/Test6, Constant (20, Int(6)))))
     ])
 
 22
 Value
   (non_rec, @.,
     [
-      ((failure, [ ], [ ], OpenApply (OCaml.exn, {OCaml.failure})),
+      ((failure, [ ], [ ], OpenApply (OCaml/exn, {OCaml/failure})),
         Constructor
           (?, inl,
-            Constructor (22, OCaml.Failure, Constant (22, String("")))))
+            Constructor (22, OCaml/Failure, Constant (22, String("")))))
     ])

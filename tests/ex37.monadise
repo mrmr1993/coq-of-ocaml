@@ -8,11 +8,11 @@
         ((c, [ A ], [ (x, Type (string)) ],
           Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], A)),
           Apply
-            (6, Variable (6, OCaml.Pervasives.failwith),
-              [ Variable (6, A/x) ]))
+            (6, Variable (6, OCaml/Pervasives.failwith),
+              [ Variable (6, Ex37.A/x) ]))
       ])
 
-9 Include A
+9 Include Ex37/A
 
 11
 Value
@@ -21,7 +21,7 @@ Value
       ((b, [ ], [ ], Type (Z)),
         Apply
           (11, Variable (11, Z.add),
-            [ Variable (11, a); Constant (11, Int(2)) ]))
+            [ Variable (11, Ex37/a); Constant (11, Int(2)) ]))
     ])
 
 13
@@ -29,11 +29,13 @@ Value
   (non_rec, @.,
     [
       ((d, [ A ], [ (b, Type (bool)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], A)),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], A)),
         IfThenElse
-          (13, Variable (13, b),
+          (13, Variable (13, Ex37/b),
             Apply
-              (13, Variable (13, c), [ Constant (13, String("true")) ]),
+              (13, Variable (13, Ex37/c),
+                [ Constant (13, String("true")) ]),
             Apply
-              (13, Variable (13, c), [ Constant (13, String("false")) ])))
+              (13, Variable (13, Ex37/c),
+                [ Constant (13, String("false")) ])))
     ])

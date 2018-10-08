@@ -50,8 +50,8 @@ Definition n2 {A : Type} (x : A) : M [ Counter; NonTermination ] Z :=
           ret (Z.add x x_1)
         end
       end in
-    let sum_1 (l : list Z) : M [ Counter; NonTermination ] Z :=
+    let sum (l : list Z) : M [ Counter; NonTermination ] Z :=
       let! x_1 := lift [_;_] "10" (read_counter tt) in
       lift [_;_] "01" (sum_rec x_1 l) in
-    sum_1 (cons 1 (cons 2 (cons 3 [])))
+    sum (cons 1 (cons 2 (cons 3 [])))
   end.

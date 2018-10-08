@@ -5,10 +5,10 @@ Value
   (non_rec, @.,
     [
       ((f, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.exception, Type (outside)) ], B)),
+        Monad ([ Type (OCaml.exception, Type (Ex17/outside)) ], B)),
         Apply
-          (5, Variable (5, OCaml.Pervasives.raise),
-            [ Constructor (5, Outside, Tuple (?)) ]))
+          (5, Variable (5, OCaml/Pervasives.raise),
+            [ Constructor (5, Ex17/Outside, Tuple (?)) ]))
     ])
 
 7 Module G:
@@ -21,32 +21,38 @@ Value
         ((g, [ A ], [ (b, Type (bool)) ],
           Monad
             ([
-              Type (OCaml.exception, Type (outside));
-              Type (OCaml.exception, Type (G/inside))
+              Type (OCaml.exception, Type (Ex17/outside));
+              Type (OCaml.exception, Type (Ex17.G/inside))
             ], A)),
           IfThenElse
-            (11, Variable (11, G/b),
+            (11, Variable (11, Ex17.G/b),
               Lift
-                (?, [ Type (OCaml.exception, Type (G/inside)) ],
+                (?,
                   [
                     Type
                       (OCaml.exception,
                         Type
-                          (outside));
+                          (Ex17.G/inside))
+                  ],
+                  [
                     Type
                       (OCaml.exception,
                         Type
-                          (G/inside))
+                          (Ex17/outside));
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (Ex17.G/inside))
                   ],
                   Apply
                     (12,
                       Variable
                         (12,
-                          OCaml.Pervasives.raise),
+                          OCaml/Pervasives.raise),
                       [
                         Constructor
                           (12,
-                            G/Inside,
+                            Ex17.G/Inside,
                             Tuple
                               (?,
                                 Constant
@@ -57,26 +63,32 @@ Value
                                     String("no"))))
                       ])),
               Lift
-                (?, [ Type (OCaml.exception, Type (outside)) ],
+                (?,
                   [
                     Type
                       (OCaml.exception,
                         Type
-                          (outside));
+                          (Ex17/outside))
+                  ],
+                  [
                     Type
                       (OCaml.exception,
                         Type
-                          (G/inside))
+                          (Ex17/outside));
+                    Type
+                      (OCaml.exception,
+                        Type
+                          (Ex17.G/inside))
                   ],
                   Apply
                     (14,
                       Variable
                         (14,
-                          OCaml.Pervasives.raise),
+                          OCaml/Pervasives.raise),
                       [
                         Constructor
                           (14,
-                            Outside,
+                            Ex17/Outside,
                             Tuple
                               (?))
                       ]))))
@@ -91,11 +103,11 @@ Value
           ([
             Type (IO);
             Type (NonTermination);
-            Type (OCaml.exception, Type (outside));
-            Type (OCaml.exception, Type (G.inside))
+            Type (OCaml/exception, Type (Ex17/outside));
+            Type (OCaml/exception, Type (Ex17/G.inside))
           ], B)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex17/counter),
             [
               (Constructor (O),
                 Lift
@@ -110,13 +122,13 @@ Value
                       Type
                         (NonTermination);
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (outside));
+                            (Ex17/outside));
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (G.inside))
+                            (Ex17/G.inside))
                     ],
                     Apply
                       (?,
@@ -129,7 +141,10 @@ Value
                         ])));
               (Constructor (S, counter),
                 Match
-                  (18, Variable (18, l),
+                  (18,
+                    Variable
+                      (18,
+                        Ex17/l),
                     [
                       (Constructor
                         ([]),
@@ -139,13 +154,13 @@ Value
                               Type
                                 (IO);
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (outside));
+                                    (Ex17/outside));
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (G.inside))
+                                    (Ex17/G.inside))
                             ],
                             [
                               Type
@@ -153,13 +168,13 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (outside));
+                                    (Ex17/outside));
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (G.inside))
+                                    (Ex17/G.inside))
                             ],
                             Bind
                               (?,
@@ -173,19 +188,19 @@ Value
                                       Type
                                         (IO);
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (outside));
+                                            (Ex17/outside));
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (G.inside))
+                                            (Ex17/G.inside))
                                     ],
                                     Apply
                                       (19,
                                         Variable
                                           (19,
-                                            OCaml.Pervasives.print_string),
+                                            OCaml/Pervasives.print_string),
                                         [
                                           Constant
                                             (19,
@@ -196,31 +211,31 @@ Value
                                   (?,
                                     [
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (outside));
+                                            (Ex17/outside));
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (G.inside))
+                                            (Ex17/G.inside))
                                     ],
                                     [
                                       Type
                                         (IO);
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (outside));
+                                            (Ex17/outside));
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (G.inside))
+                                            (Ex17/G.inside))
                                     ],
                                     Apply
                                       (19,
                                         Variable
                                           (19,
-                                            G.g),
+                                            Ex17/G.g),
                                         [
                                           Constructor
                                             (19,
@@ -237,7 +252,7 @@ Value
                               Type
                                 (OCaml.exception,
                                   Type
-                                    (G.inside))
+                                    (Ex17/G.inside))
                             ],
                             [
                               Type
@@ -245,23 +260,23 @@ Value
                               Type
                                 (NonTermination);
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (outside));
+                                    (Ex17/outside));
                               Type
-                                (OCaml.exception,
+                                (OCaml/exception,
                                   Type
-                                    (G.inside))
+                                    (Ex17/G.inside))
                             ],
                             Apply
                               (20,
                                 Variable
                                   (20,
-                                    OCaml.Pervasives.raise),
+                                    OCaml/Pervasives.raise),
                                 [
                                   Constructor
                                     (20,
-                                      G.Inside,
+                                      Ex17/G.Inside,
                                       Tuple
                                         (?,
                                           Constant
@@ -281,16 +296,16 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    h_rec),
+                                    Ex17/h_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter)
+                                      Ex17/counter)
                                 ]),
                             [
                               Variable
                                 (21,
-                                  xs)
+                                  Ex17/xs)
                             ]))
                     ]))
             ]))
@@ -306,8 +321,8 @@ Value
             Type (Counter);
             Type (IO);
             Type (NonTermination);
-            Type (OCaml.exception, Type (outside));
-            Type (OCaml.exception, Type (G.inside))
+            Type (OCaml/exception, Type (Ex17/outside));
+            Type (OCaml/exception, Type (Ex17/G.inside))
           ], B)),
         Bind
           (?,
@@ -317,8 +332,8 @@ Value
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.exception, Type (outside));
-                  Type (OCaml.exception, Type (G.inside))
+                  Type (OCaml/exception, Type (Ex17/outside));
+                  Type (OCaml/exception, Type (Ex17/G.inside))
                 ],
                 Apply (?, Variable (?, read_counter), [ Tuple (?) ])),
             Some x,
@@ -327,17 +342,17 @@ Value
                 [
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.exception, Type (outside));
-                  Type (OCaml.exception, Type (G.inside))
+                  Type (OCaml/exception, Type (Ex17/outside));
+                  Type (OCaml/exception, Type (Ex17/G.inside))
                 ],
                 [
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.exception, Type (outside));
-                  Type (OCaml.exception, Type (G.inside))
+                  Type (OCaml/exception, Type (Ex17/outside));
+                  Type (OCaml/exception, Type (Ex17/G.inside))
                 ],
                 Apply
-                  (?, Variable (?, h_rec),
-                    [ Variable (?, x); Variable (?, l) ]))))
+                  (?, Variable (?, Ex17/h_rec),
+                    [ Variable (?, Ex17/x); Variable (?, Ex17/l) ]))))
     ])

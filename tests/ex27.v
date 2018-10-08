@@ -14,28 +14,28 @@ Definition length {A : Type} (l : list A) : Z := length_aux 0 l.
 
 Definition hd {A : Type} (x : list A) : M [ OCaml.exception OCaml.failure ] A :=
   match x with
-  | [] => OCaml.Pervasives.failwith "hd" % string
+  | [] => Pervasives.failwith "hd" % string
   | cons a l => ret a
   end.
 
 Definition tl {A : Type} (x : list A)
   : M [ OCaml.exception OCaml.failure ] (list A) :=
   match x with
-  | [] => OCaml.Pervasives.failwith "tl" % string
+  | [] => Pervasives.failwith "tl" % string
   | cons a l => ret l
   end.
 
 Definition nth {A : Type} (l : list A) (n : Z)
   : M [ OCaml.exception OCaml.failure; OCaml.exception OCaml.invalid_argument ]
     A :=
-  if OCaml.Pervasives.lt n 0 then
-    lift [_;_] "01" (OCaml.Pervasives.invalid_arg "List.nth" % string)
+  if Pervasives.lt n 0 then
+    lift [_;_] "01" (Pervasives.invalid_arg "List.nth" % string)
   else
     lift [_;_] "10"
       (let fix nth_aux_coq_rec {B : Type} (l : list B) (n : Z)
         : M [ OCaml.exception OCaml.failure ] B :=
         match l with
-        | [] => OCaml.Pervasives.failwith "nth" % string
+        | [] => Pervasives.failwith "nth" % string
         | cons a l =>
           if equiv_decb n 0 then
             ret a
@@ -44,8 +44,7 @@ Definition nth {A : Type} (l : list A) (n : Z)
         end in
       nth_aux_coq_rec l n).
 
-Definition append {A : Type} : (list A) -> (list A) -> list A :=
-  OCaml.Pervasives.app.
+Definition append {A : Type} : (list A) -> (list A) -> list A := Pervasives.app.
 
 Fixpoint rev_append {A : Type} (l1 : list A) (l2 : list A) : list A :=
   match l1 with
@@ -58,7 +57,7 @@ Definition rev {A : Type} (l : list A) : list A := rev_append l [].
 Fixpoint flatten {A : Type} (x : list (list A)) : list A :=
   match x with
   | [] => []
-  | cons l r => OCaml.Pervasives.app l (flatten r)
+  | cons l r => Pervasives.app l (flatten r)
   end.
 
 Definition concat {A : Type} : (list (list A)) -> list A := flatten.
@@ -127,7 +126,7 @@ Fixpoint map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
     let r := f a1 a2 in
     let! x := map2 f l1 l2 in
     ret (cons r x)
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.map2" % string
+  | (_, _) => Pervasives.invalid_arg "List.map2" % string
   end.
 
 Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
@@ -137,7 +136,7 @@ Definition rev_map2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
     match (l1, l2) with
     | ([], []) => ret accu
     | (cons a1 l1, cons a2 l2) => rmap2_f_coq_rec (cons (f a1 a2) accu) l1 l2
-    | (_, _) => OCaml.Pervasives.invalid_arg "List.rev_map2" % string
+    | (_, _) => Pervasives.invalid_arg "List.rev_map2" % string
     end in
   rmap2_f_coq_rec [] l1 l2.
 
@@ -146,7 +145,7 @@ Fixpoint iter2 {A B C : Type} (f : A -> B -> C) (l1 : list A) (l2 : list B)
   match (l1, l2) with
   | ([], []) => ret tt
   | (cons a1 l1, cons a2 l2) => iter2 f l1 l2
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.iter2" % string
+  | (_, _) => Pervasives.invalid_arg "List.iter2" % string
   end.
 
 Fixpoint fold_left2 {A B C : Type}
@@ -155,7 +154,7 @@ Fixpoint fold_left2 {A B C : Type}
   match (l1, l2) with
   | ([], []) => ret accu
   | (cons a1 l1, cons a2 l2) => fold_left2 f (f accu a1 a2) l1 l2
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.fold_left2" % string
+  | (_, _) => Pervasives.invalid_arg "List.fold_left2" % string
   end.
 
 Fixpoint fold_right2 {A B C : Type}
@@ -166,7 +165,7 @@ Fixpoint fold_right2 {A B C : Type}
   | (cons a1 l1, cons a2 l2) =>
     let! x := fold_right2 f l1 l2 accu in
     ret (f a1 a2 x)
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.fold_right2" % string
+  | (_, _) => Pervasives.invalid_arg "List.fold_right2" % string
   end.
 
 Fixpoint for_all {A : Type} (p : A -> bool) (x : list A) : bool :=
@@ -188,7 +187,7 @@ Fixpoint for_all2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
   | (cons a1 l1, cons a2 l2) =>
     let! x := for_all2 p l1 l2 in
     ret (andb (p a1 a2) x)
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.for_all2" % string
+  | (_, _) => Pervasives.invalid_arg "List.for_all2" % string
   end.
 
 Fixpoint _exists2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
@@ -198,13 +197,13 @@ Fixpoint _exists2 {A B : Type} (p : A -> B -> bool) (l1 : list A) (l2 : list B)
   | (cons a1 l1, cons a2 l2) =>
     let! x := _exists2 p l1 l2 in
     ret (orb (p a1 a2) x)
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.exists2" % string
+  | (_, _) => Pervasives.invalid_arg "List.exists2" % string
   end.
 
 Fixpoint find {A : Type} (p : A -> bool) (x : list A)
-  : M [ OCaml.exception OCaml.not_found ] A :=
+  : M [ OCaml.exception not_found ] A :=
   match x with
-  | [] => OCaml.Pervasives.raise (OCaml.Not_found tt)
+  | [] => Pervasives.raise (Not_found tt)
   | cons x l =>
     if p x then
       ret x
@@ -256,7 +255,7 @@ Fixpoint combine {A B : Type} (l1 : list A) (l2 : list B)
   | (cons a1 l1, cons a2 l2) =>
     let! x := combine l1 l2 in
     ret (cons (a1, a2) x)
-  | (_, _) => OCaml.Pervasives.invalid_arg "List.combine" % string
+  | (_, _) => Pervasives.invalid_arg "List.combine" % string
   end.
 
 Fixpoint merge {A : Type} (cmp : A -> A -> Z) (l1 : list A) (l2 : list A)
@@ -266,7 +265,7 @@ Fixpoint merge {A : Type} (cmp : A -> A -> Z) (l1 : list A) (l2 : list A)
     | ([], l2) => l2
     | (l1, []) => l1
     | (cons h1 t1, cons h2 t2) =>
-      if OCaml.Pervasives.le (cmp h1 h2) 0 then
+      if Pervasives.le (cmp h1 h2) 0 then
         cons h1 (merge cmp t1 l2)
       else
         cons h2 (rev_merge_aux_coq_rec t2)
@@ -280,7 +279,7 @@ Fixpoint chop {A : Type} (k : Z) (l : list A)
   else
     match l with
     | cons x t => chop (Z.sub k 1) t
-    | _ => OCaml.assert false
+    | _ => assert false
     end.
 
 Module StableSort.
@@ -291,7 +290,7 @@ Module StableSort.
       | ([], l2) => rev_append l2 accu
       | (l1, []) => rev_append l1 accu
       | (cons h1 t1, cons h2 t2) =>
-        if OCaml.Pervasives.le (cmp h1 h2) 0 then
+        if Pervasives.le (cmp h1 h2) 0 then
           rev_merge cmp t1 l2 (cons h1 accu)
         else
           rev_merge_aux_coq_rec t2 (cons h2 accu)
@@ -305,7 +304,7 @@ Module StableSort.
       | ([], l2) => rev_append l2 accu
       | (l1, []) => rev_append l1 accu
       | (cons h1 t1, cons h2 t2) =>
-        if OCaml.Pervasives.gt (cmp h1 h2) 0 then
+        if Pervasives.gt (cmp h1 h2) 0 then
           rev_merge_rev cmp t1 l2 (cons h1 accu)
         else
           rev_merge_rev_aux_coq_rec t2 (cons h2 accu)
@@ -321,25 +320,25 @@ Module StableSort.
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
         ret
-          (if OCaml.Pervasives.le (cmp x1 x2) 0 then
+          (if Pervasives.le (cmp x1 x2) 0 then
             cons x1 (cons x2 [])
           else
             cons x2 (cons x1 []))
       | (3, cons x1 (cons x2 (cons x3 _))) =>
         ret
-          (if OCaml.Pervasives.le (cmp x1 x2) 0 then
-            if OCaml.Pervasives.le (cmp x2 x3) 0 then
+          (if Pervasives.le (cmp x1 x2) 0 then
+            if Pervasives.le (cmp x2 x3) 0 then
               cons x1 (cons x2 (cons x3 []))
             else
-              if OCaml.Pervasives.le (cmp x1 x3) 0 then
+              if Pervasives.le (cmp x1 x3) 0 then
                 cons x1 (cons x3 (cons x2 []))
               else
                 cons x3 (cons x1 (cons x2 []))
           else
-            if OCaml.Pervasives.le (cmp x1 x3) 0 then
+            if Pervasives.le (cmp x1 x3) 0 then
               cons x2 (cons x1 (cons x3 []))
             else
-              if OCaml.Pervasives.le (cmp x2 x3) 0 then
+              if Pervasives.le (cmp x2 x3) 0 then
                 cons x2 (cons x3 (cons x1 []))
               else
                 cons x3 (cons x2 (cons x1 [])))
@@ -362,25 +361,25 @@ Module StableSort.
       match (n, l) with
       | (2, cons x1 (cons x2 _)) =>
         ret
-          (if OCaml.Pervasives.gt (cmp x1 x2) 0 then
+          (if Pervasives.gt (cmp x1 x2) 0 then
             cons x1 (cons x2 [])
           else
             cons x2 (cons x1 []))
       | (3, cons x1 (cons x2 (cons x3 _))) =>
         ret
-          (if OCaml.Pervasives.gt (cmp x1 x2) 0 then
-            if OCaml.Pervasives.gt (cmp x2 x3) 0 then
+          (if Pervasives.gt (cmp x1 x2) 0 then
+            if Pervasives.gt (cmp x2 x3) 0 then
               cons x1 (cons x2 (cons x3 []))
             else
-              if OCaml.Pervasives.gt (cmp x1 x3) 0 then
+              if Pervasives.gt (cmp x1 x3) 0 then
                 cons x1 (cons x3 (cons x2 []))
               else
                 cons x3 (cons x1 (cons x2 []))
           else
-            if OCaml.Pervasives.gt (cmp x1 x3) 0 then
+            if Pervasives.gt (cmp x1 x3) 0 then
               cons x2 (cons x1 (cons x3 []))
             else
-              if OCaml.Pervasives.gt (cmp x2 x3) 0 then
+              if Pervasives.gt (cmp x2 x3) 0 then
                 cons x2 (cons x3 (cons x1 []))
               else
                 cons x3 (cons x2 (cons x1 [])))
@@ -408,24 +407,22 @@ Module StableSort.
 End StableSort.
 
 Definition stable_sort {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
+  : M [ Counter; NonTermination; exception assert_failure ] (list A) :=
   let len := length l in
-  if OCaml.Pervasives.lt len 2 then
+  if Pervasives.lt len 2 then
     ret l
   else
     StableSort.sort cmp len l.
 
 Definition sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) ->
-      M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
-        (list A) := stable_sort.
+    (list A) -> M [ Counter; NonTermination; exception assert_failure ] (list A) :=
+  stable_sort.
 
 Definition fast_sort {A : Type}
   : (A -> A -> Z) ->
-    (list A) ->
-      M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ]
-        (list A) := stable_sort.
+    (list A) -> M [ Counter; NonTermination; exception assert_failure ] (list A) :=
+  stable_sort.
 
 Module SortUniq.
   Fixpoint rev_merge {A : Type}
@@ -439,7 +436,7 @@ Module SortUniq.
         if equiv_decb c 0 then
           rev_merge cmp t1 t2 (cons h1 accu)
         else
-          if OCaml.Pervasives.lt c 0 then
+          if Pervasives.lt c 0 then
             rev_merge cmp t1 l2 (cons h1 accu)
           else
             rev_merge_aux_coq_rec t2 (cons h2 accu)
@@ -457,7 +454,7 @@ Module SortUniq.
         if equiv_decb c 0 then
           rev_merge_rev cmp t1 t2 (cons h1 accu)
         else
-          if OCaml.Pervasives.gt c 0 then
+          if Pervasives.gt c 0 then
             rev_merge_rev cmp t1 l2 (cons h1 accu)
           else
             rev_merge_rev_aux_coq_rec t2 (cons h2 accu)
@@ -477,7 +474,7 @@ Module SortUniq.
           if equiv_decb c 0 then
             cons x1 []
           else
-            if OCaml.Pervasives.lt c 0 then
+            if Pervasives.lt c 0 then
               cons x1 (cons x2 [])
             else
               cons x2 (cons x1 []))
@@ -489,24 +486,24 @@ Module SortUniq.
             if equiv_decb c 0 then
               cons x2 []
             else
-              if OCaml.Pervasives.lt c 0 then
+              if Pervasives.lt c 0 then
                 cons x2 (cons x3 [])
               else
                 cons x3 (cons x2 [])
           else
-            if OCaml.Pervasives.lt c 0 then
+            if Pervasives.lt c 0 then
               let c := cmp x2 x3 in
               if equiv_decb c 0 then
                 cons x1 (cons x2 [])
               else
-                if OCaml.Pervasives.lt c 0 then
+                if Pervasives.lt c 0 then
                   cons x1 (cons x2 (cons x3 []))
                 else
                   let c := cmp x1 x3 in
                   if equiv_decb c 0 then
                     cons x1 (cons x2 [])
                   else
-                    if OCaml.Pervasives.lt c 0 then
+                    if Pervasives.lt c 0 then
                       cons x1 (cons x3 (cons x2 []))
                     else
                       cons x3 (cons x1 (cons x2 []))
@@ -515,14 +512,14 @@ Module SortUniq.
               if equiv_decb c 0 then
                 cons x2 (cons x1 [])
               else
-                if OCaml.Pervasives.lt c 0 then
+                if Pervasives.lt c 0 then
                   cons x2 (cons x1 (cons x3 []))
                 else
                   let c := cmp x2 x3 in
                   if equiv_decb c 0 then
                     cons x2 (cons x1 [])
                   else
-                    if OCaml.Pervasives.lt c 0 then
+                    if Pervasives.lt c 0 then
                       cons x2 (cons x3 (cons x1 []))
                     else
                       cons x3 (cons x2 (cons x1 [])))
@@ -549,7 +546,7 @@ Module SortUniq.
           if equiv_decb c 0 then
             cons x1 []
           else
-            if OCaml.Pervasives.gt c 0 then
+            if Pervasives.gt c 0 then
               cons x1 (cons x2 [])
             else
               cons x2 (cons x1 []))
@@ -561,24 +558,24 @@ Module SortUniq.
             if equiv_decb c 0 then
               cons x2 []
             else
-              if OCaml.Pervasives.gt c 0 then
+              if Pervasives.gt c 0 then
                 cons x2 (cons x3 [])
               else
                 cons x3 (cons x2 [])
           else
-            if OCaml.Pervasives.gt c 0 then
+            if Pervasives.gt c 0 then
               let c := cmp x2 x3 in
               if equiv_decb c 0 then
                 cons x1 (cons x2 [])
               else
-                if OCaml.Pervasives.gt c 0 then
+                if Pervasives.gt c 0 then
                   cons x1 (cons x2 (cons x3 []))
                 else
                   let c := cmp x1 x3 in
                   if equiv_decb c 0 then
                     cons x1 (cons x2 [])
                   else
-                    if OCaml.Pervasives.gt c 0 then
+                    if Pervasives.gt c 0 then
                       cons x1 (cons x3 (cons x2 []))
                     else
                       cons x3 (cons x1 (cons x2 []))
@@ -587,14 +584,14 @@ Module SortUniq.
               if equiv_decb c 0 then
                 cons x2 (cons x1 [])
               else
-                if OCaml.Pervasives.gt c 0 then
+                if Pervasives.gt c 0 then
                   cons x2 (cons x1 (cons x3 []))
                 else
                   let c := cmp x2 x3 in
                   if equiv_decb c 0 then
                     cons x2 (cons x1 [])
                   else
-                    if OCaml.Pervasives.gt c 0 then
+                    if Pervasives.gt c 0 then
                       cons x2 (cons x3 (cons x1 []))
                     else
                       cons x3 (cons x2 (cons x1 [])))
@@ -622,9 +619,9 @@ Module SortUniq.
 End SortUniq.
 
 Definition sort_uniq {A : Type} (cmp : A -> A -> Z) (l : list A)
-  : M [ Counter; NonTermination; OCaml.exception OCaml.assert_failure ] (list A) :=
+  : M [ Counter; NonTermination; exception assert_failure ] (list A) :=
   let len := length l in
-  if OCaml.Pervasives.lt len 2 then
+  if Pervasives.lt len 2 then
     ret l
   else
     SortUniq.sort cmp len l.

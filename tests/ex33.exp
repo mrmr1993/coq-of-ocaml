@@ -5,9 +5,10 @@
   Value
     (non_rec, @.,
       [
-        ((compare, [ ], [ (x, Type (Ord/t)) ], (Type (Ord/t) -> Type (Z))),
+        ((compare, [ ], [ (x, Type (Ex33.Ord/t)) ],
+          (Type (Ex33.Ord/t) -> Type (Z))),
           Match
-            (5, Variable (?, Ord/x),
+            (5, Variable (?, Ex33.Ord/x),
               [
                 (Any,
                   Function
@@ -17,7 +18,7 @@
                         (5,
                           Variable
                             (?,
-                              Ord/x_1),
+                              Ex33.Ord/x_1),
                           [
                             (Any,
                               Constant
@@ -27,27 +28,28 @@
               ]))
       ])
 
-8 Synonym (key, [ ], Type (Ord.t))
+8 Synonym (key, [ ], Type (Ex33/Ord.t))
 
 10
 Inductive t:
   ([ a ],
     [
       (Empty, [ ]);
-      (Node, [ Type (t, a); Type (key); a; Type (t, a); Type (Z) ])
+      (Node,
+        [ Type (Ex33/t, a); Type (Ex33/key); a; Type (Ex33/t, a); Type (Z) ])
     ])
 
 14
 Value
   (non_rec, @.,
     [
-      ((height, [ A ], [ (x, Type (t, A)) ], Type (Z)),
+      ((height, [ A ], [ (x, Type (Ex33/t, A)) ], Type (Z)),
         Match
-          (15, Variable (?, x),
+          (15, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constant (15, Int(0)));
-              (Constructor (Node, Any, Any, Any, Any, h),
-                Variable (16, h))
+              (Constructor (Ex33/Empty), Constant (15, Int(0)));
+              (Constructor (Ex33/Node, Any, Any, Any, Any, h),
+                Variable (16, Ex33/h))
             ]))
     ])
 
@@ -56,37 +58,52 @@ Value
   (non_rec, @.,
     [
       ((create, [ A ],
-        [ (l, Type (t, A)); (x, Type (key)); (d, A); (r, Type (t, A)) ],
-        Type (t, A)),
-        LetVar 19 hl = Apply (19, Variable (19, height), [ Variable (19, l) ])
+        [
+          (l, Type (Ex33/t, A));
+          (x, Type (Ex33/key));
+          (d, A);
+          (r, Type (Ex33/t, A))
+        ], Type (Ex33/t, A)),
+        LetVar 19 hl =
+          Apply (19, Variable (19, Ex33/height), [ Variable (19, Ex33/l) ])
           in
-        LetVar 20 hr = Apply (20, Variable (20, height), [ Variable (20, r) ])
+        LetVar 20 hr =
+          Apply (20, Variable (20, Ex33/height), [ Variable (20, Ex33/r) ])
           in
         Constructor
-          (21, Node, Variable (21, l), Variable (21, x), Variable (21, d),
-            Variable (21, r),
+          (21, Ex33/Node, Variable (21, Ex33/l), Variable (21, Ex33/x),
+            Variable (21, Ex33/d), Variable (21, Ex33/r),
             IfThenElse
               (21,
                 Apply
-                  (21, Variable (21, OCaml.Pervasives.ge),
-                    [ Variable (21, hl); Variable (21, hr) ]),
+                  (21, Variable (21, OCaml/Pervasives.ge),
+                    [
+                      Variable (21, Ex33/hl);
+                      Variable (21, Ex33/hr)
+                    ]),
                 Apply
                   (21, Variable (21, Z.add),
-                    [ Variable (21, hl); Constant (21, Int(1)) ]),
+                    [
+                      Variable (21, Ex33/hl);
+                      Constant (21, Int(1))
+                    ]),
                 Apply
                   (21, Variable (21, Z.add),
-                    [ Variable (21, hr); Constant (21, Int(1)) ]))))
+                    [
+                      Variable (21, Ex33/hr);
+                      Constant (21, Int(1))
+                    ]))))
     ])
 
 23
 Value
   (non_rec, @.,
     [
-      ((singleton, [ A ], [ (x, Type (key)); (d, A) ], Type (t, A)),
+      ((singleton, [ A ], [ (x, Type (Ex33/key)); (d, A) ], Type (Ex33/t, A)),
         Constructor
-          (23, Node, Constructor (23, Empty), Variable (23, x),
-            Variable (23, d), Constructor (23, Empty),
-            Constant (23, Int(1))))
+          (23, Ex33/Node, Constructor (23, Ex33/Empty),
+            Variable (23, Ex33/x), Variable (23, Ex33/d),
+            Constructor (23, Ex33/Empty), Constant (23, Int(1))))
     ])
 
 25
@@ -94,30 +111,34 @@ Value
   (non_rec, @.,
     [
       ((bal, [ A ],
-        [ (l, Type (t, A)); (x, Type (key)); (d, A); (r, Type (t, A)) ],
-        Type (t, A)),
+        [
+          (l, Type (Ex33/t, A));
+          (x, Type (Ex33/key));
+          (d, A);
+          (r, Type (Ex33/t, A))
+        ], Type (Ex33/t, A)),
         LetVar 26 hl =
           Match
-            (26, Variable (26, l),
+            (26, Variable (26, Ex33/l),
               [
-                (Constructor (Empty), Constant (26, Int(0)));
-                (Constructor (Node, Any, Any, Any, Any, h),
-                  Variable (26, h))
+                (Constructor (Ex33/Empty), Constant (26, Int(0)));
+                (Constructor (Ex33/Node, Any, Any, Any, Any, h),
+                  Variable (26, Ex33/h))
               ]) in
         LetVar 27 hr =
           Match
-            (27, Variable (27, r),
+            (27, Variable (27, Ex33/r),
               [
-                (Constructor (Empty), Constant (27, Int(0)));
-                (Constructor (Node, Any, Any, Any, Any, h),
-                  Variable (27, h))
+                (Constructor (Ex33/Empty), Constant (27, Int(0)));
+                (Constructor (Ex33/Node, Any, Any, Any, Any, h),
+                  Variable (27, Ex33/h))
               ]) in
         IfThenElse
           (28,
             Apply
-              (28, Variable (28, OCaml.Pervasives.gt),
+              (28, Variable (28, OCaml/Pervasives.gt),
                 [
-                  Variable (28, hl);
+                  Variable (28, Ex33/hl);
                   Apply
                     (28,
                       Variable
@@ -126,111 +147,111 @@ Value
                       [
                         Variable
                           (28,
-                            hr);
+                            Ex33/hr);
                         Constant
                           (28,
                             Int(2))
                       ])
                 ]),
             Match
-              (28, Variable (29, l),
+              (28, Variable (29, Ex33/l),
                 [
-                  (Constructor (Empty),
+                  (Constructor (Ex33/Empty),
                     Apply
                       (30,
                         Variable
                           (30,
-                            OCaml.Pervasives.invalid_arg),
+                            OCaml/Pervasives.invalid_arg),
                         [
                           Constant
                             (30,
                               String("Map.bal"))
                         ]));
-                  (Constructor (Node, ll, lv, ld, lr, Any),
+                  (Constructor (Ex33/Node, ll, lv, ld, lr, Any),
                     IfThenElse
                       (32,
                         Apply
                           (32,
                             Variable
                               (32,
-                                OCaml.Pervasives.ge),
+                                OCaml/Pervasives.ge),
                             [
                               Apply
                                 (32,
                                   Variable
                                     (32,
-                                      height),
+                                      Ex33/height),
                                   [
                                     Variable
                                       (32,
-                                        ll)
+                                        Ex33/ll)
                                   ]);
                               Apply
                                 (32,
                                   Variable
                                     (32,
-                                      height),
+                                      Ex33/height),
                                   [
                                     Variable
                                       (32,
-                                        lr)
+                                        Ex33/lr)
                                   ])
                             ]),
                         Apply
                           (33,
                             Variable
                               (33,
-                                create),
+                                Ex33/create),
                             [
                               Variable
                                 (33,
-                                  ll);
+                                  Ex33/ll);
                               Variable
                                 (33,
-                                  lv);
+                                  Ex33/lv);
                               Variable
                                 (33,
-                                  ld);
+                                  Ex33/ld);
                               Apply
                                 (33,
                                   Variable
                                     (33,
-                                      create),
+                                      Ex33/create),
                                   [
                                     Variable
                                       (33,
-                                        lr);
+                                        Ex33/lr);
                                     Variable
                                       (33,
-                                        x);
+                                        Ex33/x);
                                     Variable
                                       (33,
-                                        d);
+                                        Ex33/d);
                                     Variable
                                       (33,
-                                        r)
+                                        Ex33/r)
                                   ])
                             ]),
                         Match
                           (34,
                             Variable
                               (35,
-                                lr),
+                                Ex33/lr),
                             [
                               (Constructor
-                                (Empty),
+                                (Ex33/Empty),
                                 Apply
                                   (36,
                                     Variable
                                       (36,
-                                        OCaml.Pervasives.invalid_arg),
+                                        OCaml/Pervasives.invalid_arg),
                                     [
                                       Constant
                                         (36,
                                           String("Map.bal"))
                                     ]));
                               (Constructor
-                                (Node,
+                                (Ex33/Node,
                                   lrl,
                                   lrv,
                                   lrd,
@@ -240,51 +261,51 @@ Value
                                   (38,
                                     Variable
                                       (38,
-                                        create),
+                                        Ex33/create),
                                     [
                                       Apply
                                         (38,
                                           Variable
                                             (38,
-                                              create),
+                                              Ex33/create),
                                           [
                                             Variable
                                               (38,
-                                                ll);
+                                                Ex33/ll);
                                             Variable
                                               (38,
-                                                lv);
+                                                Ex33/lv);
                                             Variable
                                               (38,
-                                                ld);
+                                                Ex33/ld);
                                             Variable
                                               (38,
-                                                lrl)
+                                                Ex33/lrl)
                                           ]);
                                       Variable
                                         (38,
-                                          lrv);
+                                          Ex33/lrv);
                                       Variable
                                         (38,
-                                          lrd);
+                                          Ex33/lrd);
                                       Apply
                                         (38,
                                           Variable
                                             (38,
-                                              create),
+                                              Ex33/create),
                                           [
                                             Variable
                                               (38,
-                                                lrr);
+                                                Ex33/lrr);
                                             Variable
                                               (38,
-                                                x);
+                                                Ex33/x);
                                             Variable
                                               (38,
-                                                d);
+                                                Ex33/d);
                                             Variable
                                               (38,
-                                                r)
+                                                Ex33/r)
                                           ])
                                     ]))
                             ])))
@@ -292,9 +313,9 @@ Value
             IfThenElse
               (40,
                 Apply
-                  (40, Variable (40, OCaml.Pervasives.gt),
+                  (40, Variable (40, OCaml/Pervasives.gt),
                     [
-                      Variable (40, hr);
+                      Variable (40, Ex33/hr);
                       Apply
                         (40,
                           Variable
@@ -303,111 +324,117 @@ Value
                           [
                             Variable
                               (40,
-                                hl);
+                                Ex33/hl);
                             Constant
                               (40,
                                 Int(2))
                           ])
                     ]),
                 Match
-                  (40, Variable (41, r),
+                  (40, Variable (41, Ex33/r),
                     [
-                      (Constructor (Empty),
+                      (Constructor (Ex33/Empty),
                         Apply
                           (42,
                             Variable
                               (42,
-                                OCaml.Pervasives.invalid_arg),
+                                OCaml/Pervasives.invalid_arg),
                             [
                               Constant
                                 (42,
                                   String("Map.bal"))
                             ]));
-                      (Constructor (Node, rl, rv, rd, rr, Any),
+                      (Constructor
+                        (Ex33/Node,
+                          rl,
+                          rv,
+                          rd,
+                          rr,
+                          Any),
                         IfThenElse
                           (44,
                             Apply
                               (44,
                                 Variable
                                   (44,
-                                    OCaml.Pervasives.ge),
+                                    OCaml/Pervasives.ge),
                                 [
                                   Apply
                                     (44,
                                       Variable
                                         (44,
-                                          height),
+                                          Ex33/height),
                                       [
                                         Variable
                                           (44,
-                                            rr)
+                                            Ex33/rr)
                                       ]);
                                   Apply
                                     (44,
                                       Variable
                                         (44,
-                                          height),
+                                          Ex33/height),
                                       [
                                         Variable
                                           (44,
-                                            rl)
+                                            Ex33/rl)
                                       ])
                                 ]),
                             Apply
                               (45,
                                 Variable
                                   (45,
-                                    create),
+                                    Ex33/create),
                                 [
                                   Apply
                                     (45,
                                       Variable
                                         (45,
-                                          create),
+                                          Ex33/create),
                                       [
                                         Variable
                                           (45,
-                                            l);
+                                            Ex33/l);
                                         Variable
                                           (45,
-                                            x);
+                                            Ex33/x);
                                         Variable
                                           (45,
-                                            d);
+                                            Ex33/d);
                                         Variable
                                           (45,
-                                            rl)
+                                            Ex33/rl)
                                       ]);
                                   Variable
                                     (45,
-                                      rv);
+                                      Ex33/rv);
                                   Variable
                                     (45,
-                                      rd);
+                                      Ex33/rd);
                                   Variable
                                     (45,
-                                      rr)
+                                      Ex33/rr)
                                 ]),
                             Match
                               (46,
                                 Variable
                                   (47,
-                                    rl),
+                                    Ex33/rl),
                                 [
                                   (Constructor
-                                    (Empty),
+                                    (Ex33/Empty),
                                     Apply
                                       (48,
                                         Variable
                                           (48,
-                                            OCaml.Pervasives.invalid_arg),
+                                            OCaml/Pervasives.invalid_arg),
                                         [
                                           Constant
                                             (48,
                                               String("Map.bal"))
                                         ]));
                                   (Constructor
-                                    (Node,
+                                    (Ex33/Node,
                                       rll,
                                       rlv,
                                       rld,
@@ -417,95 +444,97 @@ Value
                                       (50,
                                         Variable
                                           (50,
-                                            create),
+                                            Ex33/create),
                                         [
                                           Apply
                                             (50,
                                               Variable
                                                 (50,
-                                                  create),
+                                                  Ex33/create),
                                               [
                                                 Variable
                                                   (50,
-                                                    l);
+                                                    Ex33/l);
                                                 Variable
                                                   (50,
-                                                    x);
+                                                    Ex33/x);
                                                 Variable
                                                   (50,
-                                                    d);
+                                                    Ex33/d);
                                                 Variable
                                                   (50,
-                                                    rll)
+                                                    Ex33/rll)
                                               ]);
                                           Variable
                                             (50,
-                                              rlv);
+                                              Ex33/rlv);
                                           Variable
                                             (50,
-                                              rld);
+                                              Ex33/rld);
                                           Apply
                                             (50,
                                               Variable
                                                 (50,
-                                                  create),
+                                                  Ex33/create),
                                               [
                                                 Variable
                                                   (50,
-                                                    rlr);
+                                                    Ex33/rlr);
                                                 Variable
                                                   (50,
-                                                    rv);
+                                                    Ex33/rv);
                                                 Variable
                                                   (50,
-                                                    rd);
+                                                    Ex33/rd);
                                                 Variable
                                                   (50,
-                                                    rr)
+                                                    Ex33/rr)
                                               ])
                                         ]))
                                 ])))
                     ]),
                 Constructor
-                  (53, Node, Variable (53, l), Variable (53, x),
-                    Variable (53, d), Variable (53, r),
+                  (53, Ex33/Node, Variable (53, Ex33/l),
+                    Variable (53, Ex33/x), Variable (53, Ex33/d),
+                    Variable (53, Ex33/r),
                     IfThenElse
                       (53,
                         Apply
                           (53,
                             Variable
-                              (53, OCaml.Pervasives.ge),
+                              (53, OCaml/Pervasives.ge),
                             [
-                              Variable (53, hl);
-                              Variable (53, hr)
+                              Variable (53, Ex33/hl);
+                              Variable (53, Ex33/hr)
                             ]),
                         Apply
                           (53, Variable (53, Z.add),
                             [
-                              Variable (53, hl);
+                              Variable (53, Ex33/hl);
                               Constant (53, Int(1))
                             ]),
                         Apply
                           (53, Variable (53, Z.add),
                             [
-                              Variable (53, hr);
+                              Variable (53, Ex33/hr);
                               Constant (53, Int(1))
                             ]))))))
     ])
 
 55
 Value
-  (non_rec, @., [ ((empty, [ A ], [ ], Type (t, A)), Constructor (55, Empty)) ])
+  (non_rec, @.,
+    [ ((empty, [ A ], [ ], Type (Ex33/t, A)), Constructor (55, Ex33/Empty)) ])
 
 57
 Value
   (non_rec, @.,
     [
-      ((is_empty, [ A ], [ (x, Type (t, A)) ], Type (bool)),
+      ((is_empty, [ A ], [ (x, Type (Ex33/t, A)) ], Type (bool)),
         Match
-          (57, Variable (?, x),
+          (57, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (57, true));
+              (Constructor (Ex33/Empty), Constructor (57, true));
               (Any, Constructor (57, false))
             ]))
     ])
@@ -514,43 +543,44 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add, [ A ], [ (x, Type (key)); (data, A); (x_1, Type (t, A)) ],
-        Type (t, A)),
+      ((add, [ A ],
+        [ (x, Type (Ex33/key)); (data, A); (x_1, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (60, Variable (?, x_1),
+          (60, Variable (?, Ex33/x_1),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Constructor
-                  (61, Node,
+                  (61, Ex33/Node,
                     Constructor
                       (61,
-                        Empty),
+                        Ex33/Empty),
                     Variable
                       (61,
-                        x),
+                        Ex33/x),
                     Variable
                       (61,
-                        data),
+                        Ex33/data),
                     Constructor
                       (61,
-                        Empty),
+                        Ex33/Empty),
                     Constant
                       (61,
                         Int(1))));
-              (Constructor (Node, l, v, d, r, h),
+              (Constructor (Ex33/Node, l, v, d, r, h),
                 LetVar 63 c =
                   Apply
                     (63,
                       Variable
                         (63,
-                          Ord.compare),
+                          Ex33/Ord.compare),
                       [
                         Variable
                           (63,
-                            x);
+                            Ex33/x);
                         Variable
                           (63,
-                            v)
+                            Ex33/v)
                       ])
                   in
                 IfThenElse
@@ -563,40 +593,40 @@ Value
                         [
                           Variable
                             (64,
-                              c);
+                              Ex33/c);
                           Constant
                             (64,
                               Int(0))
                         ]),
                     Constructor
                       (65,
-                        Node,
+                        Ex33/Node,
                         Variable
                           (65,
-                            l),
+                            Ex33/l),
                         Variable
                           (65,
-                            x),
+                            Ex33/x),
                         Variable
                           (65,
-                            data),
+                            Ex33/data),
                         Variable
                           (65,
-                            r),
+                            Ex33/r),
                         Variable
                           (65,
-                            h)),
+                            Ex33/h)),
                     IfThenElse
                       (66,
                         Apply
                           (66,
                             Variable
                               (66,
-                                OCaml.Pervasives.lt),
+                                OCaml/Pervasives.lt),
                             [
                               Variable
                                 (66,
-                                  c);
+                                  Ex33/c);
                               Constant
                                 (66,
                                   Int(0))
@@ -605,64 +635,64 @@ Value
                           (67,
                             Variable
                               (67,
-                                bal),
+                                Ex33/bal),
                             [
                               Apply
                                 (67,
                                   Variable
                                     (67,
-                                      add),
+                                      Ex33/add),
                                   [
                                     Variable
                                       (67,
-                                        x);
+                                        Ex33/x);
                                     Variable
                                       (67,
-                                        data);
+                                        Ex33/data);
                                     Variable
                                       (67,
-                                        l)
+                                        Ex33/l)
                                   ]);
                               Variable
                                 (67,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (67,
-                                  d);
+                                  Ex33/d);
                               Variable
                                 (67,
-                                  r)
+                                  Ex33/r)
                             ]),
                         Apply
                           (69,
                             Variable
                               (69,
-                                bal),
+                                Ex33/bal),
                             [
                               Variable
                                 (69,
-                                  l);
+                                  Ex33/l);
                               Variable
                                 (69,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (69,
-                                  d);
+                                  Ex33/d);
                               Apply
                                 (69,
                                   Variable
                                     (69,
-                                      add),
+                                      Ex33/add),
                                   [
                                     Variable
                                       (69,
-                                        x);
+                                        Ex33/x);
                                     Variable
                                       (69,
-                                        data);
+                                        Ex33/data);
                                     Variable
                                       (69,
-                                        r)
+                                        Ex33/r)
                                   ])
                             ]))))
             ]))
@@ -672,37 +702,37 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((find, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], A),
+      ((find, [ A ], [ (x, Type (Ex33/Ord.t)); (x_1, Type (Ex33/t, A)) ], A),
         Match
-          (73, Variable (?, x_1),
+          (73, Variable (?, Ex33/x_1),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (74,
                     Variable
                       (74,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (74,
-                          OCaml.Not_found,
+                          OCaml/Not_found,
                           Tuple
                             (?))
                     ]));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 LetVar 76 c =
                   Apply
                     (76,
                       Variable
                         (76,
-                          Ord.compare),
+                          Ex33/Ord.compare),
                       [
                         Variable
                           (76,
-                            x);
+                            Ex33/x);
                         Variable
                           (76,
-                            v)
+                            Ex33/v)
                       ])
                   in
                 IfThenElse
@@ -715,44 +745,44 @@ Value
                         [
                           Variable
                             (77,
-                              c);
+                              Ex33/c);
                           Constant
                             (77,
                               Int(0))
                         ]),
                     Variable
                       (77,
-                        d),
+                        Ex33/d),
                     Apply
                       (78,
                         Variable
                           (78,
-                            find),
+                            Ex33/find),
                         [
                           Variable
                             (78,
-                              x);
+                              Ex33/x);
                           IfThenElse
                             (78,
                               Apply
                                 (78,
                                   Variable
                                     (78,
-                                      OCaml.Pervasives.lt),
+                                      OCaml/Pervasives.lt),
                                   [
                                     Variable
                                       (78,
-                                        c);
+                                        Ex33/c);
                                     Constant
                                       (78,
                                         Int(0))
                                   ]),
                               Variable
                                 (78,
-                                  l),
+                                  Ex33/l),
                               Variable
                                 (78,
-                                  r))
+                                  Ex33/r))
                         ])))
             ]))
     ])
@@ -761,25 +791,26 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mem, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], Type (bool)),
+      ((mem, [ A ], [ (x, Type (Ex33/Ord.t)); (x_1, Type (Ex33/t, A)) ],
+        Type (bool)),
         Match
-          (82, Variable (?, x_1),
+          (82, Variable (?, Ex33/x_1),
             [
-              (Constructor (Empty), Constructor (83, false));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Constructor (83, false));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 LetVar 85 c =
                   Apply
                     (85,
                       Variable
                         (85,
-                          Ord.compare),
+                          Ex33/Ord.compare),
                       [
                         Variable
                           (85,
-                            x);
+                            Ex33/x);
                         Variable
                           (85,
-                            v)
+                            Ex33/v)
                       ])
                   in
                 Apply
@@ -796,7 +827,7 @@ Value
                           [
                             Variable
                               (86,
-                                c);
+                                Ex33/c);
                             Constant
                               (86,
                                 Int(0))
@@ -805,32 +836,32 @@ Value
                         (86,
                           Variable
                             (86,
-                              mem),
+                              Ex33/mem),
                           [
                             Variable
                               (86,
-                                x);
+                                Ex33/x);
                             IfThenElse
                               (86,
                                 Apply
                                   (86,
                                     Variable
                                       (86,
-                                        OCaml.Pervasives.lt),
+                                        OCaml/Pervasives.lt),
                                     [
                                       Variable
                                         (86,
-                                          c);
+                                          Ex33/c);
                                       Constant
                                         (86,
                                           Int(0))
                                     ]),
                                 Variable
                                   (86,
-                                    l),
+                                    Ex33/l),
                                 Variable
                                   (86,
-                                    r))
+                                    Ex33/r))
                           ])
                     ]))
             ]))
@@ -840,39 +871,44 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((min_binding, [ A ], [ (x, Type (t, A)) ], (Type (key) * A)),
+      ((min_binding, [ A ], [ (x, Type (Ex33/t, A)) ], (Type (Ex33/key) * A)),
         Match
-          (90, Variable (?, x),
+          (90, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (90,
                     Variable
                       (90,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (90,
-                          OCaml.Not_found,
+                          OCaml/Not_found,
                           Tuple
                             (?))
                     ]));
-              (Constructor (Node, Constructor (Empty), x, d, r, Any),
+              (Constructor
+                (Ex33/Node, Constructor (Ex33/Empty), x,
+                  d, r, Any),
                 Tuple
-                  (91, Variable (91, x),
+                  (91,
                     Variable
                       (91,
-                        d)));
-              (Constructor (Node, l, x, d, r, Any),
+                        Ex33/x),
+                    Variable
+                      (91,
+                        Ex33/d)));
+              (Constructor (Ex33/Node, l, x, d, r, Any),
                 Apply
                   (92,
                     Variable
                       (92,
-                        min_binding),
+                        Ex33/min_binding),
                     [
                       Variable
                         (92,
-                          l)
+                          Ex33/l)
                     ]))
             ]))
     ])
@@ -881,39 +917,46 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((max_binding, [ A ], [ (x, Type (t, A)) ], (Type (key) * A)),
+      ((max_binding, [ A ], [ (x, Type (Ex33/t, A)) ], (Type (Ex33/key) * A)),
         Match
-          (96, Variable (?, x),
+          (96, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (96,
                     Variable
                       (96,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (96,
-                          OCaml.Not_found,
+                          OCaml/Not_found,
                           Tuple
                             (?))
                     ]));
-              (Constructor (Node, l, x, d, Constructor (Empty), Any),
+              (Constructor
+                (Ex33/Node, l, x, d,
+                  Constructor
+                    (Ex33/Empty),
+                  Any),
                 Tuple
-                  (97, Variable (97, x),
+                  (97,
                     Variable
                       (97,
-                        d)));
-              (Constructor (Node, l, x, d, r, Any),
+                        Ex33/x),
+                    Variable
+                      (97,
+                        Ex33/d)));
+              (Constructor (Ex33/Node, l, x, d, r, Any),
                 Apply
                   (98,
                     Variable
                       (98,
-                        max_binding),
+                        Ex33/max_binding),
                     [
                       Variable
                         (98,
-                          r)
+                          Ex33/r)
                     ]))
             ]))
     ])
@@ -922,49 +965,51 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove_min_binding, [ A ], [ (x, Type (t, A)) ], Type (t, A)),
+      ((remove_min_binding, [ A ], [ (x, Type (Ex33/t, A)) ], Type (Ex33/t, A)),
         Match
-          (102, Variable (?, x),
+          (102, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (102,
                     Variable
                       (102,
-                        OCaml.Pervasives.invalid_arg),
+                        OCaml/Pervasives.invalid_arg),
                     [
                       Constant
                         (102,
                           String("Map.remove_min_elt"))
                     ]));
-              (Constructor (Node, Constructor (Empty), x, d, r, Any),
-                Variable (103, r));
-              (Constructor (Node, l, x, d, r, Any),
+              (Constructor
+                (Ex33/Node, Constructor (Ex33/Empty), x,
+                  d, r, Any),
+                Variable (103, Ex33/r));
+              (Constructor (Ex33/Node, l, x, d, r, Any),
                 Apply
                   (104,
                     Variable
                       (104,
-                        bal),
+                        Ex33/bal),
                     [
                       Apply
                         (104,
                           Variable
                             (104,
-                              remove_min_binding),
+                              Ex33/remove_min_binding),
                           [
                             Variable
                               (104,
-                                l)
+                                Ex33/l)
                           ]);
                       Variable
                         (104,
-                          x);
+                          Ex33/x);
                       Variable
                         (104,
-                          d);
+                          Ex33/d);
                       Variable
                         (104,
-                          r)
+                          Ex33/r)
                     ]))
             ]))
     ])
@@ -973,15 +1018,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((remove_merge, [ A ], [ (t1, Type (t, A)); (t2, Type (t, A)) ],
-        Type (t, A)),
+      ((remove_merge, [ A ], [ (t1, Type (Ex33/t, A)); (t2, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (108, Tuple (108, Variable (108, t1), Variable (108, t2)),
+          (108,
+            Tuple (108, Variable (108, Ex33/t1), Variable (108, Ex33/t2)),
             [
-              (Tuple (Constructor (Empty), t (= t_1)),
-                Variable (109, t_1));
-              (Tuple (t (= t_1), Constructor (Empty)),
-                Variable (110, t_1));
+              (Tuple (Constructor (Ex33/Empty), t (= t_1)),
+                Variable (109, Ex33/t_1));
+              (Tuple (t (= t_1), Constructor (Ex33/Empty)),
+                Variable (110, Ex33/t_1));
               (Tuple (Any, Any),
                 Match
                   (112,
@@ -989,11 +1035,11 @@ Value
                       (112,
                         Variable
                           (112,
-                            min_binding),
+                            Ex33/min_binding),
                         [
                           Variable
                             (112,
-                              t2)
+                              Ex33/t2)
                         ]),
                     [
                       (Tuple
@@ -1003,26 +1049,26 @@ Value
                           (113,
                             Variable
                               (113,
-                                bal),
+                                Ex33/bal),
                             [
                               Variable
                                 (113,
-                                  t1);
+                                  Ex33/t1);
                               Variable
                                 (113,
-                                  x);
+                                  Ex33/x);
                               Variable
                                 (113,
-                                  d);
+                                  Ex33/d);
                               Apply
                                 (113,
                                   Variable
                                     (113,
-                                      remove_min_binding),
+                                      Ex33/remove_min_binding),
                                   [
                                     Variable
                                       (113,
-                                        t2)
+                                        Ex33/t2)
                                   ])
                             ]))
                     ]))
@@ -1033,25 +1079,26 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((remove, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ], Type (t, A)),
+      ((remove, [ A ], [ (x, Type (Ex33/Ord.t)); (x_1, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (116, Variable (?, x_1),
+          (116, Variable (?, Ex33/x_1),
             [
-              (Constructor (Empty), Constructor (117, Empty));
-              (Constructor (Node, l, v, d, r, h),
+              (Constructor (Ex33/Empty), Constructor (117, Ex33/Empty));
+              (Constructor (Ex33/Node, l, v, d, r, h),
                 LetVar 119 c =
                   Apply
                     (119,
                       Variable
                         (119,
-                          Ord.compare),
+                          Ex33/Ord.compare),
                       [
                         Variable
                           (119,
-                            x);
+                            Ex33/x);
                         Variable
                           (119,
-                            v)
+                            Ex33/v)
                       ])
                   in
                 IfThenElse
@@ -1064,7 +1111,7 @@ Value
                         [
                           Variable
                             (120,
-                              c);
+                              Ex33/c);
                           Constant
                             (120,
                               Int(0))
@@ -1073,14 +1120,14 @@ Value
                       (121,
                         Variable
                           (121,
-                            remove_merge),
+                            Ex33/remove_merge),
                         [
                           Variable
                             (121,
-                              l);
+                              Ex33/l);
                           Variable
                             (121,
-                              r)
+                              Ex33/r)
                         ]),
                     IfThenElse
                       (122,
@@ -1088,11 +1135,11 @@ Value
                           (122,
                             Variable
                               (122,
-                                OCaml.Pervasives.lt),
+                                OCaml/Pervasives.lt),
                             [
                               Variable
                                 (122,
-                                  c);
+                                  Ex33/c);
                               Constant
                                 (122,
                                   Int(0))
@@ -1101,58 +1148,58 @@ Value
                           (123,
                             Variable
                               (123,
-                                bal),
+                                Ex33/bal),
                             [
                               Apply
                                 (123,
                                   Variable
                                     (123,
-                                      remove),
+                                      Ex33/remove),
                                   [
                                     Variable
                                       (123,
-                                        x);
+                                        Ex33/x);
                                     Variable
                                       (123,
-                                        l)
+                                        Ex33/l)
                                   ]);
                               Variable
                                 (123,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (123,
-                                  d);
+                                  Ex33/d);
                               Variable
                                 (123,
-                                  r)
+                                  Ex33/r)
                             ]),
                         Apply
                           (125,
                             Variable
                               (125,
-                                bal),
+                                Ex33/bal),
                             [
                               Variable
                                 (125,
-                                  l);
+                                  Ex33/l);
                               Variable
                                 (125,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (125,
-                                  d);
+                                  Ex33/d);
                               Apply
                                 (125,
                                   Variable
                                     (125,
-                                      remove),
+                                      Ex33/remove),
                                   [
                                     Variable
                                       (125,
-                                        x);
+                                        Ex33/x);
                                     Variable
                                       (125,
-                                        r)
+                                        Ex33/r)
                                   ])
                             ]))))
             ]))
@@ -1162,27 +1209,28 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((iter, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
+      ((iter, [ A; B ],
+        [ (f, (Type (Ex33/key) -> (A -> B))); (x, Type (Ex33/t, A)) ],
         Type (unit)),
         Match
-          (129, Variable (?, x),
+          (129, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (129, tt));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Constructor (129, tt));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Sequence
                   (131,
                     Apply
                       (131,
                         Variable
                           (131,
-                            iter),
+                            Ex33/iter),
                         [
                           Variable
                             (131,
-                              f);
+                              Ex33/f);
                           Variable
                             (131,
-                              l)
+                              Ex33/l)
                         ]),
                     Sequence
                       (131,
@@ -1190,27 +1238,27 @@ Value
                           (131,
                             Variable
                               (131,
-                                f),
+                                Ex33/f),
                             [
                               Variable
                                 (131,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (131,
-                                  d)
+                                  Ex33/d)
                             ]),
                         Apply
                           (131,
                             Variable
                               (131,
-                                iter),
+                                Ex33/iter),
                             [
                               Variable
                                 (131,
-                                  f);
+                                  Ex33/f);
                               Variable
                                 (131,
-                                  r)
+                                  Ex33/r)
                             ]))))
             ]))
     ])
@@ -1219,25 +1267,26 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (t, A)) ], Type (t, B)),
+      ((map, [ A; B ], [ (f, (A -> B)); (x, Type (Ex33/t, A)) ],
+        Type (Ex33/t, B)),
         Match
-          (135, Variable (?, x),
+          (135, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (136, Empty));
-              (Constructor (Node, l, v, d, r, h),
+              (Constructor (Ex33/Empty), Constructor (136, Ex33/Empty));
+              (Constructor (Ex33/Node, l, v, d, r, h),
                 LetVar 138 l' =
                   Apply
                     (138,
                       Variable
                         (138,
-                          map),
+                          Ex33/map),
                       [
                         Variable
                           (138,
-                            f);
+                            Ex33/f);
                         Variable
                           (138,
-                            l)
+                            Ex33/l)
                       ])
                   in
                 LetVar 139 d' =
@@ -1245,11 +1294,11 @@ Value
                     (139,
                       Variable
                         (139,
-                          f),
+                          Ex33/f),
                       [
                         Variable
                           (139,
-                            d)
+                            Ex33/d)
                       ])
                   in
                 LetVar 140 r' =
@@ -1257,33 +1306,33 @@ Value
                     (140,
                       Variable
                         (140,
-                          map),
+                          Ex33/map),
                       [
                         Variable
                           (140,
-                            f);
+                            Ex33/f);
                         Variable
                           (140,
-                            r)
+                            Ex33/r)
                       ])
                   in
                 Constructor
-                  (141, Node,
+                  (141, Ex33/Node,
                     Variable
                       (141,
-                        l'),
+                        Ex33/l'),
                     Variable
                       (141,
-                        v),
+                        Ex33/v),
                     Variable
                       (141,
-                        d'),
+                        Ex33/d'),
                     Variable
                       (141,
-                        r'),
+                        Ex33/r'),
                     Variable
                       (141,
-                        h)))
+                        Ex33/h)))
             ]))
     ])
 
@@ -1291,26 +1340,27 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((mapi, [ A; B ], [ (f, (Type (key) -> (A -> B))); (x, Type (t, A)) ],
-        Type (t, B)),
+      ((mapi, [ A; B ],
+        [ (f, (Type (Ex33/key) -> (A -> B))); (x, Type (Ex33/t, A)) ],
+        Type (Ex33/t, B)),
         Match
-          (145, Variable (?, x),
+          (145, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (146, Empty));
-              (Constructor (Node, l, v, d, r, h),
+              (Constructor (Ex33/Empty), Constructor (146, Ex33/Empty));
+              (Constructor (Ex33/Node, l, v, d, r, h),
                 LetVar 148 l' =
                   Apply
                     (148,
                       Variable
                         (148,
-                          mapi),
+                          Ex33/mapi),
                       [
                         Variable
                           (148,
-                            f);
+                            Ex33/f);
                         Variable
                           (148,
-                            l)
+                            Ex33/l)
                       ])
                   in
                 LetVar 149 d' =
@@ -1318,14 +1368,14 @@ Value
                     (149,
                       Variable
                         (149,
-                          f),
+                          Ex33/f),
                       [
                         Variable
                           (149,
-                            v);
+                            Ex33/v);
                         Variable
                           (149,
-                            d)
+                            Ex33/d)
                       ])
                   in
                 LetVar 150 r' =
@@ -1333,33 +1383,33 @@ Value
                     (150,
                       Variable
                         (150,
-                          mapi),
+                          Ex33/mapi),
                       [
                         Variable
                           (150,
-                            f);
+                            Ex33/f);
                         Variable
                           (150,
-                            r)
+                            Ex33/r)
                       ])
                   in
                 Constructor
-                  (151, Node,
+                  (151, Ex33/Node,
                     Variable
                       (151,
-                        l'),
+                        Ex33/l'),
                     Variable
                       (151,
-                        v),
+                        Ex33/v),
                     Variable
                       (151,
-                        d'),
+                        Ex33/d'),
                     Variable
                       (151,
-                        r'),
+                        Ex33/r'),
                     Variable
                       (151,
-                        h)))
+                        Ex33/h)))
             ]))
     ])
 
@@ -1368,52 +1418,55 @@ Value
   (rec, @coq_rec,
     [
       ((fold, [ A; B ],
-        [ (f, (Type (key) -> (A -> (B -> B)))); (m, Type (t, A)); (accu, B) ],
-        B),
+        [
+          (f, (Type (Ex33/key) -> (A -> (B -> B))));
+          (m, Type (Ex33/t, A));
+          (accu, B)
+        ], B),
         Match
-          (155, Variable (155, m),
+          (155, Variable (155, Ex33/m),
             [
-              (Constructor (Empty), Variable (156, accu));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Variable (156, Ex33/accu));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Apply
                   (158,
                     Variable
                       (158,
-                        fold),
+                        Ex33/fold),
                     [
                       Variable
                         (158,
-                          f);
+                          Ex33/f);
                       Variable
                         (158,
-                          r);
+                          Ex33/r);
                       Apply
                         (158,
                           Variable
                             (158,
-                              f),
+                              Ex33/f),
                           [
                             Variable
                               (158,
-                                v);
+                                Ex33/v);
                             Variable
                               (158,
-                                d);
+                                Ex33/d);
                             Apply
                               (158,
                                 Variable
                                   (158,
-                                    fold),
+                                    Ex33/fold),
                                 [
                                   Variable
                                     (158,
-                                      f);
+                                      Ex33/f);
                                   Variable
                                     (158,
-                                      l);
+                                      Ex33/l);
                                   Variable
                                     (158,
-                                      accu)
+                                      Ex33/accu)
                                 ])
                           ])
                     ]))
@@ -1425,13 +1478,13 @@ Value
   (rec, @coq_rec,
     [
       ((for_all, [ A ],
-        [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
+        [ (p, (Type (Ex33/key) -> (A -> Type (bool)))); (x, Type (Ex33/t, A)) ],
         Type (bool)),
         Match
-          (162, Variable (?, x),
+          (162, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (162, true));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Constructor (162, true));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Apply
                   (163,
                     Variable
@@ -1442,14 +1495,14 @@ Value
                         (163,
                           Variable
                             (163,
-                              p),
+                              Ex33/p),
                           [
                             Variable
                               (163,
-                                v);
+                                Ex33/v);
                             Variable
                               (163,
-                                d)
+                                Ex33/d)
                           ]);
                       Apply
                         (163,
@@ -1461,27 +1514,27 @@ Value
                               (163,
                                 Variable
                                   (163,
-                                    for_all),
+                                    Ex33/for_all),
                                 [
                                   Variable
                                     (163,
-                                      p);
+                                      Ex33/p);
                                   Variable
                                     (163,
-                                      l)
+                                      Ex33/l)
                                 ]);
                             Apply
                               (163,
                                 Variable
                                   (163,
-                                    for_all),
+                                    Ex33/for_all),
                                 [
                                   Variable
                                     (163,
-                                      p);
+                                      Ex33/p);
                                   Variable
                                     (163,
-                                      r)
+                                      Ex33/r)
                                 ])
                           ])
                     ]))
@@ -1493,13 +1546,13 @@ Value
   (rec, @coq_rec,
     [
       ((exists_, [ A ],
-        [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
+        [ (p, (Type (Ex33/key) -> (A -> Type (bool)))); (x, Type (Ex33/t, A)) ],
         Type (bool)),
         Match
-          (167, Variable (?, x),
+          (167, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (167, false));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Constructor (167, false));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Apply
                   (168,
                     Variable
@@ -1510,14 +1563,14 @@ Value
                         (168,
                           Variable
                             (168,
-                              p),
+                              Ex33/p),
                           [
                             Variable
                               (168,
-                                v);
+                                Ex33/v);
                             Variable
                               (168,
-                                d)
+                                Ex33/d)
                           ]);
                       Apply
                         (168,
@@ -1529,27 +1582,27 @@ Value
                               (168,
                                 Variable
                                   (168,
-                                    exists_),
+                                    Ex33/exists_),
                                 [
                                   Variable
                                     (168,
-                                      p);
+                                      Ex33/p);
                                   Variable
                                     (168,
-                                      l)
+                                      Ex33/l)
                                 ]);
                             Apply
                               (168,
                                 Variable
                                   (168,
-                                    exists_),
+                                    Ex33/exists_),
                                 [
                                   Variable
                                     (168,
-                                      p);
+                                      Ex33/p);
                                   Variable
                                     (168,
-                                      r)
+                                      Ex33/r)
                                 ])
                           ])
                     ]))
@@ -1560,57 +1613,58 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_min_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
-        Type (t, A)),
+      ((add_min_binding, [ A ],
+        [ (k, Type (Ex33/key)); (v, A); (x, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (180, Variable (?, x),
+          (180, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (180,
                     Variable
                       (180,
-                        singleton),
+                        Ex33/singleton),
                     [
                       Variable
                         (180,
-                          k);
+                          Ex33/k);
                       Variable
                         (180,
-                          v)
+                          Ex33/v)
                     ]));
-              (Constructor (Node, l, x, d, r, h),
+              (Constructor (Ex33/Node, l, x, d, r, h),
                 Apply
                   (182,
                     Variable
                       (182,
-                        bal),
+                        Ex33/bal),
                     [
                       Apply
                         (182,
                           Variable
                             (182,
-                              add_min_binding),
+                              Ex33/add_min_binding),
                           [
                             Variable
                               (182,
-                                k);
+                                Ex33/k);
                             Variable
                               (182,
-                                v);
+                                Ex33/v);
                             Variable
                               (182,
-                                l)
+                                Ex33/l)
                           ]);
                       Variable
                         (182,
-                          x);
+                          Ex33/x);
                       Variable
                         (182,
-                          d);
+                          Ex33/d);
                       Variable
                         (182,
-                          r)
+                          Ex33/r)
                     ]))
             ]))
     ])
@@ -1619,56 +1673,57 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((add_max_binding, [ A ], [ (k, Type (key)); (v, A); (x, Type (t, A)) ],
-        Type (t, A)),
+      ((add_max_binding, [ A ],
+        [ (k, Type (Ex33/key)); (v, A); (x, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (186, Variable (?, x),
+          (186, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Apply
                   (186,
                     Variable
                       (186,
-                        singleton),
+                        Ex33/singleton),
                     [
                       Variable
                         (186,
-                          k);
+                          Ex33/k);
                       Variable
                         (186,
-                          v)
+                          Ex33/v)
                     ]));
-              (Constructor (Node, l, x, d, r, h),
+              (Constructor (Ex33/Node, l, x, d, r, h),
                 Apply
                   (188,
                     Variable
                       (188,
-                        bal),
+                        Ex33/bal),
                     [
                       Variable
                         (188,
-                          l);
+                          Ex33/l);
                       Variable
                         (188,
-                          x);
+                          Ex33/x);
                       Variable
                         (188,
-                          d);
+                          Ex33/d);
                       Apply
                         (188,
                           Variable
                             (188,
-                              add_max_binding),
+                              Ex33/add_max_binding),
                           [
                             Variable
                               (188,
-                                k);
+                                Ex33/k);
                             Variable
                               (188,
-                                v);
+                                Ex33/v);
                             Variable
                               (188,
-                                r)
+                                Ex33/r)
                           ])
                     ]))
             ]))
@@ -1681,13 +1736,13 @@ Value
       ((join_rec, [ A ],
         [
           (counter, Type (nat));
-          (l, Type (t, A));
-          (v, Type (key));
+          (l, Type (Ex33/t, A));
+          (v, Type (Ex33/key));
           (d, A);
-          (r, Type (t, A))
-        ], Type (t, A)),
+          (r, Type (Ex33/t, A))
+        ], Type (Ex33/t, A)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex33/counter),
             [
               (Constructor (O),
                 Apply
@@ -1706,61 +1761,61 @@ Value
                       (195,
                         Variable
                           (195,
-                            l),
+                            Ex33/l),
                         Variable
                           (195,
-                            r)),
+                            Ex33/r)),
                     [
                       (Tuple
                         (Constructor
-                          (Empty),
+                          (Ex33/Empty),
                           Any),
                         Apply
                           (196,
                             Variable
                               (196,
-                                add_min_binding),
+                                Ex33/add_min_binding),
                             [
                               Variable
                                 (196,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (196,
-                                  d);
+                                  Ex33/d);
                               Variable
                                 (196,
-                                  r)
+                                  Ex33/r)
                             ]));
                       (Tuple
                         (Any,
                           Constructor
-                            (Empty)),
+                            (Ex33/Empty)),
                         Apply
                           (197,
                             Variable
                               (197,
-                                add_max_binding),
+                                Ex33/add_max_binding),
                             [
                               Variable
                                 (197,
-                                  v);
+                                  Ex33/v);
                               Variable
                                 (197,
-                                  d);
+                                  Ex33/d);
                               Variable
                                 (197,
-                                  l)
+                                  Ex33/l)
                             ]));
                       (Tuple
                         (Constructor
-                          (Node,
+                          (Ex33/Node,
                             ll,
                             lv,
                             ld,
                             lr,
                             lh),
                           Constructor
-                            (Node,
+                            (Ex33/Node,
                               rl,
                               rv,
                               rd,
@@ -1772,11 +1827,11 @@ Value
                               (199,
                                 Variable
                                   (199,
-                                    OCaml.Pervasives.gt),
+                                    OCaml/Pervasives.gt),
                                 [
                                   Variable
                                     (199,
-                                      lh);
+                                      Ex33/lh);
                                   Apply
                                     (199,
                                       Variable
@@ -1785,7 +1840,7 @@ Value
                                       [
                                         Variable
                                           (199,
-                                            rh);
+                                            Ex33/rh);
                                         Constant
                                           (199,
                                             Int(2))
@@ -1795,42 +1850,42 @@ Value
                               (199,
                                 Variable
                                   (199,
-                                    bal),
+                                    Ex33/bal),
                                 [
                                   Variable
                                     (199,
-                                      ll);
+                                      Ex33/ll);
                                   Variable
                                     (199,
-                                      lv);
+                                      Ex33/lv);
                                   Variable
                                     (199,
-                                      ld);
+                                      Ex33/ld);
                                   Apply
                                     (199,
                                       Apply
                                         (?,
                                           Variable
                                             (?,
-                                              join_rec),
+                                              Ex33/join_rec),
                                           [
                                             Variable
                                               (?,
-                                                counter)
+                                                Ex33/counter)
                                           ]),
                                       [
                                         Variable
                                           (199,
-                                            lr);
+                                            Ex33/lr);
                                         Variable
                                           (199,
-                                            v);
+                                            Ex33/v);
                                         Variable
                                           (199,
-                                            d);
+                                            Ex33/d);
                                         Variable
                                           (199,
-                                            r)
+                                            Ex33/r)
                                       ])
                                 ]),
                             IfThenElse
@@ -1839,11 +1894,11 @@ Value
                                   (200,
                                     Variable
                                       (200,
-                                        OCaml.Pervasives.gt),
+                                        OCaml/Pervasives.gt),
                                     [
                                       Variable
                                         (200,
-                                          rh);
+                                          Ex33/rh);
                                       Apply
                                         (200,
                                           Variable
@@ -1852,7 +1907,7 @@ Value
                                           [
                                             Variable
                                               (200,
-                                                lh);
+                                                Ex33/lh);
                                             Constant
                                               (200,
                                                 Int(2))
@@ -1862,7 +1917,7 @@ Value
                                   (200,
                                     Variable
                                       (200,
-                                        bal),
+                                        Ex33/bal),
                                     [
                                       Apply
                                         (200,
@@ -1870,54 +1925,54 @@ Value
                                             (?,
                                               Variable
                                                 (?,
-                                                  join_rec),
+                                                  Ex33/join_rec),
                                               [
                                                 Variable
                                                   (?,
-                                                    counter)
+                                                    Ex33/counter)
                                               ]),
                                           [
                                             Variable
                                               (200,
-                                                l);
+                                                Ex33/l);
                                             Variable
                                               (200,
-                                                v);
+                                                Ex33/v);
                                             Variable
                                               (200,
-                                                d);
+                                                Ex33/d);
                                             Variable
                                               (200,
-                                                rl)
+                                                Ex33/rl)
                                           ]);
                                       Variable
                                         (200,
-                                          rv);
+                                          Ex33/rv);
                                       Variable
                                         (200,
-                                          rd);
+                                          Ex33/rd);
                                       Variable
                                         (200,
-                                          rr)
+                                          Ex33/rr)
                                     ]),
                                 Apply
                                   (201,
                                     Variable
                                       (201,
-                                        create),
+                                        Ex33/create),
                                     [
                                       Variable
                                         (201,
-                                          l);
+                                          Ex33/l);
                                       Variable
                                         (201,
-                                          v);
+                                          Ex33/v);
                                       Variable
                                         (201,
-                                          d);
+                                          Ex33/d);
                                       Variable
                                         (201,
-                                          r)
+                                          Ex33/r)
                                     ]))))
                     ]))
             ]))
@@ -1928,16 +1983,20 @@ Value
   (non_rec, @.,
     [
       ((join, [ A ],
-        [ (l, Type (t, A)); (v, Type (key)); (d, A); (r, Type (t, A)) ],
-        Type (t, A)),
+        [
+          (l, Type (Ex33/t, A));
+          (v, Type (Ex33/key));
+          (d, A);
+          (r, Type (Ex33/t, A))
+        ], Type (Ex33/t, A)),
         Apply
-          (?, Variable (?, join_rec),
+          (?, Variable (?, Ex33/join_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, l);
-              Variable (?, v);
-              Variable (?, d);
-              Variable (?, r)
+              Variable (?, Ex33/l);
+              Variable (?, Ex33/v);
+              Variable (?, Ex33/d);
+              Variable (?, Ex33/r)
             ]))
     ])
 
@@ -1945,14 +2004,16 @@ Value
 Value
   (non_rec, @.,
     [
-      ((concat, [ A ], [ (t1, Type (t, A)); (t2, Type (t, A)) ], Type (t, A)),
+      ((concat, [ A ], [ (t1, Type (Ex33/t, A)); (t2, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (208, Tuple (208, Variable (208, t1), Variable (208, t2)),
+          (208,
+            Tuple (208, Variable (208, Ex33/t1), Variable (208, Ex33/t2)),
             [
-              (Tuple (Constructor (Empty), t (= t_1)),
-                Variable (209, t_1));
-              (Tuple (t (= t_1), Constructor (Empty)),
-                Variable (210, t_1));
+              (Tuple (Constructor (Ex33/Empty), t (= t_1)),
+                Variable (209, Ex33/t_1));
+              (Tuple (t (= t_1), Constructor (Ex33/Empty)),
+                Variable (210, Ex33/t_1));
               (Tuple (Any, Any),
                 Match
                   (212,
@@ -1960,11 +2021,11 @@ Value
                       (212,
                         Variable
                           (212,
-                            min_binding),
+                            Ex33/min_binding),
                         [
                           Variable
                             (212,
-                              t2)
+                              Ex33/t2)
                         ]),
                     [
                       (Tuple
@@ -1974,26 +2035,26 @@ Value
                           (213,
                             Variable
                               (213,
-                                join),
+                                Ex33/join),
                             [
                               Variable
                                 (213,
-                                  t1);
+                                  Ex33/t1);
                               Variable
                                 (213,
-                                  x);
+                                  Ex33/x);
                               Variable
                                 (213,
-                                  d);
+                                  Ex33/d);
                               Apply
                                 (213,
                                   Variable
                                     (213,
-                                      remove_min_binding),
+                                      Ex33/remove_min_binding),
                                   [
                                     Variable
                                       (213,
-                                        t2)
+                                        Ex33/t2)
                                   ])
                             ]))
                     ]))
@@ -2006,47 +2067,47 @@ Value
     [
       ((concat_or_join, [ A ],
         [
-          (t1, Type (t, A));
-          (v, Type (key));
+          (t1, Type (Ex33/t, A));
+          (v, Type (Ex33/key));
           (d, Type (option, A));
-          (t2, Type (t, A))
-        ], Type (t, A)),
+          (t2, Type (Ex33/t, A))
+        ], Type (Ex33/t, A)),
         Match
-          (216, Variable (216, d),
+          (216, Variable (216, Ex33/d),
             [
               (Constructor (Some, d),
                 Apply
                   (217,
                     Variable
                       (217,
-                        join),
+                        Ex33/join),
                     [
                       Variable
                         (217,
-                          t1);
+                          Ex33/t1);
                       Variable
                         (217,
-                          v);
+                          Ex33/v);
                       Variable
                         (217,
-                          d);
+                          Ex33/d);
                       Variable
                         (217,
-                          t2)
+                          Ex33/t2)
                     ]));
               (Constructor (None),
                 Apply
                   (218,
                     Variable
                       (218,
-                        concat),
+                        Ex33/concat),
                     [
                       Variable
                         (218,
-                          t1);
+                          Ex33/t1);
                       Variable
                         (218,
-                          t2)
+                          Ex33/t2)
                     ]))
             ]))
     ])
@@ -2055,37 +2116,37 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((split, [ A ], [ (x, Type (Ord.t)); (x_1, Type (t, A)) ],
-        (Type (t, A) * Type (option, A) * Type (t, A))),
+      ((split, [ A ], [ (x, Type (Ex33/Ord.t)); (x_1, Type (Ex33/t, A)) ],
+        (Type (Ex33/t, A) * Type (option, A) * Type (Ex33/t, A))),
         Match
-          (221, Variable (?, x_1),
+          (221, Variable (?, Ex33/x_1),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Tuple
                   (222,
                     Constructor
                       (222,
-                        Empty),
+                        Ex33/Empty),
                     Constructor
                       (222,
                         None),
                     Constructor
                       (222,
-                        Empty)));
-              (Constructor (Node, l, v, d, r, Any),
+                        Ex33/Empty)));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 LetVar 224 c =
                   Apply
                     (224,
                       Variable
                         (224,
-                          Ord.compare),
+                          Ex33/Ord.compare),
                       [
                         Variable
                           (224,
-                            x);
+                            Ex33/x);
                         Variable
                           (224,
-                            v)
+                            Ex33/v)
                       ])
                   in
                 IfThenElse
@@ -2098,7 +2159,7 @@ Value
                         [
                           Variable
                             (225,
-                              c);
+                              Ex33/c);
                           Constant
                             (225,
                               Int(0))
@@ -2107,27 +2168,27 @@ Value
                       (225,
                         Variable
                           (225,
-                            l),
+                            Ex33/l),
                         Constructor
                           (225,
                             Some,
                             Variable
                               (225,
-                                d)),
+                                Ex33/d)),
                         Variable
                           (225,
-                            r)),
+                            Ex33/r)),
                     IfThenElse
                       (226,
                         Apply
                           (226,
                             Variable
                               (226,
-                                OCaml.Pervasives.lt),
+                                OCaml/Pervasives.lt),
                             [
                               Variable
                                 (226,
-                                  c);
+                                  Ex33/c);
                               Constant
                                 (226,
                                   Int(0))
@@ -2138,14 +2199,14 @@ Value
                               (227,
                                 Variable
                                   (227,
-                                    split),
+                                    Ex33/split),
                                 [
                                   Variable
                                     (227,
-                                      x);
+                                      Ex33/x);
                                   Variable
                                     (227,
-                                      l)
+                                      Ex33/l)
                                 ]),
                             [
                               (Tuple
@@ -2156,28 +2217,28 @@ Value
                                   (227,
                                     Variable
                                       (227,
-                                        ll),
+                                        Ex33/ll),
                                     Variable
                                       (227,
-                                        pres),
+                                        Ex33/pres),
                                     Apply
                                       (227,
                                         Variable
                                           (227,
-                                            join),
+                                            Ex33/join),
                                         [
                                           Variable
                                             (227,
-                                              rl);
+                                              Ex33/rl);
                                           Variable
                                             (227,
-                                              v);
+                                              Ex33/v);
                                           Variable
                                             (227,
-                                              d);
+                                              Ex33/d);
                                           Variable
                                             (227,
-                                              r)
+                                              Ex33/r)
                                         ])))
                             ]),
                         Match
@@ -2186,14 +2247,14 @@ Value
                               (229,
                                 Variable
                                   (229,
-                                    split),
+                                    Ex33/split),
                                 [
                                   Variable
                                     (229,
-                                      x);
+                                      Ex33/x);
                                   Variable
                                     (229,
-                                      r)
+                                      Ex33/r)
                                 ]),
                             [
                               (Tuple
@@ -2206,27 +2267,27 @@ Value
                                       (229,
                                         Variable
                                           (229,
-                                            join),
+                                            Ex33/join),
                                         [
                                           Variable
                                             (229,
-                                              l);
+                                              Ex33/l);
                                           Variable
                                             (229,
-                                              v);
+                                              Ex33/v);
                                           Variable
                                             (229,
-                                              d);
+                                              Ex33/d);
                                           Variable
                                             (229,
-                                              lr)
+                                              Ex33/lr)
                                         ]),
                                     Variable
                                       (229,
-                                        pres),
+                                        Ex33/pres),
                                     Variable
                                       (229,
-                                        rr)))
+                                        Ex33/rr)))
                             ]))))
             ]))
     ])
@@ -2239,15 +2300,15 @@ Value
         [
           (counter, Type (nat));
           (f,
-            (Type (key) ->
+            (Type (Ex33/key) ->
               (Type (option, A) ->
                 (Type (option, B) ->
                   Type (option, C)))));
-          (s1, Type (t, A));
-          (s2, Type (t, B))
-        ], Type (t, C)),
+          (s1, Type (Ex33/t, A));
+          (s2, Type (Ex33/t, B))
+        ], Type (Ex33/t, C)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex33/counter),
             [
               (Constructor (O),
                 Apply
@@ -2267,22 +2328,22 @@ Value
                         (233,
                           Variable
                             (233,
-                              s1),
+                              Ex33/s1),
                           Variable
                             (233,
-                              s2)),
+                              Ex33/s2)),
                       [
                         (Tuple
                           (Constructor
-                            (Empty),
+                            (Ex33/Empty),
                             Constructor
-                              (Empty)),
+                              (Ex33/Empty)),
                           Constant
                             (?,
                               Int(0)));
                         (Tuple
                           (Constructor
-                            (Node,
+                            (Ex33/Node,
                               l1,
                               v1,
                               d1,
@@ -2295,20 +2356,20 @@ Value
                                 (235,
                                   Variable
                                     (235,
-                                      OCaml.Pervasives.ge),
+                                      OCaml/Pervasives.ge),
                                   [
                                     Variable
                                       (235,
-                                        h1);
+                                        Ex33/h1);
                                     Apply
                                       (235,
                                         Variable
                                           (235,
-                                            height),
+                                            Ex33/height),
                                         [
                                           Variable
                                             (235,
-                                              s2)
+                                              Ex33/s2)
                                         ])
                                   ]),
                               Constant
@@ -2320,7 +2381,7 @@ Value
                         (Tuple
                           (Any,
                             Constructor
-                              (Node,
+                              (Ex33/Node,
                                 l2,
                                 v2,
                                 d2,
@@ -2339,28 +2400,28 @@ Value
                           (233,
                             Variable
                               (233,
-                                s1),
+                                Ex33/s1),
                             Variable
                               (233,
-                                s2)),
+                                Ex33/s2)),
                         Variable
                           (?,
-                            i)),
+                            Ex33/i)),
                     [
                       (Tuple
                         (Tuple
                           (Constructor
-                            (Empty),
+                            (Ex33/Empty),
                             Constructor
-                              (Empty)),
+                              (Ex33/Empty)),
                           Any),
                         Constructor
                           (234,
-                            Empty));
+                            Ex33/Empty));
                       (Tuple
                         (Tuple
                           (Constructor
-                            (Node,
+                            (Ex33/Node,
                               l1,
                               v1,
                               d1,
@@ -2374,14 +2435,14 @@ Value
                               (236,
                                 Variable
                                   (236,
-                                    split),
+                                    Ex33/split),
                                 [
                                   Variable
                                     (236,
-                                      v1);
+                                      Ex33/v1);
                                   Variable
                                     (236,
-                                      s2)
+                                      Ex33/s2)
                                 ]),
                             [
                               (Tuple
@@ -2392,7 +2453,7 @@ Value
                                   (237,
                                     Variable
                                       (237,
-                                        concat_or_join),
+                                        Ex33/concat_or_join),
                                     [
                                       Apply
                                         (237,
@@ -2400,44 +2461,44 @@ Value
                                             (?,
                                               Variable
                                                 (?,
-                                                  merge_rec),
+                                                  Ex33/merge_rec),
                                               [
                                                 Variable
                                                   (?,
-                                                    counter)
+                                                    Ex33/counter)
                                               ]),
                                           [
                                             Variable
                                               (237,
-                                                f);
+                                                Ex33/f);
                                             Variable
                                               (237,
-                                                l1);
+                                                Ex33/l1);
                                             Variable
                                               (237,
-                                                l2)
+                                                Ex33/l2)
                                           ]);
                                       Variable
                                         (237,
-                                          v1);
+                                          Ex33/v1);
                                       Apply
                                         (237,
                                           Variable
                                             (237,
-                                              f),
+                                              Ex33/f),
                                           [
                                             Variable
                                               (237,
-                                                v1);
+                                                Ex33/v1);
                                             Constructor
                                               (237,
                                                 Some,
                                                 Variable
                                                   (237,
-                                                    d1));
+                                                    Ex33/d1));
                                             Variable
                                               (237,
-                                                d2)
+                                                Ex33/d2)
                                           ]);
                                       Apply
                                         (237,
@@ -2445,22 +2506,22 @@ Value
                                             (?,
                                               Variable
                                                 (?,
-                                                  merge_rec),
+                                                  Ex33/merge_rec),
                                               [
                                                 Variable
                                                   (?,
-                                                    counter)
+                                                    Ex33/counter)
                                               ]),
                                           [
                                             Variable
                                               (237,
-                                                f);
+                                                Ex33/f);
                                             Variable
                                               (237,
-                                                r1);
+                                                Ex33/r1);
                                             Variable
                                               (237,
-                                                r2)
+                                                Ex33/r2)
                                           ])
                                     ]))
                             ]));
@@ -2468,7 +2529,7 @@ Value
                         (Tuple
                           (Any,
                             Constructor
-                              (Node,
+                              (Ex33/Node,
                                 l2,
                                 v2,
                                 d2,
@@ -2481,14 +2542,14 @@ Value
                               (239,
                                 Variable
                                   (239,
-                                    split),
+                                    Ex33/split),
                                 [
                                   Variable
                                     (239,
-                                      v2);
+                                      Ex33/v2);
                                   Variable
                                     (239,
-                                      s1)
+                                      Ex33/s1)
                                 ]),
                             [
                               (Tuple
@@ -2499,7 +2560,7 @@ Value
                                   (240,
                                     Variable
                                       (240,
-                                        concat_or_join),
+                                        Ex33/concat_or_join),
                                     [
                                       Apply
                                         (240,
@@ -2507,44 +2568,44 @@ Value
                                             (?,
                                               Variable
                                                 (?,
-                                                  merge_rec),
+                                                  Ex33/merge_rec),
                                               [
                                                 Variable
                                                   (?,
-                                                    counter)
+                                                    Ex33/counter)
                                               ]),
                                           [
                                             Variable
                                               (240,
-                                                f);
+                                                Ex33/f);
                                             Variable
                                               (240,
-                                                l1);
+                                                Ex33/l1);
                                             Variable
                                               (240,
-                                                l2)
+                                                Ex33/l2)
                                           ]);
                                       Variable
                                         (240,
-                                          v2);
+                                          Ex33/v2);
                                       Apply
                                         (240,
                                           Variable
                                             (240,
-                                              f),
+                                              Ex33/f),
                                           [
                                             Variable
                                               (240,
-                                                v2);
+                                                Ex33/v2);
                                             Variable
                                               (240,
-                                                d1);
+                                                Ex33/d1);
                                             Constructor
                                               (240,
                                                 Some,
                                                 Variable
                                                   (240,
-                                                    d2))
+                                                    Ex33/d2))
                                           ]);
                                       Apply
                                         (240,
@@ -2552,22 +2613,22 @@ Value
                                             (?,
                                               Variable
                                                 (?,
-                                                  merge_rec),
+                                                  Ex33/merge_rec),
                                               [
                                                 Variable
                                                   (?,
-                                                    counter)
+                                                    Ex33/counter)
                                               ]),
                                           [
                                             Variable
                                               (240,
-                                                f);
+                                                Ex33/f);
                                             Variable
                                               (240,
-                                                r1);
+                                                Ex33/r1);
                                             Variable
                                               (240,
-                                                r2)
+                                                Ex33/r2)
                                           ])
                                     ]))
                             ]));
@@ -2576,11 +2637,11 @@ Value
                           (?,
                             Variable
                               (?,
-                                OCaml.Pervasives.raise),
+                                OCaml/Pervasives.raise),
                             [
                               Constructor
                                 (?,
-                                  OCaml.Match_failure,
+                                  OCaml/Match_failure,
                                   Tuple
                                     (?,
                                       Constant
@@ -2604,20 +2665,20 @@ Value
       ((merge, [ A; B; C ],
         [
           (f,
-            (Type (key) ->
+            (Type (Ex33/key) ->
               (Type (option, A) ->
                 (Type (option, B) ->
                   Type (option, C)))));
-          (s1, Type (t, A));
-          (s2, Type (t, B))
-        ], Type (t, C)),
+          (s1, Type (Ex33/t, A));
+          (s2, Type (Ex33/t, B))
+        ], Type (Ex33/t, C)),
         Apply
-          (?, Variable (?, merge_rec),
+          (?, Variable (?, Ex33/merge_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, f);
-              Variable (?, s1);
-              Variable (?, s2)
+              Variable (?, Ex33/f);
+              Variable (?, Ex33/s1);
+              Variable (?, Ex33/s2)
             ]))
     ])
 
@@ -2626,26 +2687,26 @@ Value
   (rec, @coq_rec,
     [
       ((filter, [ A ],
-        [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
-        Type (t, A)),
+        [ (p, (Type (Ex33/key) -> (A -> Type (bool)))); (x, Type (Ex33/t, A)) ],
+        Type (Ex33/t, A)),
         Match
-          (243, Variable (?, x),
+          (243, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constructor (243, Empty));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Constructor (243, Ex33/Empty));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 LetVar 246 l' =
                   Apply
                     (246,
                       Variable
                         (246,
-                          filter),
+                          Ex33/filter),
                       [
                         Variable
                           (246,
-                            p);
+                            Ex33/p);
                         Variable
                           (246,
-                            l)
+                            Ex33/l)
                       ])
                   in
                 LetVar 247 pvd =
@@ -2653,14 +2714,14 @@ Value
                     (247,
                       Variable
                         (247,
-                          p),
+                          Ex33/p),
                       [
                         Variable
                           (247,
-                            v);
+                            Ex33/v);
                         Variable
                           (247,
-                            d)
+                            Ex33/d)
                       ])
                   in
                 LetVar 248 r' =
@@ -2668,52 +2729,52 @@ Value
                     (248,
                       Variable
                         (248,
-                          filter),
+                          Ex33/filter),
                       [
                         Variable
                           (248,
-                            p);
+                            Ex33/p);
                         Variable
                           (248,
-                            r)
+                            Ex33/r)
                       ])
                   in
                 IfThenElse
                   (249,
                     Variable
                       (249,
-                        pvd),
+                        Ex33/pvd),
                     Apply
                       (249,
                         Variable
                           (249,
-                            join),
+                            Ex33/join),
                         [
                           Variable
                             (249,
-                              l');
+                              Ex33/l');
                           Variable
                             (249,
-                              v);
+                              Ex33/v);
                           Variable
                             (249,
-                              d);
+                              Ex33/d);
                           Variable
                             (249,
-                              r')
+                              Ex33/r')
                         ]),
                     Apply
                       (249,
                         Variable
                           (249,
-                            concat),
+                            Ex33/concat),
                         [
                           Variable
                             (249,
-                              l');
+                              Ex33/l');
                           Variable
                             (249,
-                              r')
+                              Ex33/r')
                         ])))
             ]))
     ])
@@ -2723,35 +2784,35 @@ Value
   (rec, @coq_rec,
     [
       ((partition, [ A ],
-        [ (p, (Type (key) -> (A -> Type (bool)))); (x, Type (t, A)) ],
-        (Type (t, A) * Type (t, A))),
+        [ (p, (Type (Ex33/key) -> (A -> Type (bool)))); (x, Type (Ex33/t, A)) ],
+        (Type (Ex33/t, A) * Type (Ex33/t, A))),
         Match
-          (253, Variable (?, x),
+          (253, Variable (?, Ex33/x),
             [
-              (Constructor (Empty),
+              (Constructor (Ex33/Empty),
                 Tuple
                   (253,
                     Constructor
                       (253,
-                        Empty),
+                        Ex33/Empty),
                     Constructor
                       (253,
-                        Empty)));
-              (Constructor (Node, l, v, d, r, Any),
+                        Ex33/Empty)));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Match
                   (256,
                     Apply
                       (256,
                         Variable
                           (256,
-                            partition),
+                            Ex33/partition),
                         [
                           Variable
                             (256,
-                              p);
+                              Ex33/p);
                           Variable
                             (256,
-                              l)
+                              Ex33/l)
                         ]),
                     [
                       (Tuple
@@ -2765,14 +2826,14 @@ Value
                             (257,
                               Variable
                                 (257,
-                                  p),
+                                  Ex33/p),
                               [
                                 Variable
                                   (257,
-                                    v);
+                                    Ex33/v);
                                 Variable
                                   (257,
-                                    d)
+                                    Ex33/d)
                               ])
                           in
                         Match
@@ -2781,14 +2842,14 @@ Value
                               (258,
                                 Variable
                                   (258,
-                                    partition),
+                                    Ex33/partition),
                                 [
                                   Variable
                                     (258,
-                                      p);
+                                      Ex33/p);
                                   Variable
                                     (258,
-                                      r)
+                                      Ex33/r)
                                 ]),
                             [
                               (Tuple
@@ -2798,40 +2859,40 @@ Value
                                   (259,
                                     Variable
                                       (259,
-                                        pvd),
+                                        Ex33/pvd),
                                     Tuple
                                       (260,
                                         Apply
                                           (260,
                                             Variable
                                               (260,
-                                                join),
+                                                Ex33/join),
                                             [
                                               Variable
                                                 (260,
-                                                  lt);
+                                                  Ex33/lt);
                                               Variable
                                                 (260,
-                                                  v);
+                                                  Ex33/v);
                                               Variable
                                                 (260,
-                                                  d);
+                                                  Ex33/d);
                                               Variable
                                                 (260,
-                                                  rt)
+                                                  Ex33/rt)
                                             ]),
                                         Apply
                                           (260,
                                             Variable
                                               (260,
-                                                concat),
+                                                Ex33/concat),
                                             [
                                               Variable
                                                 (260,
-                                                  lf);
+                                                  Ex33/lf);
                                               Variable
                                                 (260,
-                                                  rf)
+                                                  Ex33/rf)
                                             ])),
                                     Tuple
                                       (261,
@@ -2839,33 +2900,33 @@ Value
                                           (261,
                                             Variable
                                               (261,
-                                                concat),
+                                                Ex33/concat),
                                             [
                                               Variable
                                                 (261,
-                                                  lt);
+                                                  Ex33/lt);
                                               Variable
                                                 (261,
-                                                  rt)
+                                                  Ex33/rt)
                                             ]),
                                         Apply
                                           (261,
                                             Variable
                                               (261,
-                                                join),
+                                                Ex33/join),
                                             [
                                               Variable
                                                 (261,
-                                                  lf);
+                                                  Ex33/lf);
                                               Variable
                                                 (261,
-                                                  v);
+                                                  Ex33/v);
                                               Variable
                                                 (261,
-                                                  d);
+                                                  Ex33/d);
                                               Variable
                                                 (261,
-                                                  rf)
+                                                  Ex33/rf)
                                             ]))))
                             ]))
                     ]))
@@ -2875,43 +2936,48 @@ Value
 264
 Inductive enumeration:
   ([ a ],
-    [ (End, [ ]); (More, [ Type (key); a; Type (t, a); Type (enumeration, a) ]) ])
+    [
+      (End, [ ]);
+      (More,
+        [ Type (Ex33/key); a; Type (Ex33/t, a); Type (Ex33/enumeration, a) ])
+    ])
 
 266
 Value
   (rec, @coq_rec,
     [
-      ((cons_enum, [ A ], [ (m, Type (t, A)); (e, Type (enumeration, A)) ],
-        Type (enumeration, A)),
+      ((cons_enum, [ A ],
+        [ (m, Type (Ex33/t, A)); (e, Type (Ex33/enumeration, A)) ],
+        Type (Ex33/enumeration, A)),
         Match
-          (267, Variable (267, m),
+          (267, Variable (267, Ex33/m),
             [
-              (Constructor (Empty), Variable (268, e));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Variable (268, Ex33/e));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Apply
                   (269,
                     Variable
                       (269,
-                        cons_enum),
+                        Ex33/cons_enum),
                     [
                       Variable
                         (269,
-                          l);
+                          Ex33/l);
                       Constructor
                         (269,
-                          More,
+                          Ex33/More,
                           Variable
                             (269,
-                              v),
+                              Ex33/v),
                           Variable
                             (269,
-                              d),
+                              Ex33/d),
                           Variable
                             (269,
-                              r),
+                              Ex33/r),
                           Variable
                             (269,
-                              e))
+                              Ex33/e))
                     ]))
             ]))
     ])
@@ -2921,8 +2987,11 @@ Value
   (non_rec, @.,
     [
       ((compare, [ A; B ],
-        [ (cmp, (A -> (B -> Type (Z)))); (m1, Type (t, A)); (m2, Type (t, B)) ],
-        Type (Z)),
+        [
+          (cmp, (A -> (B -> Type (Z))));
+          (m1, Type (Ex33/t, A));
+          (m2, Type (Ex33/t, B))
+        ], Type (Z)),
         LetFun 273
           (rec, @.,
             [
@@ -2931,18 +3000,18 @@ Value
                   (counter, Type (nat));
                   (e1,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         A));
                   (e2,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         B))
                 ], Type (Z)),
                 Match
                   (?,
                     Variable
                       (?,
-                        counter),
+                        Ex33/counter),
                     [
                       (Constructor
                         (O),
@@ -2964,22 +3033,22 @@ Value
                               (274,
                                 Variable
                                   (274,
-                                    e1),
+                                    Ex33/e1),
                                 Variable
                                   (274,
-                                    e2)),
+                                    Ex33/e2)),
                             [
                               (Tuple
                                 (Constructor
-                                  (End),
+                                  (Ex33/End),
                                   Constructor
-                                    (End)),
+                                    (Ex33/End)),
                                 Constant
                                   (275,
                                     Int(0)));
                               (Tuple
                                 (Constructor
-                                  (End),
+                                  (Ex33/End),
                                   Any),
                                 Constant
                                   (276,
@@ -2987,19 +3056,19 @@ Value
                               (Tuple
                                 (Any,
                                   Constructor
-                                    (End)),
+                                    (Ex33/End)),
                                 Constant
                                   (277,
                                     Int(1)));
                               (Tuple
                                 (Constructor
-                                  (More,
+                                  (Ex33/More,
                                     v1,
                                     d1,
                                     r1,
                                     e1),
                                   Constructor
-                                    (More,
+                                    (Ex33/More,
                                       v2,
                                       d2,
                                       r2,
@@ -3012,14 +3081,14 @@ Value
                                     (279,
                                       Variable
                                         (279,
-                                          Ord.compare),
+                                          Ex33/Ord.compare),
                                       [
                                         Variable
                                           (279,
-                                            v1);
+                                            Ex33/v1);
                                         Variable
                                           (279,
-                                            v2)
+                                            Ex33/v2)
                                       ])
                                   in
                                 IfThenElse
@@ -3032,14 +3101,14 @@ Value
                                         [
                                           Variable
                                             (280,
-                                              c);
+                                              Ex33/c);
                                           Constant
                                             (280,
                                               Int(0))
                                         ]),
                                     Variable
                                       (280,
-                                        c),
+                                        Ex33/c),
                                     LetVar
                                       281
                                       c
@@ -3048,14 +3117,14 @@ Value
                                         (281,
                                           Variable
                                             (281,
-                                              cmp),
+                                              Ex33/cmp),
                                           [
                                             Variable
                                               (281,
-                                                d1);
+                                                Ex33/d1);
                                             Variable
                                               (281,
-                                                d2)
+                                                Ex33/d2)
                                           ])
                                       in
                                     IfThenElse
@@ -3068,52 +3137,52 @@ Value
                                             [
                                               Variable
                                                 (282,
-                                                  c);
+                                                  Ex33/c);
                                               Constant
                                                 (282,
                                                   Int(0))
                                             ]),
                                         Variable
                                           (282,
-                                            c),
+                                            Ex33/c),
                                         Apply
                                           (283,
                                             Apply
                                               (?,
                                                 Variable
                                                   (?,
-                                                    compare_aux_rec),
+                                                    Ex33/compare_aux_rec),
                                                 [
                                                   Variable
                                                     (?,
-                                                      counter)
+                                                      Ex33/counter)
                                                 ]),
                                             [
                                               Apply
                                                 (283,
                                                   Variable
                                                     (283,
-                                                      cons_enum),
+                                                      Ex33/cons_enum),
                                                   [
                                                     Variable
                                                       (283,
-                                                        r1);
+                                                        Ex33/r1);
                                                     Variable
                                                       (283,
-                                                        e1)
+                                                        Ex33/e1)
                                                   ]);
                                               Apply
                                                 (283,
                                                   Variable
                                                     (283,
-                                                      cons_enum),
+                                                      Ex33/cons_enum),
                                                   [
                                                     Variable
                                                       (283,
-                                                        r2);
+                                                        Ex33/r2);
                                                     Variable
                                                       (283,
-                                                        e2)
+                                                        Ex33/e2)
                                                   ])
                                             ]))))
                             ]))
@@ -3126,18 +3195,18 @@ Value
                 [
                   (e1,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         A));
                   (e2,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         B))
                 ], Type (Z)),
                 Apply
                   (?,
                     Variable
                       (?,
-                        compare_aux_rec),
+                        Ex33/compare_aux_rec),
                     [
                       Apply
                         (?,
@@ -3150,34 +3219,34 @@ Value
                           ]);
                       Variable
                         (?,
-                          e1);
+                          Ex33/e1);
                       Variable
                         (?,
-                          e2)
+                          Ex33/e2)
                     ]))
             ]) in
         Apply
-          (284, Variable (284, compare_aux),
+          (284, Variable (284, Ex33/compare_aux),
             [
               Apply
-                (284, Variable (284, cons_enum),
+                (284, Variable (284, Ex33/cons_enum),
                   [
                     Variable
                       (284,
-                        m1);
+                        Ex33/m1);
                     Constructor
                       (284,
-                        End)
+                        Ex33/End)
                   ]);
               Apply
-                (284, Variable (284, cons_enum),
+                (284, Variable (284, Ex33/cons_enum),
                   [
                     Variable
                       (284,
-                        m2);
+                        Ex33/m2);
                     Constructor
                       (284,
-                        End)
+                        Ex33/End)
                   ])
             ]))
     ])
@@ -3189,8 +3258,8 @@ Value
       ((equal, [ A; B ],
         [
           (cmp, (A -> (B -> Type (bool))));
-          (m1, Type (t, A));
-          (m2, Type (t, B))
+          (m1, Type (Ex33/t, A));
+          (m2, Type (Ex33/t, B))
         ], Type (bool)),
         LetFun 287
           (rec, @.,
@@ -3200,18 +3269,18 @@ Value
                   (counter, Type (nat));
                   (e1,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         A));
                   (e2,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         B))
                 ], Type (bool)),
                 Match
                   (?,
                     Variable
                       (?,
-                        counter),
+                        Ex33/counter),
                     [
                       (Constructor
                         (O),
@@ -3233,22 +3302,22 @@ Value
                               (288,
                                 Variable
                                   (288,
-                                    e1),
+                                    Ex33/e1),
                                 Variable
                                   (288,
-                                    e2)),
+                                    Ex33/e2)),
                             [
                               (Tuple
                                 (Constructor
-                                  (End),
+                                  (Ex33/End),
                                   Constructor
-                                    (End)),
+                                    (Ex33/End)),
                                 Constructor
                                   (289,
                                     true));
                               (Tuple
                                 (Constructor
-                                  (End),
+                                  (Ex33/End),
                                   Any),
                                 Constructor
                                   (290,
@@ -3256,19 +3325,19 @@ Value
                               (Tuple
                                 (Any,
                                   Constructor
-                                    (End)),
+                                    (Ex33/End)),
                                 Constructor
                                   (291,
                                     false));
                               (Tuple
                                 (Constructor
-                                  (More,
+                                  (Ex33/More,
                                     v1,
                                     d1,
                                     r1,
                                     e1),
                                   Constructor
-                                    (More,
+                                    (Ex33/More,
                                       v2,
                                       d2,
                                       r2,
@@ -3289,14 +3358,14 @@ Value
                                               (293,
                                                 Variable
                                                   (293,
-                                                    Ord.compare),
+                                                    Ex33/Ord.compare),
                                                 [
                                                   Variable
                                                     (293,
-                                                      v1);
+                                                      Ex33/v1);
                                                   Variable
                                                     (293,
-                                                      v2)
+                                                      Ex33/v2)
                                                 ]);
                                             Constant
                                               (293,
@@ -3312,14 +3381,14 @@ Value
                                               (293,
                                                 Variable
                                                   (293,
-                                                    cmp),
+                                                    Ex33/cmp),
                                                 [
                                                   Variable
                                                     (293,
-                                                      d1);
+                                                      Ex33/d1);
                                                   Variable
                                                     (293,
-                                                      d2)
+                                                      Ex33/d2)
                                                 ]);
                                             Apply
                                               (294,
@@ -3327,38 +3396,38 @@ Value
                                                   (?,
                                                     Variable
                                                       (?,
-                                                        equal_aux_rec),
+                                                        Ex33/equal_aux_rec),
                                                     [
                                                       Variable
                                                         (?,
-                                                          counter)
+                                                          Ex33/counter)
                                                     ]),
                                                 [
                                                   Apply
                                                     (294,
                                                       Variable
                                                         (294,
-                                                          cons_enum),
+                                                          Ex33/cons_enum),
                                                       [
                                                         Variable
                                                           (294,
-                                                            r1);
+                                                            Ex33/r1);
                                                         Variable
                                                           (294,
-                                                            e1)
+                                                            Ex33/e1)
                                                       ]);
                                                   Apply
                                                     (294,
                                                       Variable
                                                         (294,
-                                                          cons_enum),
+                                                          Ex33/cons_enum),
                                                       [
                                                         Variable
                                                           (294,
-                                                            r2);
+                                                            Ex33/r2);
                                                         Variable
                                                           (294,
-                                                            e2)
+                                                            Ex33/e2)
                                                       ])
                                                 ])
                                           ])
@@ -3373,18 +3442,18 @@ Value
                 [
                   (e1,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         A));
                   (e2,
                     Type
-                      (enumeration,
+                      (Ex33/enumeration,
                         B))
                 ], Type (bool)),
                 Apply
                   (?,
                     Variable
                       (?,
-                        equal_aux_rec),
+                        Ex33/equal_aux_rec),
                     [
                       Apply
                         (?,
@@ -3397,34 +3466,34 @@ Value
                           ]);
                       Variable
                         (?,
-                          e1);
+                          Ex33/e1);
                       Variable
                         (?,
-                          e2)
+                          Ex33/e2)
                     ]))
             ]) in
         Apply
-          (295, Variable (295, equal_aux),
+          (295, Variable (295, Ex33/equal_aux),
             [
               Apply
-                (295, Variable (295, cons_enum),
+                (295, Variable (295, Ex33/cons_enum),
                   [
                     Variable
                       (295,
-                        m1);
+                        Ex33/m1);
                     Constructor
                       (295,
-                        End)
+                        Ex33/End)
                   ]);
               Apply
-                (295, Variable (295, cons_enum),
+                (295, Variable (295, Ex33/cons_enum),
                   [
                     Variable
                       (295,
-                        m2);
+                        Ex33/m2);
                     Constructor
                       (295,
-                        End)
+                        Ex33/End)
                   ])
             ]))
     ])
@@ -3433,12 +3502,12 @@ Value
 Value
   (rec, @coq_rec,
     [
-      ((cardinal, [ A ], [ (x, Type (t, A)) ], Type (Z)),
+      ((cardinal, [ A ], [ (x, Type (Ex33/t, A)) ], Type (Z)),
         Match
-          (298, Variable (?, x),
+          (298, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Constant (298, Int(0)));
-              (Constructor (Node, l, Any, Any, r, Any),
+              (Constructor (Ex33/Empty), Constant (298, Int(0)));
+              (Constructor (Ex33/Node, l, Any, Any, r, Any),
                 Apply
                   (299,
                     Variable
@@ -3455,11 +3524,11 @@ Value
                               (299,
                                 Variable
                                   (299,
-                                    cardinal),
+                                    Ex33/cardinal),
                                 [
                                   Variable
                                     (299,
-                                      l)
+                                      Ex33/l)
                                 ]);
                             Constant
                               (299,
@@ -3469,11 +3538,11 @@ Value
                         (299,
                           Variable
                             (299,
-                              cardinal),
+                              Ex33/cardinal),
                           [
                             Variable
                               (299,
-                                r)
+                                Ex33/r)
                           ])
                     ]))
             ]))
@@ -3484,18 +3553,18 @@ Value
   (rec, @coq_rec,
     [
       ((bindings_aux, [ A ],
-        [ (accu, Type (list, (Type (key) * A))); (x, Type (t, A)) ],
-        Type (list, (Type (key) * A))),
+        [ (accu, Type (list, (Type (Ex33/key) * A))); (x, Type (Ex33/t, A)) ],
+        Type (list, (Type (Ex33/key) * A))),
         Match
-          (303, Variable (?, x),
+          (303, Variable (?, Ex33/x),
             [
-              (Constructor (Empty), Variable (303, accu));
-              (Constructor (Node, l, v, d, r, Any),
+              (Constructor (Ex33/Empty), Variable (303, Ex33/accu));
+              (Constructor (Ex33/Node, l, v, d, r, Any),
                 Apply
                   (304,
                     Variable
                       (304,
-                        bindings_aux),
+                        Ex33/bindings_aux),
                     [
                       Constructor
                         (304,
@@ -3504,26 +3573,26 @@ Value
                             (304,
                               Variable
                                 (304,
-                                  v),
+                                  Ex33/v),
                               Variable
                                 (304,
-                                  d)),
+                                  Ex33/d)),
                           Apply
                             (304,
                               Variable
                                 (304,
-                                  bindings_aux),
+                                  Ex33/bindings_aux),
                               [
                                 Variable
                                   (304,
-                                    accu);
+                                    Ex33/accu);
                                 Variable
                                   (304,
-                                    r)
+                                    Ex33/r)
                               ]));
                       Variable
                         (304,
-                          l)
+                          Ex33/l)
                     ]))
             ]))
     ])
@@ -3532,16 +3601,17 @@ Value
 Value
   (non_rec, @.,
     [
-      ((bindings, [ A ], [ (s, Type (t, A)) ], Type (list, (Type (key) * A))),
+      ((bindings, [ A ], [ (s, Type (Ex33/t, A)) ],
+        Type (list, (Type (Ex33/key) * A))),
         Apply
-          (308, Variable (308, bindings_aux),
-            [ Constructor (308, []); Variable (308, s) ]))
+          (308, Variable (308, Ex33/bindings_aux),
+            [ Constructor (308, []); Variable (308, Ex33/s) ]))
     ])
 
 310
 Value
   (non_rec, @.,
     [
-      ((choose, [ A ], [ ], (Type (t, A) -> (Type (key) * A))),
-        Variable (310, min_binding))
+      ((choose, [ A ], [ ], (Type (Ex33/t, A) -> (Type (Ex33/key) * A))),
+        Variable (310, Ex33/min_binding))
     ])

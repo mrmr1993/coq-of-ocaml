@@ -18,7 +18,7 @@ Value
                             (OCaml.Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constant ((3, Effect ([ ], .)), Int(0)) ]) in
         Sequence
           ((4, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
@@ -26,8 +26,8 @@ Value
               ((4,
                 Effect
                   ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
-                i, true, Variable ((4, Effect ([ ], .)), a),
-                Variable ((4, Effect ([ ], .)), b),
+                i, true, Variable ((4, Effect ([ ], .)), Ex42/a),
+                Variable ((4, Effect ([ ], .)), Ex42/b),
                 Apply
                   ((5,
                     Effect
@@ -49,9 +49,9 @@ Value
                                       Type
                                         (Z))
                                 ]-> .)),
-                        OCaml.Effect.State.write),
+                        OCaml/Effect.State.write),
                     [
-                      Variable ((5, Effect ([ ], .)), y);
+                      Variable ((5, Effect ([ ], .)), Ex42/y);
                       Apply
                         ((5,
                           Effect
@@ -97,7 +97,7 @@ Value
                                                   (Z))
                                           ]->
                                           .)),
-                                    OCaml.Effect.State.read),
+                                    OCaml/Effect.State.read),
                                 [
                                   Variable
                                     ((5,
@@ -105,7 +105,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      y)
+                                      Ex42/y)
                                 ]);
                             Constant
                               ((5,
@@ -130,8 +130,8 @@ Value
                               (OCaml.Effect.State.state,
                                 Type
                                   (Z))
-                          ]-> .)), OCaml.Effect.State.read),
-                [ Variable ((7, Effect ([ ], .)), y) ])))
+                          ]-> .)), OCaml/Effect.State.read),
+                [ Variable ((7, Effect ([ ], .)), Ex42/y) ])))
     ])
 
 9
@@ -176,7 +176,7 @@ Value
                                 (list,
                                   Type
                                     (bool)))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constructor ((10, Effect ([ ], .)), []) ]) in
         Sequence
           ((11,
@@ -201,7 +201,7 @@ Value
                               (bool)))
                   ], .)), i, true,
                 Constant ((11, Effect ([ ], .)), Int(0)),
-                Variable ((11, Effect ([ ], .)), x),
+                Variable ((11, Effect ([ ], .)), Ex42/x),
                 Sequence
                   ((12,
                     Effect
@@ -226,7 +226,8 @@ Value
                           ], .)), j, true,
                         Constant
                           ((12, Effect ([ ], .)), Int(0)),
-                        Variable ((12, Effect ([ ], .)), y),
+                        Variable
+                          ((12, Effect ([ ], .)), Ex42/y),
                         Apply
                           ((13,
                             Effect
@@ -252,7 +253,7 @@ Value
                                                   Type
                                                     (bool)))
                                         ]-> .)),
-                                OCaml.Effect.State.write),
+                                OCaml/Effect.State.write),
                             [
                               Variable
                                 ((13,
@@ -260,7 +261,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  a);
+                                  Ex42/a);
                               Constructor
                                 ((13,
                                   Effect
@@ -308,7 +309,7 @@ Value
                                                             (bool)))
                                                 ]->
                                                 .)),
-                                          OCaml.Effect.State.read),
+                                          OCaml/Effect.State.read),
                                       [
                                         Variable
                                           ((13,
@@ -316,7 +317,7 @@ Value
                                               ([
                                               ],
                                                 .)),
-                                            a)
+                                            Ex42/a)
                                       ]))
                             ])),
                     Apply
@@ -344,7 +345,7 @@ Value
                                               Type
                                                 (bool)))
                                     ]-> .)),
-                            OCaml.Effect.State.write),
+                            OCaml/Effect.State.write),
                         [
                           Variable
                             ((15,
@@ -352,7 +353,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              a);
+                              Ex42/a);
                           Constructor
                             ((15,
                               Effect
@@ -400,7 +401,7 @@ Value
                                                         (bool)))
                                             ]->
                                             .)),
-                                      OCaml.Effect.State.read),
+                                      OCaml/Effect.State.read),
                                   [
                                     Variable
                                       ((15,
@@ -408,7 +409,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        a)
+                                        Ex42/a)
                                   ]))
                         ]))),
             Apply
@@ -434,8 +435,8 @@ Value
                                   (list,
                                     Type
                                       (bool)))
-                          ]-> .)), OCaml.Effect.State.read),
-                [ Variable ((17, Effect ([ ], .)), a) ])))
+                          ]-> .)), OCaml/Effect.State.read),
+                [ Variable ((17, Effect ([ ], .)), Ex42/a) ])))
     ])
 
 19
@@ -447,7 +448,7 @@ Value
         For
           ((20, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             i, true, Constant ((20, Effect ([ ], .)), Int(0)),
-            Variable ((20, Effect ([ ], .)), x),
+            Variable ((20, Effect ([ ], .)), Ex42/x),
             Coerce
               ((?,
                 Effect
@@ -473,7 +474,7 @@ Value
                                     Type
                                       (OCaml.failure))
                               ]-> .)),
-                        OCaml.Pervasives.failwith),
+                        OCaml/Pervasives.failwith),
                     [
                       Constant
                         ((21,
@@ -522,7 +523,7 @@ Value
                           ([
                           ],
                             .)),
-                        a),
+                        Ex42/a),
                     Constant
                       ((25,
                         Effect
@@ -553,7 +554,7 @@ Value
                                           (OCaml.failure))
                                   ]->
                                   .)),
-                            OCaml.Pervasives.failwith),
+                            OCaml/Pervasives.failwith),
                         [
                           Constant
                             ((25,
@@ -567,7 +568,7 @@ Value
         For
           ((26, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
             i, true, Constant ((26, Effect ([ ], .)), Int(0)),
-            Variable ((26, Effect ([ ], .)), x),
+            Variable ((26, Effect ([ ], .)), Ex42/x),
             Coerce
               ((?,
                 Effect
@@ -592,7 +593,7 @@ Value
                                   (OCaml.exception,
                                     Type
                                       (OCaml.failure))
-                              ]-> .)), f),
+                              ]-> .)), Ex42/f),
                     [ Constructor ((27, Effect ([ ], .)), true) ]),
                 Monad
                   ([ Type (OCaml.exception, Type (OCaml.failure)) ],
@@ -604,7 +605,7 @@ Value
   (non_rec, @.,
     [
       ((argument_effects, [ ],
-        [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
+        [ (x, Type (OCaml/Effect.State.t, Type (Z))); (y, Type (Z)) ],
         Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
         LetVar (31, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
           y =
@@ -621,8 +622,8 @@ Value
                             (OCaml.Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
-              [ Variable ((31, Effect ([ ], .)), y) ]) in
+                        ]-> .)), OCaml/Pervasives.ref),
+              [ Variable ((31, Effect ([ ], .)), Ex42/y) ]) in
         LetVar (32, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
           z =
           Apply
@@ -638,7 +639,7 @@ Value
                             (OCaml.Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constant ((32, Effect ([ ], .)), Int(0)) ]) in
         Sequence
           ((33, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
@@ -667,8 +668,8 @@ Value
                                     Type
                                       (Z))
                               ]-> .)),
-                        OCaml.Effect.State.read),
-                    [ Variable ((33, Effect ([ ], .)), x) ]),
+                        OCaml/Effect.State.read),
+                    [ Variable ((33, Effect ([ ], .)), Ex42/x) ]),
                 Sequence
                   ((34,
                     Effect
@@ -709,7 +710,7 @@ Value
                                             Type
                                               (Z))
                                       ]-> .)),
-                                OCaml.Effect.State.read),
+                                OCaml/Effect.State.read),
                             [
                               Variable
                                 ((34,
@@ -717,7 +718,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  y)
+                                  Ex42/y)
                             ]),
                         Apply
                           ((35,
@@ -740,7 +741,7 @@ Value
                                               Type
                                                 (Z))
                                         ]-> .)),
-                                OCaml.Effect.State.write),
+                                OCaml/Effect.State.write),
                             [
                               Variable
                                 ((35,
@@ -748,7 +749,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  z);
+                                  Ex42/z);
                               Apply
                                 ((35,
                                   Effect
@@ -794,7 +795,7 @@ Value
                                                           (Z))
                                                   ]->
                                                   .)),
-                                            OCaml.Effect.State.read),
+                                            OCaml/Effect.State.read),
                                         [
                                           Variable
                                             ((35,
@@ -802,7 +803,7 @@ Value
                                                 ([
                                                 ],
                                                   .)),
-                                              z)
+                                              Ex42/z)
                                         ]);
                                     Constant
                                       ((35,
@@ -834,7 +835,7 @@ Value
                                           Type
                                             (Z))
                                     ]-> .)),
-                            OCaml.Effect.State.write),
+                            OCaml/Effect.State.write),
                         [
                           Variable
                             ((37,
@@ -842,7 +843,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              y);
+                              Ex42/y);
                           Apply
                             ((37,
                               Effect
@@ -888,7 +889,7 @@ Value
                                                       (Z))
                                               ]->
                                               .)),
-                                        OCaml.Effect.State.read),
+                                        OCaml/Effect.State.read),
                                     [
                                       Variable
                                         ((37,
@@ -896,7 +897,7 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          y)
+                                          Ex42/y)
                                     ]);
                                 Constant
                                   ((37,
@@ -921,6 +922,6 @@ Value
                               (OCaml.Effect.State.state,
                                 Type
                                   (Z))
-                          ]-> .)), OCaml.Effect.State.read),
-                [ Variable ((39, Effect ([ ], .)), z) ])))
+                          ]-> .)), OCaml/Effect.State.read),
+                [ Variable ((39, Effect ([ ], .)), Ex42/z) ])))
     ])

@@ -6,8 +6,8 @@ Import ListNotations.
 
 Require Tests.DependEx38.
 
-Import Tests.DependEx38.
+Import DependEx38.
 
-Definition f {A B : Type} : A -> B -> A := Tests.DependEx38.f.
+Definition f {A B : Type} : A -> B -> A := f.
 
-Definition m : Z := Tests.DependEx38.n.
+Definition m : Z := n.

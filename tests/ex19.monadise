@@ -8,13 +8,13 @@ Value
         Match
           (6,
             Run
-              (?, Type (OCaml.exception, Type (error)), [ ],
+              (?, Type (OCaml/exception, Type (Ex19/error)), [ ],
                 Apply
-                  (6, Variable (6, OCaml.Pervasives.raise),
-                    [ Constructor (6, Error, Tuple (?)) ])),
+                  (6, Variable (6, OCaml/Pervasives.raise),
+                    [ Constructor (6, Ex19/Error, Tuple (?)) ])),
             [
-              (Constructor (inl, x), Variable (?, x));
-              (Constructor (inr, Constructor (Error, Tuple ())),
+              (Constructor (inl, x), Variable (?, Ex19/x));
+              (Constructor (inr, Constructor (Ex19/Error, Tuple ())),
                 Constant (7, Int(12)))
             ]))
     ])
@@ -26,7 +26,7 @@ Value
       ((x2, [ A; B ], [ (x, A) ],
         Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
-          (9, Variable (?, x),
+          (9, Variable (?, Ex19/x),
             [
               (Any,
                 Match
@@ -34,20 +34,20 @@ Value
                     Run
                       (?,
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (error)),
+                              (Ex19/error)),
                         [
                         ],
                         Apply
                           (10,
                             Variable
                               (10,
-                                OCaml.Pervasives.raise),
+                                OCaml/Pervasives.raise),
                             [
                               Constructor
                                 (10,
-                                  Error,
+                                  Ex19/Error,
                                   Tuple
                                     (?))
                             ])),
@@ -59,18 +59,18 @@ Value
                           (?,
                             Variable
                               (?,
-                                x)));
+                                Ex19/x)));
                       (Constructor
                         (inr,
                           Constructor
-                            (Error,
+                            (Ex19/Error,
                               Tuple
                                 ())),
                         Apply
                           (11,
                             Variable
                               (11,
-                                OCaml.Pervasives.failwith),
+                                OCaml/Pervasives.failwith),
                             [
                               Constant
                                 (11,
@@ -89,13 +89,13 @@ Value
         Bind
           (?,
             Run
-              (?, Type (OCaml.exception, Type (error)),
+              (?, Type (OCaml/exception, Type (Ex19/error)),
                 [
-                  Type (OCaml.exception, Type (error));
+                  Type (OCaml.exception, Type (Ex19/error));
                   Type (OCaml.exception, Type (OCaml.failure))
                 ],
                 IfThenElse
-                  (14, Variable (14, b),
+                  (14, Variable (14, Ex19/b),
                     Lift
                       (?,
                         [
@@ -108,7 +108,7 @@ Value
                           Type
                             (OCaml.exception,
                               Type
-                                (error));
+                                (Ex19/error));
                           Type
                             (OCaml.exception,
                               Type
@@ -118,7 +118,7 @@ Value
                           (14,
                             Variable
                               (14,
-                                OCaml.Pervasives.failwith),
+                                OCaml/Pervasives.failwith),
                             [
                               Constant
                                 (14,
@@ -130,13 +130,13 @@ Value
                           Type
                             (OCaml.exception,
                               Type
-                                (error))
+                                (Ex19/error))
                         ],
                         [
                           Type
                             (OCaml.exception,
                               Type
-                                (error));
+                                (Ex19/error));
                           Type
                             (OCaml.exception,
                               Type
@@ -146,24 +146,29 @@ Value
                           (14,
                             Variable
                               (14,
-                                OCaml.Pervasives.raise),
+                                OCaml/Pervasives.raise),
                             [
                               Constructor
                                 (14,
-                                  Error,
+                                  Ex19/Error,
                                   Tuple
                                     (?))
                             ])))), Some x,
             Match
-              (14, Variable (?, x),
+              (14, Variable (?, Ex19/x),
                 [
                   (Constructor (inl, x),
                     Return
                       (?,
                         Variable
                           (?,
-                            x)));
-                  (Constructor (inr, Constructor (Error, Tuple ())),
+                            Ex19/x)));
+                  (Constructor
+                    (inr,
+                      Constructor
+                        (Ex19/Error,
+                          Tuple
+                            ())),
                     Return
                       (?,
                         Constant

@@ -7,10 +7,10 @@ Value
           ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (list, A))),
         Match
           ((4, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
-            Variable ((4, Effect ([ ], .)), l),
+            Variable ((4, Effect ([ ], .)), Ex13/l),
             [
               (Constructor (cons, Any, xs),
-                Variable ((5, Effect ([ ], .)), xs));
+                Variable ((5, Effect ([ ], .)), Ex13/xs));
               (Constructor ([]),
                 Apply
                   ((6,
@@ -35,7 +35,7 @@ Value
                                       (OCaml.failure))
                               ]->
                               .)),
-                        OCaml.Pervasives.failwith),
+                        OCaml/Pervasives.failwith),
                     [
                       Constant
                         ((6,
@@ -57,7 +57,7 @@ Value
         Monad ([ Type (IO); Type (NonTermination) ], Type (unit))),
         Match
           ((?, Effect ([ Type (IO); Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), counter),
+            Variable ((?, Effect ([ ], .)), Ex13/counter),
             [
               (Constructor (O),
                 Apply
@@ -105,7 +105,7 @@ Value
                           ([
                           ],
                             .)),
-                        x),
+                        Ex13/x),
                     [
                       (Constructor
                         ([]),
@@ -149,7 +149,7 @@ Value
                                               (IO)
                                           ]->
                                           .)),
-                                    OCaml.Pervasives.print_string),
+                                    OCaml/Pervasives.print_string),
                                 [
                                   Variable
                                     ((11,
@@ -157,7 +157,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x)
+                                      Ex13/x)
                                 ]),
                             Apply
                               ((12,
@@ -197,7 +197,7 @@ Value
                                                     (NonTermination)
                                                 ]->
                                                 .)),
-                                        print_list_rec),
+                                        Ex13/print_list_rec),
                                     [
                                       Variable
                                         ((?,
@@ -205,7 +205,7 @@ Value
                                             ([
                                             ],
                                               .)),
-                                          counter)
+                                          Ex13/counter)
                                     ]),
                                 [
                                   Variable
@@ -214,7 +214,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      xs)
+                                      Ex13/xs)
                                 ])))
                     ]))
             ]))
@@ -237,7 +237,7 @@ Value
                   ([ ],
                     . ->
                       . -[ Type (IO); Type (NonTermination) ]->
-                        .)), print_list_rec),
+                        .)), Ex13/print_list_rec),
             [
               Apply
                 ((?, Effect ([ Type (Counter) ], .)),
@@ -261,7 +261,7 @@ Value
                           ],
                             .)))
                   ]);
-              Variable ((?, Effect ([ ], .)), x)
+              Variable ((?, Effect ([ ], .)), Ex13/x)
             ]))
     ])
 
@@ -283,7 +283,7 @@ Value
                     Type (Counter);
                     Type (IO);
                     Type (NonTermination)
-                  ]-> .)), print_list))
+                  ]-> .)), Ex13/print_list))
     ])
 
 16
@@ -316,7 +316,7 @@ Value
                         Type (Counter);
                         Type (IO);
                         Type (NonTermination)
-                      ]-> .)), f),
+                      ]-> .)), Ex13/f),
             [
               Apply
                 ((16,
@@ -340,7 +340,7 @@ Value
                                     (OCaml.failure))
                             ]->
                             .)),
-                      tail),
+                      Ex13/tail),
                   [
                     Constructor
                       ((16,

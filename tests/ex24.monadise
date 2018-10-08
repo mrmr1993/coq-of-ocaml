@@ -5,14 +5,14 @@ Value
       ((e_invalid, [ A; B ], [ (x, A) ],
         Monad ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ], B)),
         Match
-          (5, Variable (?, x),
+          (5, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (5,
                     Variable
                       (5,
-                        OCaml.Pervasives.invalid_arg),
+                        OCaml/Pervasives.invalid_arg),
                     [
                       Constant
                         (5,
@@ -28,14 +28,14 @@ Value
       ((e_failure, [ A; B ], [ (x, A) ],
         Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
         Match
-          (6, Variable (?, x),
+          (6, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (6,
                     Variable
                       (6,
-                        OCaml.Pervasives.failwith),
+                        OCaml/Pervasives.failwith),
                     [
                       Constant
                         (6,
@@ -49,20 +49,20 @@ Value
   (non_rec, @.,
     [
       ((e_exit1, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml/Pervasives.exit)) ], B)),
         Match
-          (7, Variable (?, x),
+          (7, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (7,
                     Variable
                       (7,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (7,
-                          OCaml.Pervasives.Exit,
+                          OCaml/Pervasives.Exit,
                           Tuple
                             (?))
                     ]))
@@ -74,20 +74,20 @@ Value
   (non_rec, @.,
     [
       ((e_exit2, [ A; B ], [ (x, A) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.Pervasives.exit)) ], B)),
+        Monad ([ Type (OCaml.exception, Type (OCaml/Pervasives.exit)) ], B)),
         Match
-          (8, Variable (?, x),
+          (8, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (8,
                     Variable
                       (8,
-                        OCaml.Pervasives.raise),
+                        OCaml/Pervasives.raise),
                     [
                       Constructor
                         (8,
-                          OCaml.Pervasives.Exit,
+                          OCaml/Pervasives.Exit,
                           Tuple
                             (?))
                     ]))
@@ -130,7 +130,7 @@ Value
     [
       ((b_lt, [ ], [ ], Type (bool)),
         Apply
-          (14, Variable (14, OCaml.Pervasives.lt),
+          (14, Variable (14, OCaml/Pervasives.lt),
             [ Constant (14, Int(1)); Constant (14, Int(2)) ]))
     ])
 
@@ -140,7 +140,7 @@ Value
     [
       ((b_gt, [ ], [ ], Type (bool)),
         Apply
-          (15, Variable (15, OCaml.Pervasives.gt),
+          (15, Variable (15, OCaml/Pervasives.gt),
             [ Constant (15, Int(1)); Constant (15, Int(2)) ]))
     ])
 
@@ -150,7 +150,7 @@ Value
     [
       ((b_le, [ ], [ ], Type (bool)),
         Apply
-          (16, Variable (16, OCaml.Pervasives.le),
+          (16, Variable (16, OCaml/Pervasives.le),
             [ Constructor (16, true); Constructor (16, false) ]))
     ])
 
@@ -160,7 +160,7 @@ Value
     [
       ((b_ge, [ ], [ ], Type (bool)),
         Apply
-          (17, Variable (17, OCaml.Pervasives.ge),
+          (17, Variable (17, OCaml/Pervasives.ge),
             [ Constructor (17, tt); Constructor (17, tt) ]))
     ])
 
@@ -170,7 +170,7 @@ Value
     [
       ((comp, [ ], [ ], Type (Z)),
         Apply
-          (18, Variable (18, OCaml.Pervasives.compare),
+          (18, Variable (18, OCaml/Pervasives.compare),
             [ Constant (18, Int(1)); Constant (18, Int(2)) ]))
     ])
 
@@ -180,7 +180,7 @@ Value
     [
       ((n_min, [ ], [ ], Type (Z)),
         Apply
-          (19, Variable (19, OCaml.Pervasives.min),
+          (19, Variable (19, OCaml/Pervasives.min),
             [ Constant (19, Int(1)); Constant (19, Int(2)) ]))
     ])
 
@@ -190,7 +190,7 @@ Value
     [
       ((n_max, [ ], [ ], Type (Z)),
         Apply
-          (20, Variable (20, OCaml.Pervasives.max),
+          (20, Variable (20, OCaml/Pervasives.max),
             [ Constant (20, Int(1)); Constant (20, Int(2)) ]))
     ])
 
@@ -248,8 +248,11 @@ Value
     [
       ((app1, [ ], [ ], Type (Z)),
         Apply
-          (32, Variable (32, OCaml.Pervasives.reverse_apply),
-            [ Constant (32, Int(12)); Function (32, x, Variable (32, x)) ]))
+          (32, Variable (32, OCaml/Pervasives.reverse_apply),
+            [
+              Constant (32, Int(12));
+              Function (32, x, Variable (32, Ex24/x))
+            ]))
     ])
 
 33
@@ -259,7 +262,10 @@ Value
       ((app2, [ ], [ ], Type (Z)),
         Apply
           (33, Variable (33, apply),
-            [ Function (33, x, Variable (33, x)); Constant (33, Int(12)) ]))
+            [
+              Function (33, x, Variable (33, Ex24/x));
+              Constant (33, Int(12))
+            ]))
     ])
 
 36
@@ -427,7 +433,7 @@ Value
     [
       ((n_char, [ ], [ ], Type (Z)),
         Apply
-          (67, Variable (67, OCaml.Pervasives.int_of_char),
+          (67, Variable (67, OCaml/Pervasives.int_of_char),
             [ Constant (67, Char("c")) ]))
     ])
 
@@ -439,14 +445,14 @@ Value
         Monad
           ([ Type (OCaml.exception, Type (invalid_argument)) ], Type (ascii))),
         Match
-          (68, Variable (?, x),
+          (68, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (68,
                     Variable
                       (68,
-                        OCaml.Pervasives.char_of_int),
+                        OCaml/Pervasives.char_of_int),
                     [
                       Constant
                         (68,
@@ -461,7 +467,7 @@ Value
     [
       ((i, [ ], [ ], Type (unit)),
         Apply
-          (71, Variable (71, OCaml.Pervasives.ignore),
+          (71, Variable (71, OCaml/Pervasives.ignore),
             [ Constant (71, Int(12)) ]))
     ])
 
@@ -471,7 +477,7 @@ Value
     [
       ((s_bool, [ ], [ ], Type (string)),
         Apply
-          (74, Variable (74, OCaml.Pervasives.string_of_bool),
+          (74, Variable (74, OCaml/Pervasives.string_of_bool),
             [ Constructor (74, false) ]))
     ])
 
@@ -481,7 +487,7 @@ Value
     [
       ((bool_s, [ ], [ ], Type (bool)),
         Apply
-          (75, Variable (75, OCaml.Pervasives.bool_of_string),
+          (75, Variable (75, OCaml/Pervasives.bool_of_string),
             [ Constant (75, String("false")) ]))
     ])
 
@@ -491,7 +497,7 @@ Value
     [
       ((s_n, [ ], [ ], Type (string)),
         Apply
-          (76, Variable (76, OCaml.Pervasives.string_of_int),
+          (76, Variable (76, OCaml/Pervasives.string_of_int),
             [ Constant (76, Int(12)) ]))
     ])
 
@@ -501,7 +507,7 @@ Value
     [
       ((n_s, [ ], [ ], Type (Z)),
         Apply
-          (77, Variable (77, OCaml.Pervasives.int_of_string),
+          (77, Variable (77, OCaml/Pervasives.int_of_string),
             [ Constant (77, String("12")) ]))
     ])
 
@@ -531,7 +537,7 @@ Value
     [
       ((ll, [ ], [ ], Type (list, Type (Z))),
         Apply
-          (86, Variable (86, OCaml.Pervasives.app),
+          (86, Variable (86, OCaml/Pervasives.app),
             [
               Constructor
                 (86, cons, Constant (86, Int(1)),
@@ -564,14 +570,14 @@ Value
     [
       ((p_c, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (94, Variable (?, x),
+          (94, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (94,
                     Variable
                       (94,
-                        OCaml.Pervasives.print_char),
+                        OCaml/Pervasives.print_char),
                     [
                       Constant
                         (94,
@@ -586,14 +592,14 @@ Value
     [
       ((p_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (95, Variable (?, x),
+          (95, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (95,
                     Variable
                       (95,
-                        OCaml.Pervasives.print_string),
+                        OCaml/Pervasives.print_string),
                     [
                       Constant
                         (95,
@@ -608,14 +614,14 @@ Value
     [
       ((p_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (96, Variable (?, x),
+          (96, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (96,
                     Variable
                       (96,
-                        OCaml.Pervasives.print_int),
+                        OCaml/Pervasives.print_int),
                     [
                       Constant
                         (96,
@@ -630,14 +636,14 @@ Value
     [
       ((p_endline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (98, Variable (?, x),
+          (98, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (98,
                     Variable
                       (98,
-                        OCaml.Pervasives.print_endline),
+                        OCaml/Pervasives.print_endline),
                     [
                       Constant
                         (98,
@@ -652,14 +658,14 @@ Value
     [
       ((p_newline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (99, Variable (?, x),
+          (99, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (99,
                     Variable
                       (99,
-                        OCaml.Pervasives.print_newline),
+                        OCaml/Pervasives.print_newline),
                     [
                       Constructor
                         (99,
@@ -674,14 +680,14 @@ Value
     [
       ((perr_c, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (102, Variable (?, x),
+          (102, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (102,
                     Variable
                       (102,
-                        OCaml.Pervasives.prerr_char),
+                        OCaml/Pervasives.prerr_char),
                     [
                       Constant
                         (102,
@@ -696,14 +702,14 @@ Value
     [
       ((perr_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (103, Variable (?, x),
+          (103, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (103,
                     Variable
                       (103,
-                        OCaml.Pervasives.prerr_string),
+                        OCaml/Pervasives.prerr_string),
                     [
                       Constant
                         (103,
@@ -718,14 +724,14 @@ Value
     [
       ((perr_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (104, Variable (?, x),
+          (104, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (104,
                     Variable
                       (104,
-                        OCaml.Pervasives.prerr_int),
+                        OCaml/Pervasives.prerr_int),
                     [
                       Constant
                         (104,
@@ -740,14 +746,14 @@ Value
     [
       ((perr_endline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (106, Variable (?, x),
+          (106, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (106,
                     Variable
                       (106,
-                        OCaml.Pervasives.prerr_endline),
+                        OCaml/Pervasives.prerr_endline),
                     [
                       Constant
                         (106,
@@ -762,14 +768,14 @@ Value
     [
       ((perr_newline, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (unit))),
         Match
-          (107, Variable (?, x),
+          (107, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (107,
                     Variable
                       (107,
-                        OCaml.Pervasives.prerr_newline),
+                        OCaml/Pervasives.prerr_newline),
                     [
                       Constructor
                         (107,
@@ -784,14 +790,14 @@ Value
     [
       ((r_s, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (string))),
         Match
-          (110, Variable (?, x),
+          (110, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (110,
                     Variable
                       (110,
-                        OCaml.Pervasives.read_line),
+                        OCaml/Pervasives.read_line),
                     [
                       Constructor
                         (110,
@@ -806,14 +812,14 @@ Value
     [
       ((r_n, [ A ], [ (x, A) ], Monad ([ Type (IO) ], Type (Z))),
         Match
-          (111, Variable (?, x),
+          (111, Variable (?, Ex24/x),
             [
               (Any,
                 Apply
                   (111,
                     Variable
                       (111,
-                        OCaml.Pervasives.read_int),
+                        OCaml/Pervasives.read_int),
                     [
                       Constructor
                         (111,

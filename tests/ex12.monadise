@@ -1,16 +1,17 @@
 3
 Inductive tree:
-  ([ ], [ (Leaf, [ ]); (Node, [ Type (tree); Type (Z); Type (tree) ]) ])
+  ([ ],
+    [ (Leaf, [ ]); (Node, [ Type (Ex12/tree); Type (Z); Type (Ex12/tree) ]) ])
 
 7
 Value
   (rec, @.,
     [
       ((find_rec, [ ],
-        [ (counter, Type (nat)); (x, Type (Z)); (t, Type (tree)) ],
+        [ (counter, Type (nat)); (x, Type (Z)); (t, Type (Ex12/tree)) ],
         Monad ([ Type (NonTermination) ], Type (bool))),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex12/counter),
             [
               (Constructor (O),
                 Apply
@@ -24,17 +25,20 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (8, Variable (8, t),
+                  (8,
+                    Variable
+                      (8,
+                        Ex12/t),
                     [
                       (Constructor
-                        (Leaf),
+                        (Ex12/Leaf),
                         Return
                           (?,
                             Constructor
                               (9,
                                 false)));
                       (Constructor
-                        (Node,
+                        (Ex12/Node,
                           t1,
                           x',
                           t2),
@@ -44,14 +48,14 @@ Value
                               (11,
                                 Variable
                                   (11,
-                                    OCaml.Pervasives.lt),
+                                    OCaml/Pervasives.lt),
                                 [
                                   Variable
                                     (11,
-                                      x);
+                                      Ex12/x);
                                   Variable
                                     (11,
-                                      x')
+                                      Ex12/x')
                                 ]),
                             Apply
                               (12,
@@ -59,19 +63,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        find_rec),
+                                        Ex12/find_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex12/counter)
                                     ]),
                                 [
                                   Variable
                                     (12,
-                                      x);
+                                      Ex12/x);
                                   Variable
                                     (12,
-                                      t1)
+                                      Ex12/t1)
                                 ]),
                             IfThenElse
                               (13,
@@ -79,14 +83,14 @@ Value
                                   (13,
                                     Variable
                                       (13,
-                                        OCaml.Pervasives.lt),
+                                        OCaml/Pervasives.lt),
                                     [
                                       Variable
                                         (13,
-                                          x');
+                                          Ex12/x');
                                       Variable
                                         (13,
-                                          x)
+                                          Ex12/x)
                                     ]),
                                 Apply
                                   (14,
@@ -94,19 +98,19 @@ Value
                                       (?,
                                         Variable
                                           (?,
-                                            find_rec),
+                                            Ex12/find_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter)
+                                              Ex12/counter)
                                         ]),
                                     [
                                       Variable
                                         (14,
-                                          x);
+                                          Ex12/x);
                                       Variable
                                         (14,
-                                          t2)
+                                          Ex12/t2)
                                     ]),
                                 Return
                                   (?,
@@ -121,7 +125,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((find, [ ], [ (x, Type (Z)); (t, Type (tree)) ],
+      ((find, [ ], [ (x, Type (Z)); (t, Type (Ex12/tree)) ],
         Monad ([ Type (Counter); Type (NonTermination) ], Type (bool))),
         Bind
           (?,
@@ -134,10 +138,10 @@ Value
               (?, [ Type (NonTermination) ],
                 [ Type (Counter); Type (NonTermination) ],
                 Apply
-                  (?, Variable (?, find_rec),
+                  (?, Variable (?, Ex12/find_rec),
                     [
-                      Variable (?, x_1);
-                      Variable (?, x);
-                      Variable (?, t)
+                      Variable (?, Ex12/x_1);
+                      Variable (?, Ex12/x);
+                      Variable (?, Ex12/t)
                     ]))))
     ])

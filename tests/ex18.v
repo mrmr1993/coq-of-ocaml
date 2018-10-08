@@ -14,7 +14,7 @@ Definition plus_one {A : Type} (x : A)
   | _ =>
     let! x_1 :=
       let! x_1 := r in
-      lift [_;_] "10" (OCaml.Effect.State.read x_1) in
+      lift [_;_] "10" (Effect.State.read x_1) in
     ret (Z.add x_1 1)
   end.
 
@@ -31,8 +31,8 @@ Definition fail {A B : Type} (x : A)
     let! x_1 :=
       lift [_;_;_] "110"
         (let! x_1 := s in
-        lift [_;_] "10" (OCaml.Effect.State.read x_1)) in
-    lift [_;_;_] "001" (OCaml.Pervasives.failwith x_1)
+        lift [_;_] "10" (Effect.State.read x_1)) in
+    lift [_;_;_] "001" (Pervasives.failwith x_1)
   end.
 
 Definition reset {A : Type} (x : A)
@@ -40,7 +40,7 @@ Definition reset {A : Type} (x : A)
   match x with
   | _ =>
     let! x_1 := r in
-    lift [_;_] "10" (OCaml.Effect.State.write x_1 0)
+    lift [_;_] "10" (Effect.State.write x_1 0)
   end.
 
 Definition incr {A : Type} (x : A)
@@ -51,7 +51,7 @@ Definition incr {A : Type} (x : A)
     let! x_2 :=
       let! x_2 :=
         let! x_2 := r in
-        lift [_;_] "10" (OCaml.Effect.State.read x_2) in
+        lift [_;_] "10" (Effect.State.read x_2) in
       ret (Z.add x_2 1) in
-    lift [_;_] "10" (OCaml.Effect.State.write x_1 x_2)
+    lift [_;_] "10" (Effect.State.write x_1 x_2)
   end.

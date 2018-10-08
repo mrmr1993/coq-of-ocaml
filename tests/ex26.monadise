@@ -4,7 +4,7 @@ Value
     [
       ((f_map, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ], Type (list, B)),
         Match
-          (4, Variable (4, l),
+          (4, Variable (4, Ex26/l),
             [
               (Constructor ([]), Constructor (5, []));
               (Constructor (cons, x, l),
@@ -14,24 +14,24 @@ Value
                       (6,
                         Variable
                           (6,
-                            f),
+                            Ex26/f),
                         [
                           Variable
                             (6,
-                              x)
+                              Ex26/x)
                         ]),
                     Apply
                       (6,
                         Variable
                           (6,
-                            f_map),
+                            Ex26/f_map),
                         [
                           Variable
                             (6,
-                              f);
+                              Ex26/f);
                           Variable
                             (6,
-                              l)
+                              Ex26/l)
                         ])))
             ]))
     ])
@@ -44,7 +44,7 @@ Value
         [ (counter, Type (nat)); (f, (A -> B)); (l, Type (list, A)) ],
         Monad ([ Type (NonTermination) ], Type (list, B))),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex26/counter),
             [
               (Constructor (O),
                 Apply
@@ -58,7 +58,10 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (10, Variable (10, l),
+                  (10,
+                    Variable
+                      (10,
+                        Ex26/l),
                     [
                       (Constructor
                         ([]),
@@ -79,19 +82,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        f_map2_rec),
+                                        Ex26/f_map2_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex26/counter)
                                     ]),
                                 [
                                   Variable
                                     (12,
-                                      f);
+                                      Ex26/f);
                                   Variable
                                     (12,
-                                      l)
+                                      Ex26/l)
                                 ]),
                             Some
                               x_1,
@@ -104,15 +107,15 @@ Value
                                       (12,
                                         Variable
                                           (12,
-                                            f),
+                                            Ex26/f),
                                         [
                                           Variable
                                             (12,
-                                              x)
+                                              Ex26/x)
                                         ]),
                                     Variable
                                       (?,
-                                        x_1)))))
+                                        Ex26/x_1)))))
                     ]))
             ]))
     ])
@@ -134,11 +137,11 @@ Value
               (?, [ Type (NonTermination) ],
                 [ Type (Counter); Type (NonTermination) ],
                 Apply
-                  (?, Variable (?, f_map2_rec),
+                  (?, Variable (?, Ex26/f_map2_rec),
                     [
-                      Variable (?, x);
-                      Variable (?, f);
-                      Variable (?, l)
+                      Variable (?, Ex26/x);
+                      Variable (?, Ex26/f);
+                      Variable (?, Ex26/l)
                     ]))))
     ])
 
@@ -153,7 +156,10 @@ Value
               ((sum_coq_rec, [ ], [ (l, Type (list, Type (Z))) ],
                 Type (Z)),
                 Match
-                  (17, Variable (17, l),
+                  (17,
+                    Variable
+                      (17,
+                        Ex26/l),
                     [
                       (Constructor
                         ([]),
@@ -172,22 +178,22 @@ Value
                             [
                               Variable
                                 (19,
-                                  x);
+                                  Ex26/x);
                               Apply
                                 (19,
                                   Variable
                                     (19,
-                                      sum_coq_rec),
+                                      Ex26/sum_coq_rec),
                                   [
                                     Variable
                                       (19,
-                                        l)
+                                        Ex26/l)
                                   ])
                             ]))
                     ]))
             ]) in
         Apply
-          (20, Variable (20, sum_coq_rec),
+          (20, Variable (20, Ex26/sum_coq_rec),
             [
               Constructor
                 (20, cons, Constant (20, Int(1)),
@@ -216,7 +222,7 @@ Value
       ((n2, [ A ], [ (x, A) ],
         Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
-          (22, Variable (?, x),
+          (22, Variable (?, Ex26/x),
             [
               (Any,
                 LetFun 23
@@ -246,7 +252,7 @@ Value
                           (?,
                             Variable
                               (?,
-                                counter),
+                                Ex26/counter),
                             [
                               (Constructor
                                 (O),
@@ -266,7 +272,7 @@ Value
                                   (24,
                                     Variable
                                       (24,
-                                        l),
+                                        Ex26/l),
                                     [
                                       (Constructor
                                         ([]),
@@ -287,16 +293,16 @@ Value
                                                   (?,
                                                     Variable
                                                       (?,
-                                                        sum_rec),
+                                                        Ex26/sum_rec),
                                                     [
                                                       Variable
                                                         (?,
-                                                          counter)
+                                                          Ex26/counter)
                                                     ]),
                                                 [
                                                   Variable
                                                     (26,
-                                                      l)
+                                                      Ex26/l)
                                                 ]),
                                             Some
                                               x_1,
@@ -310,10 +316,10 @@ Value
                                                     [
                                                       Variable
                                                         (26,
-                                                          x);
+                                                          Ex26/x);
                                                       Variable
                                                         (?,
-                                                          x_1)
+                                                          Ex26/x_1)
                                                     ]))))
                                     ]))
                             ]))
@@ -322,9 +328,7 @@ Value
                 LetFun 23
                   (non_rec, @.,
                     [
-                      ((sum
-                      (=
-                      sum_1),
+                      ((sum,
                         [
                         ],
                         [
@@ -384,14 +388,14 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        sum_rec),
+                                        Ex26/sum_rec),
                                     [
                                       Variable
                                         (?,
-                                          x_1);
+                                          Ex26/x_1);
                                       Variable
                                         (?,
-                                          l)
+                                          Ex26/l)
                                     ]))))
                     ])
                   in
@@ -399,7 +403,7 @@ Value
                   (27,
                     Variable
                       (27,
-                        sum_1),
+                        Ex26/sum),
                     [
                       Constructor
                         (27,
