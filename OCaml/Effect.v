@@ -188,6 +188,14 @@ Definition lift {A : Type} (es : list Effect.t) (bs : string)
   (x : M _ A) : M _ A :=
   of_raw (Raw.lift es bs (to_raw x)).
 
+Module Open_Type.
+  Fixpoint t (es : list Type) : Type :=
+    match es with
+    | [] => unit
+    | T :: es => T + t es
+    end.
+End Open_Type.
+
 Module Exception.
   Fixpoint remove_nth (es : list Effect.t) (n : nat) : list Effect.t :=
     match es with

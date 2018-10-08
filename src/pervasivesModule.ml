@@ -117,7 +117,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
       Type.Variable "A")))
   (* Predefined exceptions *)
   |> Descriptor.add [] "exception" ()
-  |> Typ.add [] "exn" (TypeDefinition.Abstract (CoqName.Name "exn", []))
+  |> Typ.add [] "exn" (TypeDefinition.Open (CoqName.Name "exn"))
   |> add_exn [] "Match_failure"
   |> add_exn [] "Assert_failure"
   |> add_exn [] "Invalid_argument"

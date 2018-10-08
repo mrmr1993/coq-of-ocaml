@@ -1,0 +1,139 @@
+2 Open t
+
+4
+Value
+  (non_rec, @.,
+    [
+      ((f, [ ], [ (x, Type (unit)) ],
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+            OpenApply (t, {}))),
+        Match
+          ((4,
+            Effect
+              ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ],
+                .)), Variable ((?, Effect ([ ], .)), x),
+            [
+              (Constructor (tt),
+                Apply
+                  ((4,
+                    Effect
+                      ([
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.assert_failure))
+                      ],
+                        .)),
+                    Variable
+                      ((4,
+                        Effect
+                          ([
+                          ],
+                            .
+                              -[
+                                Type
+                                  (OCaml.exception,
+                                    Type
+                                      (OCaml.assert_failure))
+                              ]->
+                              .)),
+                        OCaml.assert),
+                    [
+                      Constructor
+                        ((4,
+                          Effect
+                            ([
+                            ],
+                              .)),
+                          false)
+                    ]))
+            ]))
+    ])
+
+6 Open u
+
+8
+Value
+  (non_rec, @.,
+    [
+      ((g, [ A ], [ (x, A) ],
+        Monad
+          ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+            OpenApply (u, {}, A))),
+        Apply
+          ((8, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
+            Variable
+              ((8,
+                Effect
+                  ([ ],
+                    .
+                      -[
+                        Type
+                          (OCaml.exception,
+                            Type
+                              (OCaml.failure))
+                      ]-> .)), OCaml.Pervasives.failwith),
+            [ Constant ((8, Effect ([ ], .)), String("fail")) ]))
+    ])
+
+10 TypeExt
+(t,
+  Inductive t_1:
+    ([ ], [ (Test1, [ ]); (Test2, [ Type (bool) ]) ]))
+
+12 TypeExt
+(t,
+  Inductive t_2:
+    ([ ], [ (Test3, [ Type (Z) ]); (Test4, [ Type (option, Type (Z)) ]) ]))
+
+14 TypeExt
+(u,
+  Inductive u_1:
+    ([ b ], [ (Test5, [ b ]); (Test6, [ Type (Z) ]) ]))
+
+16
+Value
+  (non_rec, @.,
+    [
+      ((x, [ ], [ ], OpenApply (t, {t_1})),
+        Constructor
+          ((?, Effect ([ ], .)), inl,
+            Constructor ((16, Effect ([ ], .)), Test1)))
+    ])
+
+18
+Value
+  (non_rec, @.,
+    [
+      ((y, [ ], [ ], OpenApply (u, {u_1}, Type (Z))),
+        Constructor
+          ((?, Effect ([ ], .)), inl,
+            Constructor
+              ((18, Effect ([ ], .)), Test5,
+                Constant ((18, Effect ([ ], .)), Int(5)))))
+    ])
+
+20
+Value
+  (non_rec, @.,
+    [
+      ((z, [ A ], [ ], OpenApply (u, {u_1}, A)),
+        Constructor
+          ((?, Effect ([ ], .)), inl,
+            Constructor
+              ((20, Effect ([ ], .)), Test6,
+                Constant ((20, Effect ([ ], .)), Int(6)))))
+    ])
+
+22
+Value
+  (non_rec, @.,
+    [
+      ((failure, [ ], [ ], OpenApply (OCaml.exn, {OCaml.failure})),
+        Constructor
+          ((?, Effect ([ ], .)), inl,
+            Constructor
+              ((22, Effect ([ ], .)), OCaml.Failure,
+                Constant ((22, Effect ([ ], .)), String("")))))
+    ])

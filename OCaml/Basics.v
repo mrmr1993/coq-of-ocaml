@@ -71,6 +71,8 @@ Module Z.
     compare_is_sound := Z.compare_spec |}.
 End Z.
 
+Definition exn := Effect.Open_Type.t.
+
 Definition exception (A : Type) : Effect.t :=
   Effect.make unit A.
 

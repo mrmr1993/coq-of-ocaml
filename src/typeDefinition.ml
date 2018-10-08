@@ -27,6 +27,7 @@ let pp (def : t) : SmartPrint.t =
   | Abstract (name, typ_args) ->
     nest (!^ "Abstract" ^^ OCaml.tuple [
       CoqName.pp name; OCaml.list Name.pp typ_args])
+  | Open (name) -> nest (!^ "Open" ^^ CoqName.pp name)
 
 let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
   (name : Ident.t) (typ : Types.type_declaration) : t =
@@ -59,7 +60,7 @@ let of_declaration (env : unit FullEnvi.t) (loc : Loc.t)
     (match typ.type_manifest with
     | Some typ -> Synonym (x, typ_args, Type.of_type_expr env loc typ)
     | None -> Abstract (x, typ_args))
-  | Type_open -> Error.raise loc "Open type definition not handled."
+  | Type_open -> Open x
 
 let of_ocaml (env : unit FullEnvi.t) (loc : Loc.t)
   (typs : type_declaration list) : t =
@@ -86,7 +87,7 @@ let update_env (def : t) (env : 'a FullEnvi.t) : 'a FullEnvi.t =
       (index + 1,
       FullEnvi.Field.assoc x (bound.BoundName.full_path, index) env))
       (0, env) fields
-  | Synonym (name, _, _) | Abstract (name, _) ->
+  | Synonym (name, _, _) | Abstract (name, _) | Open name ->
     FullEnvi.Typ.assoc name def env
 
 let field_type (loc : Loc.t) (env : 'a FullEnvi.t) (field : BoundName.t)
@@ -132,6 +133,8 @@ let to_json (def : t) : json =
   | Abstract (name, typ_args) ->
     `List [`String "Abstract"; CoqName.to_json name;
       `List (List.map Name.to_json typ_args)]
+  | Open name ->
+    `List [`String "Open"; CoqName.to_json name]
 
 let of_json (json : json) : t =
   match json with
@@ -153,6 +156,8 @@ let of_json (json : json) : t =
       Type.of_json typ)
   | `List [`String "Abstract"; name; `List typ_args] ->
     Abstract (CoqName.of_json name, List.map Name.of_json typ_args)
+  | `List [`String "Open"; name] ->
+    Open (CoqName.of_json name)
   | _ -> raise (Error.Json "Invalid JSON for TypeDefinition.")
 
 let to_coq (def : t) : SmartPrint.t =
@@ -214,3 +219,7 @@ let to_coq (def : t) : SmartPrint.t =
           separate space (List.map Name.to_coq typ_args) ^^
           !^ ":" ^^ !^ "Type")) ^-^ !^ ",") ^^
       !^ "Type" ^-^ !^ ".")
+  | Open name ->
+    nest @@
+      !^ "Definition" ^^ CoqName.to_coq name ^^ !^ ":=" ^^
+        !^ "Effect.Open_Type.t."

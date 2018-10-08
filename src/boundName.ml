@@ -21,6 +21,12 @@ let pp (x : t) : SmartPrint.t =
 let stable_compare (x : t) (y : t) : int =
   compare x.full_path y.full_path
 
+type t' = t
+module Set = Set.Make(struct
+  type t = t'
+  let compare = stable_compare
+end)
+
 let to_coq (x : t) : SmartPrint.t =
   PathName.to_coq x.local_path
 

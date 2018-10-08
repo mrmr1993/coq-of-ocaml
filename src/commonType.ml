@@ -1,5 +1,6 @@
 open SmartPrint
 open Yojson.Basic
+open Utils
 
 module Type = struct
   type typ =
@@ -7,6 +8,7 @@ module Type = struct
     | Arrow of typ * typ
     | Tuple of typ list
     | Apply of BoundName.t * typ list
+    | OpenApply of BoundName.t * typ list * BoundName.t list
     | Monad of desc * typ
 
   and desc = {
@@ -23,6 +25,7 @@ module TypeDefinition = struct
     | Record of CoqName.t * Name.t list * (CoqName.t * typ) list
     | Synonym of CoqName.t * Name.t list * typ
     | Abstract of CoqName.t * Name.t list
+    | Open of CoqName.t
 end
 
 type t = typ
@@ -35,6 +38,11 @@ let rec pp (typ : t) : SmartPrint.t =
   | Apply (x, typs) ->
     nest (!^ "Type" ^^ nest (parens (
       separate (!^ "," ^^ space) (BoundName.pp x :: List.map pp typs))))
+  | OpenApply (x, typs, typ_defs) ->
+    nest (!^ "OpenApply" ^^ nest (parens (
+      separate (!^ "," ^^ space) (BoundName.pp x ::
+        braces (separate (!^ "," ^^ space) (List.map BoundName.pp typ_defs)) ::
+        List.map pp typs))))
   | Monad (d, typ) -> nest (!^ "Monad" ^^ OCaml.tuple [pp_desc d; pp typ])
 
 and pp_desc (d : desc) : SmartPrint.t =
@@ -46,33 +54,34 @@ let rec compare (typ1 : t) (typ2 : t) : int =
   | Variable _, _ -> -1
   | _, Variable _ -> 1
   | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
-    compare_list [typ1a; typ1b] [typ2a; typ2b]
+    compare_list compare [typ1a; typ1b] [typ2a; typ2b]
   | Arrow _, _ -> -1
   | _, Arrow _ -> 1
-  | Tuple typs1, Tuple typs2 -> compare_list typs1 typs2
+  | Tuple typs1, Tuple typs2 -> compare_list compare typs1 typs2
   | Tuple _, _ -> -1
   | _, Tuple _ -> 1
   | Apply (x, typs1), Apply (y, typs2) ->
     let cmp = BoundName.stable_compare x y in
-    if cmp = 0 then compare_list typs1 typs2 else cmp
+    if cmp = 0 then compare_list compare typs1 typs2 else cmp
   | Apply _, _ -> -1
   | _, Apply _ -> 1
+  | OpenApply (x, typs1, typ_defs1), OpenApply (y, typs2, typ_defs2) ->
+    let cmp = BoundName.stable_compare x y in
+    if cmp = 0 then
+      let cmp = compare_list compare typs1 typs2 in
+      if cmp = 0 then
+        compare_list BoundName.stable_compare typ_defs1 typ_defs2
+      else cmp
+    else cmp
+  | OpenApply _, _ -> -1
+  | _, OpenApply _ -> 1
   | Monad (d1, typ1), Monad (d2, typ2) ->
     let cmp = compare_desc d1 d2 in
     if cmp = 0 then compare typ1 typ2 else cmp
 
-and compare_list (typs1 : t list) (typs2 : t list) : int =
-  match typs1, typs2 with
-  | [], [] -> 0
-  | [], _ -> -1
-  | _, [] -> 1
-  | typ1 :: typs1, typ2 :: typs2 ->
-    let cmp = compare typ1 typ2 in
-    if cmp = 0 then compare_list typs1 typs2 else cmp
-
 and compare_desc (d1 : desc) (d2 : desc) : int =
-  let cmp = compare_list d1.with_args d2.with_args in
-  if cmp = 0 then compare_list d1.no_args d2.no_args else cmp
+  let cmp = compare_list compare d1.with_args d2.with_args in
+  if cmp = 0 then compare_list compare d1.no_args d2.no_args else cmp
 
 module Set = Set.Make (struct
   type t = typ
@@ -95,6 +104,10 @@ let rec unify (typ1 : t) (typ2 : t) : t Name.Map.t =
   | Apply (x1, typs1), Apply (x2, typs2) ->
     List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
       Name.Map.empty typs1 typs2
+  | OpenApply (x1, typs1, typ_defs1), OpenApply (x2, typs2, typ_defs2) ->
+    List.fold_left2 (fun var_map typ1 typ2 ->
+        union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
   | _, _ -> failwith "Could not unify types"
 
 let rec unify_monad (f : desc -> desc option -> desc) (typ1 : t) (typ2 : t)
@@ -112,6 +125,10 @@ let rec unify_monad (f : desc -> desc option -> desc) (typ1 : t) (typ2 : t)
     Monad (f d1 (Some d2), unify_monad typ1 typ2)
   | Monad (d, typ1), typ2 | typ1, Monad (d, typ2) ->
     Monad (f d None, unify_monad typ1 typ2)
+  | OpenApply (x1, typs1, typ_defs1), OpenApply (x2, typs2, typ_defs2) ->
+    let typ_defs = BoundName.Set.elements @@ BoundName.Set.union
+      (BoundName.Set.of_list typ_defs1) (BoundName.Set.of_list typ_defs2) in
+    OpenApply (x1, List.map2 unify_monad typs1 typs2, typ_defs)
   | _, Variable y -> typ1
   | Variable x, _ -> typ2
   | _, _ -> failwith "Could not unify types"
@@ -122,6 +139,8 @@ let rec map (f : BoundName.t -> BoundName.t) (typ : t) : t =
   | Arrow (typ_x, typ_y) -> Arrow (map f typ_x, map f typ_y)
   | Tuple typs -> Tuple (List.map (map f) typs)
   | Apply (path, typs) -> Apply (f path, List.map (map f) typs)
+  | OpenApply (x, typs, typ_defs) ->
+    OpenApply (x, List.map (map f) typs, List.map f typ_defs)
   | Monad (d, typ) -> Monad (d, map f typ)
 
 let rec map_vars (f : Name.t -> t) (typ : t) : t =
@@ -130,6 +149,8 @@ let rec map_vars (f : Name.t -> t) (typ : t) : t =
   | Arrow (typ1, typ2) -> Arrow (map_vars f typ1, map_vars f typ2)
   | Tuple typs -> Tuple (List.map (map_vars f) typs)
   | Apply (x, typs) -> Apply (x, List.map (map_vars f) typs)
+  | OpenApply (x, typs, typ_defs) ->
+    OpenApply (x, List.map (map_vars f) typs, typ_defs)
   | Monad (d, typ) -> Monad (map_desc_vars f d, map_vars f typ)
 
 and map_desc_vars (f : Name.t -> t) (d : desc) : desc =
@@ -143,6 +164,7 @@ let rec typ_args (typ : t) : Name.Set.t =
   | Variable x -> Name.Set.singleton x
   | Arrow (typ1, typ2) -> typ_args_of_typs [typ1; typ2]
   | Tuple typs | Apply (_, typs) -> typ_args_of_typs typs
+  | OpenApply (x, typs, typ_defs) -> typ_args_of_typs typs
   | Monad (d, typ) -> Name.Set.union (desc_typ_args d) (typ_args typ)
 
 and typ_args_of_typs (typs : t list) : Name.Set.t =
@@ -160,6 +182,10 @@ let rec to_json (typ : t) : json =
   | Tuple typs -> `List (`String "Tuple" :: List.map to_json typs)
   | Apply (path, typs) ->
     `List (`String "Apply" :: BoundName.to_json path :: List.map to_json typs)
+  | OpenApply (path, typs, typ_defs) ->
+    `List [`String "OpenApply"; BoundName.to_json path;
+      `List (List.map to_json typs);
+      `List (List.map BoundName.to_json typ_defs)]
   | Monad (descriptor, typ) ->
     `List [`String "Monad"; desc_to_json descriptor; to_json typ]
 
@@ -180,6 +206,9 @@ let rec of_json (json : json) : t =
   | `List (`String "Tuple" :: typs) -> Tuple (List.map of_json typs)
   | `List (`String "Apply" :: path :: typs) ->
     Apply (BoundName.of_json path, List.map of_json typs)
+  | `List [`String "OpenApply"; path; `List typs; `List typ_defs] ->
+    OpenApply (BoundName.of_json path, List.map of_json typs,
+      List.map BoundName.of_json typ_defs)
   | `List [`String "Monad"; descriptor; typ] ->
     Monad (desc_of_json descriptor, of_json typ)
   | _ -> failwith "Invalid JSON for Type."
@@ -212,5 +241,14 @@ let rec to_coq (a_to_coq : desc -> SmartPrint.t) (paren : bool) (typ : t)
   | Apply (path, typs) ->
     Pp.parens (paren && typs <> []) @@ nest @@ separate space
       (BoundName.to_coq path :: List.map (to_coq true) typs)
+  | OpenApply (path, typs, typ_defs) ->
+    (* The polymorphic annotation on TypeExt definitions doesn't work if there
+       are no type parameters. If this is the case, add a manual coercion to
+       Type. *)
+    let args_to_coq = match typs with
+      | [] -> fun name -> BoundName.to_coq name ^^ !^ ":" ^^ !^ "Type"
+      | _ -> fun name -> to_coq false (Apply (name, typs)) in
+    Pp.parens paren @@ nest @@
+      BoundName.to_coq path ^^ OCaml.list args_to_coq typ_defs
   | Monad (d, typ) ->
     Pp.parens paren @@ nest (!^ "M" ^^ a_to_coq d ^^ to_coq true typ)

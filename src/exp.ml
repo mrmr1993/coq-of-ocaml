@@ -465,7 +465,19 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_tuple es -> Tuple (a, List.map (of_expression env typ_vars) es)
   | Texp_construct (x, _, es) ->
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
-    Constructor (a, x, List.map (of_expression env typ_vars) es)
+    begin match typ with
+    | Type.OpenApply (name, typs, _) ->
+      let (true_typ, _) = FullEnvi.Constructor.find l x env in
+      let true_typ = FullEnvi.Typ.localize env true_typ.PathName.path
+        true_typ.PathName.base in
+      let true_typ_full = Type.Apply (true_typ, typs) in
+      let typ = Type.OpenApply (name, typs, [true_typ]) in
+      Constructor ((Loc.Unknown, typ),
+        FullEnvi.Constructor.localize env [] "inl",
+      [Constructor ((l, true_typ_full), x,
+        List.map (of_expression env typ_vars) es)])
+    | _ -> Constructor (a, x, List.map (of_expression env typ_vars) es)
+    end
   | Texp_record { fields; extended_expression } ->
     Record (a, Array.to_list fields |> List.map (fun (label, definition) ->
       match definition with
