@@ -82,10 +82,9 @@ let rec to_full_envi (top_name : Name.t option) (interface : t)
         effect |> Effect.map (fun ({full_path} as bound_path) ->
           let full_path' = { full_path with
             PathName.path = top_name :: full_path.PathName.path } in
-          let bound_path = if FullEnvi.has_global_value env full_path' then
-              { BoundName.full_path = full_path'; local_path = full_path' }
-            else bound_path in
-          FullEnvi.localize (FullEnvi.has_value env) env bound_path) in
+          FullEnvi.localize_path (FullEnvi.has_value env) env @@
+            if FullEnvi.has_global_value env full_path' then full_path'
+            else bound_path.BoundName.full_path) in
     FullEnvi.Var.assoc x effect env
   | Typ typ -> TypeDefinition.update_env typ env
   | TypeExt (typ, typ_def) ->

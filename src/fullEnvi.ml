@@ -102,9 +102,15 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
+let localize_path (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
+  (x : PathName.t) : BoundName.t = {
+    BoundName.full_path = x;
+    local_path = FullMod.localize has_name env.active_module x;
+  }
+
 let localize (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
   (x : BoundName.t) : BoundName.t =
-  FullMod.localize has_name env.active_module x
+   localize_path has_name env x.BoundName.full_path
 
 let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
   let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
@@ -245,8 +251,7 @@ module ValueCarrier (M : Carrier) = struct
 
   let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
     let x = PathName.of_name path base in
-    let x = { BoundName.full_path = x; local_path = x } in
-    FullMod.localize (has_value env) env.active_module x
+    localize_path (has_value env) env x
 
   let coq_name (base : Name.t) (env : 'a t) : CoqName.t =
     CoqName.of_names base (resolve [] base env).PathName.base
@@ -398,8 +403,7 @@ module Module = struct
 
   let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
     let x = PathName.of_name path base in
-    let x = { BoundName.full_path = x; local_path = x } in
-    FullMod.localize (has_name env) env.active_module x
+    localize_path (has_name env) env x
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt Mod.Modules.resolve_opt (has_name env) x env
