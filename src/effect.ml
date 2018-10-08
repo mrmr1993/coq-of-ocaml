@@ -47,7 +47,7 @@ module Descriptor = struct
 
   let remove (x : CommonType.t) (d : t) : t =
     { d with
-      no_args = d.no_args |> List.filter (fun y -> compare x y <> 0)
+      no_args = d.no_args |> List.filter (fun y -> CommonType.compare x y <> 0)
     }
 
   let elements (d : t) : BoundName.t list =
@@ -61,7 +61,7 @@ module Descriptor = struct
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index d.no_args (fun y -> compare x y = 0)
+    find_index d.no_args (fun y -> CommonType.compare x y = 0)
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
     { d with args_arg = Some arg }
@@ -89,7 +89,7 @@ module Descriptor = struct
       match (xs1, xs2) with
       | ([], _) -> List.map (fun _ -> false) xs2
       | (x1 :: xs1', x2 :: xs2') ->
-        if x1 = x2 then
+        if CommonType.compare x1 x2 = 0 then
           true :: aux xs1' xs2'
         else
           false :: aux xs1 xs2'
