@@ -8,7 +8,6 @@ module Value = struct
     | Variable of 'a
     | Type of typ_def
     | Descriptor
-    | Exception of PathName.t
     | Constructor of PathName.t * int
     | Field of PathName.t * int
 
@@ -17,7 +16,6 @@ module Value = struct
     | Variable a -> Variable (f a)
     | Type def -> Type def
     | Descriptor -> Descriptor
-    | Exception raise_name -> Exception raise_name
     | Constructor (typ, index) -> Constructor (typ, index)
     | Field (typ, index) -> Field (typ, index)
 
@@ -26,7 +24,6 @@ module Value = struct
     | Variable _ -> "variable"
     | Type _ -> "type"
     | Descriptor -> "descriptor"
-    | Exception _ -> "exception"
     | Constructor _ -> "constructor"
     | Field _ -> "field"
 end
@@ -348,24 +345,6 @@ module Descriptor = ValueCarrier(struct
   let value () : 'a Value.t = Descriptor
 
   let unpack (v : 'a Value.t) : 'a t' = ()
-end)
-
-module Exception = ValueCarrier(struct
-  let resolve_opt (x : PathName.t) (m : Mod.t) : PathName.t option =
-    PathName.Map.find_opt x m.Mod.descriptors
-
-  let assoc (x : PathName.t) (y : PathName.t) (m : Mod.t) : Mod.t =
-    { m with Mod.descriptors = PathName.Map.add x y m.Mod.descriptors }
-
-  type 'a t = PathName.t
-  type 'a t' = PathName.t
-
-  let value (raise_name : PathName.t) : 'a Value.t = Exception raise_name
-
-  let unpack (v : 'a Value.t) : PathName.t =
-    match v with
-    | Exception raise_name -> raise_name
-    | _ -> failwith @@ "Could not interpret " ^ Value.to_string v ^ " as an exception."
 end)
 
 module Constructor = ValueCarrier(struct
