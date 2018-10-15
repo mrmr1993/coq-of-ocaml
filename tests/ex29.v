@@ -19,7 +19,7 @@ with even_length {A : Type} (l : list A) : bool :=
 Fixpoint odd_length_with_print {A : Type} (l : list A) : M [ IO ] bool :=
   match l with
   | [] =>
-    let! _ := OCaml.Pervasives.print_endline "false" % string in
+    let! _ := Pervasives.print_endline "false" % string in
     ret false
   | cons _ l =>
     let! x := even_length_with_print l in

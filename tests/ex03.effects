@@ -5,8 +5,9 @@ Value
       ((n1, [ ], [ ], Type (Z)),
         LetVar (4, Effect ([ ], .)) m =
           Constant ((4, Effect ([ ], .)), Int(12)) in
-        LetVar (5, Effect ([ ], .)) n1 = Variable ((5, Effect ([ ], .)), m) in
-        Variable ((6, Effect ([ ], .)), n1))
+        LetVar (5, Effect ([ ], .)) n1 =
+          Variable ((5, Effect ([ ], .)), Ex03/m) in
+        Variable ((6, Effect ([ ], .)), Ex03/n1))
     ])
 
 8
@@ -28,7 +29,7 @@ Value
                             .
                               ->
                               .)),
-                        c),
+                        Ex03/c),
                     [
                       Function
                         ((9,
@@ -56,7 +57,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  x)))
+                                  Ex03/x)))
                     ]))
             ]) in
         LetFun (10, Effect ([ ], .))
@@ -75,7 +76,7 @@ Value
                               .
                                 ->
                                 .)),
-                        f),
+                        Ex03/f),
                     [
                       Constant
                         ((10,
@@ -94,6 +95,7 @@ Value
                     ]))
             ]) in
         Apply
-          ((11, Effect ([ ], .)), Variable ((11, Effect ([ ], . -> .)), p1),
-            [ Variable ((11, Effect ([ ], . -> .)), c) ]))
+          ((11, Effect ([ ], .)),
+            Variable ((11, Effect ([ ], . -> .)), Ex03/p1),
+            [ Variable ((11, Effect ([ ], . -> .)), Ex03/c) ]))
     ])

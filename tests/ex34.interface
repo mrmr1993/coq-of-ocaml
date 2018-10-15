@@ -5,14 +5,17 @@
     "Ex34",
     [
       [ "Interface", "Ord", [ [ "Typ", [ "Abstract", "t", [] ] ], [ "Var", "compare", [] ] ] ],
-      [ "Typ", [ "Synonym", "elt", [], [ "Apply", "Ord.t" ] ] ],
+      [ "Typ", [ "Synonym", "elt", [], [ "Apply", "Ex34.Ord.t" ] ] ],
       [
         "Typ",
         [
           "Inductive",
           "t",
           [],
-          [ [ "Empty", [] ], [ "Node", [ [ "Apply", "t" ], [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "Z" ] ] ] ]
+          [
+            [ "Empty", [] ],
+            [ "Node", [ [ "Apply", "Ex34.t" ], [ "Apply", "Ex34.elt" ], [ "Apply", "Ex34.t" ], [ "Apply", "Z" ] ] ]
+          ]
         ]
       ],
       [ "Var", "height", [] ],
@@ -183,7 +186,10 @@
           "Inductive",
           "enumeration",
           [],
-          [ [ "End", [] ], [ "More", [ [ "Apply", "elt" ], [ "Apply", "t" ], [ "Apply", "enumeration" ] ] ] ]
+          [
+            [ "End", [] ],
+            [ "More", [ [ "Apply", "Ex34.elt" ], [ "Apply", "Ex34.t" ], [ "Apply", "Ex34.enumeration" ] ] ]
+          ]
         ]
       ],
       [ "Var", "cons_enum", [] ],

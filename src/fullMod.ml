@@ -87,24 +87,24 @@ let bound_module_opt (x : PathName.t) (env : t) : BoundName.t option =
   bound_name_opt Mod.Modules.resolve_opt x env
 
 let localize (has_name : PathName.t -> Mod.t -> bool) (env : t)
-  (x : BoundName.t) : BoundName.t =
+  (x : PathName.t) : PathName.t =
   let rec localize_name (path : Name.t list) (base : Name.t) (env : t)
       (env' : Mod.t list) =
     match env with
     | [] -> None
     | Module m :: env | Include m :: env | Open m :: env ->
-      match strip_prefix m.Mod.coq_path path with
-      | None -> localize_name path base env (m :: env')
-      | Some path' ->
-        let path_name = PathName.of_name path' base in
-        if List.exists (has_name path_name) env' then
-          localize_name path base env (m :: env')
-        else
-          Some path_name in
-  let full_path = x.BoundName.full_path in
-  let name =
-    localize_name full_path.PathName.path full_path.PathName.base env []
-    |> option_map (fun path -> { x with BoundName.local_path = path }) in
-  match name with
+      let coq_path = m.Mod.coq_path in
+      match coq_path with
+      | [] -> localize_name path base env (m :: env')
+      | _ ->
+        match strip_prefix coq_path path with
+        | None -> localize_name path base env (m :: env')
+        | Some path' ->
+          let path_name = PathName.of_name path' base in
+          if List.exists (has_name path_name) env' then
+            localize_name path base env (m :: env')
+          else
+            Some path_name in
+  match localize_name x.PathName.path x.PathName.base env [] with
   | Some name -> name
-  | None -> { x with BoundName.local_path = x.BoundName.full_path }
+  | None -> x

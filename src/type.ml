@@ -101,6 +101,8 @@ let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
 
 let map_vars (f : Name.t -> t) (typ : t) : t = CommonType.map_vars f typ
 
+let map (f : BoundName.t -> BoundName.t) (typ : t) : t = CommonType.map f typ
+
 let typ_args (typ : t) : Name.Set.t = CommonType.typ_args typ
 
 (** In a function's type extract the body's type (up to [n] arguments). *)

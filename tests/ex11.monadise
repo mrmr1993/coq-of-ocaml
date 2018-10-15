@@ -7,32 +7,36 @@
 Value
   (non_rec, @.,
     [
-      ((r, [ ], [ ], Type (SizedString.t)),
+      ((r, [ ], [ ], Type (Ex11/SizedString.t)),
         Record
-          (9, None, (SizedString.name, Some Constant (9, String("gre"))),
-            (SizedString.size, Some Constant (9, Int(3)))))
+          (9, None,
+            (Ex11/SizedString.name, Some Constant (9, String("gre"))),
+            (Ex11/SizedString.size, Some Constant (9, Int(3)))))
     ])
 
 10
 Value
   (non_rec, @.,
     [
-      ((r', [ ], [ ], Type (SizedString.t)),
+      ((r', [ ], [ ], Type (Ex11/SizedString.t)),
         Record
-          (10, None, (SizedString.name, Some Constant (10, String("haha"))),
-            (SizedString.size, Some Constant (10, Int(4)))))
+          (10, None,
+            (Ex11/SizedString.name, Some Constant (10, String("haha"))),
+            (Ex11/SizedString.size, Some Constant (10, Int(4)))))
     ])
 
 11
 Value
   (non_rec, @.,
     [
-      ((r'', [ ], [ ], Type (SizedString.t)),
+      ((r'', [ ], [ ], Type (Ex11/SizedString.t)),
         Record
-          (11, Some Variable (11, r),
-            (SizedString.name, Some Constant (11, String("GRE"))),
-            (SizedString.size,
-              Some Field (?, Variable (11, r), SizedString.size))))
+          (11, Some Variable (11, Ex11/r),
+            (Ex11/SizedString.name, Some Constant (11, String("GRE"))),
+            (Ex11/SizedString.size,
+              Some
+                Field
+                  (?, Variable (11, Ex11/r), Ex11/SizedString.size))))
     ])
 
 13
@@ -43,8 +47,8 @@ Value
         Apply
           (13, Variable (13, Z.add),
             [
-              Field (13, Variable (13, r), SizedString.size);
-              Field (13, Variable (13, r'), SizedString.size)
+              Field (13, Variable (13, Ex11/r), Ex11/SizedString.size);
+              Field (13, Variable (13, Ex11/r'), Ex11/SizedString.size)
             ]))
     ])
 
@@ -52,11 +56,11 @@ Value
 Value
   (non_rec, @.,
     [
-      ((f, [ ], [ (x, Type (SizedString.t)) ], Type (bool)),
+      ((f, [ ], [ (x, Type (Ex11/SizedString.t)) ], Type (bool)),
         Match
-          (16, Variable (?, x),
+          (16, Variable (?, Ex11/x),
             [
-              (Record ((SizedString.size, Int(3))),
+              (Record ((Ex11/SizedString.size, Int(3))),
                 Constructor (16, true));
               (Any, Constructor (17, false))
             ]))
@@ -67,7 +71,7 @@ Value
   (non_rec, @.,
     [
       ((b, [ ], [ ], Type (bool)),
-        Apply (19, Variable (19, f), [ Variable (19, r) ]))
+        Apply (19, Variable (19, Ex11/f), [ Variable (19, Ex11/r) ]))
     ])
 
 20
@@ -75,7 +79,7 @@ Value
   (non_rec, @.,
     [
       ((b', [ ], [ ], Type (bool)),
-        Apply (20, Variable (20, f), [ Variable (20, r') ]))
+        Apply (20, Variable (20, Ex11/f), [ Variable (20, Ex11/r') ]))
     ])
 
 21
@@ -83,7 +87,7 @@ Value
   (non_rec, @.,
     [
       ((b'', [ ], [ ], Type (bool)),
-        Apply (21, Variable (21, f), [ Variable (21, r'') ]))
+        Apply (21, Variable (21, Ex11/f), [ Variable (21, Ex11/r'') ]))
     ])
 
 23 Module Point:
@@ -95,11 +99,11 @@ Value
   Value
     (non_rec, @.,
       [
-        ((p, [ ], [ ], Type (Point/t)),
+        ((p, [ ], [ ], Type (Ex11.Point/t)),
           Record
-            (29, None, (Point/x, Some Constant (29, Int(5))),
-              (Point/y, Some Constant (29, Int(-3))),
-              (Point/z, Some Constant (29, Int(1)))))
+            (29, None, (Ex11.Point/x, Some Constant (29, Int(5))),
+              (Ex11.Point/y, Some Constant (29, Int(-3))),
+              (Ex11.Point/z, Some Constant (29, Int(1)))))
       ])
   
   31
@@ -108,9 +112,13 @@ Value
       [
         ((b, [ ], [ ], Type (bool)),
           Match
-            (31, Variable (31, Point/p),
+            (31, Variable (31, Ex11.Point/p),
               [
-                (Record ((Point/x, Int(5)), (Point/z, Int(1))),
+                (Record
+                  ((Ex11.Point/x,
+                    Int(5)),
+                    (Ex11.Point/z,
+                      Int(1))),
                   Constructor (32, true));
                 (Any, Constructor (33, false))
               ]))
@@ -120,10 +128,10 @@ Value
   Value
     (non_rec, @.,
       [
-        ((move_right, [ ], [ (p, Type (Point/t)) ], Type (Point/t)),
+        ((move_right, [ ], [ (p, Type (Ex11.Point/t)) ], Type (Ex11.Point/t)),
           Record
-            (35, Some Variable (35, Point/p),
-              (Point/x,
+            (35, Some Variable (35, Ex11.Point/p),
+              (Ex11.Point/x,
                 Some
                   Apply
                     (35, Variable (35, Z.add),
@@ -132,12 +140,18 @@ Value
                           (35,
                             Variable
                               (35,
-                                Point/p),
-                            Point/x);
+                                Ex11.Point/p),
+                            Ex11.Point/x);
                         Constant (35, Int(1))
                       ])),
-              (Point/y,
-                Some Field (?, Variable (35, Point/p), Point/y)),
-              (Point/z,
-                Some Field (?, Variable (35, Point/p), Point/z))))
+              (Ex11.Point/y,
+                Some
+                  Field
+                    (?, Variable (35, Ex11.Point/p),
+                      Ex11.Point/y)),
+              (Ex11.Point/z,
+                Some
+                  Field
+                    (?, Variable (35, Ex11.Point/p),
+                      Ex11.Point/z))))
       ])

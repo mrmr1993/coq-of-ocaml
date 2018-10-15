@@ -6,7 +6,7 @@ Value
     [
       ((plus_one, [ A ], [ (x, A) ], Type (Z)),
         Match
-          (3, Variable (?, x),
+          (3, Variable (?, Ex18/x),
             [
               (Any,
                 Apply
@@ -19,11 +19,11 @@ Value
                         (4,
                           Variable
                             (4,
-                              OCaml.Effect.State.read),
+                              OCaml/Effect.State.read),
                           [
                             Variable
                               (4,
-                                r)
+                                Ex18/r)
                           ]);
                       Constant
                         (4,
@@ -40,24 +40,24 @@ Value
     [
       ((fail, [ A; B ], [ (x, A) ], B),
         Match
-          (8, Variable (?, x),
+          (8, Variable (?, Ex18/x),
             [
               (Any,
                 Apply
                   (8,
                     Variable
                       (8,
-                        OCaml.Pervasives.failwith),
+                        OCaml/Pervasives.failwith),
                     [
                       Apply
                         (8,
                           Variable
                             (8,
-                              OCaml.Effect.State.read),
+                              OCaml/Effect.State.read),
                           [
                             Variable
                               (8,
-                                s)
+                                Ex18/s)
                           ])
                     ]))
             ]))
@@ -69,18 +69,18 @@ Value
     [
       ((reset, [ A ], [ (x, A) ], Type (unit)),
         Match
-          (10, Variable (?, x),
+          (10, Variable (?, Ex18/x),
             [
               (Any,
                 Apply
                   (11,
                     Variable
                       (11,
-                        OCaml.Effect.State.write),
+                        OCaml/Effect.State.write),
                     [
                       Variable
                         (11,
-                          r);
+                          Ex18/r);
                       Constant
                         (11,
                           Int(0))
@@ -94,18 +94,18 @@ Value
     [
       ((incr, [ A ], [ (x, A) ], Type (unit)),
         Match
-          (13, Variable (?, x),
+          (13, Variable (?, Ex18/x),
             [
               (Any,
                 Apply
                   (14,
                     Variable
                       (14,
-                        OCaml.Effect.State.write),
+                        OCaml/Effect.State.write),
                     [
                       Variable
                         (14,
-                          r);
+                          Ex18/r);
                       Apply
                         (14,
                           Variable
@@ -116,11 +116,11 @@ Value
                               (14,
                                 Variable
                                   (14,
-                                    OCaml.Effect.State.read),
+                                    OCaml/Effect.State.read),
                                 [
                                   Variable
                                     (14,
-                                      r)
+                                      Ex18/r)
                                 ]);
                             Constant
                               (14,

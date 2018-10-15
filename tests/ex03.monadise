@@ -4,8 +4,8 @@ Value
     [
       ((n1, [ ], [ ], Type (Z)),
         LetVar ? m = Constant (4, Int(12)) in
-        LetVar ? n1 = Variable (5, m) in
-        Variable (6, n1))
+        LetVar ? n1 = Variable (5, Ex03/m) in
+        Variable (6, Ex03/n1))
     ])
 
 8
@@ -18,7 +18,10 @@ Value
             [
               ((p1, [ A; B; C ], [ (c, ((A -> (B -> A)) -> C)) ], C),
                 Apply
-                  (9, Variable (9, c),
+                  (9,
+                    Variable
+                      (9,
+                        Ex03/c),
                     [
                       Function
                         (9,
@@ -28,7 +31,7 @@ Value
                               y,
                               Variable
                                 (9,
-                                  x)))
+                                  Ex03/x)))
                     ]))
             ]) in
         LetFun 10
@@ -36,7 +39,10 @@ Value
             [
               ((c, [ A ], [ (f, (Type (Z) -> (Type (Z) -> A))) ], A),
                 Apply
-                  (10, Variable (10, f),
+                  (10,
+                    Variable
+                      (10,
+                        Ex03/f),
                     [
                       Constant
                         (10,
@@ -46,5 +52,5 @@ Value
                           Int(23))
                     ]))
             ]) in
-        Apply (11, Variable (11, p1), [ Variable (11, c) ]))
+        Apply (11, Variable (11, Ex03/p1), [ Variable (11, Ex03/c) ]))
     ])

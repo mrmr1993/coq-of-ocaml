@@ -4,12 +4,13 @@
     (non_rec, @.,
       [
         ((f, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
+          Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], B)),
           Match
             ((4,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
-                  .)), Variable ((?, Effect ([ ], .)), M/x),
+                ([ Type (OCaml/exception, Type (OCaml/failure)) ],
+                  .)),
+              Variable ((?, Effect ([ ], .)), Ex30.M/x),
               [
                 (Any,
                   Apply
@@ -17,9 +18,9 @@
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           .)),
                       Variable
@@ -30,12 +31,12 @@
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.failure))
+                                        (OCaml/failure))
                                 ]->
                                 .)),
-                          OCaml.Pervasives.failwith),
+                          OCaml/Pervasives.failwith),
                       [
                         Constant
                           ((4,
@@ -54,16 +55,17 @@
     (non_rec, @.,
       [
         ((f, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ], B)),
+          Monad ([ Type (OCaml/exception, Type (OCaml/assert_failure)) ], B)),
           Match
             ((8,
               Effect
                 ([
                   Type
-                    (OCaml.exception,
+                    (OCaml/exception,
                       Type
-                        (OCaml.assert_failure))
-                ], .)), Variable ((?, Effect ([ ], .)), N/x),
+                        (OCaml/assert_failure))
+                ], .)),
+              Variable ((?, Effect ([ ], .)), Ex30.N/x),
               [
                 (Any,
                   Apply
@@ -71,9 +73,9 @@
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.assert_failure))
+                                (OCaml/assert_failure))
                         ],
                           .)),
                       Variable
@@ -84,12 +86,12 @@
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.assert_failure))
+                                        (OCaml/assert_failure))
                                 ]->
                                 .)),
-                          OCaml.assert),
+                          OCaml/assert),
                       [
                         Constructor
                           ((8,
@@ -112,17 +114,17 @@
               Run
                 ((?, Effect ([ ], .)),
                   Type
-                    (OCaml.exception,
-                      Type (OCaml.assert_failure)),
+                    (OCaml/exception,
+                      Type (OCaml/assert_failure)),
                   [ ],
                   Apply
                     ((9,
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.assert_failure))
+                                (OCaml/assert_failure))
                         ], .)),
                       Variable
                         ((9,
@@ -131,12 +133,12 @@
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.assert_failure))
+                                        (OCaml/assert_failure))
                                 ]->
                                 .)),
-                          N/f),
+                          Ex30.N/f),
                       [
                         Constructor
                           ((9,
@@ -154,11 +156,11 @@
                         ([
                         ],
                           .)),
-                      N/x));
+                      Ex30.N/x));
                 (Constructor
                   (inr,
                     Constructor
-                      (OCaml.Assert_failure,
+                      (OCaml/Assert_failure,
                         Tuple
                           (Any))),
                   Constructor
@@ -171,7 +173,7 @@
               ]))
       ])
   
-  10 Open M
+  10 Open Ex30/M
   
   11
   Value
@@ -183,16 +185,16 @@
               Run
                 ((?, Effect ([ ], .)),
                   Type
-                    (OCaml.exception,
-                      Type (OCaml.failure)), [ ],
+                    (OCaml/exception,
+                      Type (OCaml/failure)), [ ],
                   Apply
                     ((11,
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ], .)),
                       Variable
                         ((11,
@@ -201,12 +203,12 @@
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.failure))
+                                        (OCaml/failure))
                                 ]->
                                 .)),
-                          M.f),
+                          Ex30/M.f),
                       [
                         Constructor
                           ((11,
@@ -224,11 +226,11 @@
                         ([
                         ],
                           .)),
-                      N/x_1));
+                      Ex30.N/x_1));
                 (Constructor
                   (inr,
                     Constructor
-                      (OCaml.Failure,
+                      (OCaml/Failure,
                         Tuple
                           (Any))),
                   Constructor
@@ -250,16 +252,16 @@ Value
           ((14, Effect ([ ], .)),
             Run
               ((?, Effect ([ ], .)),
-                Type (OCaml.exception, Type (OCaml.assert_failure)),
+                Type (OCaml/exception, Type (OCaml/assert_failure)),
                 [ ],
                 Apply
                   ((14,
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ], .)),
                     Variable
                       ((14,
@@ -268,24 +270,25 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.exception,
+                                  (OCaml/exception,
                                     Type
-                                      (OCaml.assert_failure))
-                              ]-> .)), N.f),
+                                      (OCaml/assert_failure))
+                              ]-> .)), Ex30/N.f),
                     [ Constructor ((14, Effect ([ ], .)), tt) ])),
             [
-              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
+              (Constructor (inl, x),
+                Variable ((?, Effect ([ ], .)), Ex30/x));
               (Constructor
                 (inr,
                   Constructor
-                    (OCaml.Assert_failure,
+                    (OCaml/Assert_failure,
                       Tuple
                         (Any))),
                 Constructor ((14, Effect ([ ], .)), tt))
             ]))
     ])
 
-15 Open N
+15 Open Ex30/N
 
 16
 Value
@@ -296,16 +299,16 @@ Value
           ((16, Effect ([ ], .)),
             Run
               ((?, Effect ([ ], .)),
-                Type (OCaml.exception, Type (OCaml.assert_failure)),
+                Type (OCaml/exception, Type (OCaml/assert_failure)),
                 [ ],
                 Apply
                   ((16,
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.assert_failure))
+                              (OCaml/assert_failure))
                       ], .)),
                     Variable
                       ((16,
@@ -314,17 +317,18 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.exception,
+                                  (OCaml/exception,
                                     Type
-                                      (OCaml.assert_failure))
-                              ]-> .)), N.f),
+                                      (OCaml/assert_failure))
+                              ]-> .)), Ex30/N.f),
                     [ Constructor ((16, Effect ([ ], .)), tt) ])),
             [
-              (Constructor (inl, x), Variable ((?, Effect ([ ], .)), x));
+              (Constructor (inl, x),
+                Variable ((?, Effect ([ ], .)), Ex30/x));
               (Constructor
                 (inr,
                   Constructor
-                    (OCaml.Assert_failure,
+                    (OCaml/Assert_failure,
                       Tuple
                         (Any))),
                 Constructor ((16, Effect ([ ], .)), tt))
@@ -342,16 +346,17 @@ Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.assert_failure)) ], B)),
+          Monad ([ Type (OCaml/exception, Type (OCaml/assert_failure)) ], B)),
           Match
             ((21,
               Effect
                 ([
                   Type
-                    (OCaml.exception,
+                    (OCaml/exception,
                       Type
-                        (OCaml.assert_failure))
-                ], .)), Variable ((?, Effect ([ ], .)), A/x),
+                        (OCaml/assert_failure))
+                ], .)),
+              Variable ((?, Effect ([ ], .)), Ex30.A/x),
               [
                 (Any,
                   Apply
@@ -359,9 +364,9 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.assert_failure))
+                                (OCaml/assert_failure))
                         ],
                           .)),
                       Variable
@@ -372,12 +377,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.assert_failure))
+                                        (OCaml/assert_failure))
                                 ]->
                                 .)),
-                          OCaml.assert),
+                          OCaml/assert),
                       [
                         Constructor
                           ((21,
@@ -394,9 +399,9 @@ Value
   25
   Value
     (non_rec, @.,
-      [ ((a, [ ], [ ], Type (Z)), Variable ((25, Effect ([ ], .)), x)) ])
+      [ ((a, [ ], [ ], Type (Z)), Variable ((25, Effect ([ ], .)), Ex30/x)) ])
   
-  26 Open A
+  26 Open Ex30/A
   
   27
   Value
@@ -407,9 +412,9 @@ Value
             Monad
               ([
                 Type
-                  (OCaml.exception,
+                  (OCaml/exception,
                     Type
-                      (OCaml.assert_failure))
+                      (OCaml/assert_failure))
               ], B))),
           Variable
             ((27,
@@ -418,10 +423,10 @@ Value
                   .
                     -[
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (OCaml.assert_failure))
-                    ]-> .)), A/x))
+                            (OCaml/assert_failure))
+                    ]-> .)), Ex30.A/x))
       ])
   
   28
@@ -429,12 +434,13 @@ Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
+          Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], B)),
           Match
             ((28,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
-                  .)), Variable ((?, Effect ([ ], .)), B/x),
+                ([ Type (OCaml/exception, Type (OCaml/failure)) ],
+                  .)),
+              Variable ((?, Effect ([ ], .)), Ex30.B/x),
               [
                 (Any,
                   Apply
@@ -442,9 +448,9 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           .)),
                       Variable
@@ -455,12 +461,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.failure))
+                                        (OCaml/failure))
                                 ]->
                                 .)),
-                          OCaml.Pervasives.failwith),
+                          OCaml/Pervasives.failwith),
                       [
                         Constant
                           ((28,
@@ -478,7 +484,7 @@ Value
     (non_rec, @.,
       [
         ((c, [ A; B ], [ ],
-          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B))),
+          (A -> Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], B))),
           Variable
             ((29,
               Effect
@@ -486,29 +492,30 @@ Value
                   .
                     -[
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (OCaml.failure))
-                    ]-> .)), B/x))
+                            (OCaml/failure))
+                    ]-> .)), Ex30.B/x))
       ])
 
 32 Module C:
   33
   Value
     (non_rec, @.,
-      [ ((a, [ ], [ ], Type (Z)), Variable ((33, Effect ([ ], .)), x)) ])
+      [ ((a, [ ], [ ], Type (Z)), Variable ((33, Effect ([ ], .)), Ex30/x)) ])
   
   34
   Value
     (non_rec, @.,
       [
         ((x, [ A; B ], [ (x, A) ],
-          Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B)),
+          Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], B)),
           Match
             ((34,
               Effect
-                ([ Type (OCaml.exception, Type (OCaml.failure)) ],
-                  .)), Variable ((?, Effect ([ ], .)), C/x),
+                ([ Type (OCaml/exception, Type (OCaml/failure)) ],
+                  .)),
+              Variable ((?, Effect ([ ], .)), Ex30.C/x),
               [
                 (Any,
                   Apply
@@ -516,9 +523,9 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           .)),
                       Variable
@@ -529,12 +536,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.failure))
+                                        (OCaml/failure))
                                 ]->
                                 .)),
-                          OCaml.Pervasives.failwith),
+                          OCaml/Pervasives.failwith),
                       [
                         Constant
                           ((34,
@@ -552,7 +559,7 @@ Value
     (non_rec, @.,
       [
         ((b, [ A; B ], [ ],
-          (A -> Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], B))),
+          (A -> Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], B))),
           Variable
             ((35,
               Effect
@@ -560,13 +567,13 @@ Value
                   .
                     -[
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (OCaml.failure))
-                    ]-> .)), C/x))
+                            (OCaml/failure))
+                    ]-> .)), Ex30.C/x))
       ])
   
-  36 Open A
+  36 Open Ex30/A
   
   37
   Value
@@ -577,9 +584,9 @@ Value
             Monad
               ([
                 Type
-                  (OCaml.exception,
+                  (OCaml/exception,
                     Type
-                      (OCaml.assert_failure))
+                      (OCaml/assert_failure))
               ], B))),
           Variable
             ((37,
@@ -588,10 +595,10 @@ Value
                   .
                     -[
                       Type
-                        (OCaml.exception,
+                        (OCaml/exception,
                           Type
-                            (OCaml.assert_failure))
-                    ]-> .)), A.x))
+                            (OCaml/assert_failure))
+                    ]-> .)), Ex30/A.x))
       ])
 
 40 Module D:
@@ -604,16 +611,16 @@ Value
   44
   Value
     (non_rec, @.,
-      [ ((b, [ ], [ ], Type (Z)), Variable ((44, Effect ([ ], .)), x)) ])
+      [ ((b, [ ], [ ], Type (Z)), Variable ((44, Effect ([ ], .)), Ex30/x)) ])
   
-  45 Open D/A
+  45 Open Ex30.D/A
   
   46
   Value
     (non_rec, @.,
-      [ ((c, [ ], [ ], Type (Z)), Variable ((46, Effect ([ ], .)), A/A.a)) ])
+      [ ((c, [ ], [ ], Type (Z)), Variable ((46, Effect ([ ], .)), Ex30.D/A.a)) ])
   
   47
   Value
     (non_rec, @.,
-      [ ((d, [ ], [ ], Type (Z)), Variable ((47, Effect ([ ], .)), x)) ])
+      [ ((d, [ ], [ ], Type (Z)), Variable ((47, Effect ([ ], .)), Ex30/x)) ])

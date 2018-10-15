@@ -5,18 +5,20 @@ Value
   (non_rec, @.,
     [
       ((div, [ ], [ (n, Type (Z)) ],
-        Monad ([ Type (OCaml.exception, Type (fail)) ], Type (Z))),
+        Monad ([ Type (OCaml/exception, Type (Ex35/fail)) ], Type (Z))),
         IfThenElse
-          ((6, Effect ([ Type (OCaml.exception, Type (fail)) ], .)),
+          ((6, Effect ([ Type (OCaml/exception, Type (Ex35/fail)) ], .)),
             Apply
               ((6, Effect ([ ], .)),
                 Variable ((6, Effect ([ ], . -> . -> .)), equiv_decb),
                 [
-                  Variable ((6, Effect ([ ], .)), n);
+                  Variable ((6, Effect ([ ], .)), Ex35/n);
                   Constant ((6, Effect ([ ], .)), Int(0))
                 ]),
             Apply
-              ((7, Effect ([ Type (OCaml.exception, Type (fail)) ], .)),
+              ((7,
+                Effect
+                  ([ Type (OCaml/exception, Type (Ex35/fail)) ], .)),
                 Variable
                   ((7,
                     Effect
@@ -24,14 +26,14 @@ Value
                         .
                           -[
                             Type
-                              (OCaml.exception,
+                              (OCaml/exception,
                                 Type
-                                  (fail))
-                          ]-> .)), OCaml.Pervasives.raise),
+                                  (Ex35/fail))
+                          ]-> .)), OCaml/Pervasives.raise),
                 [
                   Constructor
                     ((7, Effect ([ ], .)),
-                      Fail,
+                      Ex35/Fail,
                       Tuple
                         ((?,
                           Effect
@@ -51,6 +53,6 @@ Value
                 Variable ((9, Effect ([ ], . -> . -> .)), Z.div),
                 [
                   Constant ((9, Effect ([ ], .)), Int(256));
-                  Variable ((9, Effect ([ ], .)), n)
+                  Variable ((9, Effect ([ ], .)), Ex35/n)
                 ])))
     ])

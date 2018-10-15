@@ -4,18 +4,18 @@ Value
     [
       ((tail, [ A ], [ (l, Type (list, A)) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (list, A))),
+          ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (list, A))),
         Match
-          (4, Variable (4, l),
+          (4, Variable (4, Ex13/l),
             [
               (Constructor (cons, Any, xs),
-                Return (?, Variable (5, xs)));
+                Return (?, Variable (5, Ex13/xs)));
               (Constructor ([]),
                 Apply
                   (6,
                     Variable
                       (6,
-                        OCaml.Pervasives.failwith),
+                        OCaml/Pervasives.failwith),
                     [
                       Constant
                         (6,
@@ -32,7 +32,7 @@ Value
         [ (counter, Type (nat)); (x, Type (list, Type (string))) ],
         Monad ([ Type (IO); Type (NonTermination) ], Type (unit))),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex13/counter),
             [
               (Constructor (O),
                 Lift
@@ -58,7 +58,10 @@ Value
                         ])));
               (Constructor (S, counter),
                 Match
-                  (9, Variable (?, x),
+                  (9,
+                    Variable
+                      (?,
+                        Ex13/x),
                     [
                       (Constructor
                         ([]),
@@ -89,11 +92,11 @@ Value
                                   (11,
                                     Variable
                                       (11,
-                                        OCaml.Pervasives.print_string),
+                                        OCaml/Pervasives.print_string),
                                     [
                                       Variable
                                         (11,
-                                          x)
+                                          Ex13/x)
                                     ])),
                             None,
                             Apply
@@ -102,16 +105,16 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        print_list_rec),
+                                        Ex13/print_list_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex13/counter)
                                     ]),
                                 [
                                   Variable
                                     (12,
-                                      xs)
+                                      Ex13/xs)
                                 ])))
                     ]))
             ]))
@@ -135,8 +138,11 @@ Value
               (?, [ Type (IO); Type (NonTermination) ],
                 [ Type (Counter); Type (IO); Type (NonTermination) ],
                 Apply
-                  (?, Variable (?, print_list_rec),
-                    [ Variable (?, x_1); Variable (?, x) ]))))
+                  (?, Variable (?, Ex13/print_list_rec),
+                    [
+                      Variable (?, Ex13/x_1);
+                      Variable (?, Ex13/x)
+                    ]))))
     ])
 
 14
@@ -147,7 +153,7 @@ Value
         (Type (list, Type (string)) ->
           Monad
             ([ Type (Counter); Type (IO); Type (NonTermination) ],
-              Type (unit)))), Variable (14, print_list))
+              Type (unit)))), Variable (14, Ex13/print_list))
     ])
 
 16
@@ -160,20 +166,20 @@ Value
             Type (Counter);
             Type (IO);
             Type (NonTermination);
-            Type (OCaml.exception, Type (OCaml.failure))
+            Type (OCaml/exception, Type (OCaml/failure))
           ], Type (unit))),
         Bind
           (?,
             Lift
-              (?, [ Type (OCaml.exception, Type (OCaml.failure)) ],
+              (?, [ Type (OCaml/exception, Type (OCaml/failure)) ],
                 [
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.exception, Type (OCaml.failure))
+                  Type (OCaml/exception, Type (OCaml/failure))
                 ],
                 Apply
-                  (16, Variable (16, tail),
+                  (16, Variable (16, Ex13/tail),
                     [
                       Constructor
                         (16,
@@ -209,6 +215,9 @@ Value
                   Type (Counter);
                   Type (IO);
                   Type (NonTermination);
-                  Type (OCaml.exception, Type (OCaml.failure))
-                ], Apply (16, Variable (16, f), [ Variable (?, x) ]))))
+                  Type (OCaml/exception, Type (OCaml/failure))
+                ],
+                Apply
+                  (16, Variable (16, Ex13/f),
+                    [ Variable (?, Ex13/x) ]))))
     ])

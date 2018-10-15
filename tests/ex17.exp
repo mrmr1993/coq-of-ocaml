@@ -6,8 +6,8 @@ Value
     [
       ((f, [ A; B ], [ (x, A) ], B),
         Apply
-          (5, Variable (5, OCaml.Pervasives.raise),
-            [ Constructor (5, Outside, Tuple (?)) ]))
+          (5, Variable (5, OCaml/Pervasives.raise),
+            [ Constructor (5, Ex17/Outside, Tuple (?)) ]))
     ])
 
 7 Module G:
@@ -19,13 +19,13 @@ Value
       [
         ((g, [ A ], [ (b, Type (bool)) ], A),
           IfThenElse
-            (11, Variable (11, G/b),
+            (11, Variable (11, Ex17.G/b),
               Apply
-                (12, Variable (12, OCaml.Pervasives.raise),
+                (12, Variable (12, OCaml/Pervasives.raise),
                   [
                     Constructor
                       (12,
-                        G/Inside,
+                        Ex17.G/Inside,
                         Tuple
                           (?,
                             Constant
@@ -36,8 +36,14 @@ Value
                                 String("no"))))
                   ]),
               Apply
-                (14, Variable (14, OCaml.Pervasives.raise),
-                  [ Constructor (14, Outside, Tuple (?)) ])))
+                (14, Variable (14, OCaml/Pervasives.raise),
+                  [
+                    Constructor
+                      (14,
+                        Ex17/Outside,
+                        Tuple
+                          (?))
+                  ])))
       ])
 
 17
@@ -46,7 +52,7 @@ Value
     [
       ((h_rec, [ A; B ], [ (counter, Type (nat)); (l, Type (list, A)) ], B),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex17/counter),
             [
               (Constructor (O),
                 Apply
@@ -60,7 +66,10 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (18, Variable (18, l),
+                  (18,
+                    Variable
+                      (18,
+                        Ex17/l),
                     [
                       (Constructor
                         ([]),
@@ -70,7 +79,7 @@ Value
                               (19,
                                 Variable
                                   (19,
-                                    OCaml.Pervasives.print_string),
+                                    OCaml/Pervasives.print_string),
                                 [
                                   Constant
                                     (19,
@@ -80,7 +89,7 @@ Value
                               (19,
                                 Variable
                                   (19,
-                                    G.g),
+                                    Ex17/G.g),
                                 [
                                   Constructor
                                     (19,
@@ -95,11 +104,11 @@ Value
                           (20,
                             Variable
                               (20,
-                                OCaml.Pervasives.raise),
+                                OCaml/Pervasives.raise),
                             [
                               Constructor
                                 (20,
-                                  G.Inside,
+                                  Ex17/G.Inside,
                                   Tuple
                                     (?,
                                       Constant
@@ -119,16 +128,16 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    h_rec),
+                                    Ex17/h_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter)
+                                      Ex17/counter)
                                 ]),
                             [
                               Variable
                                 (21,
-                                  xs)
+                                  Ex17/xs)
                             ]))
                     ]))
             ]))
@@ -140,9 +149,9 @@ Value
     [
       ((h, [ A; B ], [ (l, Type (list, A)) ], B),
         Apply
-          (?, Variable (?, h_rec),
+          (?, Variable (?, Ex17/h_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, l)
+              Variable (?, Ex17/l)
             ]))
     ])

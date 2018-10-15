@@ -9,7 +9,7 @@ Definition a : M [ OCaml.Effect.State.state Z; a_state ]
   (OCaml.Effect.State.t Z) := OCaml.Effect.State.global 15.
 
 Definition b (x : unit)
-  : M [ OCaml.Effect.State.state Z; a_state ] (OCaml.Effect.State.t Z) :=
+  : M [ Effect.State.state Z; a_state ] (Effect.State.t Z) :=
   match x with
   | tt => a
   end.
@@ -19,8 +19,7 @@ Definition a_1 : M [ OCaml.Effect.State.state string; a_state_1 ]
   (OCaml.Effect.State.t string) := OCaml.Effect.State.global "test" % string.
 
 Definition c (x : unit)
-  : M [ OCaml.Effect.State.state string; a_state_1 ]
-    (OCaml.Effect.State.t string) :=
+  : M [ Effect.State.state string; a_state_1 ] (Effect.State.t string) :=
   match x with
   | tt => a_1
   end.

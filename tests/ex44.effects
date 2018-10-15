@@ -5,7 +5,7 @@ Value
       ((temp, [ ], [ ], Type (unit)),
         Apply
           ((3, Effect ([ ], .)),
-            Variable ((3, Effect ([ ], . -> .)), OCaml.Pervasives.ignore),
+            Variable ((3, Effect ([ ], . -> .)), OCaml/Pervasives.ignore),
             [
               Apply
                 ((3, Effect ([ ], .)),
@@ -55,8 +55,9 @@ Value
     [
       ((a, [ ], [ ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
-            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), a)) ]))
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_1),
+            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), Ex44/a)) ]))
     ])
 
 5
@@ -65,8 +66,9 @@ Value
     [
       ((b, [ ], [ ], Type (string)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_1),
-            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), b)) ]))
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_1),
+            [ (Tuple (a, b), Variable ((?, Effect ([ ], .)), Ex44/b)) ]))
     ])
 
 7
@@ -77,9 +79,9 @@ Inductive a (= a_1):
 Value
   (non_rec, @.,
     [
-      ((temp_2, [ ], [ ], Type (a_1)),
+      ((temp_2, [ ], [ ], Type (Ex44/a_1)),
         Constructor
-          ((9, Effect ([ ], .)), A,
+          ((9, Effect ([ ], .)), Ex44/A,
             Constant ((9, Effect ([ ], .)), Int(15)),
             Constructor ((9, Effect ([ ], .)), true)))
     ])
@@ -90,8 +92,12 @@ Value
     [
       ((i, [ ], [ ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
-            [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), i)) ]))
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_2),
+            [
+              (Constructor (Ex44/A, i, j),
+                Variable ((?, Effect ([ ], .)), Ex44/i))
+            ]))
     ])
 
 9
@@ -100,8 +106,12 @@ Value
     [
       ((j, [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_2),
-            [ (Constructor (A, i, j), Variable ((?, Effect ([ ], .)), j)) ]))
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_2),
+            [
+              (Constructor (Ex44/A, i, j),
+                Variable ((?, Effect ([ ], .)), Ex44/j))
+            ]))
     ])
 
 11
@@ -112,12 +122,12 @@ Record b (= b_1):
 Value
   (non_rec, @.,
     [
-      ((b_val, [ ], [ ], Type (b_1)),
+      ((b_val, [ ], [ ], Type (Ex44/b_1)),
         Record
           ((13, Effect ([ ], .)), None,
-            (first, Some Constant ((13, Effect ([ ], .)), Int(12))),
-            (second, Some Constructor ((13, Effect ([ ], .)), false)),
-            (third,
+            (Ex44/first, Some Constant ((13, Effect ([ ], .)), Int(12))),
+            (Ex44/second, Some Constructor ((13, Effect ([ ], .)), false)),
+            (Ex44/third,
               Some Constant ((13, Effect ([ ], .)), String("hello")))))
     ])
 
@@ -127,10 +137,13 @@ Value
     [
       ((hi, [ ], [ ], Type (Z)),
         Match
-          ((15, Effect ([ ], .)), Variable ((15, Effect ([ ], .)), b_val),
+          ((15, Effect ([ ], .)),
+            Variable ((15, Effect ([ ], .)), Ex44/b_val),
             [
-              (Record ((first, hi)),
-                Variable ((15, Effect ([ ], .)), hi))
+              (Record ((Ex44/first, hi)),
+                Variable
+                  ((15, Effect ([ ], .)),
+                    Ex44/hi))
             ]))
     ])
 
@@ -140,17 +153,23 @@ Value
     [
       ((hey, [ ], [ ], Type (bool)),
         Match
-          ((16, Effect ([ ], .)), Variable ((16, Effect ([ ], .)), b_val),
+          ((16, Effect ([ ], .)),
+            Variable ((16, Effect ([ ], .)), Ex44/b_val),
             [
-              (Record ((second, hey)),
-                Variable ((16, Effect ([ ], .)), hey))
+              (Record ((Ex44/second, hey)),
+                Variable
+                  ((16, Effect ([ ], .)),
+                    Ex44/hey))
             ]))
     ])
 
 17
 Value
   (non_rec, @.,
-    [ ((temp_5, [ ], [ ], Type (b_1)), Variable ((17, Effect ([ ], .)), b_val)) ])
+    [
+      ((temp_5, [ ], [ ], Type (Ex44/b_1)),
+        Variable ((17, Effect ([ ], .)), Ex44/b_val))
+    ])
 
 17
 Value
@@ -158,10 +177,15 @@ Value
     [
       ((hello, [ ], [ ], Type (string)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_5),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_5),
             [
-              (Record ((second, hey (= hey_1)), (third, hello)),
-                Variable ((?, Effect ([ ], .)), hello))
+              (Record
+                ((Ex44/second, hey (= hey_1)),
+                  (Ex44/third, hello)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    Ex44/hello))
             ]))
     ])
 
@@ -171,10 +195,15 @@ Value
     [
       ((hey (= hey_1), [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_5),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_5),
             [
-              (Record ((second, hey (= hey_1)), (third, hello)),
-                Variable ((?, Effect ([ ], .)), hey_1))
+              (Record
+                ((Ex44/second, hey (= hey_1)),
+                  (Ex44/third, hello)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    Ex44/hey_1))
             ]))
     ])
 
@@ -182,16 +211,19 @@ Value
 Value
   (non_rec, @.,
     [
-      ((temp_6, [ ], [ ], Type (b_1)), Variable ((19, Effect ([ ], .)), b_val));
-      ((temp_7, [ ], [ ], Type (b_1)), Variable ((20, Effect ([ ], .)), b_val));
+      ((temp_6, [ ], [ ], Type (Ex44/b_1)),
+        Variable ((19, Effect ([ ], .)), Ex44/b_val));
+      ((temp_7, [ ], [ ], Type (Ex44/b_1)),
+        Variable ((20, Effect ([ ], .)), Ex44/b_val));
       ((number1b, [ ], [ ], Type (Z)),
         Match
-          ((21, Effect ([ ], .)), Variable ((21, Effect ([ ], .)), b_val),
+          ((21, Effect ([ ], .)),
+            Variable ((21, Effect ([ ], .)), Ex44/b_val),
             [
-              (Record ((first, number1b)),
+              (Record ((Ex44/first, number1b)),
                 Variable
                   ((21, Effect ([ ], .)),
-                    number1b))
+                    Ex44/number1b))
             ]))
     ])
 
@@ -201,12 +233,13 @@ Value
     [
       ((number1a, [ ], [ ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_6),
             [
-              (Record ((first, number1a), (second, number2a)),
+              (Record ((Ex44/first, number1a), (Ex44/second, number2a)),
                 Variable
                   ((?, Effect ([ ], .)),
-                    number1a))
+                    Ex44/number1a))
             ]))
     ])
 
@@ -216,12 +249,13 @@ Value
     [
       ((number2a, [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_6),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_6),
             [
-              (Record ((first, number1a), (second, number2a)),
+              (Record ((Ex44/first, number1a), (Ex44/second, number2a)),
                 Variable
                   ((?, Effect ([ ], .)),
-                    number2a))
+                    Ex44/number2a))
             ]))
     ])
 
@@ -231,12 +265,13 @@ Value
     [
       ((number2b, [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_7),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_7),
             [
-              (Record ((second, number2b), (third, number3)),
+              (Record ((Ex44/second, number2b), (Ex44/third, number3)),
                 Variable
                   ((?, Effect ([ ], .)),
-                    number2b))
+                    Ex44/number2b))
             ]))
     ])
 
@@ -246,10 +281,13 @@ Value
     [
       ((number3, [ ], [ ], Type (string)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_7),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_7),
             [
-              (Record ((second, number2b), (third, number3)),
-                Variable ((?, Effect ([ ], .)), number3))
+              (Record ((Ex44/second, number2b), (Ex44/third, number3)),
+                Variable
+                  ((?, Effect ([ ], .)),
+                    Ex44/number3))
             ]))
     ])
 
@@ -257,12 +295,14 @@ Value
 Value
   (non_rec, @.,
     [
-      ((temp_9, [ ], [ ], Type (b_1)),
+      ((temp_9, [ ], [ ], Type (Ex44/b_1)),
         Record
           ((24, Effect ([ ], .)), None,
-            (first, Some Variable ((24, Effect ([ ], .)), hi)),
-            (second, Some Variable ((24, Effect ([ ], .)), hey_1)),
-            (third, Some Variable ((24, Effect ([ ], .)), hello))))
+            (Ex44/first, Some Variable ((24, Effect ([ ], .)), Ex44/hi)),
+            (Ex44/second,
+              Some Variable ((24, Effect ([ ], .)), Ex44/hey_1)),
+            (Ex44/third,
+              Some Variable ((24, Effect ([ ], .)), Ex44/hello))))
     ])
 
 23
@@ -271,19 +311,22 @@ Value
     [
       ((first (= first_1), [ ], [ ], Type (Z)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_9),
             [
               (Record
-                ((first, first (= first_1)),
-                  (second,
+                ((Ex44/first, first (= first_1)),
+                  (Ex44/second,
                     second
                     (=
                     second_1)),
-                  (third,
+                  (Ex44/third,
                     third
                     (=
                     third_1))),
-                Variable ((?, Effect ([ ], .)), first_1))
+                Variable
+                  ((?, Effect ([ ], .)),
+                    Ex44/first_1))
             ]))
     ])
 
@@ -293,21 +336,22 @@ Value
     [
       ((second (= second_1), [ ], [ ], Type (bool)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_9),
             [
               (Record
-                ((first, first (= first_1)),
-                  (second,
+                ((Ex44/first, first (= first_1)),
+                  (Ex44/second,
                     second
                     (=
                     second_1)),
-                  (third,
+                  (Ex44/third,
                     third
                     (=
                     third_1))),
                 Variable
                   ((?, Effect ([ ], .)),
-                    second_1))
+                    Ex44/second_1))
             ]))
     ])
 
@@ -317,19 +361,22 @@ Value
     [
       ((third (= third_1), [ ], [ ], Type (string)),
         Match
-          ((?, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), temp_9),
+          ((?, Effect ([ ], .)),
+            Variable ((?, Effect ([ ], .)), Ex44/temp_9),
             [
               (Record
-                ((first, first (= first_1)),
-                  (second,
+                ((Ex44/first, first (= first_1)),
+                  (Ex44/second,
                     second
                     (=
                     second_1)),
-                  (third,
+                  (Ex44/third,
                     third
                     (=
                     third_1))),
-                Variable ((?, Effect ([ ], .)), third_1))
+                Variable
+                  ((?, Effect ([ ], .)),
+                    Ex44/third_1))
             ]))
     ])
 
@@ -341,16 +388,17 @@ Record c:
 Value
   (non_rec, @.,
     [
-      ((c_val, [ A ], [ ], Type (c, A)),
+      ((c_val, [ A ], [ ], Type (Ex44/c, A)),
         Record
           ((28, Effect ([ ], .)), None,
-            (f,
+            (Ex44/f,
               Some
                 Function
                   ((28, Effect ([ ], . -> .)), x,
                     Match
                       ((28, Effect ([ ], .)),
-                        Variable ((?, Effect ([ ], .)), x),
+                        Variable
+                          ((?, Effect ([ ], .)), Ex44/x),
                         [
                           (Any,
                             Constant
@@ -370,9 +418,9 @@ Value
       ((f (= f_1), [ A ], [ ], (A -> Type (Z))),
         Match
           ((30, Effect ([ ], . -> .)),
-            Variable ((30, Effect ([ ], .)), c_val),
+            Variable ((30, Effect ([ ], .)), Ex44/c_val),
             [
-              (Record ((f, f (= f_1))),
+              (Record ((Ex44/f, f (= f_1))),
                 Variable
                   ((30,
                     Effect
@@ -381,7 +429,7 @@ Value
                         .
                           ->
                           .)),
-                    f_1))
+                    Ex44/f_1))
             ]))
     ])
 
@@ -393,14 +441,14 @@ Inductive d:
 Value
   (non_rec, @.,
     [
-      ((d_val, [ A ], [ ], Type (d, A)),
+      ((d_val, [ A ], [ ], Type (Ex44/d, A)),
         Constructor
-          ((34, Effect ([ ], .)), F,
+          ((34, Effect ([ ], .)), Ex44/F,
             Function
               ((34, Effect ([ ], . -> .)), x,
                 Match
                   ((34, Effect ([ ], .)),
-                    Variable ((?, Effect ([ ], .)), x),
+                    Variable ((?, Effect ([ ], .)), Ex44/x),
                     [
                       (Any,
                         Constant
@@ -420,9 +468,17 @@ Value
       ((g, [ A ], [ ], (A -> Type (Z))),
         Match
           ((36, Effect ([ ], . -> .)),
-            Variable ((36, Effect ([ ], .)), d_val),
+            Variable ((36, Effect ([ ], .)), Ex44/d_val),
             [
-              (Constructor (F, g),
-                Variable ((36, Effect ([ ], . -> .)), g))
+              (Constructor (Ex44/F, g),
+                Variable
+                  ((36,
+                    Effect
+                      ([
+                      ],
+                        .
+                          ->
+                          .)),
+                    Ex44/g))
             ]))
     ])

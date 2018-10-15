@@ -1,18 +1,21 @@
 3
 Inductive set:
-  ([ ], [ (Empty, [ ]); (Node, [ Type (set); Type (Z); Type (set) ]) ])
+  ([ ], [ (Empty, [ ]); (Node, [ Type (Ex15/set); Type (Z); Type (Ex15/set) ]) ])
 
 7
-Value (non_rec, @., [ ((empty, [ ], [ ], Type (set)), Constructor (7, Empty)) ])
+Value
+  (non_rec, @.,
+    [ ((empty, [ ], [ ], Type (Ex15/set)), Constructor (7, Ex15/Empty)) ])
 
 9
 Value
   (rec, @.,
     [
       ((member_rec, [ ],
-        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (bool)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (Ex15/set)) ],
+        Type (bool)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex15/counter),
             [
               (Constructor (O),
                 Apply
@@ -26,15 +29,18 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (10, Variable (10, s),
+                  (10,
+                    Variable
+                      (10,
+                        Ex15/s),
                     [
                       (Constructor
-                        (Empty),
+                        (Ex15/Empty),
                         Constructor
                           (11,
                             false));
                       (Constructor
-                        (Node,
+                        (Ex15/Node,
                           s1,
                           y,
                           s2),
@@ -44,14 +50,14 @@ Value
                               (13,
                                 Variable
                                   (13,
-                                    OCaml.Pervasives.lt),
+                                    OCaml/Pervasives.lt),
                                 [
                                   Variable
                                     (13,
-                                      x);
+                                      Ex15/x);
                                   Variable
                                     (13,
-                                      y)
+                                      Ex15/y)
                                 ]),
                             Apply
                               (14,
@@ -59,19 +65,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        member_rec),
+                                        Ex15/member_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex15/counter)
                                     ]),
                                 [
                                   Variable
                                     (14,
-                                      x);
+                                      Ex15/x);
                                   Variable
                                     (14,
-                                      s1)
+                                      Ex15/s1)
                                 ]),
                             IfThenElse
                               (15,
@@ -79,14 +85,14 @@ Value
                                   (15,
                                     Variable
                                       (15,
-                                        OCaml.Pervasives.lt),
+                                        OCaml/Pervasives.lt),
                                     [
                                       Variable
                                         (15,
-                                          y);
+                                          Ex15/y);
                                       Variable
                                         (15,
-                                          x)
+                                          Ex15/x)
                                     ]),
                                 Apply
                                   (16,
@@ -94,19 +100,19 @@ Value
                                       (?,
                                         Variable
                                           (?,
-                                            member_rec),
+                                            Ex15/member_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter)
+                                              Ex15/counter)
                                         ]),
                                     [
                                       Variable
                                         (16,
-                                          x);
+                                          Ex15/x);
                                       Variable
                                         (16,
-                                          s2)
+                                          Ex15/s2)
                                     ]),
                                 Constructor
                                   (18,
@@ -119,13 +125,13 @@ Value
 Value
   (non_rec, @.,
     [
-      ((member, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (bool)),
+      ((member, [ ], [ (x, Type (Z)); (s, Type (Ex15/set)) ], Type (bool)),
         Apply
-          (?, Variable (?, member_rec),
+          (?, Variable (?, Ex15/member_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, x);
-              Variable (?, s)
+              Variable (?, Ex15/x);
+              Variable (?, Ex15/s)
             ]))
     ])
 
@@ -134,9 +140,10 @@ Value
   (rec, @.,
     [
       ((insert_rec, [ ],
-        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (set)) ], Type (set)),
+        [ (counter, Type (nat)); (x, Type (Z)); (s, Type (Ex15/set)) ],
+        Type (Ex15/set)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex15/counter),
             [
               (Constructor (O),
                 Apply
@@ -150,24 +157,27 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (21, Variable (21, s),
+                  (21,
+                    Variable
+                      (21,
+                        Ex15/s),
                     [
                       (Constructor
-                        (Empty),
+                        (Ex15/Empty),
                         Constructor
                           (22,
-                            Node,
+                            Ex15/Node,
                             Constructor
                               (22,
-                                Empty),
+                                Ex15/Empty),
                             Variable
                               (22,
-                                x),
+                                Ex15/x),
                             Constructor
                               (22,
-                                Empty)));
+                                Ex15/Empty)));
                       (Constructor
-                        (Node,
+                        (Ex15/Node,
                           s1,
                           y,
                           s2),
@@ -177,91 +187,91 @@ Value
                               (24,
                                 Variable
                                   (24,
-                                    OCaml.Pervasives.lt),
+                                    OCaml/Pervasives.lt),
                                 [
                                   Variable
                                     (24,
-                                      x);
+                                      Ex15/x);
                                   Variable
                                     (24,
-                                      y)
+                                      Ex15/y)
                                 ]),
                             Constructor
                               (25,
-                                Node,
+                                Ex15/Node,
                                 Apply
                                   (25,
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            insert_rec),
+                                            Ex15/insert_rec),
                                         [
                                           Variable
                                             (?,
-                                              counter)
+                                              Ex15/counter)
                                         ]),
                                     [
                                       Variable
                                         (25,
-                                          x);
+                                          Ex15/x);
                                       Variable
                                         (25,
-                                          s1)
+                                          Ex15/s1)
                                     ]),
                                 Variable
                                   (25,
-                                    y),
+                                    Ex15/y),
                                 Variable
                                   (25,
-                                    s2)),
+                                    Ex15/s2)),
                             IfThenElse
                               (26,
                                 Apply
                                   (26,
                                     Variable
                                       (26,
-                                        OCaml.Pervasives.lt),
+                                        OCaml/Pervasives.lt),
                                     [
                                       Variable
                                         (26,
-                                          y);
+                                          Ex15/y);
                                       Variable
                                         (26,
-                                          x)
+                                          Ex15/x)
                                     ]),
                                 Constructor
                                   (27,
-                                    Node,
+                                    Ex15/Node,
                                     Variable
                                       (27,
-                                        s1),
+                                        Ex15/s1),
                                     Variable
                                       (27,
-                                        y),
+                                        Ex15/y),
                                     Apply
                                       (27,
                                         Apply
                                           (?,
                                             Variable
                                               (?,
-                                                insert_rec),
+                                                Ex15/insert_rec),
                                             [
                                               Variable
                                                 (?,
-                                                  counter)
+                                                  Ex15/counter)
                                             ]),
                                         [
                                           Variable
                                             (27,
-                                              x);
+                                              Ex15/x);
                                           Variable
                                             (27,
-                                              s2)
+                                              Ex15/s2)
                                         ])),
                                 Variable
                                   (28,
-                                    s))))
+                                    Ex15/s))))
                     ]))
             ]))
     ])
@@ -270,12 +280,12 @@ Value
 Value
   (non_rec, @.,
     [
-      ((insert, [ ], [ (x, Type (Z)); (s, Type (set)) ], Type (set)),
+      ((insert, [ ], [ (x, Type (Z)); (s, Type (Ex15/set)) ], Type (Ex15/set)),
         Apply
-          (?, Variable (?, insert_rec),
+          (?, Variable (?, Ex15/insert_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, x);
-              Variable (?, s)
+              Variable (?, Ex15/x);
+              Variable (?, Ex15/s)
             ]))
     ])

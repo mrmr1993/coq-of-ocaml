@@ -6,8 +6,8 @@ Inductive t1:
 Value
   (non_rec, @.,
     [
-      ((n, [ ], [ ], Type (t1)),
-        Constructor (8, C2, Constructor (8, false), Constant (8, Int(3))))
+      ((n, [ ], [ ], Type (Ex08/t1)),
+        Constructor (8, Ex08/C2, Constructor (8, false), Constant (8, Int(3))))
     ])
 
 10
@@ -16,25 +16,25 @@ Value
     [
       ((m, [ ], [ ], Type (bool)),
         Match
-          (10, Variable (10, n),
+          (10, Variable (10, Ex08/n),
             [
-              (Constructor (C2, b, Any), Variable (11, b));
+              (Constructor (Ex08/C2, b, Any), Variable (11, Ex08/b));
               (Any, Constructor (12, true))
             ]))
     ])
 
 14
 Inductive t2:
-  ([ a ], [ (D1, [ ]); (D2, [ a; Type (t2, a) ]) ])
+  ([ a ], [ (D1, [ ]); (D2, [ a; Type (Ex08/t2, a) ]) ])
 
 18
 Value
   (rec, @.,
     [
       ((of_list_rec, [ A ], [ (counter, Type (nat)); (l, Type (list, A)) ],
-        Monad ([ Type (NonTermination) ], Type (t2, A))),
+        Monad ([ Type (NonTermination) ], Type (Ex08/t2, A))),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex08/counter),
             [
               (Constructor (O),
                 Apply
@@ -48,7 +48,10 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (19, Variable (19, l),
+                  (19,
+                    Variable
+                      (19,
+                        Ex08/l),
                     [
                       (Constructor
                         ([]),
@@ -56,7 +59,7 @@ Value
                           (?,
                             Constructor
                               (20,
-                                D1)));
+                                Ex08/D1)));
                       (Constructor
                         (cons,
                           x,
@@ -69,16 +72,16 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        of_list_rec),
+                                        Ex08/of_list_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex08/counter)
                                     ]),
                                 [
                                   Variable
                                     (21,
-                                      xs)
+                                      Ex08/xs)
                                 ]),
                             Some
                               x_1,
@@ -86,13 +89,13 @@ Value
                               (?,
                                 Constructor
                                   (21,
-                                    D2,
+                                    Ex08/D2,
                                     Variable
                                       (21,
-                                        x),
+                                        Ex08/x),
                                     Variable
                                       (?,
-                                        x_1)))))
+                                        Ex08/x_1)))))
                     ]))
             ]))
     ])
@@ -102,7 +105,7 @@ Value
   (non_rec, @.,
     [
       ((of_list, [ A ], [ (l, Type (list, A)) ],
-        Monad ([ Type (Counter); Type (NonTermination) ], Type (t2, A))),
+        Monad ([ Type (Counter); Type (NonTermination) ], Type (Ex08/t2, A))),
         Bind
           (?,
             Lift
@@ -114,18 +117,18 @@ Value
               (?, [ Type (NonTermination) ],
                 [ Type (Counter); Type (NonTermination) ],
                 Apply
-                  (?, Variable (?, of_list_rec),
-                    [ Variable (?, x); Variable (?, l) ]))))
+                  (?, Variable (?, Ex08/of_list_rec),
+                    [ Variable (?, Ex08/x); Variable (?, Ex08/l) ]))))
     ])
 
 23
 Value
   (rec, @.,
     [
-      ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (t2, Type (Z))) ],
+      ((sum_rec, [ ], [ (counter, Type (nat)); (l, Type (Ex08/t2, Type (Z))) ],
         Monad ([ Type (NonTermination) ], Type (Z))),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex08/counter),
             [
               (Constructor (O),
                 Apply
@@ -139,17 +142,20 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (24, Variable (24, l),
+                  (24,
+                    Variable
+                      (24,
+                        Ex08/l),
                     [
                       (Constructor
-                        (D1),
+                        (Ex08/D1),
                         Return
                           (?,
                             Constant
                               (25,
                                 Int(0))));
                       (Constructor
-                        (D2,
+                        (Ex08/D2,
                           x,
                           xs),
                         Bind
@@ -160,16 +166,16 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        sum_rec),
+                                        Ex08/sum_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex08/counter)
                                     ]),
                                 [
                                   Variable
                                     (26,
-                                      xs)
+                                      Ex08/xs)
                                 ]),
                             Some
                               x_1,
@@ -183,10 +189,10 @@ Value
                                     [
                                       Variable
                                         (26,
-                                          x);
+                                          Ex08/x);
                                       Variable
                                         (?,
-                                          x_1)
+                                          Ex08/x_1)
                                     ]))))
                     ]))
             ]))
@@ -196,7 +202,7 @@ Value
 Value
   (non_rec, @.,
     [
-      ((sum (= sum_1), [ ], [ (l, Type (t2, Type (Z))) ],
+      ((sum, [ ], [ (l, Type (Ex08/t2, Type (Z))) ],
         Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Bind
           (?,
@@ -209,8 +215,8 @@ Value
               (?, [ Type (NonTermination) ],
                 [ Type (Counter); Type (NonTermination) ],
                 Apply
-                  (?, Variable (?, sum_rec),
-                    [ Variable (?, x); Variable (?, l) ]))))
+                  (?, Variable (?, Ex08/sum_rec),
+                    [ Variable (?, Ex08/x); Variable (?, Ex08/l) ]))))
     ])
 
 28
@@ -220,7 +226,7 @@ Value
       ((s, [ A ], [ (x, A) ],
         Monad ([ Type (Counter); Type (NonTermination) ], Type (Z))),
         Match
-          (28, Variable (?, x),
+          (28, Variable (?, Ex08/x),
             [
               (Any,
                 Bind
@@ -229,7 +235,7 @@ Value
                       (28,
                         Variable
                           (28,
-                            of_list),
+                            Ex08/of_list),
                         [
                           Constructor
                             (28,
@@ -259,11 +265,11 @@ Value
                       (28,
                         Variable
                           (28,
-                            sum_1),
+                            Ex08/sum),
                         [
                           Variable
                             (?,
-                              x_1)
+                              Ex08/x_1)
                         ])))
             ]))
     ])

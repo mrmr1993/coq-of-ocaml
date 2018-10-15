@@ -4,12 +4,10 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition tail {A : Type} (l : list A)
-  : M [ OCaml.exception OCaml.failure ] (list A) :=
+Definition tail {A : Type} (l : list A) : M [ exception failure ] (list A) :=
   match l with
   | cons _ xs => ret xs
-  | [] =>
-    OCaml.Pervasives.failwith "Cannot take the tail of an empty list." % string
+  | [] => Pervasives.failwith "Cannot take the tail of an empty list." % string
   end.
 
 Fixpoint print_list_rec (counter : nat) (x : list string)
@@ -20,7 +18,7 @@ Fixpoint print_list_rec (counter : nat) (x : list string)
     match x with
     | [] => ret tt
     | cons x xs =>
-      let! _ := lift [_;_] "10" (OCaml.Pervasives.print_string x) in
+      let! _ := lift [_;_] "10" (Pervasives.print_string x) in
       (print_list_rec counter) xs
     end
   end.
@@ -34,7 +32,7 @@ Definition f : (list string) -> M [ Counter; IO; NonTermination ] unit :=
   print_list.
 
 Definition x {A : Type} (z : A)
-  : M [ Counter; IO; NonTermination; OCaml.exception OCaml.failure ] unit :=
+  : M [ Counter; IO; NonTermination; exception failure ] unit :=
   let! x :=
     lift [_;_;_;_] "0001"
       (tail

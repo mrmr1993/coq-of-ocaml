@@ -4,12 +4,12 @@ Require [ OCaml.List ]
 Value
   (non_rec, @.,
     [
-      ((get_local_ref, [ ], [ (tt (= tt_1), Type (unit)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
-        LetVar (4, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
+      ((get_local_ref, [ ], [ (tt, Type (unit)) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
+        LetVar (4, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .))
           x =
           Apply
-            ((4, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+            ((4, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
               Variable
                 ((4,
                   Effect
@@ -17,13 +17,13 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constant ((4, Effect ([ ], .)), Int(12)) ]) in
         Apply
-          ((5, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((5, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((5,
                 Effect
@@ -31,23 +31,23 @@ Value
                     .
                       -[
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
-                      ]-> .)), OCaml.Effect.State.read),
-            [ Variable ((5, Effect ([ ], .)), x) ]))
+                      ]-> .)), OCaml/Effect.State.read),
+            [ Variable ((5, Effect ([ ], .)), Ex39/x) ]))
     ])
 
 7
 Value
   (non_rec, @.,
     [
-      ((set_local_ref, [ ], [ (tt (= tt_1), Type (unit)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
-        LetVar (8, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
+      ((set_local_ref, [ ], [ (tt, Type (unit)) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
+        LetVar (8, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .))
           x =
           Apply
-            ((8, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+            ((8, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
               Variable
                 ((8,
                   Effect
@@ -55,17 +55,17 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constant ((8, Effect ([ ], .)), Int(12)) ]) in
         Sequence
-          ((9, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((9, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Apply
               ((9,
                 Effect
-                  ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+                  ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
                 Variable
                   ((9,
                     Effect
@@ -74,19 +74,19 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]-> .)),
-                    OCaml.Effect.State.write),
+                    OCaml/Effect.State.write),
                 [
-                  Variable ((9, Effect ([ ], .)), x);
+                  Variable ((9, Effect ([ ], .)), Ex39/x);
                   Constant ((9, Effect ([ ], .)), Int(15))
                 ]),
             Apply
               ((10,
                 Effect
-                  ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+                  ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
                 Variable
                   ((10,
                     Effect
@@ -94,11 +94,11 @@ Value
                         .
                           -[
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
-                          ]-> .)), OCaml.Effect.State.read),
-                [ Variable ((10, Effect ([ ], .)), x) ])))
+                          ]-> .)), OCaml/Effect.State.read),
+                [ Variable ((10, Effect ([ ], .)), Ex39/x) ])))
     ])
 
 12
@@ -107,12 +107,12 @@ Value
     [
       ((add_multiple_by_refs, [ ],
         [ (a, Type (Z)); (b, Type (Z)); (c, Type (Z)); (d, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
-        LetVar (13, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
+        LetVar (13, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .))
           x =
           Apply
             ((13,
-              Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+              Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
               Variable
                 ((13,
                   Effect
@@ -120,17 +120,17 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Pervasives.ref),
-              [ Variable ((13, Effect ([ ], .)), a) ]) in
+                        ]-> .)), OCaml/Pervasives.ref),
+              [ Variable ((13, Effect ([ ], .)), Ex39/a) ]) in
         Sequence
-          ((14, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((14, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Apply
               ((14,
                 Effect
-                  ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+                  ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
                 Variable
                   ((14,
                     Effect
@@ -139,19 +139,19 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]-> .)),
-                    OCaml.Effect.State.write),
+                    OCaml/Effect.State.write),
                 [
-                  Variable ((14, Effect ([ ], .)), x);
+                  Variable ((14, Effect ([ ], .)), Ex39/x);
                   Apply
                     ((14,
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
@@ -173,7 +173,7 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ],
@@ -186,12 +186,12 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]->
                                       .)),
-                                OCaml.Effect.State.read),
+                                OCaml/Effect.State.read),
                             [
                               Variable
                                 ((14,
@@ -199,7 +199,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  x)
+                                  Ex39/x)
                             ]);
                         Variable
                           ((14,
@@ -207,18 +207,18 @@ Value
                               ([
                               ],
                                 .)),
-                            b)
+                            Ex39/b)
                       ])
                 ]),
             LetVar
               (15,
                 Effect
-                  ([ Type (OCaml.Effect.State.state, Type (Z)) ], .))
+                  ([ Type (OCaml/Effect.State.state, Type (Z)) ], .))
               y =
               Apply
                 ((15,
                   Effect
-                    ([ Type (OCaml.Effect.State.state, Type (Z)) ],
+                    ([ Type (OCaml/Effect.State.state, Type (Z)) ],
                       .)),
                   Variable
                     ((15,
@@ -227,21 +227,21 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
-                            ]-> .)), OCaml.Pervasives.ref),
-                  [ Variable ((15, Effect ([ ], .)), c) ]) in
+                            ]-> .)), OCaml/Pervasives.ref),
+                  [ Variable ((15, Effect ([ ], .)), Ex39/c) ]) in
             Sequence
               ((16,
                 Effect
-                  ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+                  ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
                 Apply
                   ((16,
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ], .)),
@@ -253,19 +253,19 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]-> .)),
-                        OCaml.Effect.State.write),
+                        OCaml/Effect.State.write),
                     [
-                      Variable ((16, Effect ([ ], .)), y);
+                      Variable ((16, Effect ([ ], .)), Ex39/y);
                       Apply
                         ((16,
                           Effect
                             ([
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ],
@@ -287,7 +287,7 @@ Value
                                 Effect
                                   ([
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ],
@@ -300,12 +300,12 @@ Value
                                         .
                                           -[
                                             Type
-                                              (OCaml.Effect.State.state,
+                                              (OCaml/Effect.State.state,
                                                 Type
                                                   (Z))
                                           ]->
                                           .)),
-                                    OCaml.Effect.State.read),
+                                    OCaml/Effect.State.read),
                                 [
                                   Variable
                                     ((16,
@@ -313,7 +313,7 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      y)
+                                      Ex39/y)
                                 ]);
                             Variable
                               ((16,
@@ -321,7 +321,7 @@ Value
                                   ([
                                   ],
                                     .)),
-                                d)
+                                Ex39/d)
                           ])
                     ]),
                 LetVar
@@ -329,7 +329,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ], .)) z =
@@ -338,7 +338,7 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ], .)),
@@ -349,18 +349,18 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]-> .)),
-                          OCaml.Pervasives.ref),
+                          OCaml/Pervasives.ref),
                       [
                         Apply
                           ((17,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ],
@@ -382,7 +382,7 @@ Value
                                   Effect
                                     ([
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ],
@@ -395,12 +395,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z))
                                             ]->
                                             .)),
-                                      OCaml.Effect.State.read),
+                                      OCaml/Effect.State.read),
                                   [
                                     Variable
                                       ((17,
@@ -408,14 +408,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        x)
+                                        Ex39/x)
                                   ]);
                               Apply
                                 ((17,
                                   Effect
                                     ([
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ],
@@ -428,12 +428,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z))
                                             ]->
                                             .)),
-                                      OCaml.Effect.State.read),
+                                      OCaml/Effect.State.read),
                                   [
                                     Variable
                                       ((17,
@@ -441,7 +441,7 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        y)
+                                        Ex39/y)
                                   ])
                             ])
                       ]) in
@@ -450,7 +450,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ], .)),
@@ -461,22 +461,22 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ]-> .)),
-                        OCaml.Effect.State.read),
-                    [ Variable ((18, Effect ([ ], .)), z) ]))))
+                        OCaml/Effect.State.read),
+                    [ Variable ((18, Effect ([ ], .)), Ex39/z) ]))))
     ])
 
 20
 Value
   (non_rec, @.,
     [
-      ((set_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+      ((set_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Apply
-          ((21, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((21, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((21,
                 Effect
@@ -485,12 +485,12 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Effect.State.write),
+                        ]-> .)), OCaml/Effect.State.write),
             [
-              Variable ((21, Effect ([ ], .)), x);
+              Variable ((21, Effect ([ ], .)), Ex39/x);
               Constant ((21, Effect ([ ], .)), Int(15))
             ]))
     ])
@@ -499,10 +499,10 @@ Value
 Value
   (non_rec, @.,
     [
-      ((get_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+      ((get_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Apply
-          ((24, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((24, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((24,
                 Effect
@@ -510,21 +510,21 @@ Value
                     .
                       -[
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
-                      ]-> .)), OCaml.Effect.State.read),
-            [ Variable ((24, Effect ([ ], .)), x) ]))
+                      ]-> .)), OCaml/Effect.State.read),
+            [ Variable ((24, Effect ([ ], .)), Ex39/x) ]))
     ])
 
 26
 Value
   (non_rec, @.,
     [
-      ((update_ref, [ ], [ (x, Type (OCaml.Effect.State.t, Type (Z))) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+      ((update_ref, [ ], [ (x, Type (OCaml/Effect.State.t, Type (Z))) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Apply
-          ((27, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((27, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((27,
                 Effect
@@ -533,18 +533,18 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
-                        ]-> .)), OCaml.Effect.State.write),
+                        ]-> .)), OCaml/Effect.State.write),
             [
-              Variable ((27, Effect ([ ], .)), x);
+              Variable ((27, Effect ([ ], .)), Ex39/x);
               Apply
                 ((27,
                   Effect
                     ([
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (Z))
                     ], .)),
@@ -565,7 +565,7 @@ Value
                         Effect
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
@@ -578,12 +578,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .)),
-                            OCaml.Effect.State.read),
+                            OCaml/Effect.State.read),
                         [
                           Variable
                             ((27,
@@ -591,7 +591,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              x)
+                              Ex39/x)
                         ]);
                     Constant
                       ((27,
@@ -610,10 +610,10 @@ Value
     [
       ((new_ref, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)) ],
-            Type (OCaml.Effect.State.t, Type (Z)))),
+          ([ Type (OCaml/Effect.State.state, Type (Z)) ],
+            Type (OCaml/Effect.State.t, Type (Z)))),
         Apply
-          ((30, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((30, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((30,
                 Effect
@@ -621,10 +621,10 @@ Value
                     .
                       -[
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
-                      ]-> .)), OCaml.Pervasives.ref),
+                      ]-> .)), OCaml/Pervasives.ref),
             [ Constant ((30, Effect ([ ], .)), Int(15)) ]))
     ])
 
@@ -636,14 +636,14 @@ Value
     [
       ((set_r, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (unit))),
         Apply
           ((34,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (Ex39/r_state)
               ], .)),
             Variable
               ((34,
@@ -652,23 +652,23 @@ Value
                     .
                       -[
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
-                      ]-> .)), set_ref),
+                      ]-> .)), Ex39/set_ref),
             [
               Variable
                 ((34,
                   Effect
                     ([
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (Z));
                       Type
-                        (r_state)
+                        (Ex39/r_state)
                     ], .)),
-                  r)
+                  Ex39/r)
             ]))
     ])
 
@@ -678,14 +678,14 @@ Value
     [
       ((get_r, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (Z))),
         Apply
           ((36,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (Ex39/r_state)
               ], .)),
             Variable
               ((36,
@@ -694,23 +694,23 @@ Value
                     .
                       -[
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
-                      ]-> .)), get_ref),
+                      ]-> .)), Ex39/get_ref),
             [
               Variable
                 ((36,
                   Effect
                     ([
                       Type
-                        (OCaml.Effect.State.state,
+                        (OCaml/Effect.State.state,
                           Type
                             (Z));
                       Type
-                        (r_state)
+                        (Ex39/r_state)
                     ], .)),
-                  r)
+                  Ex39/r)
             ]))
     ])
 
@@ -720,21 +720,21 @@ Value
     [
       ((r_add_15, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)); Type (r_state) ],
+          ([ Type (OCaml/Effect.State.state, Type (Z)); Type (Ex39/r_state) ],
             Type (Z))),
         LetVar
           (39,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (Ex39/r_state)
               ], .)) i =
           Apply
             ((39,
               Effect
                 ([
-                  Type (OCaml.Effect.State.state, Type (Z));
-                  Type (r_state)
+                  Type (OCaml/Effect.State.state, Type (Z));
+                  Type (Ex39/r_state)
                 ], .)),
               Variable
                 ((39,
@@ -743,25 +743,25 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
-                          Type (r_state)
-                        ]-> .)), get_r),
+                          Type (Ex39/r_state)
+                        ]-> .)), Ex39/get_r),
               [ Constructor ((39, Effect ([ ], .)), tt) ]) in
         Sequence
           ((40,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (Ex39/r_state)
               ], .)),
             Apply
               ((40,
                 Effect
                   ([
-                    Type (OCaml.Effect.State.state, Type (Z));
-                    Type (r_state)
+                    Type (OCaml/Effect.State.state, Type (Z));
+                    Type (Ex39/r_state)
                   ], .)),
                 Variable
                   ((40,
@@ -770,25 +770,25 @@ Value
                         .
                           -[
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z));
-                            Type (r_state)
-                          ]-> .)), set_r),
+                            Type (Ex39/r_state)
+                          ]-> .)), Ex39/set_r),
                 [ Constructor ((40, Effect ([ ], .)), tt) ]),
             LetVar
               (41,
                 Effect
                   ([
-                    Type (OCaml.Effect.State.state, Type (Z));
-                    Type (r_state)
+                    Type (OCaml/Effect.State.state, Type (Z));
+                    Type (Ex39/r_state)
                   ], .)) j =
               Apply
                 ((41,
                   Effect
                     ([
-                      Type (OCaml.Effect.State.state, Type (Z));
-                      Type (r_state)
+                      Type (OCaml/Effect.State.state, Type (Z));
+                      Type (Ex39/r_state)
                     ], .)),
                   Variable
                     ((41,
@@ -797,28 +797,28 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
-                              Type (r_state)
-                            ]-> .)), get_r),
+                              Type (Ex39/r_state)
+                            ]-> .)), Ex39/get_r),
                   [ Constructor ((41, Effect ([ ], .)), tt) ]) in
             Sequence
               ((42,
                 Effect
                   ([
-                    Type (OCaml.Effect.State.state, Type (Z));
-                    Type (r_state)
+                    Type (OCaml/Effect.State.state, Type (Z));
+                    Type (Ex39/r_state)
                   ], .)),
                 Apply
                   ((42,
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
-                        Type (r_state)
+                        Type (Ex39/r_state)
                       ], .)),
                     Variable
                       ((42,
@@ -828,25 +828,25 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]-> .)),
-                        OCaml.Effect.State.write),
+                        OCaml/Effect.State.write),
                     [
                       Variable
                         ((42,
                           Effect
                             ([
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (r_state)
+                                (Ex39/r_state)
                             ],
                               .)),
-                          r);
+                          Ex39/r);
                       Apply
                         ((42,
                           Effect
@@ -871,14 +871,14 @@ Value
                                   ([
                                   ],
                                     .)),
-                                i);
+                                Ex39/i);
                             Variable
                               ((42,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                j)
+                                Ex39/j)
                           ])
                     ]),
                 Apply
@@ -886,10 +886,10 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
-                        Type (r_state)
+                        Type (Ex39/r_state)
                       ], .)),
                     Variable
                       ((43,
@@ -898,25 +898,25 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ]-> .)),
-                        OCaml.Effect.State.read),
+                        OCaml/Effect.State.read),
                     [
                       Variable
                         ((43,
                           Effect
                             ([
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (r_state)
+                                (Ex39/r_state)
                             ],
                               .)),
-                          r)
+                          Ex39/r)
                     ]))))
     ])
 
@@ -927,24 +927,24 @@ Value
       ((mixed_type, [ ], [ (x, Type (unit)) ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, Type (Z));
-            Type (OCaml.Effect.State.state, Type (bool));
-            Type (OCaml.Effect.State.state, Type (string));
-            Type (r_state)
+            Type (OCaml/Effect.State.state, Type (Z));
+            Type (OCaml/Effect.State.state, Type (bool));
+            Type (OCaml/Effect.State.state, Type (string));
+            Type (Ex39/r_state)
           ], (Type (bool) * Type (string) * Type (Z)))),
         LetVar
           (46,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (OCaml.Effect.State.state, Type (bool));
-                Type (OCaml.Effect.State.state, Type (string));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (OCaml/Effect.State.state, Type (bool));
+                Type (OCaml/Effect.State.state, Type (string));
+                Type (Ex39/r_state)
               ], .)) b =
           Apply
             ((46,
               Effect
-                ([ Type (OCaml.Effect.State.state, Type (bool)) ], .)),
+                ([ Type (OCaml/Effect.State.state, Type (bool)) ], .)),
               Variable
                 ((46,
                   Effect
@@ -952,24 +952,24 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (bool))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constructor ((46, Effect ([ ], .)), true) ]) in
         LetVar
           (47,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (OCaml.Effect.State.state, Type (bool));
-                Type (OCaml.Effect.State.state, Type (string));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (OCaml/Effect.State.state, Type (bool));
+                Type (OCaml/Effect.State.state, Type (string));
+                Type (Ex39/r_state)
               ], .)) str =
           Apply
             ((47,
               Effect
-                ([ Type (OCaml.Effect.State.state, Type (string)) ], .)),
+                ([ Type (OCaml/Effect.State.state, Type (string)) ], .)),
               Variable
                 ((47,
                   Effect
@@ -977,19 +977,19 @@ Value
                       .
                         -[
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (string))
-                        ]-> .)), OCaml.Pervasives.ref),
+                        ]-> .)), OCaml/Pervasives.ref),
               [ Constant ((47, Effect ([ ], .)), String("")) ]) in
         LetFun
           (48,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (OCaml.Effect.State.state, Type (bool));
-                Type (OCaml.Effect.State.state, Type (string));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (OCaml/Effect.State.state, Type (bool));
+                Type (OCaml/Effect.State.state, Type (string));
+                Type (Ex39/r_state)
               ], .))
           (non_rec, @.,
             [
@@ -997,11 +997,11 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.Effect.State.state,
+                      (OCaml/Effect.State.state,
                         Type
                           (bool));
                     Type
-                      (OCaml.Effect.State.state,
+                      (OCaml/Effect.State.state,
                         Type
                           (string))
                   ], Type (unit))),
@@ -1010,11 +1010,11 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (bool));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (string))
                       ],
@@ -1025,7 +1025,7 @@ Value
                           ([
                           ],
                             .)),
-                        x_1),
+                        Ex39/x_1),
                     [
                       (Constructor
                         (tt),
@@ -1034,11 +1034,11 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (bool));
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (string))
                               ],
@@ -1048,7 +1048,7 @@ Value
                                 Effect
                                   ([
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (bool))
                                   ],
@@ -1063,12 +1063,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (bool))
                                             ]->
                                             .)),
-                                    OCaml.Effect.State.write),
+                                    OCaml/Effect.State.write),
                                 [
                                   Variable
                                     ((49,
@@ -1076,13 +1076,13 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      b);
+                                      Ex39/b);
                                   Apply
                                     ((49,
                                       Effect
                                         ([
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (bool))
                                         ],
@@ -1095,12 +1095,12 @@ Value
                                               .
                                                 -[
                                                   Type
-                                                    (OCaml.Effect.State.state,
+                                                    (OCaml/Effect.State.state,
                                                       Type
                                                         (bool))
                                                 ]->
                                                 .)),
-                                          OCaml.Effect.State.read),
+                                          OCaml/Effect.State.read),
                                       [
                                         Variable
                                           ((49,
@@ -1108,7 +1108,7 @@ Value
                                               ([
                                               ],
                                                 .)),
-                                            b)
+                                            Ex39/b)
                                       ])
                                 ]),
                             Apply
@@ -1116,7 +1116,7 @@ Value
                                 Effect
                                   ([
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (string))
                                   ],
@@ -1131,12 +1131,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (string))
                                             ]->
                                             .)),
-                                    OCaml.Effect.State.write),
+                                    OCaml/Effect.State.write),
                                 [
                                   Variable
                                     ((50,
@@ -1144,13 +1144,13 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      str);
+                                      Ex39/str);
                                   Apply
                                     ((50,
                                       Effect
                                         ([
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (string))
                                         ],
@@ -1179,7 +1179,7 @@ Value
                                             Effect
                                               ([
                                                 Type
-                                                  (OCaml.Effect.State.state,
+                                                  (OCaml/Effect.State.state,
                                                     Type
                                                       (string))
                                               ],
@@ -1192,12 +1192,12 @@ Value
                                                     .
                                                       -[
                                                         Type
-                                                          (OCaml.Effect.State.state,
+                                                          (OCaml/Effect.State.state,
                                                             Type
                                                               (string))
                                                       ]->
                                                       .)),
-                                                OCaml.Effect.State.read),
+                                                OCaml/Effect.State.read),
                                             [
                                               Variable
                                                 ((50,
@@ -1205,7 +1205,7 @@ Value
                                                     ([
                                                     ],
                                                       .)),
-                                                  str)
+                                                  Ex39/str)
                                             ])
                                       ])
                                 ])))
@@ -1215,17 +1215,17 @@ Value
           ((51,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (OCaml.Effect.State.state, Type (bool));
-                Type (OCaml.Effect.State.state, Type (string));
-                Type (r_state)
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (OCaml/Effect.State.state, Type (bool));
+                Type (OCaml/Effect.State.state, Type (string));
+                Type (Ex39/r_state)
               ], .)),
             Apply
               ((51,
                 Effect
                   ([
-                    Type (OCaml.Effect.State.state, Type (bool));
-                    Type (OCaml.Effect.State.state, Type (string))
+                    Type (OCaml/Effect.State.state, Type (bool));
+                    Type (OCaml/Effect.State.state, Type (string))
                   ], .)),
                 Variable
                   ((51,
@@ -1234,34 +1234,34 @@ Value
                         .
                           -[
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (bool));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (string))
-                          ]-> .)), update),
+                          ]-> .)), Ex39/update),
                 [ Constructor ((51, Effect ([ ], .)), tt) ]),
             Sequence
               ((52,
                 Effect
                   ([
-                    Type (OCaml.Effect.State.state, Type (Z));
-                    Type (OCaml.Effect.State.state, Type (bool));
-                    Type (OCaml.Effect.State.state, Type (string));
-                    Type (r_state)
+                    Type (OCaml/Effect.State.state, Type (Z));
+                    Type (OCaml/Effect.State.state, Type (bool));
+                    Type (OCaml/Effect.State.state, Type (string));
+                    Type (Ex39/r_state)
                   ], .)),
                 Apply
                   ((52,
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (bool));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (string))
                       ], .)),
@@ -1272,43 +1272,43 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (bool));
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (string))
-                              ]-> .)), update),
+                              ]-> .)), Ex39/update),
                     [ Constructor ((52, Effect ([ ], .)), tt) ]),
                 Sequence
                   ((53,
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (bool));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (string));
-                        Type (r_state)
+                        Type (Ex39/r_state)
                       ], .)),
                     Apply
                       ((53,
                         Effect
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (bool));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (string))
                           ], .)),
@@ -1319,14 +1319,15 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (bool));
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (string))
-                                  ]-> .)), update),
+                                  ]-> .)),
+                            Ex39/update),
                         [
                           Constructor
                             ((53,
@@ -1341,25 +1342,25 @@ Value
                         Effect
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (bool));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (string));
-                            Type (r_state)
+                            Type (Ex39/r_state)
                           ], .)),
                         Apply
                           ((54,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (bool))
                               ], .)),
@@ -1370,11 +1371,11 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (bool))
                                       ]-> .)),
-                                OCaml.Effect.State.read),
+                                OCaml/Effect.State.read),
                             [
                               Variable
                                 ((54,
@@ -1382,14 +1383,14 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  b)
+                                  Ex39/b)
                             ]),
                         Apply
                           ((54,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (string))
                               ], .)),
@@ -1400,11 +1401,11 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (string))
                                       ]-> .)),
-                                OCaml.Effect.State.read),
+                                OCaml/Effect.State.read),
                             [
                               Variable
                                 ((54,
@@ -1412,17 +1413,17 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  str)
+                                  Ex39/str)
                             ]),
                         Apply
                           ((54,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z));
-                                Type (r_state)
+                                Type (Ex39/r_state)
                               ], .)),
                             Variable
                               ((54,
@@ -1431,25 +1432,25 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]-> .)),
-                                OCaml.Effect.State.read),
+                                OCaml/Effect.State.read),
                             [
                               Variable
                                 ((54,
                                   Effect
                                     ([
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z));
                                       Type
-                                        (r_state)
+                                        (Ex39/r_state)
                                     ],
                                       .)),
-                                  r)
+                                  Ex39/r)
                             ]))))))
     ])
 
@@ -1460,18 +1461,18 @@ Value
       ((partials_test, [ ], [ (x, Type (unit)) ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, Type (Z));
-            Type (OCaml.Effect.State.state, Type (list, Type (Z)));
-            Type (r_state)
-          ], Type (OCaml.Effect.State.t, Type (Z)))),
+            Type (OCaml/Effect.State.state, Type (Z));
+            Type (OCaml/Effect.State.state, Type (list, Type (Z)));
+            Type (Ex39/r_state)
+          ], Type (OCaml/Effect.State.t, Type (Z)))),
         Match
           ((56,
             Effect
               ([
-                Type (OCaml.Effect.State.state, Type (Z));
-                Type (OCaml.Effect.State.state, Type (list, Type (Z)));
-                Type (r_state)
-              ], .)), Variable ((?, Effect ([ ], .)), x),
+                Type (OCaml/Effect.State.state, Type (Z));
+                Type (OCaml/Effect.State.state, Type (list, Type (Z)));
+                Type (Ex39/r_state)
+              ], .)), Variable ((?, Effect ([ ], .)), Ex39/x),
             [
               (Constructor (tt),
                 LetFun
@@ -1479,17 +1480,17 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
                                   (Z)));
                         Type
-                          (r_state)
+                          (Ex39/r_state)
                       ],
                         .))
                   (non_rec, @.,
@@ -1500,7 +1501,7 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t,
+                              (OCaml/Effect.State.t,
                                 Type
                                   (Z)));
                           (y,
@@ -1510,12 +1511,12 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
                             Type
-                              (OCaml.Effect.State.t,
+                              (OCaml/Effect.State.t,
                                 Type
                                   (Z)))),
                         Sequence
@@ -1523,7 +1524,7 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ],
@@ -1533,7 +1534,7 @@ Value
                                 Effect
                                   ([
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ],
@@ -1548,12 +1549,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z))
                                             ]->
                                             .)),
-                                    OCaml.Effect.State.write),
+                                    OCaml/Effect.State.write),
                                 [
                                   Variable
                                     ((58,
@@ -1561,14 +1562,14 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x);
+                                      Ex39/x);
                                   Variable
                                     ((58,
                                       Effect
                                         ([
                                         ],
                                           .)),
-                                      y)
+                                      Ex39/y)
                                 ]),
                             Variable
                               ((59,
@@ -1576,7 +1577,7 @@ Value
                                   ([
                                   ],
                                     .)),
-                                x)))
+                                Ex39/x)))
                     ])
                   in
                 LetVar
@@ -1584,17 +1585,17 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
                                   (Z)));
                         Type
-                          (r_state)
+                          (Ex39/r_state)
                       ],
                         .))
                   f1_test =
@@ -1603,16 +1604,16 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (r_state)
+                            (Ex39/r_state)
                         ],
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]->
@@ -1627,26 +1628,26 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .)),
-                          f1),
+                          Ex39/f1),
                       [
                         Variable
                           ((60,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z));
                                 Type
-                                  (r_state)
+                                  (Ex39/r_state)
                               ],
                                 .)),
-                            r)
+                            Ex39/r)
                       ])
                   in
                 LetVar
@@ -1654,11 +1655,11 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
@@ -1671,7 +1672,7 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
@@ -1684,12 +1685,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .)),
-                          f1_test),
+                          Ex39/f1_test),
                       [
                         Constant
                           ((61,
@@ -1705,11 +1706,11 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
@@ -1724,7 +1725,7 @@ Value
                         [
                           (l1,
                             Type
-                              (OCaml.Effect.State.t,
+                              (OCaml/Effect.State.t,
                                 Type
                                   (list,
                                     Type
@@ -1738,18 +1739,18 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z));
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (list,
                                     Type
                                       (Z)))
                           ],
                             Type
-                              (OCaml.Effect.State.t,
+                              (OCaml/Effect.State.t,
                                 Type
                                   (Z)))),
                         Apply
@@ -1757,11 +1758,11 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z));
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (list,
                                         Type
@@ -1776,19 +1777,19 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]->
                                       .)),
-                                OCaml.Pervasives.ref),
+                                OCaml/Pervasives.ref),
                             [
                               Apply
                                 ((63,
                                   Effect
                                     ([
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (list,
                                               Type
@@ -1812,7 +1813,7 @@ Value
                                         Effect
                                           ([
                                             Type
-                                              (OCaml.Effect.State.state,
+                                              (OCaml/Effect.State.state,
                                                 Type
                                                   (list,
                                                     Type
@@ -1827,14 +1828,14 @@ Value
                                                 .
                                                   ->
                                                   .)),
-                                            OCaml.List.length),
+                                            List.length),
                                         [
                                           Apply
                                             ((63,
                                               Effect
                                                 ([
                                                   Type
-                                                    (OCaml.Effect.State.state,
+                                                    (OCaml/Effect.State.state,
                                                       Type
                                                         (list,
                                                           Type
@@ -1849,14 +1850,14 @@ Value
                                                       .
                                                         -[
                                                           Type
-                                                            (OCaml.Effect.State.state,
+                                                            (OCaml/Effect.State.state,
                                                               Type
                                                                 (list,
                                                                   Type
                                                                     (Z)))
                                                         ]->
                                                         .)),
-                                                  OCaml.Effect.State.read),
+                                                  OCaml/Effect.State.read),
                                               [
                                                 Variable
                                                   ((63,
@@ -1864,7 +1865,7 @@ Value
                                                       ([
                                                       ],
                                                         .)),
-                                                    l1)
+                                                    Ex39/l1)
                                               ])
                                         ]);
                                     Apply
@@ -1881,7 +1882,7 @@ Value
                                                 .
                                                   ->
                                                   .)),
-                                            OCaml.List.length),
+                                            List.length),
                                         [
                                           Variable
                                             ((63,
@@ -1889,7 +1890,7 @@ Value
                                                 ([
                                                 ],
                                                   .)),
-                                              l2)
+                                              Ex39/l2)
                                         ])
                                   ])
                             ]))
@@ -1900,11 +1901,11 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
@@ -1917,7 +1918,7 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (list,
                                   Type
@@ -1926,11 +1927,11 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (list,
                                       Type
@@ -1947,25 +1948,25 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z));
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (list,
                                             Type
                                               (Z)))
                                   ]->
                                   .)),
-                          f2),
+                          Ex39/f2),
                       [
                         Apply
                           ((64,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (list,
                                         Type
@@ -1980,14 +1981,14 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (list,
                                                 Type
                                                   (Z)))
                                       ]->
                                       .)),
-                                OCaml.Pervasives.ref),
+                                OCaml/Pervasives.ref),
                             [
                               Constructor
                                 ((64,
@@ -2046,11 +2047,11 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z));
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (list,
                                 Type
@@ -2063,11 +2064,11 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z));
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (list,
                                   Type
@@ -2082,18 +2083,18 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z));
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (list,
                                           Type
                                             (Z)))
                                 ]->
                                 .)),
-                          f2_test),
+                          Ex39/f2_test),
                       [
                         Constructor
                           ((65,
@@ -2137,7 +2138,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2152,12 +2153,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .)),
-                        f1),
+                        Ex39/f1),
                     [
                       Variable
                         ((66,
@@ -2165,13 +2166,13 @@ Value
                             ([
                             ],
                               .)),
-                          f2_test);
+                          Ex39/f2_test);
                       Apply
                         ((66,
                           Effect
                             ([
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ],
@@ -2184,12 +2185,12 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ]->
                                     .)),
-                              OCaml.Effect.State.read),
+                              OCaml/Effect.State.read),
                           [
                             Variable
                               ((66,
@@ -2197,7 +2198,7 @@ Value
                                   ([
                                   ],
                                     .)),
-                                f1_test)
+                                Ex39/f1_test)
                           ])
                     ]))
             ]))
@@ -2209,11 +2210,11 @@ Value
     [
       ((multiple_returns_test, [ ], [ (x, Type (unit)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (Z)) ],
-            (Type (Z) * Type (OCaml.Effect.State.t, Type (Z))))),
+          ([ Type (OCaml/Effect.State.state, Type (Z)) ],
+            (Type (Z) * Type (OCaml/Effect.State.t, Type (Z))))),
         Match
-          ((68, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((68, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
+            Variable ((?, Effect ([ ], .)), Ex39/x),
             [
               (Constructor (tt),
                 LetFun
@@ -2221,7 +2222,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2234,7 +2235,7 @@ Value
                         [
                           (x,
                             Type
-                              (OCaml.Effect.State.t,
+                              (OCaml/Effect.State.t,
                                 Type
                                   (Z)));
                           (y,
@@ -2244,7 +2245,7 @@ Value
                         Monad
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
@@ -2254,24 +2255,24 @@ Value
                               Monad
                                 ([
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ],
                                   (Type
-                                    (OCaml.Effect.State.t,
+                                    (OCaml/Effect.State.t,
                                       Type
                                         (Z))
                                     ->
                                     Monad
                                       ([
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ],
                                         Type
-                                          (OCaml.Effect.State.t,
+                                          (OCaml/Effect.State.t,
                                             Type
                                               (Z)))))))),
                         Sequence
@@ -2279,21 +2280,21 @@ Value
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ],
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .
                                     -[
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ]->
@@ -2303,7 +2304,7 @@ Value
                                 Effect
                                   ([
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ],
@@ -2318,12 +2319,12 @@ Value
                                           .
                                             -[
                                               Type
-                                                (OCaml.Effect.State.state,
+                                                (OCaml/Effect.State.state,
                                                   Type
                                                     (Z))
                                             ]->
                                             .)),
-                                    OCaml.Effect.State.write),
+                                    OCaml/Effect.State.write),
                                 [
                                   Variable
                                     ((70,
@@ -2331,14 +2332,14 @@ Value
                                         ([
                                         ],
                                           .)),
-                                      x);
+                                      Ex39/x);
                                   Variable
                                     ((70,
                                       Effect
                                         ([
                                         ],
                                           .)),
-                                      y)
+                                      Ex39/y)
                                 ]),
                             Function
                               ((71,
@@ -2348,14 +2349,14 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]->
                                       .
                                         -[
                                           Type
-                                            (OCaml.Effect.State.state,
+                                            (OCaml/Effect.State.state,
                                               Type
                                                 (Z))
                                         ]->
@@ -2366,14 +2367,14 @@ Value
                                     Effect
                                       ([
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ],
                                         .
                                           -[
                                             Type
-                                              (OCaml.Effect.State.state,
+                                              (OCaml/Effect.State.state,
                                                 Type
                                                   (Z))
                                           ]->
@@ -2383,7 +2384,7 @@ Value
                                         Effect
                                           ([
                                             Type
-                                              (OCaml.Effect.State.state,
+                                              (OCaml/Effect.State.state,
                                                 Type
                                                   (Z))
                                           ],
@@ -2398,12 +2399,12 @@ Value
                                                   .
                                                     -[
                                                       Type
-                                                        (OCaml.Effect.State.state,
+                                                        (OCaml/Effect.State.state,
                                                           Type
                                                             (Z))
                                                     ]->
                                                     .)),
-                                            OCaml.Effect.State.write),
+                                            OCaml/Effect.State.write),
                                         [
                                           Variable
                                             ((72,
@@ -2411,13 +2412,13 @@ Value
                                                 ([
                                                 ],
                                                   .)),
-                                              x);
+                                              Ex39/x);
                                           Apply
                                             ((72,
                                               Effect
                                                 ([
                                                   Type
-                                                    (OCaml.Effect.State.state,
+                                                    (OCaml/Effect.State.state,
                                                       Type
                                                         (Z))
                                                 ],
@@ -2439,7 +2440,7 @@ Value
                                                     Effect
                                                       ([
                                                         Type
-                                                          (OCaml.Effect.State.state,
+                                                          (OCaml/Effect.State.state,
                                                             Type
                                                               (Z))
                                                       ],
@@ -2452,12 +2453,12 @@ Value
                                                             .
                                                               -[
                                                                 Type
-                                                                  (OCaml.Effect.State.state,
+                                                                  (OCaml/Effect.State.state,
                                                                     Type
                                                                       (Z))
                                                               ]->
                                                               .)),
-                                                        OCaml.Effect.State.read),
+                                                        OCaml/Effect.State.read),
                                                     [
                                                       Variable
                                                         ((72,
@@ -2465,7 +2466,7 @@ Value
                                                             ([
                                                             ],
                                                               .)),
-                                                          x)
+                                                          Ex39/x)
                                                     ]);
                                                 Variable
                                                   ((72,
@@ -2473,7 +2474,7 @@ Value
                                                       ([
                                                       ],
                                                         .)),
-                                                    z)
+                                                    Ex39/z)
                                               ])
                                         ]),
                                     Function
@@ -2484,7 +2485,7 @@ Value
                                             .
                                               -[
                                                 Type
-                                                  (OCaml.Effect.State.state,
+                                                  (OCaml/Effect.State.state,
                                                     Type
                                                       (Z))
                                               ]->
@@ -2495,7 +2496,7 @@ Value
                                             Effect
                                               ([
                                                 Type
-                                                  (OCaml.Effect.State.state,
+                                                  (OCaml/Effect.State.state,
                                                     Type
                                                       (Z))
                                               ],
@@ -2507,7 +2508,7 @@ Value
                                               Effect
                                                 ([
                                                   Type
-                                                    (OCaml.Effect.State.state,
+                                                    (OCaml/Effect.State.state,
                                                       Type
                                                         (Z))
                                                 ],
@@ -2520,12 +2521,12 @@ Value
                                                       .
                                                         -[
                                                           Type
-                                                            (OCaml.Effect.State.state,
+                                                            (OCaml/Effect.State.state,
                                                               Type
                                                                 (Z))
                                                         ]->
                                                         .)),
-                                                  OCaml.Effect.State.read),
+                                                  OCaml/Effect.State.read),
                                               [
                                                 Variable
                                                   ((74,
@@ -2533,7 +2534,7 @@ Value
                                                       ([
                                                       ],
                                                         .)),
-                                                    w)
+                                                    Ex39/w)
                                               ])
                                           in
                                         Sequence
@@ -2541,7 +2542,7 @@ Value
                                             Effect
                                               ([
                                                 Type
-                                                  (OCaml.Effect.State.state,
+                                                  (OCaml/Effect.State.state,
                                                     Type
                                                       (Z))
                                               ],
@@ -2551,7 +2552,7 @@ Value
                                                 Effect
                                                   ([
                                                     Type
-                                                      (OCaml.Effect.State.state,
+                                                      (OCaml/Effect.State.state,
                                                         Type
                                                           (Z))
                                                   ],
@@ -2566,12 +2567,12 @@ Value
                                                           .
                                                             -[
                                                               Type
-                                                                (OCaml.Effect.State.state,
+                                                                (OCaml/Effect.State.state,
                                                                   Type
                                                                     (Z))
                                                             ]->
                                                             .)),
-                                                    OCaml.Effect.State.write),
+                                                    OCaml/Effect.State.write),
                                                 [
                                                   Variable
                                                     ((75,
@@ -2579,13 +2580,13 @@ Value
                                                         ([
                                                         ],
                                                           .)),
-                                                      w);
+                                                      Ex39/w);
                                                   Apply
                                                     ((75,
                                                       Effect
                                                         ([
                                                           Type
-                                                            (OCaml.Effect.State.state,
+                                                            (OCaml/Effect.State.state,
                                                               Type
                                                                 (Z))
                                                         ],
@@ -2614,7 +2615,7 @@ Value
                                                             Effect
                                                               ([
                                                                 Type
-                                                                  (OCaml.Effect.State.state,
+                                                                  (OCaml/Effect.State.state,
                                                                     Type
                                                                       (Z))
                                                               ],
@@ -2627,12 +2628,12 @@ Value
                                                                     .
                                                                       -[
                                                                         Type
-                                                                          (OCaml.Effect.State.state,
+                                                                          (OCaml/Effect.State.state,
                                                                             Type
                                                                               (Z))
                                                                       ]->
                                                                       .)),
-                                                                OCaml.Effect.State.read),
+                                                                OCaml/Effect.State.read),
                                                             [
                                                               Variable
                                                                 ((75,
@@ -2640,7 +2641,7 @@ Value
                                                                     ([
                                                                     ],
                                                                       .)),
-                                                                  x)
+                                                                  Ex39/x)
                                                             ])
                                                       ])
                                                 ]),
@@ -2649,7 +2650,7 @@ Value
                                                 Effect
                                                   ([
                                                     Type
-                                                      (OCaml.Effect.State.state,
+                                                      (OCaml/Effect.State.state,
                                                         Type
                                                           (Z))
                                                   ],
@@ -2659,7 +2660,7 @@ Value
                                                     Effect
                                                       ([
                                                         Type
-                                                          (OCaml.Effect.State.state,
+                                                          (OCaml/Effect.State.state,
                                                             Type
                                                               (Z))
                                                       ],
@@ -2674,12 +2675,12 @@ Value
                                                               .
                                                                 -[
                                                                   Type
-                                                                    (OCaml.Effect.State.state,
+                                                                    (OCaml/Effect.State.state,
                                                                       Type
                                                                         (Z))
                                                                 ]->
                                                                 .)),
-                                                        OCaml.Effect.State.write),
+                                                        OCaml/Effect.State.write),
                                                     [
                                                       Variable
                                                         ((76,
@@ -2687,14 +2688,14 @@ Value
                                                             ([
                                                             ],
                                                               .)),
-                                                          x);
+                                                          Ex39/x);
                                                       Variable
                                                         ((76,
                                                           Effect
                                                             ([
                                                             ],
                                                               .)),
-                                                          tmp)
+                                                          Ex39/tmp)
                                                     ]),
                                                 Variable
                                                   ((77,
@@ -2702,7 +2703,7 @@ Value
                                                       ([
                                                       ],
                                                         .)),
-                                                    x))))))))
+                                                    Ex39/x))))))))
                     ])
                   in
                 LetVar
@@ -2710,7 +2711,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2721,7 +2722,7 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
@@ -2734,12 +2735,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .)),
-                          OCaml.Pervasives.ref),
+                          OCaml/Pervasives.ref),
                       [
                         Constant
                           ((80,
@@ -2755,7 +2756,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2766,28 +2767,28 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]->
                             .
                               -[
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ]->
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
@@ -2802,33 +2803,33 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .
                                     -[
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ]->
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]->
                                       .)),
-                          f),
+                          Ex39/f),
                       [
                         Apply
                           ((81,
                             Effect
                               ([
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ],
@@ -2841,12 +2842,12 @@ Value
                                     .
                                       -[
                                         Type
-                                          (OCaml.Effect.State.state,
+                                          (OCaml/Effect.State.state,
                                             Type
                                               (Z))
                                       ]->
                                       .)),
-                                OCaml.Pervasives.ref),
+                                OCaml/Pervasives.ref),
                             [
                               Constant
                                 ((81,
@@ -2863,7 +2864,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2874,21 +2875,21 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]->
                             .
                               -[
                                 Type
-                                  (OCaml.Effect.State.state,
+                                  (OCaml/Effect.State.state,
                                     Type
                                       (Z))
                               ]->
@@ -2901,26 +2902,26 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .
                                     -[
                                       Type
-                                        (OCaml.Effect.State.state,
+                                        (OCaml/Effect.State.state,
                                           Type
                                             (Z))
                                     ]->
                                     .)),
-                          f1),
+                          Ex39/f1),
                       [
                         Constant
                           ((82,
@@ -2936,7 +2937,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -2947,14 +2948,14 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
                             ]->
@@ -2967,19 +2968,19 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .)),
-                          f2),
+                          Ex39/f2),
                       [
                         Constant
                           ((83,
@@ -2995,7 +2996,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -3006,7 +3007,7 @@ Value
                       Effect
                         ([
                           Type
-                            (OCaml.Effect.State.state,
+                            (OCaml/Effect.State.state,
                               Type
                                 (Z))
                         ],
@@ -3019,12 +3020,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.Effect.State.state,
+                                    (OCaml/Effect.State.state,
                                       Type
                                         (Z))
                                 ]->
                                 .)),
-                          f3),
+                          Ex39/f3),
                       [
                         Variable
                           ((84,
@@ -3032,7 +3033,7 @@ Value
                               ([
                               ],
                                 .)),
-                            s)
+                            Ex39/s)
                       ])
                   in
                 Tuple
@@ -3040,7 +3041,7 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.Effect.State.state,
+                          (OCaml/Effect.State.state,
                             Type
                               (Z))
                       ],
@@ -3050,7 +3051,7 @@ Value
                         Effect
                           ([
                             Type
-                              (OCaml.Effect.State.state,
+                              (OCaml/Effect.State.state,
                                 Type
                                   (Z))
                           ],
@@ -3063,12 +3064,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.Effect.State.state,
+                                      (OCaml/Effect.State.state,
                                         Type
                                           (Z))
                                   ]->
                                   .)),
-                            OCaml.Effect.State.read),
+                            OCaml/Effect.State.read),
                         [
                           Variable
                             ((85,
@@ -3076,7 +3077,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              f4)
+                              Ex39/f4)
                         ]),
                     Variable
                       ((85,
@@ -3084,7 +3085,7 @@ Value
                           ([
                           ],
                             .)),
-                        s)))
+                        Ex39/s)))
             ]))
     ])
 
@@ -3094,25 +3095,25 @@ Value
     [
       ((type_vars_test, [ A; B ],
         [
-          (x, Type (OCaml.Effect.State.t, A));
-          (y, Type (OCaml.Effect.State.t, B));
+          (x, Type (OCaml/Effect.State.t, A));
+          (y, Type (OCaml/Effect.State.t, B));
           (a, A);
           (b, B)
         ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, A);
-            Type (OCaml.Effect.State.state, B)
+            Type (OCaml/Effect.State.state, A);
+            Type (OCaml/Effect.State.state, B)
           ], Type (unit))),
         Sequence
           ((88,
             Effect
               ([
-                Type (OCaml.Effect.State.state, A);
-                Type (OCaml.Effect.State.state, B)
+                Type (OCaml/Effect.State.state, A);
+                Type (OCaml/Effect.State.state, B)
               ], .)),
             Apply
-              ((88, Effect ([ Type (OCaml.Effect.State.state, A) ], .)),
+              ((88, Effect ([ Type (OCaml/Effect.State.state, A) ], .)),
                 Variable
                   ((88,
                     Effect
@@ -3121,16 +3122,16 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   A)
                             ]-> .)),
-                    OCaml.Effect.State.write),
+                    OCaml/Effect.State.write),
                 [
-                  Variable ((88, Effect ([ ], .)), x);
-                  Variable ((88, Effect ([ ], .)), a)
+                  Variable ((88, Effect ([ ], .)), Ex39/x);
+                  Variable ((88, Effect ([ ], .)), Ex39/a)
                 ]),
             Apply
-              ((89, Effect ([ Type (OCaml.Effect.State.state, B) ], .)),
+              ((89, Effect ([ Type (OCaml/Effect.State.state, B) ], .)),
                 Variable
                   ((89,
                     Effect
@@ -3139,13 +3140,13 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   B)
                             ]-> .)),
-                    OCaml.Effect.State.write),
+                    OCaml/Effect.State.write),
                 [
-                  Variable ((89, Effect ([ ], .)), y);
-                  Variable ((89, Effect ([ ], .)), b)
+                  Variable ((89, Effect ([ ], .)), Ex39/y);
+                  Variable ((89, Effect ([ ], .)), Ex39/b)
                 ])))
     ])
 
@@ -3154,10 +3155,10 @@ Value
   (non_rec, @.,
     [
       ((resolves_test1, [ A ],
-        [ (x, Type (OCaml.Effect.State.t, A)); (a, A); (b, A) ],
-        Monad ([ Type (OCaml.Effect.State.state, A) ], Type (unit))),
+        [ (x, Type (OCaml/Effect.State.t, A)); (a, A); (b, A) ],
+        Monad ([ Type (OCaml/Effect.State.state, A) ], Type (unit))),
         Apply
-          ((92, Effect ([ Type (OCaml.Effect.State.state, A) ], .)),
+          ((92, Effect ([ Type (OCaml/Effect.State.state, A) ], .)),
             Variable
               ((92,
                 Effect
@@ -3168,17 +3169,17 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   A);
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   A)
-                            ]-> .)), type_vars_test),
+                            ]-> .)), Ex39/type_vars_test),
             [
-              Variable ((92, Effect ([ ], .)), x);
-              Variable ((92, Effect ([ ], .)), x);
-              Variable ((92, Effect ([ ], .)), a);
-              Variable ((92, Effect ([ ], .)), b)
+              Variable ((92, Effect ([ ], .)), Ex39/x);
+              Variable ((92, Effect ([ ], .)), Ex39/x);
+              Variable ((92, Effect ([ ], .)), Ex39/a);
+              Variable ((92, Effect ([ ], .)), Ex39/b)
             ]))
     ])
 
@@ -3188,22 +3189,22 @@ Value
     [
       ((resolves_test2, [ A ],
         [
-          (x, Type (OCaml.Effect.State.t, Type (Z)));
-          (y, Type (OCaml.Effect.State.t, A));
+          (x, Type (OCaml/Effect.State.t, Type (Z)));
+          (y, Type (OCaml/Effect.State.t, A));
           (a, Type (Z));
           (b, A)
         ],
         Monad
           ([
-            Type (OCaml.Effect.State.state, A);
-            Type (OCaml.Effect.State.state, Type (Z))
+            Type (OCaml/Effect.State.state, A);
+            Type (OCaml/Effect.State.state, Type (Z))
           ], Type (unit))),
         Apply
           ((95,
             Effect
               ([
-                Type (OCaml.Effect.State.state, A);
-                Type (OCaml.Effect.State.state, Type (Z))
+                Type (OCaml/Effect.State.state, A);
+                Type (OCaml/Effect.State.state, Type (Z))
               ], .)),
             Variable
               ((95,
@@ -3215,18 +3216,18 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   A)
-                            ]-> .)), type_vars_test),
+                            ]-> .)), Ex39/type_vars_test),
             [
-              Variable ((95, Effect ([ ], .)), x);
-              Variable ((95, Effect ([ ], .)), y);
-              Variable ((95, Effect ([ ], .)), a);
-              Variable ((95, Effect ([ ], .)), b)
+              Variable ((95, Effect ([ ], .)), Ex39/x);
+              Variable ((95, Effect ([ ], .)), Ex39/y);
+              Variable ((95, Effect ([ ], .)), Ex39/a);
+              Variable ((95, Effect ([ ], .)), Ex39/b)
             ]))
     ])
 
@@ -3236,13 +3237,13 @@ Value
     [
       ((resolves_test3, [ ],
         [
-          (x, Type (OCaml.Effect.State.t, Type (Z)));
-          (y, Type (OCaml.Effect.State.t, Type (Z)));
+          (x, Type (OCaml/Effect.State.t, Type (Z)));
+          (y, Type (OCaml/Effect.State.t, Type (Z)));
           (a, Type (Z));
           (b, Type (Z))
-        ], Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (unit))),
+        ], Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (unit))),
         Apply
-          ((98, Effect ([ Type (OCaml.Effect.State.state, Type (Z)) ], .)),
+          ((98, Effect ([ Type (OCaml/Effect.State.state, Type (Z)) ], .)),
             Variable
               ((98,
                 Effect
@@ -3253,18 +3254,18 @@ Value
                           .
                             -[
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z));
                               Type
-                                (OCaml.Effect.State.state,
+                                (OCaml/Effect.State.state,
                                   Type
                                     (Z))
-                            ]-> .)), type_vars_test),
+                            ]-> .)), Ex39/type_vars_test),
             [
-              Variable ((98, Effect ([ ], .)), x);
-              Variable ((98, Effect ([ ], .)), y);
-              Variable ((98, Effect ([ ], .)), a);
-              Variable ((98, Effect ([ ], .)), b)
+              Variable ((98, Effect ([ ], .)), Ex39/x);
+              Variable ((98, Effect ([ ], .)), Ex39/y);
+              Variable ((98, Effect ([ ], .)), Ex39/a);
+              Variable ((98, Effect ([ ], .)), Ex39/b)
             ]))
     ])

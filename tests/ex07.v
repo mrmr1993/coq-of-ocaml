@@ -20,18 +20,15 @@ Definition n5 : Z := Z.add (Z.shiftl 156 4) (Z.shiftr 12 1).
 
 Definition s : string := String.append "ghj" % string "klm" % string.
 
-Definition c {A : Type} (x : A)
-  : M [ OCaml.exception invalid_argument ] ascii :=
+Definition c {A : Type} (x : A) : M [ exception invalid_argument ] ascii :=
   match x with
-  | _ =>
-    OCaml.Pervasives.char_of_int
-      (Z.add (OCaml.Pervasives.int_of_char "c" % char) 1)
+  | _ => Pervasives.char_of_int (Z.add (Pervasives.int_of_char "c" % char) 1)
   end.
 
-Definition x : unit := OCaml.Pervasives.ignore 23.
+Definition x : unit := Pervasives.ignore 23.
 
 Definition p : Z := Z.add (fst (1, 2)) (snd (3, 4)).
 
-Definition l : list Z := OCaml.Pervasives.app (cons 1 (cons 2 [])) (cons 3 []).
+Definition l : list Z := Pervasives.app (cons 1 (cons 2 [])) (cons 3 []).
 
 Definition y : Z := apply (fun n => Z.add n 1) 12.

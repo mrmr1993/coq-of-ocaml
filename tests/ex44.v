@@ -4,7 +4,7 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Definition temp : unit := OCaml.Pervasives.ignore (Z.add 1 1).
+Definition temp : unit := Pervasives.ignore (Z.add 1 1).
 
 Definition temp_1 : Z * string := (15, "hi" % string).
 

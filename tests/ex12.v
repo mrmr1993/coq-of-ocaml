@@ -16,10 +16,10 @@ Fixpoint find_rec (counter : nat) (x : Z) (t : tree)
     match t with
     | Leaf => ret false
     | Node t1 x' t2 =>
-      if OCaml.Pervasives.lt x x' then
+      if Pervasives.lt x x' then
         (find_rec counter) x t1
       else
-        if OCaml.Pervasives.lt x' x then
+        if Pervasives.lt x' x then
           (find_rec counter) x t2
         else
           ret true

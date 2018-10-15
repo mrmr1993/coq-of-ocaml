@@ -6,7 +6,7 @@ Value
         [ (counter, Type (nat)); (f, (A -> B)); (l, Type (list, A)) ],
         Type (list, B)),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex06/counter),
             [
               (Constructor (O),
                 Apply
@@ -20,7 +20,10 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (4, Variable (4, l),
+                  (4,
+                    Variable
+                      (4,
+                        Ex06/l),
                     [
                       (Constructor
                         ([]),
@@ -38,11 +41,11 @@ Value
                               (6,
                                 Variable
                                   (6,
-                                    f),
+                                    Ex06/f),
                                 [
                                   Variable
                                     (6,
-                                      x)
+                                      Ex06/x)
                                 ]),
                             Apply
                               (6,
@@ -50,19 +53,19 @@ Value
                                   (?,
                                     Variable
                                       (?,
-                                        map_rec),
+                                        Ex06/map_rec),
                                     [
                                       Variable
                                         (?,
-                                          counter)
+                                          Ex06/counter)
                                     ]),
                                 [
                                   Variable
                                     (6,
-                                      f);
+                                      Ex06/f);
                                   Variable
                                     (6,
-                                      xs)
+                                      Ex06/xs)
                                 ])))
                     ]))
             ]))
@@ -74,11 +77,11 @@ Value
     [
       ((map, [ A; B ], [ (f, (A -> B)); (l, Type (list, A)) ], Type (list, B)),
         Apply
-          (?, Variable (?, map_rec),
+          (?, Variable (?, Ex06/map_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, f);
-              Variable (?, l)
+              Variable (?, Ex06/f);
+              Variable (?, Ex06/l)
             ]))
     ])
 
@@ -94,7 +97,7 @@ Value
           (l, Type (list, B))
         ], A),
         Match
-          (?, Variable (?, counter),
+          (?, Variable (?, Ex06/counter),
             [
               (Constructor (O),
                 Apply
@@ -108,13 +111,16 @@ Value
                     ]));
               (Constructor (S, counter),
                 Match
-                  (9, Variable (9, l),
+                  (9,
+                    Variable
+                      (9,
+                        Ex06/l),
                     [
                       (Constructor
                         ([]),
                         Variable
                           (10,
-                            a));
+                            Ex06/a));
                       (Constructor
                         (cons,
                           x,
@@ -125,32 +131,32 @@ Value
                               (?,
                                 Variable
                                   (?,
-                                    fold_rec),
+                                    Ex06/fold_rec),
                                 [
                                   Variable
                                     (?,
-                                      counter)
+                                      Ex06/counter)
                                 ]),
                             [
                               Variable
                                 (11,
-                                  f);
+                                  Ex06/f);
                               Apply
                                 (11,
                                   Variable
                                     (11,
-                                      f),
+                                      Ex06/f),
                                   [
                                     Variable
                                       (11,
-                                        a);
+                                        Ex06/a);
                                     Variable
                                       (11,
-                                        x)
+                                        Ex06/x)
                                   ]);
                               Variable
                                 (11,
-                                  xs)
+                                  Ex06/xs)
                             ]))
                     ]))
             ]))
@@ -162,12 +168,12 @@ Value
     [
       ((fold, [ A; B ], [ (f, (A -> (B -> A))); (a, A); (l, Type (list, B)) ], A),
         Apply
-          (?, Variable (?, fold_rec),
+          (?, Variable (?, Ex06/fold_rec),
             [
               Apply (?, Variable (?, read_counter), [ Tuple (?) ]);
-              Variable (?, f);
-              Variable (?, a);
-              Variable (?, l)
+              Variable (?, Ex06/f);
+              Variable (?, Ex06/a);
+              Variable (?, Ex06/l)
             ]))
     ])
 
@@ -195,7 +201,7 @@ Value
         [ (incr, (Type (Z) -> A)); (plus, (Type (Z) -> (A -> Type (Z)))) ],
         Type (Z)),
         Apply
-          (16, Variable (16, fold),
+          (16, Variable (16, Ex06/fold),
             [
               Function
                 (16, x,
@@ -206,25 +212,25 @@ Value
                         (16,
                           Variable
                             (16,
-                              plus),
+                              Ex06/plus),
                           [
                             Variable
                               (16,
-                                x);
+                                Ex06/x);
                             Variable
                               (16,
-                                y)
+                                Ex06/y)
                           ])));
               Constant (16, Int(0));
               Apply
-                (16, Variable (16, map),
+                (16, Variable (16, Ex06/map),
                   [
                     Variable
                       (16,
-                        incr);
+                        Ex06/incr);
                     Variable
                       (16,
-                        l)
+                        Ex06/l)
                   ])
             ]))
     ])

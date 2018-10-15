@@ -4,7 +4,7 @@ Local Open Scope Z_scope.
 Local Open Scope type_scope.
 Import ListNotations.
 
-Module Type S_1.
+Module Type S.
   Parameter x : Z.
   
   Parameter y : bool.
@@ -32,4 +32,4 @@ Module Type S_1.
     
     Parameter y : Z.
   End S.
-End S_1.
+End S.

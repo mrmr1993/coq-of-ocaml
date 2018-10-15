@@ -56,8 +56,8 @@ Value
       ((s1, [ ], [ ], Type (Z)),
         Apply
           ((7, Effect ([ ], .)),
-            Variable ((7, Effect ([ ], . -> .)), OCaml.List.length),
-            [ Variable ((7, Effect ([ ], .)), l1) ]))
+            Variable ((7, Effect ([ ], . -> .)), List.length),
+            [ Variable ((7, Effect ([ ], .)), Ex25/l1) ]))
     ])
 
 8
@@ -67,8 +67,8 @@ Value
       ((s2, [ ], [ ], Type (Z)),
         Apply
           ((8, Effect ([ ], .)),
-            Variable ((8, Effect ([ ], . -> .)), OCaml.List.length),
-            [ Variable ((8, Effect ([ ], .)), l2) ]))
+            Variable ((8, Effect ([ ], . -> .)), List.length),
+            [ Variable ((8, Effect ([ ], .)), Ex25/l2) ]))
     ])
 
 9
@@ -76,10 +76,10 @@ Value
   (non_rec, @.,
     [
       ((h, [ A ], [ (x, A) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (Z))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (Z))),
         Match
-          ((9, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((9, Effect ([ Type (OCaml/exception, Type (OCaml/failure)) ], .)),
+            Variable ((?, Effect ([ ], .)), Ex25/x),
             [
               (Any,
                 Apply
@@ -87,9 +87,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.failure))
+                              (OCaml/failure))
                       ],
                         .)),
                     Variable
@@ -100,12 +100,12 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.exception,
+                                  (OCaml/exception,
                                     Type
-                                      (OCaml.failure))
+                                      (OCaml/failure))
                               ]->
                               .)),
-                        OCaml.List.hd),
+                        List.hd),
                     [
                       Variable
                         ((9,
@@ -113,7 +113,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -124,11 +124,11 @@ Value
     [
       ((t, [ A ], [ (x, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.failure)) ],
+          ([ Type (OCaml/exception, Type (OCaml/failure)) ],
             Type (list, Type (Z)))),
         Match
-          ((10, Effect ([ Type (OCaml.exception, Type (OCaml.failure)) ], .)),
-            Variable ((?, Effect ([ ], .)), x),
+          ((10, Effect ([ Type (OCaml/exception, Type (OCaml/failure)) ], .)),
+            Variable ((?, Effect ([ ], .)), Ex25/x),
             [
               (Any,
                 Apply
@@ -136,9 +136,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.failure))
+                              (OCaml/failure))
                       ],
                         .)),
                     Variable
@@ -149,12 +149,12 @@ Value
                             .
                               -[
                                 Type
-                                  (OCaml.exception,
+                                  (OCaml/exception,
                                     Type
-                                      (OCaml.failure))
+                                      (OCaml/failure))
                               ]->
                               .)),
-                        OCaml.List.tl),
+                        List.tl),
                     [
                       Variable
                         ((10,
@@ -162,7 +162,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -174,16 +174,16 @@ Value
       ((x, [ A ], [ (x, A) ],
         Monad
           ([
-            Type (OCaml.exception, Type (OCaml.failure));
-            Type (OCaml.exception, Type (OCaml.invalid_argument))
+            Type (OCaml/exception, Type (OCaml/failure));
+            Type (OCaml/exception, Type (OCaml/invalid_argument))
           ], Type (Z))),
         Match
           ((11,
             Effect
               ([
-                Type (OCaml.exception, Type (OCaml.failure));
-                Type (OCaml.exception, Type (OCaml.invalid_argument))
-              ], .)), Variable ((?, Effect ([ ], .)), x),
+                Type (OCaml/exception, Type (OCaml/failure));
+                Type (OCaml/exception, Type (OCaml/invalid_argument))
+              ], .)), Variable ((?, Effect ([ ], .)), Ex25/x),
             [
               (Any,
                 Apply
@@ -191,13 +191,13 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.failure));
+                              (OCaml/failure));
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -210,16 +210,16 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.failure));
+                                        (OCaml/failure));
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.invalid_argument))
+                                        (OCaml/invalid_argument))
                                 ]->
                                 .)),
-                        OCaml.List.nth),
+                        List.nth),
                     [
                       Variable
                         ((11,
@@ -227,7 +227,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Constant
                         ((11,
                           Effect
@@ -246,8 +246,8 @@ Value
       ((rl, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((12, Effect ([ ], .)),
-            Variable ((12, Effect ([ ], . -> .)), OCaml.List.rev),
-            [ Variable ((12, Effect ([ ], .)), l2) ]))
+            Variable ((12, Effect ([ ], . -> .)), List.rev),
+            [ Variable ((12, Effect ([ ], .)), Ex25/l2) ]))
     ])
 
 13
@@ -257,10 +257,10 @@ Value
       ((ll, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((13, Effect ([ ], .)),
-            Variable ((13, Effect ([ ], . -> . -> .)), OCaml.List.append),
+            Variable ((13, Effect ([ ], . -> . -> .)), List.append),
             [
-              Variable ((13, Effect ([ ], .)), l2);
-              Variable ((13, Effect ([ ], .)), l2)
+              Variable ((13, Effect ([ ], .)), Ex25/l2);
+              Variable ((13, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -271,11 +271,10 @@ Value
       ((rll, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((14, Effect ([ ], .)),
-            Variable
-              ((14, Effect ([ ], . -> . -> .)), OCaml.List.rev_append),
+            Variable ((14, Effect ([ ], . -> . -> .)), List.rev_append),
             [
-              Variable ((14, Effect ([ ], .)), l2);
-              Variable ((14, Effect ([ ], .)), l2)
+              Variable ((14, Effect ([ ], .)), Ex25/l2);
+              Variable ((14, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -286,7 +285,7 @@ Value
       ((lc, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((15, Effect ([ ], .)),
-            Variable ((15, Effect ([ ], . -> .)), OCaml.List.concat),
+            Variable ((15, Effect ([ ], . -> .)), List.concat),
             [
               Constructor
                 ((15, Effect ([ ], .)), cons,
@@ -296,7 +295,7 @@ Value
                         ([
                         ],
                           .)),
-                      l1),
+                      Ex25/l1),
                   Constructor
                     ((15,
                       Effect
@@ -310,7 +309,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2),
+                          Ex25/l2),
                       Constructor
                         ((15,
                           Effect
@@ -324,7 +323,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              l1),
+                              Ex25/l1),
                           Constructor
                             ((15,
                               Effect
@@ -338,7 +337,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  l2),
+                                  Ex25/l2),
                               Constructor
                                 ((15,
                                   Effect
@@ -356,7 +355,7 @@ Value
       ((lf, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((16, Effect ([ ], .)),
-            Variable ((16, Effect ([ ], . -> .)), OCaml.List.flatten),
+            Variable ((16, Effect ([ ], . -> .)), List.flatten),
             [
               Constructor
                 ((16, Effect ([ ], .)), cons,
@@ -366,7 +365,7 @@ Value
                         ([
                         ],
                           .)),
-                      l1),
+                      Ex25/l1),
                   Constructor
                     ((16,
                       Effect
@@ -380,7 +379,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2),
+                          Ex25/l2),
                       Constructor
                         ((16,
                           Effect
@@ -394,7 +393,7 @@ Value
                                 ([
                                 ],
                                   .)),
-                              l1),
+                              Ex25/l1),
                           Constructor
                             ((16,
                               Effect
@@ -408,7 +407,7 @@ Value
                                     ([
                                     ],
                                       .)),
-                                  l2),
+                                  Ex25/l2),
                               Constructor
                                 ((16,
                                   Effect
@@ -426,7 +425,7 @@ Value
       ((m, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((21, Effect ([ ], .)),
-            Variable ((21, Effect ([ ], . -> . -> .)), OCaml.List.map),
+            Variable ((21, Effect ([ ], . -> . -> .)), List.map),
             [
               Function
                 ((21, Effect ([ ], . -> .)), x,
@@ -454,7 +453,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((21,
                             Effect
@@ -463,7 +462,7 @@ Value
                                 .)),
                             Int(1))
                       ]));
-              Variable ((21, Effect ([ ], .)), l2)
+              Variable ((21, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -474,7 +473,7 @@ Value
       ((mi, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((22, Effect ([ ], .)),
-            Variable ((22, Effect ([ ], . -> . -> .)), OCaml.List.mapi),
+            Variable ((22, Effect ([ ], . -> . -> .)), List.mapi),
             [
               Function
                 ((22, Effect ([ ], . -> . -> .)), i,
@@ -511,16 +510,16 @@ Value
                                   ([
                                   ],
                                     .)),
-                                x);
+                                Ex25/x);
                             Variable
                               ((22,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                i)
+                                Ex25/i)
                           ])));
-              Variable ((22, Effect ([ ], .)), l2)
+              Variable ((22, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -531,7 +530,7 @@ Value
       ((rm, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((23, Effect ([ ], .)),
-            Variable ((23, Effect ([ ], . -> . -> .)), OCaml.List.rev_map),
+            Variable ((23, Effect ([ ], . -> . -> .)), List.rev_map),
             [
               Function
                 ((23, Effect ([ ], . -> .)), x,
@@ -559,7 +558,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((23,
                             Effect
@@ -568,7 +567,7 @@ Value
                                 .)),
                             Int(1))
                       ]));
-              Variable ((23, Effect ([ ], .)), l2)
+              Variable ((23, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -580,8 +579,7 @@ Value
         Apply
           ((24, Effect ([ ], .)),
             Variable
-              ((24, Effect ([ ], . -> . -> . -> .)),
-                OCaml.List.fold_left),
+              ((24, Effect ([ ], . -> . -> . -> .)), List.fold_left),
             [
               Function
                 ((24, Effect ([ ], . -> . -> .)), s,
@@ -618,17 +616,17 @@ Value
                                   ([
                                   ],
                                     .)),
-                                s);
+                                Ex25/s);
                             Variable
                               ((24,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                x)
+                                Ex25/x)
                           ])));
               Constant ((24, Effect ([ ], .)), Int(0));
-              Variable ((24, Effect ([ ], .)), l2)
+              Variable ((24, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -640,8 +638,7 @@ Value
         Apply
           ((25, Effect ([ ], .)),
             Variable
-              ((25, Effect ([ ], . -> . -> . -> .)),
-                OCaml.List.fold_right),
+              ((25, Effect ([ ], . -> . -> . -> .)), List.fold_right),
             [
               Function
                 ((25, Effect ([ ], . -> . -> .)), x,
@@ -678,16 +675,16 @@ Value
                                   ([
                                   ],
                                     .)),
-                                s);
+                                Ex25/s);
                             Variable
                               ((25,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                x)
+                                Ex25/x)
                           ])));
-              Variable ((25, Effect ([ ], .)), l2);
+              Variable ((25, Effect ([ ], .)), Ex25/l2);
               Constant ((25, Effect ([ ], .)), Int(0))
             ]))
     ])
@@ -698,13 +695,13 @@ Value
     [
       ((m2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, Type (Z)))),
         Match
           ((29,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -712,9 +709,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -729,12 +726,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.invalid_argument))
+                                          (OCaml/invalid_argument))
                                   ]->
                                   .)),
-                        OCaml.List.map2),
+                        List.map2),
                     [
                       Function
                         ((29,
@@ -780,14 +777,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       ((29,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         ((29,
@@ -795,14 +792,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((29,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -813,13 +810,13 @@ Value
     [
       ((rm2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, Type (Z)))),
         Match
           ((30,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -827,9 +824,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -844,12 +841,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.invalid_argument))
+                                          (OCaml/invalid_argument))
                                   ]->
                                   .)),
-                        OCaml.List.rev_map2),
+                        List.rev_map2),
                     [
                       Function
                         ((30,
@@ -895,14 +892,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       ((30,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         ((30,
@@ -910,14 +907,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((30,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -928,13 +925,13 @@ Value
     [
       ((fl2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (Z))),
         Match
           ((31,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -942,9 +939,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -961,12 +958,12 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (OCaml.invalid_argument))
+                                            (OCaml/invalid_argument))
                                     ]->
                                     .)),
-                        OCaml.List.fold_left2),
+                        List.fold_left2),
                     [
                       Function
                         ((31,
@@ -1043,14 +1040,14 @@ Value
                                                     ([
                                                     ],
                                                       .)),
-                                                  s);
+                                                  Ex25/s);
                                               Variable
                                                 ((31,
                                                   Effect
                                                     ([
                                                     ],
                                                       .)),
-                                                  x)
+                                                  Ex25/x)
                                             ]);
                                         Variable
                                           ((31,
@@ -1058,7 +1055,7 @@ Value
                                               ([
                                               ],
                                                 .)),
-                                            y)
+                                            Ex25/y)
                                       ]))));
                       Constant
                         ((31,
@@ -1073,14 +1070,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((31,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1091,13 +1088,13 @@ Value
     [
       ((fr2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (Z))),
         Match
           ((32,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1105,9 +1102,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1124,12 +1121,12 @@ Value
                                   .
                                     -[
                                       Type
-                                        (OCaml.exception,
+                                        (OCaml/exception,
                                           Type
-                                            (OCaml.invalid_argument))
+                                            (OCaml/invalid_argument))
                                     ]->
                                     .)),
-                        OCaml.List.fold_right2),
+                        List.fold_right2),
                     [
                       Function
                         ((32,
@@ -1206,14 +1203,14 @@ Value
                                                     ([
                                                     ],
                                                       .)),
-                                                  s);
+                                                  Ex25/s);
                                               Variable
                                                 ((32,
                                                   Effect
                                                     ([
                                                     ],
                                                       .)),
-                                                  x)
+                                                  Ex25/x)
                                             ]);
                                         Variable
                                           ((32,
@@ -1221,7 +1218,7 @@ Value
                                               ([
                                               ],
                                                 .)),
-                                            y)
+                                            Ex25/y)
                                       ]))));
                       Variable
                         ((32,
@@ -1229,14 +1226,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((32,
                           Effect
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Constant
                         ((32,
                           Effect
@@ -1255,7 +1252,7 @@ Value
       ((all, [ ], [ ], Type (bool)),
         Apply
           ((35, Effect ([ ], .)),
-            Variable ((35, Effect ([ ], . -> . -> .)), OCaml.List.for_all),
+            Variable ((35, Effect ([ ], . -> . -> .)), List.for_all),
             [
               Function
                 ((35, Effect ([ ], . -> .)), x,
@@ -1283,7 +1280,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((35,
                             Effect
@@ -1292,7 +1289,7 @@ Value
                                 .)),
                             Int(2))
                       ]));
-              Variable ((35, Effect ([ ], .)), l2)
+              Variable ((35, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1303,7 +1300,7 @@ Value
       ((ex, [ ], [ ], Type (bool)),
         Apply
           ((36, Effect ([ ], .)),
-            Variable ((36, Effect ([ ], . -> . -> .)), OCaml.List._exists),
+            Variable ((36, Effect ([ ], . -> . -> .)), List._exists),
             [
               Function
                 ((36, Effect ([ ], . -> .)), x,
@@ -1331,7 +1328,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((36,
                             Effect
@@ -1340,7 +1337,7 @@ Value
                                 .)),
                             Int(2))
                       ]));
-              Variable ((36, Effect ([ ], .)), l2)
+              Variable ((36, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1350,13 +1347,13 @@ Value
     [
       ((all2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (bool))),
         Match
           ((37,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1364,9 +1361,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1381,12 +1378,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.invalid_argument))
+                                          (OCaml/invalid_argument))
                                   ]->
                                   .)),
-                        OCaml.List.for_all2),
+                        List.for_all2),
                     [
                       Function
                         ((37,
@@ -1432,14 +1429,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       ((37,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         ((37,
@@ -1447,14 +1444,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((37,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1465,13 +1462,13 @@ Value
     [
       ((ex2, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (bool))),
         Match
           ((38,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1479,9 +1476,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -1496,12 +1493,12 @@ Value
                                 .
                                   -[
                                     Type
-                                      (OCaml.exception,
+                                      (OCaml/exception,
                                         Type
-                                          (OCaml.invalid_argument))
+                                          (OCaml/invalid_argument))
                                   ]->
                                   .)),
-                        OCaml.List._exists2),
+                        List._exists2),
                     [
                       Function
                         ((38,
@@ -1547,14 +1544,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        x);
+                                        Ex25/x);
                                     Variable
                                       ((38,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        y)
+                                        Ex25/y)
                                   ])));
                       Variable
                         ((38,
@@ -1562,14 +1559,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((38,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1581,10 +1578,10 @@ Value
       ((me, [ ], [ ], Type (bool)),
         Apply
           ((39, Effect ([ ], .)),
-            Variable ((39, Effect ([ ], . -> . -> .)), OCaml.List.mem),
+            Variable ((39, Effect ([ ], . -> . -> .)), List.mem),
             [
               Constant ((39, Effect ([ ], .)), Int(2));
-              Variable ((39, Effect ([ ], .)), l2)
+              Variable ((39, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1593,11 +1590,11 @@ Value
   (non_rec, @.,
     [
       ((fin, [ A ], [ (x_1, A) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (Z))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/not_found)) ], Type (Z))),
         Match
           ((43,
-            Effect ([ Type (OCaml.exception, Type (OCaml.not_found)) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+            Effect ([ Type (OCaml/exception, Type (OCaml/not_found)) ], .)),
+            Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1605,9 +1602,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.not_found))
+                              (OCaml/not_found))
                       ],
                         .)),
                     Variable
@@ -1620,12 +1617,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.not_found))
+                                        (OCaml/not_found))
                                 ]->
                                 .)),
-                        OCaml.List.find),
+                        List.find),
                     [
                       Function
                         ((43,
@@ -1660,7 +1657,7 @@ Value
                                       ([
                                       ],
                                         .)),
-                                    x);
+                                    Ex25/x);
                                 Constant
                                   ((43,
                                     Effect
@@ -1675,7 +1672,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -1687,7 +1684,7 @@ Value
       ((fil, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((44, Effect ([ ], .)),
-            Variable ((44, Effect ([ ], . -> . -> .)), OCaml.List.filter),
+            Variable ((44, Effect ([ ], . -> . -> .)), List.filter),
             [
               Function
                 ((44, Effect ([ ], . -> .)), x,
@@ -1707,7 +1704,7 @@ Value
                                 .
                                   ->
                                   .)),
-                          OCaml.Pervasives.ge),
+                          OCaml/Pervasives.ge),
                       [
                         Variable
                           ((44,
@@ -1715,7 +1712,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((44,
                             Effect
@@ -1724,7 +1721,7 @@ Value
                                 .)),
                             Int(2))
                       ]));
-              Variable ((44, Effect ([ ], .)), l2)
+              Variable ((44, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1735,8 +1732,7 @@ Value
       ((fina, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((45, Effect ([ ], .)),
-            Variable
-              ((45, Effect ([ ], . -> . -> .)), OCaml.List.find_all),
+            Variable ((45, Effect ([ ], . -> . -> .)), List.find_all),
             [
               Function
                 ((45, Effect ([ ], . -> .)), x,
@@ -1756,7 +1752,7 @@ Value
                                 .
                                   ->
                                   .)),
-                          OCaml.Pervasives.ge),
+                          OCaml/Pervasives.ge),
                       [
                         Variable
                           ((45,
@@ -1764,7 +1760,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((45,
                             Effect
@@ -1773,7 +1769,7 @@ Value
                                 .)),
                             Int(2))
                       ]));
-              Variable ((45, Effect ([ ], .)), l2)
+              Variable ((45, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1784,8 +1780,7 @@ Value
       ((par, [ ], [ ], (Type (list, Type (Z)) * Type (list, Type (Z)))),
         Apply
           ((46, Effect ([ ], .)),
-            Variable
-              ((46, Effect ([ ], . -> . -> .)), OCaml.List.partition),
+            Variable ((46, Effect ([ ], . -> . -> .)), List.partition),
             [
               Function
                 ((46, Effect ([ ], . -> .)), x,
@@ -1805,7 +1800,7 @@ Value
                                 .
                                   ->
                                   .)),
-                          OCaml.Pervasives.gt),
+                          OCaml/Pervasives.gt),
                       [
                         Variable
                           ((46,
@@ -1813,7 +1808,7 @@ Value
                               ([
                               ],
                                 .)),
-                            x);
+                            Ex25/x);
                         Constant
                           ((46,
                             Effect
@@ -1822,7 +1817,7 @@ Value
                                 .)),
                             Int(2))
                       ]));
-              Variable ((46, Effect ([ ], .)), l2)
+              Variable ((46, Effect ([ ], .)), Ex25/l2)
             ]))
     ])
 
@@ -1832,11 +1827,11 @@ Value
     [
       ((asso, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.not_found)) ], Type (string))),
+          ([ Type (OCaml/exception, Type (OCaml/not_found)) ], Type (string))),
         Match
           ((49,
-            Effect ([ Type (OCaml.exception, Type (OCaml.not_found)) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+            Effect ([ Type (OCaml/exception, Type (OCaml/not_found)) ], .)),
+            Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1844,9 +1839,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.not_found))
+                              (OCaml/not_found))
                       ],
                         .)),
                     Variable
@@ -1859,12 +1854,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.not_found))
+                                        (OCaml/not_found))
                                 ]->
                                 .)),
-                        OCaml.List.assoc),
+                        List.assoc),
                     [
                       Constant
                         ((49,
@@ -1879,7 +1874,7 @@ Value
                             ([
                             ],
                               .)),
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -1890,7 +1885,7 @@ Value
     [
       ((masso, [ A ], [ (x_1, A) ], Type (bool)),
         Match
-          ((51, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x_1),
+          ((51, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1905,7 +1900,7 @@ Value
                               .
                                 ->
                                 .)),
-                        OCaml.List.mem_assoc),
+                        List.mem_assoc),
                     [
                       Constant
                         ((51,
@@ -1920,7 +1915,7 @@ Value
                             ([
                             ],
                               .)),
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -1931,7 +1926,7 @@ Value
     [
       ((rasso, [ A ], [ (x_1, A) ], Type (list, (Type (Z) * Type (string)))),
         Match
-          ((53, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), x_1),
+          ((53, Effect ([ ], .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1946,7 +1941,7 @@ Value
                               .
                                 ->
                                 .)),
-                        OCaml.List.remove_assoc),
+                        List.remove_assoc),
                     [
                       Constant
                         ((53,
@@ -1961,7 +1956,7 @@ Value
                             ([
                             ],
                               .)),
-                          l3)
+                          Ex25/l3)
                     ]))
             ]))
     ])
@@ -1973,8 +1968,8 @@ Value
       ((sp, [ ], [ ], (Type (list, Type (Z)) * Type (list, Type (string)))),
         Apply
           ((57, Effect ([ ], .)),
-            Variable ((57, Effect ([ ], . -> .)), OCaml.List.split),
-            [ Variable ((57, Effect ([ ], .)), l3) ]))
+            Variable ((57, Effect ([ ], . -> .)), List.split),
+            [ Variable ((57, Effect ([ ], .)), Ex25/l3) ]))
     ])
 
 58
@@ -1983,13 +1978,13 @@ Value
     [
       ((com, [ A ], [ (x_1, A) ],
         Monad
-          ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
+          ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
             Type (list, (Type (Z) * Type (Z))))),
         Match
           ((58,
             Effect
-              ([ Type (OCaml.exception, Type (OCaml.invalid_argument)) ],
-                .)), Variable ((?, Effect ([ ], .)), x_1),
+              ([ Type (OCaml/exception, Type (OCaml/invalid_argument)) ],
+                .)), Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -1997,9 +1992,9 @@ Value
                     Effect
                       ([
                         Type
-                          (OCaml.exception,
+                          (OCaml/exception,
                             Type
-                              (OCaml.invalid_argument))
+                              (OCaml/invalid_argument))
                       ],
                         .)),
                     Variable
@@ -2012,12 +2007,12 @@ Value
                               .
                                 -[
                                   Type
-                                    (OCaml.exception,
+                                    (OCaml/exception,
                                       Type
-                                        (OCaml.invalid_argument))
+                                        (OCaml/invalid_argument))
                                 ]->
                                 .)),
-                        OCaml.List.combine),
+                        List.combine),
                     [
                       Variable
                         ((58,
@@ -2025,14 +2020,14 @@ Value
                             ([
                             ],
                               .)),
-                          l2);
+                          Ex25/l2);
                       Variable
                         ((58,
                           Effect
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -2046,7 +2041,7 @@ Value
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
           ((61, Effect ([ Type (Counter); Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+            Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -2074,7 +2069,7 @@ Value
                                     (NonTermination)
                                 ]->
                                 .)),
-                        OCaml.List.sort),
+                        List.sort),
                     [
                       Function
                         ((61,
@@ -2120,14 +2115,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       ((61,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         ((61,
@@ -2135,7 +2130,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -2149,7 +2144,7 @@ Value
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
           ((62, Effect ([ Type (Counter); Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+            Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -2177,7 +2172,7 @@ Value
                                     (NonTermination)
                                 ]->
                                 .)),
-                        OCaml.List.stable_sort),
+                        List.stable_sort),
                     [
                       Function
                         ((62,
@@ -2223,14 +2218,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       ((62,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         ((62,
@@ -2238,7 +2233,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -2252,7 +2247,7 @@ Value
           ([ Type (Counter); Type (NonTermination) ], Type (list, Type (Z)))),
         Match
           ((63, Effect ([ Type (Counter); Type (NonTermination) ], .)),
-            Variable ((?, Effect ([ ], .)), x_1),
+            Variable ((?, Effect ([ ], .)), Ex25/x_1),
             [
               (Any,
                 Apply
@@ -2280,7 +2275,7 @@ Value
                                     (NonTermination)
                                 ]->
                                 .)),
-                        OCaml.List.fast_sort),
+                        List.fast_sort),
                     [
                       Function
                         ((63,
@@ -2326,14 +2321,14 @@ Value
                                           ([
                                           ],
                                             .)),
-                                        y);
+                                        Ex25/y);
                                     Variable
                                       ((63,
                                         Effect
                                           ([
                                           ],
                                             .)),
-                                        x)
+                                        Ex25/x)
                                   ])));
                       Variable
                         ((63,
@@ -2341,7 +2336,7 @@ Value
                             ([
                             ],
                               .)),
-                          l2)
+                          Ex25/l2)
                     ]))
             ]))
     ])
@@ -2353,8 +2348,7 @@ Value
       ((mer, [ ], [ ], Type (list, Type (Z))),
         Apply
           ((64, Effect ([ ], .)),
-            Variable
-              ((64, Effect ([ ], . -> . -> . -> .)), OCaml.List.merge),
+            Variable ((64, Effect ([ ], . -> . -> . -> .)), List.merge),
             [
               Function
                 ((64, Effect ([ ], . -> . -> .)), x,
@@ -2391,16 +2385,16 @@ Value
                                   ([
                                   ],
                                     .)),
-                                y);
+                                Ex25/y);
                             Variable
                               ((64,
                                 Effect
                                   ([
                                   ],
                                     .)),
-                                x)
+                                Ex25/x)
                           ])));
-              Variable ((64, Effect ([ ], .)), l2);
+              Variable ((64, Effect ([ ], .)), Ex25/l2);
               Constructor
                 ((64, Effect ([ ], .)), cons,
                   Constant

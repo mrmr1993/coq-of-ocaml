@@ -3,7 +3,9 @@ Value
   (non_rec, @.,
     [
       ((op_plus_plus_plus, [ ], [ (x, Type (Z)); (y, Type (Z)) ], Type (Z)),
-        Apply (3, Variable (3, Z.add), [ Variable (3, x); Variable (3, y) ]))
+        Apply
+          (3, Variable (3, Z.add),
+            [ Variable (3, Ex22/x); Variable (3, Ex22/y) ]))
     ])
 
 4
@@ -11,7 +13,7 @@ Value
   (non_rec, @.,
     [
       ((op_tilde_tilde, [ ], [ (x, Type (Z)) ], Type (Z)),
-        Apply (4, Variable (4, Z.opp), [ Variable (4, x) ]))
+        Apply (4, Variable (4, Z.opp), [ Variable (4, Ex22/x) ]))
     ])
 
 6
@@ -20,10 +22,10 @@ Value
     [
       ((z, [ ], [ ], Type (Z)),
         Apply
-          (6, Variable (6, op_plus_plus_plus),
+          (6, Variable (6, Ex22/op_plus_plus_plus),
             [
               Apply
-                (6, Variable (6, op_tilde_tilde),
+                (6, Variable (6, Ex22/op_tilde_tilde),
                   [
                     Constant
                       (6,

@@ -53,7 +53,7 @@ Fixpoint sum_rec (counter : nat) (l : t2 Z) : M [ NonTermination ] Z :=
     end
   end.
 
-Definition sum_1 (l : t2 Z) : M [ Counter; NonTermination ] Z :=
+Definition sum (l : t2 Z) : M [ Counter; NonTermination ] Z :=
   let! x := lift [_;_] "10" (read_counter tt) in
   lift [_;_] "01" (sum_rec x l).
 
@@ -61,7 +61,7 @@ Definition s {A : Type} (x : A) : M [ Counter; NonTermination ] Z :=
   match x with
   | _ =>
     let! x_1 := of_list (cons 5 (cons 7 (cons 3 []))) in
-    sum_1 x_1
+    sum x_1
   end.
 
 Parameter t3 : Type.

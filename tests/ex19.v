@@ -8,27 +8,27 @@ Inductive error : Type :=
 | Error : unit -> error.
 
 Definition x1 : Z :=
-  match Exception.run 0 (OCaml.Pervasives.raise (Error tt)) tt with
+  match Exception.run 0 (Pervasives.raise (Error tt)) tt with
   | inl x => x
   | inr (Error tt) => 12
   end.
 
-Definition x2 {A B : Type} (x : A) : M [ OCaml.exception OCaml.failure ] B :=
+Definition x2 {A B : Type} (x : A) : M [ exception failure ] B :=
   match x with
   | _ =>
-    match Exception.run 0 (OCaml.Pervasives.raise (Error tt)) tt with
+    match Exception.run 0 (Pervasives.raise (Error tt)) tt with
     | inl x => ret x
-    | inr (Error tt) => OCaml.Pervasives.failwith "arg" % string
+    | inr (Error tt) => Pervasives.failwith "arg" % string
     end
   end.
 
-Definition x3 (b : bool) : M [ OCaml.exception OCaml.failure ] Z :=
+Definition x3 (b : bool) : M [ exception failure ] Z :=
   let! x :=
     Exception.run 0
       (if b then
-        lift [_;_] "01" (OCaml.Pervasives.failwith "arg" % string)
+        lift [_;_] "01" (Pervasives.failwith "arg" % string)
       else
-        lift [_;_] "10" (OCaml.Pervasives.raise (Error tt))) tt in
+        lift [_;_] "10" (Pervasives.raise (Error tt))) tt in
   match x with
   | inl x => ret x
   | inr (Error tt) => ret 12

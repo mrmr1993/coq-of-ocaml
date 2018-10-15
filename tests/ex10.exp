@@ -1,16 +1,17 @@
 3 Module List2:
   4
   Inductive t:
-    ([ a ], [ (Nil, [ ]); (Cons, [ a; Type (List2/t, a) ]) ])
+    ([ a ], [ (Nil, [ ]); (Cons, [ a; Type (Ex10.List2/t, a) ]) ])
   
   8
   Value
     (rec, @.,
       [
         ((sum_rec, [ ],
-          [ (counter, Type (nat)); (l, Type (List2/t, Type (Z))) ], Type (Z)),
+          [ (counter, Type (nat)); (l, Type (Ex10.List2/t, Type (Z))) ],
+          Type (Z)),
           Match
-            (?, Variable (?, List2/counter),
+            (?, Variable (?, Ex10.List2/counter),
               [
                 (Constructor (O),
                   Apply
@@ -27,15 +28,15 @@
                     (9,
                       Variable
                         (9,
-                          List2/l),
+                          Ex10.List2/l),
                       [
                         (Constructor
-                          (List2/Nil),
+                          (Ex10.List2/Nil),
                           Constant
                             (10,
                               Int(0)));
                         (Constructor
-                          (List2/Cons,
+                          (Ex10.List2/Cons,
                             x,
                             xs),
                           Apply
@@ -46,23 +47,23 @@
                               [
                                 Variable
                                   (11,
-                                    List2/x);
+                                    Ex10.List2/x);
                                 Apply
                                   (11,
                                     Apply
                                       (?,
                                         Variable
                                           (?,
-                                            List2/sum_rec),
+                                            Ex10.List2/sum_rec),
                                         [
                                           Variable
                                             (?,
-                                              List2/counter)
+                                              Ex10.List2/counter)
                                         ]),
                                     [
                                       Variable
                                         (11,
-                                          List2/xs)
+                                          Ex10.List2/xs)
                                     ])
                               ]))
                       ]))
@@ -73,9 +74,9 @@
   Value
     (non_rec, @.,
       [
-        ((sum, [ ], [ (l, Type (List2/t, Type (Z))) ], Type (Z)),
+        ((sum, [ ], [ (l, Type (Ex10.List2/t, Type (Z))) ], Type (Z)),
           Apply
-            (?, Variable (?, List2/sum_rec),
+            (?, Variable (?, Ex10.List2/sum_rec),
               [
                 Apply
                   (?,
@@ -86,7 +87,7 @@
                       Tuple
                         (?)
                     ]);
-                Variable (?, List2/l)
+                Variable (?, Ex10.List2/l)
               ]))
       ])
   
@@ -95,9 +96,9 @@
     (rec, @.,
       [
         ((of_list_rec, [ A ], [ (counter, Type (nat)); (x, Type (list, A)) ],
-          Type (List2/t, A)),
+          Type (Ex10.List2/t, A)),
           Match
-            (?, Variable (?, List2/counter),
+            (?, Variable (?, Ex10.List2/counter),
               [
                 (Constructor (O),
                   Apply
@@ -114,39 +115,39 @@
                     (14,
                       Variable
                         (?,
-                          List2/x),
+                          Ex10.List2/x),
                       [
                         (Constructor
                           ([]),
                           Constructor
                             (14,
-                              List2/Nil));
+                              Ex10.List2/Nil));
                         (Constructor
                           (cons,
                             x,
                             xs),
                           Constructor
                             (15,
-                              List2/Cons,
+                              Ex10.List2/Cons,
                               Variable
                                 (15,
-                                  List2/x),
+                                  Ex10.List2/x),
                               Apply
                                 (15,
                                   Apply
                                     (?,
                                       Variable
                                         (?,
-                                          List2/of_list_rec),
+                                          Ex10.List2/of_list_rec),
                                       [
                                         Variable
                                           (?,
-                                            List2/counter)
+                                            Ex10.List2/counter)
                                       ]),
                                   [
                                     Variable
                                       (15,
-                                        List2/xs)
+                                        Ex10.List2/xs)
                                   ])))
                       ]))
               ]))
@@ -156,9 +157,9 @@
   Value
     (non_rec, @.,
       [
-        ((of_list, [ A ], [ (x, Type (list, A)) ], Type (List2/t, A)),
+        ((of_list, [ A ], [ (x, Type (list, A)) ], Type (Ex10.List2/t, A)),
           Apply
-            (?, Variable (?, List2/of_list_rec),
+            (?, Variable (?, Ex10.List2/of_list_rec),
               [
                 Apply
                   (?,
@@ -169,7 +170,7 @@
                       Tuple
                         (?)
                     ]);
-                Variable (?, List2/x)
+                Variable (?, Ex10.List2/x)
               ]))
       ])
   
@@ -183,20 +184,20 @@ Value
     [
       ((n, [ A ], [ (x, A) ], Type (Z)),
         Match
-          (22, Variable (?, x),
+          (22, Variable (?, Ex10/x),
             [
               (Any,
                 Apply
                   (22,
                     Variable
                       (22,
-                        List2.sum),
+                        Ex10/List2.sum),
                     [
                       Apply
                         (22,
                           Variable
                             (22,
-                              List2.of_list),
+                              Ex10/List2.of_list),
                           [
                             Constructor
                               (22,
@@ -221,7 +222,7 @@ Value
                                             cons,
                                             Variable
                                               (22,
-                                                List2.Inside.x),
+                                                Ex10/List2.Inside.x),
                                             Constructor
                                               (22,
                                                 [])))))

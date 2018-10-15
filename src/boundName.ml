@@ -8,8 +8,10 @@ type t = {
   }
 
 let pp (x : t) : SmartPrint.t =
-  let full_path_prefix = drop (List.length x.local_path.PathName.path)
-    x.full_path.PathName.path in
+  let full_path_part = x.full_path.PathName.path in
+  let local_path_part = x.local_path.PathName.path in
+  let full_path_prefix = take
+    (List.length full_path_part - List.length local_path_part) full_path_part in
   let local = PathName.pp x.local_path in
   match full_path_prefix with
   | [] -> local

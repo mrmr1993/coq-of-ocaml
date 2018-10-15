@@ -3,19 +3,19 @@ Value
   (non_rec, @.,
     [
       ((x, [ ], [ (a, Type (Z)); (b, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
-              (3, Variable (3, OCaml.Pervasives.ref),
+              (3, Variable (3, OCaml/Pervasives.ref),
                 [ Constant (3, Int(0)) ]), Some y,
             Bind
               (?,
                 Apply
-                  (4, Variable (?, OCaml.Basics.for_to),
+                  (4, Variable (?, OCaml/Basics.for_to),
                     [
-                      Variable (4, a);
-                      Variable (4, b);
+                      Variable (4, Ex42/a);
+                      Variable (4, Ex42/b);
                       Function
                         (?, i,
                           Bind
@@ -26,11 +26,11 @@ Value
                                     (5,
                                       Variable
                                         (5,
-                                          OCaml.Effect.State.read),
+                                          OCaml/Effect.State.read),
                                       [
                                         Variable
                                           (5,
-                                            y)
+                                            Ex42/y)
                                       ]),
                                   Some
                                     x,
@@ -44,7 +44,7 @@ Value
                                           [
                                             Variable
                                               (?,
-                                                x);
+                                                Ex42/x);
                                             Constant
                                               (5,
                                                 Int(1))
@@ -55,19 +55,19 @@ Value
                                 (5,
                                   Variable
                                     (5,
-                                      OCaml.Effect.State.write),
+                                      OCaml/Effect.State.write),
                                   [
                                     Variable
                                       (5,
-                                        y);
+                                        Ex42/y);
                                     Variable
                                       (?,
-                                        x)
+                                        Ex42/x)
                                   ])))
                     ]), None,
                 Apply
-                  (7, Variable (7, OCaml.Effect.State.read),
-                    [ Variable (7, y) ]))))
+                  (7, Variable (7, OCaml/Effect.State.read),
+                    [ Variable (7, Ex42/y) ]))))
     ])
 
 9
@@ -76,20 +76,20 @@ Value
     [
       ((nested, [ ], [ (x, Type (Z)); (y, Type (Z)) ],
         Monad
-          ([ Type (OCaml.Effect.State.state, Type (list, Type (bool))) ],
+          ([ Type (OCaml/Effect.State.state, Type (list, Type (bool))) ],
             Type (list, Type (bool)))),
         Bind
           (?,
             Apply
-              (10, Variable (10, OCaml.Pervasives.ref),
+              (10, Variable (10, OCaml/Pervasives.ref),
                 [ Constructor (10, []) ]), Some a,
             Bind
               (?,
                 Apply
-                  (11, Variable (?, OCaml.Basics.for_to),
+                  (11, Variable (?, OCaml/Basics.for_to),
                     [
                       Constant (11, Int(0));
-                      Variable (11, x);
+                      Variable (11, Ex42/x);
                       Function
                         (?, i,
                           Bind
@@ -98,14 +98,14 @@ Value
                                 (12,
                                   Variable
                                     (?,
-                                      OCaml.Basics.for_to),
+                                      OCaml/Basics.for_to),
                                   [
                                     Constant
                                       (12,
                                         Int(0));
                                     Variable
                                       (12,
-                                        y);
+                                        Ex42/y);
                                     Function
                                       (?,
                                         j,
@@ -117,11 +117,11 @@ Value
                                                   (13,
                                                     Variable
                                                       (13,
-                                                        OCaml.Effect.State.read),
+                                                        OCaml/Effect.State.read),
                                                     [
                                                       Variable
                                                         (13,
-                                                          a)
+                                                          Ex42/a)
                                                     ]),
                                                 Some
                                                   x_1,
@@ -135,21 +135,21 @@ Value
                                                             true),
                                                         Variable
                                                           (?,
-                                                            x_1)))),
+                                                            Ex42/x_1)))),
                                             Some
                                               x_1,
                                             Apply
                                               (13,
                                                 Variable
                                                   (13,
-                                                    OCaml.Effect.State.write),
+                                                    OCaml/Effect.State.write),
                                                 [
                                                   Variable
                                                     (13,
-                                                      a);
+                                                      Ex42/a);
                                                   Variable
                                                     (?,
-                                                      x_1)
+                                                      Ex42/x_1)
                                                 ])))
                                   ]),
                               None,
@@ -161,11 +161,11 @@ Value
                                         (15,
                                           Variable
                                             (15,
-                                              OCaml.Effect.State.read),
+                                              OCaml/Effect.State.read),
                                           [
                                             Variable
                                               (15,
-                                                a)
+                                                Ex42/a)
                                           ]),
                                       Some
                                         x_1,
@@ -179,26 +179,26 @@ Value
                                                   false),
                                               Variable
                                                 (?,
-                                                  x_1)))),
+                                                  Ex42/x_1)))),
                                   Some
                                     x_1,
                                   Apply
                                     (15,
                                       Variable
                                         (15,
-                                          OCaml.Effect.State.write),
+                                          OCaml/Effect.State.write),
                                       [
                                         Variable
                                           (15,
-                                            a);
+                                            Ex42/a);
                                         Variable
                                           (?,
-                                            x_1)
+                                            Ex42/x_1)
                                       ]))))
                     ]), None,
                 Apply
-                  (17, Variable (17, OCaml.Effect.State.read),
-                    [ Variable (17, a) ]))))
+                  (17, Variable (17, OCaml/Effect.State.read),
+                    [ Variable (17, Ex42/a) ]))))
     ])
 
 19
@@ -206,12 +206,12 @@ Value
   (non_rec, @.,
     [
       ((raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (unit))),
         Apply
-          (20, Variable (?, OCaml.Basics.for_to),
+          (20, Variable (?, OCaml/Basics.for_to),
             [
               Constant (20, Int(0));
-              Variable (20, x);
+              Variable (20, Ex42/x);
               Function
                 (?, i,
                   Coerce
@@ -220,7 +220,7 @@ Value
                         (21,
                           Variable
                             (21,
-                              OCaml.Pervasives.failwith),
+                              OCaml/Pervasives.failwith),
                           [
                             Constant
                               (21,
@@ -229,9 +229,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           ())))
             ]))
@@ -242,7 +242,7 @@ Value
   (non_rec, @.,
     [
       ((complex_raises, [ ], [ (x, Type (Z)) ],
-        Monad ([ Type (OCaml.exception, Type (OCaml.failure)) ], Type (unit))),
+        Monad ([ Type (OCaml/exception, Type (OCaml/failure)) ], Type (unit))),
         LetFun 25
           (non_rec, @.,
             [
@@ -250,9 +250,9 @@ Value
                 Monad
                   ([
                     Type
-                      (OCaml.exception,
+                      (OCaml/exception,
                         Type
-                          (OCaml.failure))
+                          (OCaml/failure))
                   ], (A * Type (Z) * B))),
                 Bind
                   (?,
@@ -260,7 +260,7 @@ Value
                       (25,
                         Variable
                           (25,
-                            OCaml.Pervasives.failwith),
+                            OCaml/Pervasives.failwith),
                         [
                           Constant
                             (25,
@@ -274,19 +274,19 @@ Value
                           (25,
                             Variable
                               (25,
-                                a),
+                                Ex42/a),
                             Constant
                               (25,
                                 Int(15)),
                             Variable
                               (?,
-                                x_1)))))
+                                Ex42/x_1)))))
             ]) in
         Apply
-          (26, Variable (?, OCaml.Basics.for_to),
+          (26, Variable (?, OCaml/Basics.for_to),
             [
               Constant (26, Int(0));
-              Variable (26, x);
+              Variable (26, Ex42/x);
               Function
                 (?, i,
                   Coerce
@@ -295,7 +295,7 @@ Value
                         (27,
                           Variable
                             (27,
-                              f),
+                              Ex42/f),
                           [
                             Constructor
                               (27,
@@ -304,9 +304,9 @@ Value
                       Monad
                         ([
                           Type
-                            (OCaml.exception,
+                            (OCaml/exception,
                               Type
-                                (OCaml.failure))
+                                (OCaml/failure))
                         ],
                           (Type
                             (bool)
@@ -323,17 +323,17 @@ Value
   (non_rec, @.,
     [
       ((argument_effects, [ ],
-        [ (x, Type (OCaml.Effect.State.t, Type (Z))); (y, Type (Z)) ],
-        Monad ([ Type (OCaml.Effect.State.state, Type (Z)) ], Type (Z))),
+        [ (x, Type (OCaml/Effect.State.t, Type (Z))); (y, Type (Z)) ],
+        Monad ([ Type (OCaml/Effect.State.state, Type (Z)) ], Type (Z))),
         Bind
           (?,
             Apply
-              (31, Variable (31, OCaml.Pervasives.ref),
-                [ Variable (31, y) ]), Some y,
+              (31, Variable (31, OCaml/Pervasives.ref),
+                [ Variable (31, Ex42/y) ]), Some y,
             Bind
               (?,
                 Apply
-                  (32, Variable (32, OCaml.Pervasives.ref),
+                  (32, Variable (32, OCaml/Pervasives.ref),
                     [ Constant (32, Int(0)) ]), Some z,
                 Bind
                   (?,
@@ -343,16 +343,16 @@ Value
                           (33,
                             Variable
                               (33,
-                                OCaml.Effect.State.read),
-                            [ Variable (33, x) ]),
+                                OCaml/Effect.State.read),
+                            [ Variable (33, Ex42/x) ]),
                         Some x_1,
                         Apply
                           (33,
                             Variable
-                              (?, OCaml.Basics.for_to),
+                              (?, OCaml/Basics.for_to),
                             [
                               Constant (33, Int(0));
-                              Variable (?, x_1);
+                              Variable (?, Ex42/x_1);
                               Function
                                 (?,
                                   i,
@@ -364,11 +364,11 @@ Value
                                             (34,
                                               Variable
                                                 (34,
-                                                  OCaml.Effect.State.read),
+                                                  OCaml/Effect.State.read),
                                               [
                                                 Variable
                                                   (34,
-                                                    y)
+                                                    Ex42/y)
                                               ]),
                                           Some
                                             x_1,
@@ -376,14 +376,14 @@ Value
                                             (34,
                                               Variable
                                                 (?,
-                                                  OCaml.Basics.for_to),
+                                                  OCaml/Basics.for_to),
                                               [
                                                 Constant
                                                   (34,
                                                     Int(0));
                                                 Variable
                                                   (?,
-                                                    x_1);
+                                                    Ex42/x_1);
                                                 Function
                                                   (?,
                                                     j,
@@ -395,11 +395,11 @@ Value
                                                               (35,
                                                                 Variable
                                                                   (35,
-                                                                    OCaml.Effect.State.read),
+                                                                    OCaml/Effect.State.read),
                                                                 [
                                                                   Variable
                                                                     (35,
-                                                                      z)
+                                                                      Ex42/z)
                                                                 ]),
                                                             Some
                                                               x_1,
@@ -413,7 +413,7 @@ Value
                                                                     [
                                                                       Variable
                                                                         (?,
-                                                                          x_1);
+                                                                          Ex42/x_1);
                                                                       Constant
                                                                         (35,
                                                                           Int(1))
@@ -424,14 +424,14 @@ Value
                                                           (35,
                                                             Variable
                                                               (35,
-                                                                OCaml.Effect.State.write),
+                                                                OCaml/Effect.State.write),
                                                             [
                                                               Variable
                                                                 (35,
-                                                                  z);
+                                                                  Ex42/z);
                                                               Variable
                                                                 (?,
-                                                                  x_1)
+                                                                  Ex42/x_1)
                                                             ])))
                                               ])),
                                       None,
@@ -443,11 +443,11 @@ Value
                                                 (37,
                                                   Variable
                                                     (37,
-                                                      OCaml.Effect.State.read),
+                                                      OCaml/Effect.State.read),
                                                   [
                                                     Variable
                                                       (37,
-                                                        y)
+                                                        Ex42/y)
                                                   ]),
                                               Some
                                                 x_1,
@@ -461,7 +461,7 @@ Value
                                                       [
                                                         Variable
                                                           (?,
-                                                            x_1);
+                                                            Ex42/x_1);
                                                         Constant
                                                           (37,
                                                             Int(1))
@@ -472,18 +472,18 @@ Value
                                             (37,
                                               Variable
                                                 (37,
-                                                  OCaml.Effect.State.write),
+                                                  OCaml/Effect.State.write),
                                               [
                                                 Variable
                                                   (37,
-                                                    y);
+                                                    Ex42/y);
                                                 Variable
                                                   (?,
-                                                    x_1)
+                                                    Ex42/x_1)
                                               ]))))
                             ])), None,
                     Apply
                       (39,
-                        Variable (39, OCaml.Effect.State.read),
-                        [ Variable (39, z) ])))))
+                        Variable (39, OCaml/Effect.State.read),
+                        [ Variable (39, Ex42/z) ])))))
     ])
