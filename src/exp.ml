@@ -30,12 +30,13 @@ end
 
 module Definition = struct
   type 'a t = {
-    is_rec : Recursivity.t;
+    is_rec : bool;
     attribute : Attribute.t;
     cases : (Header.t * 'a) list }
 
   let pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
-    OCaml.tuple [Recursivity.pp def.is_rec; Attribute.pp def.attribute;
+    OCaml.tuple [if def.is_rec then !^ "rec" else !^ "non_rec";
+      Attribute.pp def.attribute;
       def.cases |> OCaml.list (fun (header, e) ->
         OCaml.tuple [Header.pp header; pp_a e])]
 
@@ -47,7 +48,7 @@ module Definition = struct
       env (names def)
 
   let env_in_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-    if Recursivity.to_bool def.is_rec then
+    if def.is_rec then
       env_after_def def env
     else
       env
@@ -249,7 +250,7 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
           PathName.Set.add (bound_of_coq_name header.Header.name) def_names
           ))
         |> PathName.Set.inter names in
-      let names = if Recursivity.to_bool def.Definition.is_rec then
+      let names = if def.Definition.is_rec then
           PathName.Set.diff names def_names
         else names in
       let (names, map) = def.Definition.cases |>
@@ -263,7 +264,7 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
           let (names, map') = find_var_annotations names e in
           let names = PathName.Set.union names args in
           (names, union map map'))) in
-      let names = if Recursivity.to_bool def.Definition.is_rec then names
+      let names = if def.Definition.is_rec then names
         else PathName.Set.diff names def_names in
       let (names, map') = find_var_annotations names e in
       (PathName.Set.union names def_names, union map map')
@@ -546,7 +547,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
     let unit_t = Type.Apply (Localize._unit env, []) in
     LetFun (a, {
-        Definition.is_rec = Recursivity.New true;
+        Definition.is_rec = true;
         attribute = Attribute.None;
         cases = [{
             Header.name = while_name;
@@ -593,7 +594,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
   (cases : value_binding list)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
-  let is_rec = Recursivity.of_rec_flag is_rec in
+  let is_rec = is_rec = Asttypes.Recursive in
   let attrs = cases |> List.map (fun { vb_attributes = attrs; vb_expr = e; vb_pat = p } ->
     let { exp_loc = loc } = e in
     let l = Loc.of_location loc in
@@ -615,7 +616,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     | Pattern.Variable (typ, x) ->
       (FullEnvi.Var.assoc x () env, (None, p, [(x, typ)], e, loc))
     | _ ->
-      if Recursivity.to_bool is_rec then
+      if is_rec then
         Error.raise loc "Only variables are allowed as a left-hand side of let rec";
       let free_vars = CoqName.Map.bindings @@ Pattern.free_variables p in
       let env = List.fold_left (fun env (x, typ) ->
@@ -628,11 +629,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         | None -> env in
       List.fold_left (fun env (x, typ) -> FullEnvi.Var.assoc x () env) env xs)
     env cases in
-  let env =
-    if Recursivity.to_bool is_rec then
-      env_with_let
-    else
-      env in
+  let env = if is_rec then env_with_let else env in
   let cases' = cases |> List.map (fun (bound, p, xs, e, loc) ->
     let (e_typ, typ_vars, new_typ_vars) =
       Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
@@ -683,7 +680,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     Definition.is_rec = is_rec;
     attribute = attr;
     cases = cases' } in
-  if Recursivity.to_bool is_rec then
+  if is_rec then
     (env_with_let, [def])
   else
     let defs = cases |> List.map (fun (bound, p, xs, e, loc) ->
@@ -742,7 +739,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     let is_x_a_name = List.exists (fun y -> x = CoqName.ocaml_name y)
       (Definition.names def) in
     let def =
-      if (Recursivity.to_bool def.Definition.is_rec && is_x_a_name) then
+      if (def.Definition.is_rec && is_x_a_name) then
         def
       else
         { def with Definition.cases =
@@ -878,7 +875,7 @@ let rec monadise_let_rec (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
 and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
   (def : (Loc.t * Type.t) t Definition.t)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
-  if Recursivity.to_bool def.Definition.is_rec &&
+  if def.Definition.is_rec &&
     def.Definition.attribute <> Attribute.CoqRec then
     let var (x : Name.t) (typ : Type.t) env : (Loc.t * Type.t) t =
       Variable ((Loc.Unknown, typ),
@@ -948,7 +945,7 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
           [Tuple ((Loc.Unknown, Type.Tuple []), [])])
         :: List.map (fun (x, typ) -> var (CoqName.ocaml_name x) typ env)
           header.Header.args) in
-      { Definition.is_rec = Recursivity.New false;
+      { Definition.is_rec = false;
         attribute = Attribute.None;
         cases = [header, e] })
       (Definition.names def') def.Definition.cases in
@@ -1140,7 +1137,7 @@ and effects_of_def (env : Type.t FullEnvi.t)
   (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
   let rec fix_effect (def' : (Loc.t * Type.t) t Definition.t) =
     let env =
-      if Recursivity.to_bool def.Definition.is_rec then
+      if def.Definition.is_rec then
         env_after_def_with_effects env def'
       else
         env in
@@ -1150,7 +1147,7 @@ and effects_of_def (env : Type.t FullEnvi.t)
     else
       fix_effect def'' in
   let env =
-    if Recursivity.to_bool def.Definition.is_rec then
+    if def.Definition.is_rec then
       List.fold_left (fun env (header, _) ->
         FullEnvi.Var.assoc header.Header.name Effect.pure env)
         env def.Definition.cases
@@ -1318,7 +1315,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         (if !firt_case then (
           firt_case := false;
           !^ "let" ^^
-          (if Recursivity.to_bool def.Definition.is_rec then !^ "fix" else empty)
+          (if def.Definition.is_rec then !^ "fix" else empty)
         ) else
           !^ "with") ^^
         CoqName.to_coq header.Header.name ^^
