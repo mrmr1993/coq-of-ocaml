@@ -477,13 +477,9 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
   open_module loc (Module.bound loc path env) env
 
-let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
+let leave_module (env : 'a t) : 'a t =
   let (m, active_module) = FullMod.leave_module env.active_module in
   let env = { env with active_module } in
-  let values = Mod.fold_values (fun _ x -> PathName.Map.update x
-      (option_map (Value.map (localize env))))
-    m env.values in
-  let env = { env with active_module; values } in
   let module_name = match option_map CoqName.ocaml_name m.Mod.name with
     | Some module_name -> module_name
     | None -> failwith "Leaving a module with no name." in

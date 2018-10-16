@@ -202,7 +202,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
     (Type.Arrow (Type.Variable "0", Monad (typ_d "0", state_type "0")))
   (* Operations on format strings *)
   (* Program termination *)
-  |> leave_module localize_effects
+  |> leave_module
 
   (* List *)
   |> fun env ->

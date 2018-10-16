@@ -48,7 +48,7 @@ let rec of_ocaml (env : unit FullEnvi.t) (signature : signature)
       let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
       let env = FullEnvi.enter_module name env in
       let (env, signatures) = of_ocaml env signature in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module env in
       (env, Module (loc, name, signatures))
     | Sig_module (name, { md_loc = loc }, _) ->
       let loc = Loc.of_location loc in
@@ -91,7 +91,7 @@ let rec update_env (decls : t list) (a : 'a) (env : 'a FullEnvi.t)
     | Module (loc, name, decls) ->
       env |> FullEnvi.enter_module name
         |> update_env decls a
-        |> FullEnvi.leave_module (fun _ v -> v)
+        |> FullEnvi.leave_module
     | ModType (loc, name, decls) ->
       env |> FullEnvi.enter_module name
         |> update_env decls a
