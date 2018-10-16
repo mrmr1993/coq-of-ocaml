@@ -127,10 +127,6 @@ let rec unify (env : 'a FullEnvi.t) (typ1 : t) (typ2 : t) : t Name.Map.t =
   | Tuple typs1, Tuple typs2 ->
     List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
       Name.Map.empty typs1 typs2
-  | Tuple [],
-    Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, [])
-  | Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, []),
-    Tuple [] -> Name.Map.empty
   | Apply (x1, typs1), Apply (x2, typs2)
     when BoundName.stable_compare x1 x2 = 0 ->
     List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
