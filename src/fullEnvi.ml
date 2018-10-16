@@ -119,9 +119,6 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
 let has_global_value (env : 'a t) (x : PathName.t) =
   PathName.Map.mem x env.values
 
-let localize_effects (env : 'a t) (typ : Effect.t) : Effect.t =
-  Effect.map (localize (has_value env) env) typ
-
 let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
   env1.required_modules := Name.Set.union !(env1.required_modules)
     !(env2.required_modules);
