@@ -95,12 +95,12 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
   | Type.Apply (
       {BoundName.full_path = { PathName.path = ["OCaml"]; base = "exn" }},
       []), _ -> p
-  | _, Any typ' -> Any (Effect.Type.unify typ' typ)
-  | _, Constant (typ', c) -> Constant (Effect.Type.unify typ' typ, c)
-  | _, Variable (typ', x) -> Variable (Effect.Type.unify typ' typ, x)
+  | _, Any typ' -> Any (Type.unify_monad typ' typ)
+  | _, Constant (typ', c) -> Constant (Type.unify_monad typ' typ, c)
+  | _, Variable (typ', x) -> Variable (Type.unify_monad typ' typ, x)
   | Type.Monad (_, Type.Tuple typs), Tuple (typ', ps)
   | Type.Tuple typs, Tuple (typ', ps) ->
-    Tuple (Effect.Type.unify typ' typ, List.map2 unify typs ps)
+    Tuple (Type.unify_monad typ' typ, List.map2 unify typs ps)
   | Type.Monad (_, Type.Apply (_, typ_vars)), Constructor (typ', x, ps)
   | Type.Apply (_, typ_vars), Constructor (typ', x, ps) ->
     let (typ_name, index) = FullEnvi.Constructor.find loc x env in
@@ -119,8 +119,8 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
       | Some typ -> typ
       | None -> Variable x)) @@
       snd @@ List.nth constructors index in
-    Constructor (Effect.Type.unify typ' typ, x, List.map2 unify typs ps)
-  | _, Alias (typ', p, x) -> Alias (Effect.Type.unify typ' typ, p, x)
+    Constructor (Type.unify_monad typ' typ, x, List.map2 unify typs ps)
+  | _, Alias (typ', p, x) -> Alias (Type.unify_monad typ' typ, p, x)
   | Type.Monad (_, Type.Apply (bound_typ, typ_vars)), Record (typ', fields)
   | Type.Apply (bound_typ, typ_vars), Record (typ', fields) ->
     let (typ_args, field_typs) =
@@ -141,9 +141,9 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
       let typ = FullEnvi.Field.find loc field_name env
         |> snd |> List.nth typs in
       (field_name, unify typ p)) in
-    Record (Effect.Type.unify typ' typ, fields)
+    Record (Type.unify_monad typ' typ, fields)
   | _, Or (typ', p1, p2) ->
-    Or (Effect.Type.unify typ' typ, unify typ' p1, unify typ' p2)
+    Or (Type.unify_monad typ' typ, unify typ' p1, unify typ' p2)
   | _, _ -> Error.raise loc "Cannot unify type with pattern."
 
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =

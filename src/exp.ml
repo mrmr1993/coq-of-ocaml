@@ -827,7 +827,7 @@ let rec monadise_let_rec (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
             let typ2 = PathName.Map.find path typed_vars' in
             let map' = Type.unify typ1 typ2 in
             Name.Map.union (fun _ typ1 typ2 ->
-                Some (Effect.Type.unify typ1 typ2))
+                Some (Type.unify_monad typ1 typ2))
               map map')
         typed_vars map) Name.Map.empty cases in
     let typ_e = snd @@ annotation e in
@@ -980,7 +980,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
         Type.map (FullEnvi.localize env) @@ FullEnvi.Var.find l x env in
       let vars_map = Type.unify typ' typ in
       let typ' = Effect.map_type_vars vars_map typ' in
-      let typ = Effect.Type.unify ~collapse:false typ typ' in
+      let typ = Type.unify_monad ~collapse:false typ typ' in
       Variable ((l, typ), x)
     with Not_found ->
       let message = BoundName.pp x ^^ !^ "not found: supposed to be pure." in
@@ -989,7 +989,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     end
   | Tuple ((l, typ), es) ->
     let (d, es, typs) = compound es in
-    let typ = Effect.Type.unify typ @@ Effect.join d @@ Type.Tuple typs in
+    let typ = Type.unify_monad typ @@ Effect.join d @@ Type.Tuple typs in
     Tuple ((l, typ), es)
   | Constructor ((l, typ), x, es) ->
     let (d, es, typs) = compound es in
@@ -1020,7 +1020,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Function ((l, typ), x, e) ->
     let env = FullEnvi.Var.assoc x Effect.pure env in
     let e = effects env e in
-    let typ = Effect.Type.unify typ @@
+    let typ = Type.unify_monad typ @@
       Type.Arrow (Variable "_", snd (annotation e)) in
     Function ((l, typ), x, e)
   | LetVar ((l, typ), x, e1, e2) ->
@@ -1030,7 +1030,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e2 = effects env e2 in
     let (d2, typ2) = Effect.split @@ snd (annotation e2) in
     let descriptor = Effect.Descriptor.union [d1; d2] in
-    let effect = Effect.Type.unify typ @@ Effect.join descriptor typ2 in
+    let effect = Type.unify_monad typ @@ Effect.join descriptor typ2 in
     LetVar ((l, effect), x, e1, e2)
   | LetFun ((l, typ), def, e2) ->
     let def = effects_of_def env def in
@@ -1046,9 +1046,9 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       let env = Pattern.add_to_env_with_effects p env in
       (p, effects env e')) in
     let (d, typ_cases) = Effect.split @@
-      Effect.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
+      Type.union (List.map (fun (_, e) -> snd (annotation e)) cases) in
     let descriptor = Effect.Descriptor.union [d_e; d] in
-    let typ = Effect.Type.unify typ @@ Effect.join descriptor typ_cases in
+    let typ = Type.unify_monad typ @@ Effect.join descriptor typ_cases in
     Match ((l, typ), e, cases)
   | Record ((l, typ), fields, base) ->
     let (base, (d, es, typs)) =
@@ -1081,8 +1081,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     | (d, [e2; e3], [typ2; typ3]) -> (d, e2, e3, typ2, typ3)
     | _ -> failwith "Wrong answer from 'compound'." in
     let d = Effect.Descriptor.union [d1; d] in
-    let typ = Effect.Type.unify typ @@ Effect.join d @@
-      Effect.Type.unify typ2 typ3 in
+    let typ = Type.unify_monad typ @@ Effect.join d @@
+      Type.unify_monad typ2 typ3 in
     IfThenElse ((l, typ), e1, e2, e3)
   | For ((l, typ), name, down, e1, e2, e) ->
     let (d, e, e1, e2) = match compound [e; e1; e2] with
@@ -1096,19 +1096,19 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     For ((l, typ), name, down, e1, e2, e)
   | Coerce ((l, _), e, typ) ->
     let e = effects env e in
-    let typ = Effect.Type.unify typ @@ snd @@ annotation e in
+    let typ = Type.unify_monad typ @@ snd @@ annotation e in
     Coerce ((l, typ), e, typ)
   | Sequence ((l, typ), e1, e2) ->
     let (d, e1, e2, typ2) = match compound [e1; e2] with
       | (d, [e1; e2], [_; typ2]) -> (d, e1, e2, typ2)
       | _ -> failwith "Wrong answer from 'compound'." in
-    let typ = Effect.Type.unify typ @@ Effect.join d typ2 in
+    let typ = Type.unify_monad typ @@ Effect.join d typ2 in
     Sequence ((l, typ), e1, e2)
   | Run ((l, typ), x, d, e) ->
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd @@ annotation e in
     let exn = Type.Variable "_" in
-    let typ = Effect.Type.unify typ @@
+    let typ = Type.unify_monad typ @@
       Effect.join (Effect.Descriptor.remove x d_e) @@
       Type.Apply (Localize._sum env, [typ_e; exn]) in
     Run ((l, typ), x, d, e)
@@ -1130,7 +1130,7 @@ and effects_of_def_step (env : Type.t FullEnvi.t)
     def.Definition.cases |> List.map (fun (header, e) ->
       let env = Header.env_in_header header env Effect.pure in
       let e = effects env e in
-      let typ = Effect.Type.unify header.Header.typ @@ snd @@ annotation e in
+      let typ = Type.unify_monad header.Header.typ @@ snd @@ annotation e in
       ({ header with Header.typ = typ }, e)) }
 
 and effects_of_def (env : Type.t FullEnvi.t)
@@ -1273,7 +1273,7 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
           [e1; e2; Function (Loc.Unknown, name, e)])
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | Coerce ((l, d), e, typ) ->
-    Coerce (l, monadise env e, Effect.Type.unify d typ)
+    Coerce (l, monadise env e, Type.unify_monad d typ)
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
     let (d1, d2) = (descriptor e1, descriptor e2) in
     let e1 = monadise env e1 in
