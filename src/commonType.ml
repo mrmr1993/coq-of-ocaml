@@ -101,6 +101,10 @@ let rec unify (typ1 : t) (typ2 : t) : t Name.Map.t =
   | Tuple typs1, Tuple typs2 ->
     List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
       Name.Map.empty typs1 typs2
+  | Tuple [],
+    Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, [])
+  | Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, []),
+    Tuple [] -> Name.Map.empty
   | Apply (x1, typs1), Apply (x2, typs2) ->
     List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
       Name.Map.empty typs1 typs2
@@ -118,6 +122,10 @@ let rec unify_monad (f : desc -> desc option -> desc) (typ1 : t) (typ2 : t)
     Arrow (unify_monad typ1a typ2a, unify_monad typ1b typ2b)
   | Tuple typs1, Tuple typs2 ->
     Tuple (List.map2 unify_monad typs1 typs2)
+  | Tuple [],
+    Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, [])
+  | Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, []),
+    Tuple [] -> typ1
   | Apply (x1, typs1), Apply (x2, typs2)
     (*when BoundName.stable_compare x1 x2 = 0*) ->
     Apply (x1, List.map2 unify_monad typs1 typs2)
