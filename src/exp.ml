@@ -535,10 +535,20 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e1 = of_expression env typ_vars e1 in
     let e2 = of_expression env typ_vars e2 in
     let e = of_expression env typ_vars e in
+    let typ_e = snd @@ annotation e in
+    let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e = if typ_e = typ_e' then e else
+      Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
     For (a, name, down, e1, e2, e)
   | Texp_while (e1, e2) ->
     let e1 = of_expression env typ_vars e1 in
     let e2 = of_expression env typ_vars e2 in
+    let typ2 = snd @@ annotation e2 in
+    let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e2 = if typ2 = typ2' then e2 else
+      Coerce ((Loc.Unknown, typ2'), e2, typ2') in
     While (a, e1, e2)
   | Texp_setfield _ -> Error.raise l "Set field not handled."
   | Texp_array _ -> Error.raise l "Arrays not handled."
@@ -1068,11 +1078,6 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       Effect.Type.unify typ2 typ3 in
     IfThenElse ((l, typ), e1, e2, e3)
   | For ((l, typ), name, down, e1, e2, e) ->
-    let typ_e = snd @@ annotation e in
-    let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
-    (* Give Coq a concrete type if it can't infer one. *)
-    let e = if typ_e = typ_e' then e else
-      Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
     let (d, e, e1, e2) = match compound [e; e1; e2] with
       | (d, [e; e1; e2], _) -> (d, e, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in
@@ -1083,11 +1088,6 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let typ = Effect.join d typ in
     For ((l, typ), name, down, e1, e2, e)
   | While ((l, typ), e1, e2) ->
-    let typ2 = snd @@ annotation e2 in
-    let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
-    (* Give Coq a concrete type if it can't infer one. *)
-    let e2 = if typ2 = typ2' then e2 else
-      Coerce ((Loc.Unknown, typ2'), e2, typ2') in
     let (d, e1, e2) = match compound [e1; e2] with
       | (d, [e1; e2], _) -> (d, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in

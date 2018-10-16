@@ -397,9 +397,11 @@ Value
       ((raises, [ ], [ (b, Type (bool)) ], Type (unit)),
         While
           (30, Variable (30, Ex43/b),
-            Apply
-              (31, Variable (31, OCaml/Pervasives.failwith),
-                [ Constant (31, String("b is true")) ])))
+            Coerce
+              (?,
+                Apply
+                  (31, Variable (31, OCaml/Pervasives.failwith),
+                    [ Constant (31, String("b is true")) ]), ())))
     ])
 
 34
@@ -432,7 +434,12 @@ Value
             ]) in
         While
           (36, Variable (36, Ex43/b),
-            Apply (37, Variable (37, Ex43/f), [ Constructor (37, true) ])))
+            Coerce
+              (?,
+                Apply
+                  (37, Variable (37, Ex43/f),
+                    [ Constructor (37, true) ]),
+                (Type (bool) * Type (Z) * ()))))
     ])
 
 40

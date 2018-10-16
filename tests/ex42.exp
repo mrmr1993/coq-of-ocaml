@@ -119,9 +119,15 @@ Value
       ((raises, [ ], [ (x, Type (Z)) ], Type (unit)),
         For
           (20, i, true, Constant (20, Int(0)), Variable (20, Ex42/x),
-            Apply
-              (21, Variable (21, OCaml/Pervasives.failwith),
-                [ Constant (21, String("x is not less than 0")) ])))
+            Coerce
+              (?,
+                Apply
+                  (21, Variable (21, OCaml/Pervasives.failwith),
+                    [
+                      Constant
+                        (21,
+                          String("x is not less than 0"))
+                    ]), ())))
     ])
 
 24
@@ -154,7 +160,12 @@ Value
             ]) in
         For
           (26, i, true, Constant (26, Int(0)), Variable (26, Ex42/x),
-            Apply (27, Variable (27, Ex42/f), [ Constructor (27, true) ])))
+            Coerce
+              (?,
+                Apply
+                  (27, Variable (27, Ex42/f),
+                    [ Constructor (27, true) ]),
+                (Type (bool) * Type (Z) * ()))))
     ])
 
 30
