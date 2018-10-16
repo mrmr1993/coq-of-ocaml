@@ -192,6 +192,10 @@ let unify_monad ?collapse:(collapse=true) (env : 'a FullEnvi.t) (typ1 : t)
         | None -> d1) in
   unify_monad env f typ1 typ2
 
+(* TODO: rewrite as non-throwing and use to implement unify_monad. *)
+let unify_monad_opt (env : 'a FullEnvi.t) (typ1 : t) (typ2 : t) : t option =
+  try Some (unify_monad env typ1 typ2) with _ -> None
+
 let union (env : 'a FullEnvi.t) (typs : t list) : t =
   List.fold_left (unify_monad env) Effect.Type.pure typs
 
