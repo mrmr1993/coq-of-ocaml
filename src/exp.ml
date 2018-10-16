@@ -75,7 +75,6 @@ type 'a t =
   | Field of 'a * 'a t * BoundName.t (** Access to a field of a record. *)
   | IfThenElse of 'a * 'a t * 'a t * 'a t (** The "else" part may be unit. *)
   | For of 'a * CoqName.t * bool * 'a t * 'a t * 'a t (** For loop. *)
-  | While of 'a * 'a t * 'a t (** While loop. *)
   | Coerce of 'a * 'a t * Type.t (** Coercion. *)
   | Sequence of 'a * 'a t * 'a t (** A sequence of two expressions. *)
   | Return of 'a * 'a t (** Monadic return. *)
@@ -123,8 +122,6 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
   | For (a, name, down, e1, e2, e) ->
     nest (!^ "For" ^^ OCaml.tuple
       [pp_a a; CoqName.pp name; OCaml.bool down; pp e1; pp e2; pp e])
-  | While (a, e1, e2) ->
-    nest (!^ "While" ^^ OCaml.tuple [pp_a a; pp e1; pp e2])
   | Coerce (a, e, typ) ->
     nest (!^ "Coerce" ^^ OCaml.tuple [pp_a a; pp e; Type.pp typ])
   | Sequence (a, e1, e2) ->
@@ -144,7 +141,7 @@ let annotation (e : 'a t) : 'a =
   | Constant (a, _) | Variable (a, _) | Tuple (a, _) | Constructor (a, _, _)
   | Apply (a, _, _) | Function (a, _, _) | LetVar (a, _, _, _)
   | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
-  | IfThenElse (a, _, _, _) | For (a, _, _, _, _, _) | While (a, _, _)
+  | IfThenElse (a, _, _, _) | For (a, _, _, _, _, _)
   | Coerce (a, _, _) | Sequence (a, _, _) | Return (a, _) | Bind (a, _, _, _)
   | Lift (a, _, _, _) | Run (a, _, _, _) -> a
 
@@ -163,7 +160,6 @@ let update_annotation (f : 'a -> 'a) (e : 'a t) : 'a t =
   | Field (a, e, x) -> Field (f a, e, x)
   | IfThenElse (a, e1, e2, e3) -> IfThenElse (f a, e1, e2, e3)
   | For (a, name, down, e1, e2, e) -> For (f a, name, down, e1, e2, e)
-  | While (a, e1, e2) -> While (f a, e1, e2)
   | Coerce (a, e, typ) -> Coerce (f a, e, typ)
   | Sequence (a, e1, e2) -> Sequence (f a, e1, e2)
   | Return (a, e) -> Return (f a, e)
@@ -191,7 +187,6 @@ let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
     IfThenElse (f a, map f e1, map f e2, map f e3)
   | For (a, name, down, e1, e2, e) ->
     For (f a, name, down, map f e1, map f e2, map f e)
-  | While (a, e1, e2) -> While (f a, map f e1, map f e2)
   | Coerce (a, e, typ) -> Coerce (f a, map f e, typ)
   | Sequence (a, e1, e2) -> Sequence (f a, map f e1, map f e2)
   | Return (a, e) -> Return (f a, map f e)
@@ -306,7 +301,6 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
       let (names, map2) = find_var_annotations names e in
       let names = if has_name then PathName.Set.add name names else names in
       (names, union map1 map2)
-    | While (a, e1, e2) -> fold [e1; e2] names
     | Coerce (a, e, typ) -> find_var_annotations names e
     | Bind (a, e1, None, e2) | Sequence (a, e1, e2) -> fold [e1; e2] names
     | Return (a, e) -> find_var_annotations names e
@@ -549,7 +543,26 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     (* Give Coq a concrete type if it can't infer one. *)
     let e2 = if typ2 = typ2' then e2 else
       Coerce ((Loc.Unknown, typ2'), e2, typ2') in
-    While (a, e1, e2)
+    let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
+    let unit_t = Type.Apply (Localize._unit env, []) in
+    LetFun (a, {
+        Definition.is_rec = Recursivity.New true;
+        attribute = Attribute.None;
+        cases = [{
+            Header.name = while_name;
+            typ_vars = [];
+            implicit_args = [];
+            args = [];
+            typ = unit_t;
+          },
+          IfThenElse ((Loc.Unknown, unit_t), e1,
+            Sequence ((Loc.Unknown, unit_t), e2,
+              Apply ((Loc.Unknown, unit_t),
+                Variable ((Loc.Unknown, unit_t), while_bound), [])),
+            Tuple ((Loc.Unknown, unit_t), []))];
+      },
+      Apply ((Loc.Unknown, unit_t),
+        Variable ((Loc.Unknown, unit_t), while_bound), []))
   | Texp_setfield _ -> Error.raise l "Set field not handled."
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_assert e ->
@@ -759,7 +772,6 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     For (a, name, down, substitute x e' e1,
       substitute x e' e2,
       substitute x e' e)
-  | While (a, e1, e2) -> While (a, substitute x e' e1, substitute x e' e2)
   | Coerce (a, e, typ) -> Coerce (a, substitute x e' e, typ)
   | Sequence (a, e1, e2) ->
     Sequence (a, substitute x e' e1, substitute x e' e2)
@@ -849,8 +861,6 @@ let rec monadise_let_rec (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
     For (a, name, down, monadise_let_rec env e1,
       monadise_let_rec env e2,
       monadise_let_rec env e)
-  | While (a, e1, e2) ->
-    While (a, monadise_let_rec env e1, monadise_let_rec env e2)
   | Coerce (a, e, typ) -> Coerce (a, monadise_let_rec env e, typ)
   | Sequence (a, e1, e2) ->
     Sequence (a, monadise_let_rec env e1,
@@ -1087,20 +1097,6 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
        exactly the same effect. *)
     let typ = Effect.join d typ in
     For ((l, typ), name, down, e1, e2, e)
-  | While ((l, typ), e1, e2) ->
-    let (d, e1, e2) = match compound [e1; e2] with
-      | (d, [e1; e2], _) -> (d, e1, e2)
-      | _ -> failwith "Wrong answer from 'compound'." in
-    let loop_d = Effect.Descriptor.union [
-        Effect.Descriptor.singleton (Localize._Counter env) [];
-        Effect.Descriptor.singleton (Localize._NonTermination env) [];
-      ] in
-    (* We don't use the actual type of [e2] here, since OCaml ignores it, and
-       thus it won't necessarily unify with [unit]. We choose not to insert an
-       [ignore] call, since it can bloat the generated code significantly for
-       exactly the same effect. *)
-    let typ = Effect.join (Effect.Descriptor.union [loop_d; d]) typ in
-    While ((l, typ), e1, e2)
   | Coerce ((l, _), e, typ) ->
     let e = effects env e in
     let typ = Effect.Type.unify typ @@ snd @@ annotation e in
@@ -1279,55 +1275,6 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
         Apply (l, Variable (Loc.Unknown, bound_for),
           [e1; e2; Function (Loc.Unknown, name, e)])
       | _ -> failwith "Wrong answer from 'monadise_list'.")
-  | While ((l, d), e1, e2) ->
-    let tt = Localize._tt env in
-    let nat = Type.Apply (Localize._nat env, []) in
-    let counter_d = Effect.Descriptor.singleton (Localize._Counter env) [] in
-    let nonterm_d =
-      Effect.Descriptor.singleton (Localize._NonTermination env) [] in
-    let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
-    let (counter_name, counter_bound, env) =
-      FullEnvi.Var.fresh "counter" () env in
-    let (check_name, check_bound, env) =
-      FullEnvi.Var.fresh "check" () env in
-    let d = fst @@ Effect.split d in
-    let d1 = descriptor e1 in
-    let d2 = descriptor e2 in
-    let while_d = Effect.Descriptor.union [nonterm_d; d1; d2] in
-    LetFun (l, {
-        Definition.is_rec = Recursivity.New true;
-        attribute = Attribute.None;
-        cases = [{
-            Header.name = while_name;
-            typ_vars = [];
-            implicit_args = [];
-            args = [(counter_name, nat)];
-            typ = Monad (while_d, Type.Tuple [])
-          },
-          Match (Loc.Unknown, Variable (Loc.Unknown, counter_bound), [
-            (Pattern.Constructor (nat, Localize._O env, []),
-            lift nonterm_d while_d
-              (Apply (Loc.Unknown,
-                Variable (Loc.Unknown, Localize._not_terminated env),
-                [Constructor (Loc.Unknown, tt, [])])));
-            (Pattern.Constructor (nat, Localize._S env,
-              [Pattern.Variable (nat, counter_name)]),
-            bind d1 while_d while_d (monadise env e1) (Some check_name)
-              (IfThenElse (Loc.Unknown, Variable (Loc.Unknown, check_bound),
-                bind d2 while_d while_d (monadise env e2) None
-                  (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
-                    [Variable (Loc.Unknown, counter_bound)])),
-                (Return (Loc.Unknown, Constructor (Loc.Unknown, tt, [])))
-            )))
-          ])]},
-      bind counter_d while_d d
-        (Apply (Loc.Unknown,
-          Variable (Loc.Unknown, Localize._read_counter env),
-          [Constructor (Loc.Unknown, tt, [])]))
-        (Some counter_name)
-        (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
-          [Variable (Loc.Unknown, counter_bound)]))
-    )
   | Coerce ((l, d), e, typ) ->
     Coerce (l, monadise env e, Effect.Type.unify d typ)
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
@@ -1406,7 +1353,6 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       !^ "else" ^^ newline ^^
       indent (to_coq false e3))
   | For _ -> failwith "Cannot output for statement: should have already been converted."
-  | While _ -> failwith "Cannot output while statement: should have already been converted."
   | Coerce (_, e, typ) ->
     Pp.parens paren @@ nest @@ to_coq true e ^^ !^ ":" ^^ Type.to_coq false typ
   | Sequence (_, e1, e2) ->
