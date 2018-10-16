@@ -72,7 +72,10 @@ module Descriptor = struct
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index d.no_args (fun y -> CommonType.compare x y = 0)
+    find_index d.no_args (fun y -> CommonType.compare x y = 0) +
+      match d.with_args with
+      | [] -> 0
+      | _ -> 1
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
     { d with args_arg = Some arg }
