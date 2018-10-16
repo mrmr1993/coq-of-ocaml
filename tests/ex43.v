@@ -11,18 +11,18 @@ Definition slow_div (a : Z) (b : Z)
   let! y := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! c := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! _ :=
-    let fix while (counter : nat)
+    let fix while_rec (counter : nat)
       : M [ Effect.State.state Z; NonTermination ] unit :=
       match counter with
       | O => lift [_;_] "01" (not_terminated tt)
       | S counter =>
-        let! check :=
+        let! x :=
           lift [_;_] "10"
             (let! x :=
               let! x := Effect.State.read y in
               ret (Z.add x b) in
             ret (Pervasives.le x a)) in
-        if check then
+        if x then
           let! _ :=
             lift [_;_] "10"
               (let! _ :=
@@ -34,12 +34,14 @@ Definition slow_div (a : Z) (b : Z)
                 let! x := Effect.State.read c in
                 ret (Z.add x 1) in
               Effect.State.write c x) in
-          while counter
+          while_rec counter
         else
           ret tt
       end in
-    let! counter := lift [_;_;_] "010" (read_counter tt) in
-    lift [_;_;_] "101" (while counter) in
+    let while : M [ Effect.State.state Z; Counter; NonTermination ] unit :=
+      let! x := lift [_;_;_] "010" (read_counter tt) in
+      lift [_;_;_] "101" (while_rec x) in
+    while in
   lift [_;_;_] "100" (Effect.State.read c).
 
 Definition nested {es_in : list Effect.t} (x : unit)
@@ -71,7 +73,7 @@ Definition nested {es_in : list Effect.t} (x : unit)
     let! b := lift [_;_;_] "100" (@Union.lift _ _ _ [_;_] 0 (Pervasives.ref []))
       in
     let! _ :=
-      let fix while (counter : nat)
+      let fix while_rec (counter : nat)
         : M
           [
             OCaml.Effect.Union.union _
@@ -89,14 +91,14 @@ Definition nested {es_in : list Effect.t} (x : unit)
         match counter with
         | O => lift [_;_;_] "001" (not_terminated tt)
         | S counter =>
-          let! check :=
+          let! x_1 :=
             lift [_;_;_] "100"
               (@Union.lift _ _ _ [_;_] 1
                 (let! x_1 :=
                   let! x_1 := Effect.State.read a in
                   ret (List.length x_1) in
                 ret (Pervasives.gt x_1 0))) in
-          if check then
+          if x_1 then
             let! _ :=
               let! x_1 :=
                 lift [_;_;_] "100"
@@ -106,18 +108,18 @@ Definition nested {es_in : list Effect.t} (x : unit)
               | cons x a' =>
                 let! _ :=
                   @Union.lift _ _ _ [_;_] 0
-                    (let fix while_1 (counter_1 : nat)
+                    (let fix while_rec_1 (counter_1 : nat)
                       : M [ Effect.State.state (list Z); NonTermination ] unit :=
                       match counter_1 with
                       | O => lift [_;_] "01" (not_terminated tt)
                       | S counter_1 =>
-                        let! check_1 :=
+                        let! x_1 :=
                           lift [_;_] "10"
                             (let! x_1 :=
                               let! x_1 := Effect.State.read x in
                               ret (List.length x_1) in
                             ret (Pervasives.gt x_1 0)) in
-                        if check_1 then
+                        if x_1 then
                           let! _ :=
                             lift [_;_] "10"
                               (let! x_1 := Effect.State.read x in
@@ -131,65 +133,88 @@ Definition nested {es_in : list Effect.t} (x : unit)
                                   Effect.State.write b x_1 in
                                 Effect.State.write x x'
                               end) in
-                          while_1 counter_1
+                          while_rec_1 counter_1
                         else
                           ret tt
                       end in
-                    let! counter_1 := lift [_;_;_] "010" (read_counter tt) in
-                    lift [_;_;_] "101" (while_1 counter_1)) in
+                    let while
+                      : M
+                        [ Effect.State.state (list Z); Counter; NonTermination ]
+                        unit :=
+                      let! x_1 := lift [_;_;_] "010" (read_counter tt) in
+                      lift [_;_;_] "101" (while_rec_1 x_1) in
+                    while) in
                 lift [_;_;_] "100"
                   (@Union.lift _ _ _ [_;_] 1 (Effect.State.write a a'))
               end in
-            while counter
+            while_rec counter
           else
             ret tt
         end in
-      let! counter := lift [_;_;_] "010" (read_counter tt) in
-      while counter in
+      let while
+        : M
+          [
+            OCaml.Effect.Union.union _
+              [
+                (Effect.State.state (list Z));
+                (Effect.State.state
+                  (list
+                    (Effect.State.t
+                      (list
+                        Z))))
+              ];
+            Counter;
+            NonTermination
+          ] unit :=
+        let! x_1 := lift [_;_;_] "010" (read_counter tt) in
+        while_rec x_1 in
+      while in
     lift [_;_;_] "100" (@Union.lift _ _ _ [_;_] 0 (Effect.State.read b))
   end.
 
 Definition raises (b : bool)
   : M [ Counter; NonTermination; exception failure ] unit :=
-  let fix while (counter : nat)
+  let fix while_rec (counter : nat)
     : M [ NonTermination; exception failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
-      let check := b in
-      if check then
+      if b then
         let! _ :=
           lift [_;_] "01"
             ((Pervasives.failwith "b is true" % string) :
               M [ exception failure ] unit) in
-        while counter
+        while_rec counter
       else
         ret tt
     end in
-  let! counter := lift [_;_;_] "100" (read_counter tt) in
-  lift [_;_;_] "011" (while counter).
+  let while : M [ Counter; NonTermination; exception failure ] unit :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (while_rec x) in
+  while.
 
 Definition complex_raises (b : bool)
   : M [ Counter; NonTermination; exception failure ] unit :=
   let f {A B : Type} (a : A) : M [ exception failure ] (A * Z * B) :=
     let! x := Pervasives.failwith "b is true" % string in
     ret (a, 15, x) in
-  let fix while (counter : nat)
+  let fix while_rec (counter : nat)
     : M [ NonTermination; exception failure ] unit :=
     match counter with
     | O => lift [_;_] "10" (not_terminated tt)
     | S counter =>
-      let check := b in
-      if check then
+      if b then
         let! _ :=
           lift [_;_] "01" ((f true) : M [ exception failure ] (bool * Z * unit))
           in
-        while counter
+        while_rec counter
       else
         ret tt
     end in
-  let! counter := lift [_;_;_] "100" (read_counter tt) in
-  lift [_;_;_] "011" (while counter).
+  let while : M [ Counter; NonTermination; exception failure ] unit :=
+    let! x := lift [_;_;_] "100" (read_counter tt) in
+    lift [_;_;_] "011" (while_rec x) in
+  while.
 
 Definition argument_effects (x : Effect.State.t Z) (y : Z)
   : M [ Effect.State.state Z; Counter; NonTermination ] Z :=
@@ -197,31 +222,31 @@ Definition argument_effects (x : Effect.State.t Z) (y : Z)
   let! z := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! i := lift [_;_;_] "100" (Pervasives.ref 0) in
   let! _ :=
-    let fix while (counter : nat)
+    let fix while_rec (counter : nat)
       : M [ Effect.State.state Z; Counter; NonTermination ] unit :=
       match counter with
       | O => lift [_;_;_] "001" (not_terminated tt)
       | S counter =>
-        let! check :=
+        let! x_1 :=
           lift [_;_;_] "100"
             (let! x_1 := Effect.State.read i in
             let! x_2 := Effect.State.read x in
             ret (Pervasives.le x_1 x_2)) in
-        if check then
+        if x_1 then
           let! _ :=
             let! j := lift [_;_;_] "100" (Pervasives.ref 0) in
             let! _ :=
-              let fix while_1 (counter_1 : nat)
+              let fix while_rec_1 (counter_1 : nat)
                 : M [ Effect.State.state Z; NonTermination ] unit :=
                 match counter_1 with
                 | O => lift [_;_] "01" (not_terminated tt)
                 | S counter_1 =>
-                  let! check_1 :=
+                  let! x_1 :=
                     lift [_;_] "10"
                       (let! x_1 := Effect.State.read j in
                       let! x_2 := Effect.State.read y in
                       ret (Pervasives.le x_1 x_2)) in
-                  if check_1 then
+                  if x_1 then
                     let! _ :=
                       lift [_;_] "10"
                         (let! _ :=
@@ -233,12 +258,15 @@ Definition argument_effects (x : Effect.State.t Z) (y : Z)
                           let! x_1 := Effect.State.read j in
                           ret (Z.add x_1 1) in
                         Effect.State.write j x_1) in
-                    while_1 counter_1
+                    while_rec_1 counter_1
                   else
                     ret tt
                 end in
-              let! counter_1 := lift [_;_;_] "010" (read_counter tt) in
-              lift [_;_;_] "101" (while_1 counter_1) in
+              let while
+                : M [ Effect.State.state Z; Counter; NonTermination ] unit :=
+                let! x_1 := lift [_;_;_] "010" (read_counter tt) in
+                lift [_;_;_] "101" (while_rec_1 x_1) in
+              while in
             lift [_;_;_] "100"
               (let! _ :=
                 let! x_1 :=
@@ -249,10 +277,12 @@ Definition argument_effects (x : Effect.State.t Z) (y : Z)
                 let! x_1 := Effect.State.read i in
                 ret (Z.add x_1 1) in
               Effect.State.write i x_1) in
-          while counter
+          while_rec counter
         else
           ret tt
       end in
-    let! counter := lift [_;_;_] "010" (read_counter tt) in
-    while counter in
+    let while : M [ Effect.State.state Z; Counter; NonTermination ] unit :=
+      let! x_1 := lift [_;_;_] "010" (read_counter tt) in
+      while_rec x_1 in
+    while in
   lift [_;_;_] "100" (Effect.State.read z).

@@ -3,6 +3,7 @@ open Typedtree
 open Types
 open SmartPrint
 open Utils
+open Builtins
 
 module Header = struct
   type t = {
@@ -29,12 +30,13 @@ end
 
 module Definition = struct
   type 'a t = {
-    is_rec : Recursivity.t;
+    is_rec : bool;
     attribute : Attribute.t;
     cases : (Header.t * 'a) list }
 
   let pp (pp_a : 'a -> SmartPrint.t) (def : 'a t) : SmartPrint.t =
-    OCaml.tuple [Recursivity.pp def.is_rec; Attribute.pp def.attribute;
+    OCaml.tuple [if def.is_rec then !^ "rec" else !^ "non_rec";
+      Attribute.pp def.attribute;
       def.cases |> OCaml.list (fun (header, e) ->
         OCaml.tuple [Header.pp header; pp_a e])]
 
@@ -46,7 +48,7 @@ module Definition = struct
       env (names def)
 
   let env_in_def (def : 'a t) (env : unit FullEnvi.t) : unit FullEnvi.t =
-    if Recursivity.to_bool def.is_rec then
+    if def.is_rec then
       env_after_def def env
     else
       env
@@ -74,7 +76,6 @@ type 'a t =
   | Field of 'a * 'a t * BoundName.t (** Access to a field of a record. *)
   | IfThenElse of 'a * 'a t * 'a t * 'a t (** The "else" part may be unit. *)
   | For of 'a * CoqName.t * bool * 'a t * 'a t * 'a t (** For loop. *)
-  | While of 'a * 'a t * 'a t (** While loop. *)
   | Coerce of 'a * 'a t * Type.t (** Coercion. *)
   | Sequence of 'a * 'a t * 'a t (** A sequence of two expressions. *)
   | Return of 'a * 'a t (** Monadic return. *)
@@ -122,8 +123,6 @@ let rec pp (pp_a : 'a -> SmartPrint.t) (e : 'a t) : SmartPrint.t =
   | For (a, name, down, e1, e2, e) ->
     nest (!^ "For" ^^ OCaml.tuple
       [pp_a a; CoqName.pp name; OCaml.bool down; pp e1; pp e2; pp e])
-  | While (a, e1, e2) ->
-    nest (!^ "While" ^^ OCaml.tuple [pp_a a; pp e1; pp e2])
   | Coerce (a, e, typ) ->
     nest (!^ "Coerce" ^^ OCaml.tuple [pp_a a; pp e; Type.pp typ])
   | Sequence (a, e1, e2) ->
@@ -143,7 +142,7 @@ let annotation (e : 'a t) : 'a =
   | Constant (a, _) | Variable (a, _) | Tuple (a, _) | Constructor (a, _, _)
   | Apply (a, _, _) | Function (a, _, _) | LetVar (a, _, _, _)
   | LetFun (a, _, _) | Match (a, _, _) | Record (a, _, _) | Field (a, _, _)
-  | IfThenElse (a, _, _, _) | For (a, _, _, _, _, _) | While (a, _, _)
+  | IfThenElse (a, _, _, _) | For (a, _, _, _, _, _)
   | Coerce (a, _, _) | Sequence (a, _, _) | Return (a, _) | Bind (a, _, _, _)
   | Lift (a, _, _, _) | Run (a, _, _, _) -> a
 
@@ -162,7 +161,6 @@ let update_annotation (f : 'a -> 'a) (e : 'a t) : 'a t =
   | Field (a, e, x) -> Field (f a, e, x)
   | IfThenElse (a, e1, e2, e3) -> IfThenElse (f a, e1, e2, e3)
   | For (a, name, down, e1, e2, e) -> For (f a, name, down, e1, e2, e)
-  | While (a, e1, e2) -> While (f a, e1, e2)
   | Coerce (a, e, typ) -> Coerce (f a, e, typ)
   | Sequence (a, e1, e2) -> Sequence (f a, e1, e2)
   | Return (a, e) -> Return (f a, e)
@@ -190,7 +188,6 @@ let rec map (f : 'a -> 'b) (e : 'a t) : 'b t =
     IfThenElse (f a, map f e1, map f e2, map f e3)
   | For (a, name, down, e1, e2, e) ->
     For (f a, name, down, map f e1, map f e2, map f e)
-  | While (a, e1, e2) -> While (f a, map f e1, map f e2)
   | Coerce (a, e, typ) -> Coerce (f a, map f e, typ)
   | Sequence (a, e1, e2) -> Sequence (f a, map f e1, map f e2)
   | Return (a, e) -> Return (f a, map f e)
@@ -253,7 +250,7 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
           PathName.Set.add (bound_of_coq_name header.Header.name) def_names
           ))
         |> PathName.Set.inter names in
-      let names = if Recursivity.to_bool def.Definition.is_rec then
+      let names = if def.Definition.is_rec then
           PathName.Set.diff names def_names
         else names in
       let (names, map) = def.Definition.cases |>
@@ -267,7 +264,7 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
           let (names, map') = find_var_annotations names e in
           let names = PathName.Set.union names args in
           (names, union map map'))) in
-      let names = if Recursivity.to_bool def.Definition.is_rec then names
+      let names = if def.Definition.is_rec then names
         else PathName.Set.diff names def_names in
       let (names, map') = find_var_annotations names e in
       (PathName.Set.union names def_names, union map map')
@@ -305,7 +302,6 @@ let rec find_var_annotations (env : 'a FullEnvi.t) (names : PathName.Set.t)
       let (names, map2) = find_var_annotations names e in
       let names = if has_name then PathName.Set.add name names else names in
       (names, union map1 map2)
-    | While (a, e1, e2) -> fold [e1; e2] names
     | Coerce (a, e, typ) -> find_var_annotations names e
     | Bind (a, e1, None, e2) | Sequence (a, e1, e2) -> fold [e1; e2] names
     | Return (a, e) -> find_var_annotations names e
@@ -366,10 +362,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let x = PathName.of_loc x in
           let x = FullEnvi.Constructor.bound l_x x env in
           let (typ_path, _) = FullEnvi.Constructor.find l_x x env in
-          let typ_path = FullEnvi.localize_path (FullEnvi.has_value env) env
-            typ_path in
-          let raise_path = FullEnvi.Var.localize env ["OCaml"; "Pervasives"]
-            "raise" in
+          let typ_path = FullEnvi.localize_path env typ_path in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
@@ -377,7 +370,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let t_x = Type.Apply (typ_path, []) in
           let t_f = Type.Arrow (t_x, typ) in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_f, t_f), raise_path),
+          Apply (a, Variable ((l_f, t_f), Localize._raise env),
             [Constructor ((l_x, t_x), x,
               [Tuple ((Loc.Unknown, Type.Tuple typs), es)])])
         | _ ->
@@ -410,20 +403,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           (index, (p, None, of_expression env typ_vars e') :: l)) (None, []) in
     begin match index with
     | Some _ ->
-      let string_t = Type.Apply (FullEnvi.Typ.localize env [] "string", []) in
-      let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
-      let raise_bound =
-        FullEnvi.Var.localize env ["OCaml"; "Pervasives"] "raise" in
-      let match_fail =
-        FullEnvi.Constructor.localize env ["OCaml"] "Match_failure" in
-      let match_fail_t = Type.Apply
-        (FullEnvi.Typ.localize env ["OCaml"] "match_failure", []) in
+      let string_t = Type.Apply (Localize._string env, []) in
+      let int_t = Type.Apply (Localize._Z env, []) in
+      let match_fail_t = Type.Apply (Localize._match_failure env, []) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any (Type.Tuple [snd @@ annotation e; int_t]),
           Apply ((Loc.Unknown, typ),
             Variable ((Loc.Unknown, Type.Arrow (match_fail_t, typ)),
-              raise_bound),
-            [Constructor ((Loc.Unknown, match_fail_t), match_fail,
+              Localize._raise env),
+            [Constructor ((Loc.Unknown, match_fail_t),
+              Localize._Match_failure env,
               [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
                 [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
                 Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
@@ -472,8 +461,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         true_typ.PathName.base in
       let true_typ_full = Type.Apply (true_typ, typs) in
       let typ = Type.OpenApply (name, typs, [true_typ]) in
-      Constructor ((Loc.Unknown, typ),
-        FullEnvi.Constructor.localize env [] "inl",
+      Constructor ((Loc.Unknown, typ), Localize._inl env,
       [Constructor ((l, true_typ_full), x,
         List.map (of_expression env typ_vars) es)])
     | _ -> Constructor (a, x, List.map (of_expression env typ_vars) es)
@@ -511,28 +499,22 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let typ1 = snd @@ annotation e1 in
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
     let (typ_path, _) = FullEnvi.Constructor.find l x env in
-    let typ_bound = FullEnvi.localize_path (FullEnvi.has_value env) env
-      typ_path in
+    let typ_bound = FullEnvi.localize_path env typ_path in
     let t_exn = Type.Apply (typ_bound, []) in
-    let match_d = Type.Apply (
-      FullEnvi.Descriptor.localize env ["OCaml"] "exception", [t_exn]) in
+    let match_d = Type.Apply (Localize._exception env, [t_exn]) in
     let ps = List.map (Pattern.of_pattern false env typ_vars) ps in
     let typ_p = List.map Pattern.typ ps in
     let p = Pattern.Constructor (t_exn, x,
       [Pattern.Tuple (Type.Tuple typ_p, ps)]) in
-    let typ_sum = Type.Apply (FullEnvi.Typ.localize env [] "sum",
-      [typ1; t_exn]) in
+    let typ_sum = Type.Apply (Localize._sum env, [typ1; t_exn]) in
     Match (a, Run ((Loc.Unknown, typ_sum), match_d,
       Effect.Descriptor.pure, e1), [
-        (let p = Pattern.Constructor (typ_sum,
-          FullEnvi.Constructor.localize env [] "inl",
+        (let p = Pattern.Constructor (typ_sum, Localize._inl env,
           [Pattern.Variable (typ1, FullEnvi.Var.coq_name "x" env)]) in
         let env = Pattern.add_to_env p env in
         let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
         (p, Variable ((Loc.Unknown, typ), x)));
-        (let p = Pattern.Constructor (typ_sum,
-          FullEnvi.Constructor.localize env [] "inr",
-          [p]) in
+        (let p = Pattern.Constructor (typ_sum, Localize._inr env, [p]) in
         let env = Pattern.add_to_env p env in
         let e2 = of_expression env typ_vars e2 in
         (p, e2))])
@@ -548,18 +530,46 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let e1 = of_expression env typ_vars e1 in
     let e2 = of_expression env typ_vars e2 in
     let e = of_expression env typ_vars e in
+    let typ_e = snd @@ annotation e in
+    let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e = if typ_e = typ_e' then e else
+      Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
     For (a, name, down, e1, e2, e)
   | Texp_while (e1, e2) ->
     let e1 = of_expression env typ_vars e1 in
     let e2 = of_expression env typ_vars e2 in
-    While (a, e1, e2)
+    let typ2 = snd @@ annotation e2 in
+    let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
+    (* Give Coq a concrete type if it can't infer one. *)
+    let e2 = if typ2 = typ2' then e2 else
+      Coerce ((Loc.Unknown, typ2'), e2, typ2') in
+    let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
+    let unit_t = Type.Apply (Localize._unit env, []) in
+    LetFun (a, {
+        Definition.is_rec = true;
+        attribute = Attribute.None;
+        cases = [{
+            Header.name = while_name;
+            typ_vars = [];
+            implicit_args = [];
+            args = [];
+            typ = unit_t;
+          },
+          IfThenElse ((Loc.Unknown, unit_t), e1,
+            Sequence ((Loc.Unknown, unit_t), e2,
+              Apply ((Loc.Unknown, unit_t),
+                Variable ((Loc.Unknown, unit_t), while_bound), [])),
+            Tuple ((Loc.Unknown, unit_t), []))];
+      },
+      Apply ((Loc.Unknown, unit_t),
+        Variable ((Loc.Unknown, unit_t), while_bound), []))
   | Texp_setfield _ -> Error.raise l "Set field not handled."
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_assert e ->
-    let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
     let e = of_expression env typ_vars e in
     Apply (a, Variable ((l, Type.Arrow (snd @@ annotation e, typ)),
-      assert_function), [e])
+      Localize._assert env), [e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
@@ -584,7 +594,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
   (typ_vars : Name.t Name.Map.t) (is_rec : Asttypes.rec_flag)
   (cases : value_binding list)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
-  let is_rec = Recursivity.of_rec_flag is_rec in
+  let is_rec = is_rec = Asttypes.Recursive in
   let attrs = cases |> List.map (fun { vb_attributes = attrs; vb_expr = e; vb_pat = p } ->
     let { exp_loc = loc } = e in
     let l = Loc.of_location loc in
@@ -606,7 +616,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     | Pattern.Variable (typ, x) ->
       (FullEnvi.Var.assoc x () env, (None, p, [(x, typ)], e, loc))
     | _ ->
-      if Recursivity.to_bool is_rec then
+      if is_rec then
         Error.raise loc "Only variables are allowed as a left-hand side of let rec";
       let free_vars = CoqName.Map.bindings @@ Pattern.free_variables p in
       let env = List.fold_left (fun env (x, typ) ->
@@ -619,11 +629,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
         | None -> env in
       List.fold_left (fun env (x, typ) -> FullEnvi.Var.assoc x () env) env xs)
     env cases in
-  let env =
-    if Recursivity.to_bool is_rec then
-      env_with_let
-    else
-      env in
+  let env = if is_rec then env_with_let else env in
   let cases' = cases |> List.map (fun (bound, p, xs, e, loc) ->
     let (e_typ, typ_vars, new_typ_vars) =
       Type.of_type_expr_new_typ_vars env loc typ_vars e.exp_type in
@@ -674,7 +680,7 @@ and import_let_fun (new_names : bool) (env : unit FullEnvi.t) (loc : Loc.t)
     Definition.is_rec = is_rec;
     attribute = attr;
     cases = cases' } in
-  if Recursivity.to_bool is_rec then
+  if is_rec then
     (env_with_let, [def])
   else
     let defs = cases |> List.map (fun (bound, p, xs, e, loc) ->
@@ -733,7 +739,7 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     let is_x_a_name = List.exists (fun y -> x = CoqName.ocaml_name y)
       (Definition.names def) in
     let def =
-      if (Recursivity.to_bool def.Definition.is_rec && is_x_a_name) then
+      if (def.Definition.is_rec && is_x_a_name) then
         def
       else
         { def with Definition.cases =
@@ -763,7 +769,6 @@ let rec substitute (x : Name.t) (e' : 'a t) (e : 'a t) : 'a t =
     For (a, name, down, substitute x e' e1,
       substitute x e' e2,
       substitute x e' e)
-  | While (a, e1, e2) -> While (a, substitute x e' e1, substitute x e' e2)
   | Coerce (a, e, typ) -> Coerce (a, substitute x e' e, typ)
   | Sequence (a, e1, e2) ->
     Sequence (a, substitute x e' e1, substitute x e' e2)
@@ -853,8 +858,6 @@ let rec monadise_let_rec (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
     For (a, name, down, monadise_let_rec env e1,
       monadise_let_rec env e2,
       monadise_let_rec env e)
-  | While (a, e1, e2) ->
-    While (a, monadise_let_rec env e1, monadise_let_rec env e2)
   | Coerce (a, e, typ) -> Coerce (a, monadise_let_rec env e, typ)
   | Sequence (a, e1, e2) ->
     Sequence (a, monadise_let_rec env e1,
@@ -872,7 +875,7 @@ let rec monadise_let_rec (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
 and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
   (def : (Loc.t * Type.t) t Definition.t)
   : unit FullEnvi.t * (Loc.t * Type.t) t Definition.t list =
-  if Recursivity.to_bool def.Definition.is_rec &&
+  if def.Definition.is_rec &&
     def.Definition.attribute <> Attribute.CoqRec then
     let var (x : Name.t) (typ : Type.t) env : (Loc.t * Type.t) t =
       Variable ((Loc.Unknown, typ),
@@ -885,8 +888,7 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
           (CoqName.ocaml_name header.Header.name ^ "_rec") () env_in_def in
         ({ header with Header.name = name_rec }, e)) } in
     let env_after_def' = Definition.env_in_def def' env in
-    let nat_type = Type.Apply (FullEnvi.Typ.localize env_after_def' [] "nat",
-      []) in
+    let nat_type = Type.Apply (Localize._nat env_after_def', []) in
     (* Add the argument "counter" and monadise the bodies. *)
     let def' = { def' with Definition.cases =
       def'.Definition.cases |> List.map (fun (header, e) ->
@@ -921,14 +923,12 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
       let nt_type = snd (annotation e_name_rec) in
       let e_name_rec = Match ((Loc.Unknown, nt_type),
         var (CoqName.ocaml_name counter) counter_typ env, [
-        (Pattern.Constructor
-            (nat_type, FullEnvi.Constructor.localize env [] "O", []),
+        (Pattern.Constructor (nat_type, Localize._O env, []),
           Apply ((Loc.Unknown, nt_type), var "not_terminated"
               (Type.Arrow (Type.Tuple [], nt_type)) env,
             [Tuple ((Loc.Unknown, Type.Tuple []), [])]));
-        (Pattern.Constructor
-            (nat_type, FullEnvi.Constructor.localize env [] "S",
-              [Pattern.Variable (nat_type, counter)]),
+        (Pattern.Constructor (nat_type, Localize._S env,
+            [Pattern.Variable (nat_type, counter)]),
           e_name_rec)]) in
       (header, e_name_rec))
       (Definition.names def) def'.Definition.cases } in
@@ -945,7 +945,7 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
           [Tuple ((Loc.Unknown, Type.Tuple []), [])])
         :: List.map (fun (x, typ) -> var (CoqName.ocaml_name x) typ env)
           header.Header.args) in
-      { Definition.is_rec = Recursivity.New false;
+      { Definition.is_rec = false;
         attribute = Attribute.None;
         cases = [header, e] })
       (Definition.names def') def.Definition.cases in
@@ -976,8 +976,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let typ' = FullEnvi.Var.find l x env |>
-        Type.map (FullEnvi.localize (FullEnvi.has_value env) env) in
+      let typ' =
+        Type.map (FullEnvi.localize env) @@ FullEnvi.Var.find l x env in
       let vars_map = Type.unify typ' typ in
       let typ' = Effect.map_type_vars vars_map typ' in
       let typ = Effect.Type.unify ~collapse:false typ typ' in
@@ -1085,11 +1085,6 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
       Effect.Type.unify typ2 typ3 in
     IfThenElse ((l, typ), e1, e2, e3)
   | For ((l, typ), name, down, e1, e2, e) ->
-    let typ_e = snd @@ annotation e in
-    let typ_e' = Type.map_vars (fun _ -> Type.Tuple []) typ_e in
-    (* Give Coq a concrete type if it can't infer one. *)
-    let e = if typ_e = typ_e' then e else
-      Coerce ((Loc.Unknown, typ_e'), e, typ_e') in
     let (d, e, e1, e2) = match compound [e; e1; e2] with
       | (d, [e; e1; e2], _) -> (d, e, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in
@@ -1099,27 +1094,6 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
        exactly the same effect. *)
     let typ = Effect.join d typ in
     For ((l, typ), name, down, e1, e2, e)
-  | While ((l, typ), e1, e2) ->
-    let typ2 = snd @@ annotation e2 in
-    let typ2' = Type.map_vars (fun _ -> Type.Tuple []) typ2 in
-    (* Give Coq a concrete type if it can't infer one. *)
-    let e2 = if typ2 = typ2' then e2 else
-      Coerce ((Loc.Unknown, typ2'), e2, typ2') in
-    let (d, e1, e2) = match compound [e1; e2] with
-      | (d, [e1; e2], _) -> (d, e1, e2)
-      | _ -> failwith "Wrong answer from 'compound'." in
-    let counter = FullEnvi.Descriptor.localize env [] "Counter" in
-    let nonterm = FullEnvi.Descriptor.localize env [] "NonTermination" in
-    let loop_d = Effect.Descriptor.union [
-        Effect.Descriptor.singleton counter [];
-        Effect.Descriptor.singleton nonterm [];
-      ] in
-    (* We don't use the actual type of [e2] here, since OCaml ignores it, and
-       thus it won't necessarily unify with [unit]. We choose not to insert an
-       [ignore] call, since it can bloat the generated code significantly for
-       exactly the same effect. *)
-    let typ = Effect.join (Effect.Descriptor.union [loop_d; d]) typ in
-    While ((l, typ), e1, e2)
   | Coerce ((l, _), e, typ) ->
     let e = effects env e in
     let typ = Effect.Type.unify typ @@ snd @@ annotation e in
@@ -1136,7 +1110,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let exn = Type.Variable "_" in
     let typ = Effect.Type.unify typ @@
       Effect.join (Effect.Descriptor.remove x d_e) @@
-      Type.Apply (FullEnvi.Typ.localize env [] "sum", [typ_e; exn]) in
+      Type.Apply (Localize._sum env, [typ_e; exn]) in
     Run ((l, typ), x, d, e)
   | Return _ | Bind _ | Lift _ ->
     Error.raise Loc.Unknown
@@ -1163,7 +1137,7 @@ and effects_of_def (env : Type.t FullEnvi.t)
   (def : (Loc.t * Type.t) t Definition.t) : (Loc.t * Type.t) t Definition.t =
   let rec fix_effect (def' : (Loc.t * Type.t) t Definition.t) =
     let env =
-      if Recursivity.to_bool def.Definition.is_rec then
+      if def.Definition.is_rec then
         env_after_def_with_effects env def'
       else
         env in
@@ -1173,7 +1147,7 @@ and effects_of_def (env : Type.t FullEnvi.t)
     else
       fix_effect def'' in
   let env =
-    if Recursivity.to_bool def.Definition.is_rec then
+    if def.Definition.is_rec then
       List.fold_left (fun env (header, _) ->
         FullEnvi.Var.assoc header.Header.name Effect.pure env)
         env def.Definition.cases
@@ -1293,63 +1267,11 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
       match es' with
       | [e1; e2] ->
         let e = lift (descriptor e) d (monadise env e) in
-        let for_name = if down then "for_to" else "for_downto" in
-        let bound_for = FullEnvi.Var.localize env ["OCaml"; "Basics"] for_name in
+        let bound_for =
+          Localize.(if down then _for_to env else _for_downto env) in
         Apply (l, Variable (Loc.Unknown, bound_for),
           [e1; e2; Function (Loc.Unknown, name, e)])
       | _ -> failwith "Wrong answer from 'monadise_list'.")
-  | While ((l, d), e1, e2) ->
-    let counter = FullEnvi.Descriptor.localize env [] "Counter" in
-    let nonterm = FullEnvi.Descriptor.localize env [] "NonTermination" in
-    let read_counter = FullEnvi.Var.localize env [] "read_counter" in
-    let not_terminated = FullEnvi.Var.localize env [] "not_terminated" in
-    let tt = FullEnvi.Constructor.localize env [] "tt" in
-    let nat = Type.Apply (FullEnvi.Typ.localize env [] "nat", []) in
-    let o = FullEnvi.Constructor.localize env [] "O" in
-    let s = FullEnvi.Constructor.localize env [] "S" in
-    let counter_d = Effect.Descriptor.singleton counter [] in
-    let nonterm_d = Effect.Descriptor.singleton nonterm [] in
-    let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
-    let (counter_name, counter_bound, env) =
-      FullEnvi.Var.fresh "counter" () env in
-    let (check_name, check_bound, env) =
-      FullEnvi.Var.fresh "check" () env in
-    let d = fst @@ Effect.split d in
-    let d1 = descriptor e1 in
-    let d2 = descriptor e2 in
-    let while_d = Effect.Descriptor.union [nonterm_d; d1; d2] in
-    LetFun (l, {
-        Definition.is_rec = Recursivity.New true;
-        attribute = Attribute.None;
-        cases = [{
-            Header.name = while_name;
-            typ_vars = [];
-            implicit_args = [];
-            args = [(counter_name, nat)];
-            typ = Monad (while_d, Type.Tuple [])
-          },
-          Match (Loc.Unknown, Variable (Loc.Unknown, counter_bound), [
-            (Pattern.Constructor (nat, o, []),
-            lift nonterm_d while_d
-              (Apply (Loc.Unknown, Variable (Loc.Unknown, not_terminated),
-                [Constructor (Loc.Unknown, tt, [])])));
-            (Pattern.Constructor (nat, s,
-              [Pattern.Variable (nat, counter_name)]),
-            bind d1 while_d while_d (monadise env e1) (Some check_name)
-              (IfThenElse (Loc.Unknown, Variable (Loc.Unknown, check_bound),
-                bind d2 while_d while_d (monadise env e2) None
-                  (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
-                    [Variable (Loc.Unknown, counter_bound)])),
-                (Return (Loc.Unknown, Constructor (Loc.Unknown, tt, [])))
-            )))
-          ])]},
-      bind counter_d while_d d
-        (Apply (Loc.Unknown, Variable (Loc.Unknown, read_counter),
-          [Constructor (Loc.Unknown, tt, [])]))
-        (Some counter_name)
-        (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),
-          [Variable (Loc.Unknown, counter_bound)]))
-    )
   | Coerce ((l, d), e, typ) ->
     Coerce (l, monadise env e, Effect.Type.unify d typ)
   | Sequence ((l, _), e1, e2) -> (* TODO: use l *)
@@ -1393,7 +1315,7 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
         (if !firt_case then (
           firt_case := false;
           !^ "let" ^^
-          (if Recursivity.to_bool def.Definition.is_rec then !^ "fix" else empty)
+          (if def.Definition.is_rec then !^ "fix" else empty)
         ) else
           !^ "with") ^^
         CoqName.to_coq header.Header.name ^^
@@ -1428,7 +1350,6 @@ let rec to_coq (paren : bool) (e : 'a t) : SmartPrint.t =
       !^ "else" ^^ newline ^^
       indent (to_coq false e3))
   | For _ -> failwith "Cannot output for statement: should have already been converted."
-  | While _ -> failwith "Cannot output while statement: should have already been converted."
   | Coerce (_, e, typ) ->
     Pp.parens paren @@ nest @@ to_coq true e ^^ !^ ":" ^^ Type.to_coq false typ
   | Sequence (_, e1, e2) ->

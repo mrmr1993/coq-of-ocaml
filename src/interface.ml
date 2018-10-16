@@ -89,7 +89,7 @@ let rec to_full_envi (interface : t) (env : Type.t FullEnvi.t)
     let env = FullEnvi.enter_module x env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env
       defs in
-    FullEnvi.leave_module FullEnvi.localize_effects env
+    FullEnvi.leave_module env
   | Signature (x, decls) ->
     let env = FullEnvi.enter_module x env in
     let env = List.fold_left (fun env def -> to_full_envi def env) env

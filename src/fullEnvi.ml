@@ -102,16 +102,6 @@ let enter_module (module_name : CoqName.t) (env : 'a t) : 'a t =
 let enter_section (env : 'a t) : 'a t =
   {env with active_module = FullMod.enter_section env.active_module}
 
-let localize_path (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
-  (x : PathName.t) : BoundName.t = {
-    BoundName.full_path = x;
-    local_path = FullMod.localize has_name env.active_module x;
-  }
-
-let localize (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
-  (x : BoundName.t) : BoundName.t =
-   localize_path has_name env x.BoundName.full_path
-
 let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
   let x = { x with PathName.path = m.Mod.coq_path @ x.PathName.path } in
   PathName.Map.mem x env.values
@@ -119,8 +109,21 @@ let has_value (env : 'a t) (x : PathName.t) (m : Mod.t) =
 let has_global_value (env : 'a t) (x : PathName.t) =
   PathName.Map.mem x env.values
 
-let localize_effects (env : 'a t) (typ : Effect.t) : Effect.t =
-  Effect.map (localize (has_value env) env) typ
+let localize_path' (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
+  (x : PathName.t) : BoundName.t = {
+    BoundName.full_path = x;
+    local_path = FullMod.localize has_name env.active_module x;
+  }
+
+let localize_path (env : 'a t) (x : PathName.t) : BoundName.t =
+  localize_path' (has_value env) env x
+
+let localize' (has_name : PathName.t -> Mod.t -> bool) (env : 'a t)
+  (x : BoundName.t) : BoundName.t =
+   localize_path' has_name env x.BoundName.full_path
+
+let localize (env : 'a t) (x : BoundName.t) : BoundName.t =
+   localize' (has_value env) env x
 
 let combine (env1 : 'a t) (env2 : 'a t) : 'a t =
   env1.required_modules := Name.Set.union !(env1.required_modules)
@@ -136,7 +139,7 @@ let bound_name_opt (find : PathName.t -> Mod.t -> PathName.t option)
   (has_name : PathName.t -> Mod.t -> bool) (x : PathName.t) (env : 'a t)
   : BoundName.t option =
   match FullMod.bound_name_opt find x env.active_module with
-  | Some name -> Some (localize has_name env name)
+  | Some name -> Some (localize' has_name env name)
   | None ->
     let f env =
       match FullMod.bound_name_opt find x env.active_module with
@@ -148,7 +151,7 @@ let bound_name_opt (find : PathName.t -> Mod.t -> PathName.t option)
         let env = combine env @@ env.load_module module_name env in
         (FullMod.bound_name_opt find x env.active_module, env) in
     match env.run_in_external f env with
-    | Some (Some name) -> Some (localize has_name env name)
+    | Some (Some name) -> Some (localize' has_name env name)
     | Some None -> None
     | None -> failwith "Didn't attempt to search for an external module"
 
@@ -251,7 +254,7 @@ module ValueCarrier (M : Carrier) = struct
 
   let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
     let x = PathName.of_name path base in
-    localize_path (has_value env) env x
+    localize_path env x
 
   let coq_name (base : Name.t) (env : 'a t) : CoqName.t =
     CoqName.of_names base (resolve [] base env).PathName.base
@@ -403,7 +406,7 @@ module Module = struct
 
   let localize (env : 'a t) (path : Name.t list) (base : Name.t) : BoundName.t =
     let x = PathName.of_name path base in
-    localize_path (has_name env) env x
+    localize_path' (has_name env) env x
 
   let bound_opt (x : PathName.t) (env : 'a t) : BoundName.t option =
     bound_name_opt Mod.Modules.resolve_opt (has_name env) x env
@@ -477,13 +480,9 @@ let open_module' (loc : Loc.t) (module_name : Name.t list) (env : 'a t) : 'a t =
   let path = PathName.of_name_list module_name in
   open_module loc (Module.bound loc path env) env
 
-let leave_module (localize : 'a t -> 'a -> 'a) (env : 'a t) : 'a t =
+let leave_module (env : 'a t) : 'a t =
   let (m, active_module) = FullMod.leave_module env.active_module in
   let env = { env with active_module } in
-  let values = Mod.fold_values (fun _ x -> PathName.Map.update x
-      (option_map (Value.map (localize env))))
-    m env.values in
-  let env = { env with active_module; values } in
   let module_name = match option_map CoqName.ocaml_name m.Mod.name with
     | Some module_name -> module_name
     | None -> failwith "Leaving a module with no name." in

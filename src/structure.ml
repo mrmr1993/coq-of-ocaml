@@ -14,9 +14,9 @@ module Value = struct
     let firt_case = ref true in
     separate (newline ^^ newline) (value.Exp.Definition.cases |> List.map (fun (header, e) ->
       nest (
-        (if !firt_case || not (Recursivity.to_bool value.Exp.Definition.is_rec) then (
+        (if !firt_case || not value.Exp.Definition.is_rec then (
           firt_case := false;
-          if Recursivity.to_bool value.Exp.Definition.is_rec then
+          if value.Exp.Definition.is_rec then
             !^ "Fixpoint"
           else
             !^ "Definition"
@@ -35,10 +35,9 @@ module Value = struct
           parens @@ nest (CoqName.to_coq x ^^ !^ ":" ^^ Type.to_coq false t)))) ^^
         !^ ": " ^-^ Type.to_coq false header.Exp.Header.typ ^-^
         !^ " :=" ^^ Exp.to_coq false e ^-^
-        if Recursivity.to_bool value.Exp.Definition.is_rec then empty
+        if value.Exp.Definition.is_rec then empty
         else !^ "."))) ^-^
-      if Recursivity.to_bool value.Exp.Definition.is_rec then !^ "."
-      else empty
+      if value.Exp.Definition.is_rec then !^ "." else empty
 end
 
 (** A structure. *)
@@ -123,7 +122,7 @@ let rec of_structure (env : unit FullEnvi.t) (structure : structure)
       let (name, _, _) = FullEnvi.Module.create name (Mod.empty None []) env in
       let env = FullEnvi.enter_module name env in
       let (env, structures) = of_structure env structure in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module env in
       (env, [Module (loc, name, structures)])
     | Tstr_module { mb_expr = { mod_desc = Tmod_functor _ }} ->
       Error.raise loc "Functors not handled."
@@ -190,7 +189,7 @@ let rec monadise_let_rec (env : unit FullEnvi.t)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module name env in
       let (env, defs) = monadise_let_rec env defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module env in
       (env, [Module (loc, name, defs)])
     | Signature (loc, name, decls) ->
       let env = env |> FullEnvi.enter_module name
@@ -234,7 +233,7 @@ let rec effects (env : Type.t FullEnvi.t) (defs : ('a * Type.t) t list)
     | Module (loc, name, defs) ->
       let env = FullEnvi.enter_module name env in
       let (env, defs) = effects env defs in
-      let env = FullEnvi.leave_module FullEnvi.localize_effects env in
+      let env = FullEnvi.leave_module env in
       (env, Module (loc, name, defs))
     | Signature (loc, name, decls) ->
       let env = env |> FullEnvi.enter_module name
@@ -286,7 +285,7 @@ let rec monadise (env : unit FullEnvi.t) (defs : (Loc.t * Type.t) t list)
       (env, Include (loc, name))
     | Module (loc, name, defs) ->
       let (env, defs) = monadise (FullEnvi.enter_module name env) defs in
-      let env = FullEnvi.leave_module (fun _ _ -> ()) env in
+      let env = FullEnvi.leave_module env in
       (env, Module (loc, name, defs))
     | Signature (loc, name, decls) ->
       let env = env |> FullEnvi.enter_module name
