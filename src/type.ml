@@ -97,9 +97,103 @@ let is_open (typ : t) : bool =
   | OpenApply _ -> true
   | _ -> false
 
-let unify (typ1 : t) (typ2 : t) : t Name.Map.t = CommonType.unify typ1 typ2
-
 let map_vars (f : Name.t -> t) (typ : t) : t = CommonType.map_vars f typ
+
+let resolve (env : 'a FullEnvi.t) (typ : t) : t option =
+  match typ with
+  | Apply (x, typs) ->
+    begin match FullEnvi.Typ.find Loc.Unknown x env with
+    | CommonType.TypeDefinition.Synonym (_, typ_args, typ) ->
+      let typ_map = List.fold_left2 (fun map name typ ->
+        Name.Map.add name typ map) Name.Map.empty typ_args typs in
+      let typ = typ |> map_vars (fun name ->
+        match Name.Map.find_opt name typ_map with
+        | Some typ -> typ
+        | None -> Variable name) in
+      Some typ
+    | _ -> None
+    end
+  | _ -> None
+
+let rec unify (env : 'a FullEnvi.t) (typ1 : t) (typ2 : t) : t Name.Map.t =
+  let unify = unify env in
+  let union = Name.Map.union (fun _ typ _ -> Some typ) in
+  match typ1, typ2 with
+  | Monad (_, typ), _ -> unify typ typ2
+  | _, Monad (_, typ) -> unify typ1 typ
+  | Variable x, _ -> Name.Map.singleton x typ2
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    union (unify typ1a typ2a) (unify typ1b typ2b)
+  | Tuple typs1, Tuple typs2 ->
+    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
+  | Apply (x1, typs1), Apply (x2, typs2)
+    when BoundName.stable_compare x1 x2 = 0 ->
+    List.fold_left2 (fun var_map typ1 typ2 -> union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
+  | Apply _, Apply _ ->
+    begin match resolve env typ1, resolve env typ2 with
+    | Some typ1, Some typ2 -> unify typ1 typ2
+    | Some typ1, None -> unify typ1 typ2
+    | None, Some typ2 -> unify typ1 typ2
+    | None, None -> failwith "Could not unify type names."
+    end
+  | OpenApply (x1, typs1, typ_defs1), OpenApply (x2, typs2, typ_defs2) ->
+    List.fold_left2 (fun var_map typ1 typ2 ->
+        union var_map (unify typ1 typ2))
+      Name.Map.empty typs1 typs2
+  | _, _ -> failwith "Could not unify types"
+
+let rec unify_monad (env : 'a FullEnvi.t) (f : desc -> desc option -> desc)
+  (typ1 : t) (typ2 : t) : t =
+  let unify_monad = unify_monad env f in
+  match typ1, typ2 with
+  | Arrow (typ1a, typ1b), Arrow (typ2a, typ2b) ->
+    Arrow (unify_monad typ1a typ2a, unify_monad typ1b typ2b)
+  | Tuple typs1, Tuple typs2 ->
+    Tuple (List.map2 unify_monad typs1 typs2)
+  | Tuple [],
+    Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, [])
+  | Apply ({ BoundName.full_path = { PathName.path = []; base = "unit" } }, []),
+    Tuple [] -> typ1
+  | Apply (x1, typs1), Apply (x2, typs2)
+    when BoundName.stable_compare x1 x2 = 0 ->
+    Apply (x1, List.map2 unify_monad typs1 typs2)
+  | Apply _, Apply _ ->
+    begin match resolve env typ1, resolve env typ2 with
+    | Some typ1, Some typ2 -> unify_monad typ1 typ2
+    | Some typ1, None -> unify_monad typ1 typ2
+    | None, Some typ2 -> unify_monad typ1 typ2
+    | None, None -> failwith "Could not unify type names."
+    end
+  | Monad (d1, typ1), Monad (d2, typ2) ->
+    Monad (f d1 (Some d2), unify_monad typ1 typ2)
+  | Monad (d, typ1), typ2 | typ1, Monad (d, typ2) ->
+    Monad (f d None, unify_monad typ1 typ2)
+  | OpenApply (x1, typs1, typ_defs1), OpenApply (x2, typs2, typ_defs2) ->
+    let typ_defs = BoundName.Set.elements @@ BoundName.Set.union
+      (BoundName.Set.of_list typ_defs1) (BoundName.Set.of_list typ_defs2) in
+    OpenApply (x1, List.map2 unify_monad typs1 typs2, typ_defs)
+  | _, Variable y -> typ1
+  | Variable x, _ -> typ2
+  | _, _ -> failwith "Could not unify types"
+
+let unify_monad ?collapse:(collapse=true) (env : 'a FullEnvi.t) (typ1 : t)
+  (typ2 : t) : t =
+  let f = if collapse then
+      (fun d1 d2 ->
+        Effect.Descriptor.union @@ match d2 with
+        | Some d2 -> [d1; d2]
+        | None -> [d1])
+    else
+      (fun d1 d2 ->
+        match d2 with
+        | Some d2 -> Effect.Descriptor.union [d1; d2]
+        | None -> d1) in
+  unify_monad env f typ1 typ2
+
+let union (env : 'a FullEnvi.t) (typs : t list) : t =
+  List.fold_left (unify_monad env) Effect.Type.pure typs
 
 let map (f : BoundName.t -> BoundName.t) (typ : t) : t = CommonType.map f typ
 

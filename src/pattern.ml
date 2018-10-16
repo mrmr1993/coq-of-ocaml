@@ -95,32 +95,29 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
   | Type.Apply (
       {BoundName.full_path = { PathName.path = ["OCaml"]; base = "exn" }},
       []), _ -> p
-  | _, Any typ' -> Any (Effect.Type.unify typ' typ)
-  | _, Constant (typ', c) -> Constant (Effect.Type.unify typ' typ, c)
-  | _, Variable (typ', x) -> Variable (Effect.Type.unify typ' typ, x)
+  | _, Any typ' -> Any (Type.unify_monad env typ' typ)
+  | _, Constant (typ', c) -> Constant (Type.unify_monad env typ' typ, c)
+  | _, Variable (typ', x) -> Variable (Type.unify_monad env typ' typ, x)
   | Type.Monad (_, Type.Tuple typs), Tuple (typ', ps)
   | Type.Tuple typs, Tuple (typ', ps) ->
-    Tuple (Effect.Type.unify typ' typ, List.map2 unify typs ps)
+    Tuple (Type.unify_monad env typ' typ, List.map2 unify typs ps)
   | Type.Monad (_, Type.Apply (_, typ_vars)), Constructor (typ', x, ps)
   | Type.Apply (_, typ_vars), Constructor (typ', x, ps) ->
     let (typ_name, index) = FullEnvi.Constructor.find loc x env in
     let bound_typ = { BoundName.full_path = typ_name; local_path = typ_name } in
-    let (typ_args, constructors) =
+    let (typ_args, constructor_typ) =
       match FullEnvi.Typ.find loc bound_typ env with
       | TypeDefinition.Inductive (name, typ_args, constructors) ->
-        (typ_args, constructors)
-      | _ ->
-        Error.raise loc @@ SmartPrint.to_string 80 2 @@
-        !^ "Could not find inductive type for constructor" ^^ BoundName.pp x in
+        (typ_args, snd @@ List.nth constructors index)
+      | _ -> ([], List.map (fun _ -> Type.Variable "_") ps) in
     let var_map = List.fold_left2 (fun m n typ -> Name.Map.add n typ m)
       Name.Map.empty typ_args typ_vars in
     let typs = List.map (Type.map_vars (fun x ->
       match Name.Map.find_opt x var_map with
       | Some typ -> typ
-      | None -> Variable x)) @@
-      snd @@ List.nth constructors index in
-    Constructor (Effect.Type.unify typ' typ, x, List.map2 unify typs ps)
-  | _, Alias (typ', p, x) -> Alias (Effect.Type.unify typ' typ, p, x)
+      | None -> Variable x)) constructor_typ in
+    Constructor (Type.unify_monad env typ' typ, x, List.map2 unify typs ps)
+  | _, Alias (typ', p, x) -> Alias (Type.unify_monad env typ' typ, p, x)
   | Type.Monad (_, Type.Apply (bound_typ, typ_vars)), Record (typ', fields)
   | Type.Apply (bound_typ, typ_vars), Record (typ', fields) ->
     let (typ_args, field_typs) =
@@ -141,9 +138,9 @@ let rec unify (env : 'a FullEnvi.t) (loc : Loc.t) (typ : Type.t) (p : t)
       let typ = FullEnvi.Field.find loc field_name env
         |> snd |> List.nth typs in
       (field_name, unify typ p)) in
-    Record (Effect.Type.unify typ' typ, fields)
+    Record (Type.unify_monad env typ' typ, fields)
   | _, Or (typ', p1, p2) ->
-    Or (Effect.Type.unify typ' typ, unify typ' p1, unify typ' p2)
+    Or (Type.unify_monad env typ' typ, unify typ' p1, unify typ' p2)
   | _, _ -> Error.raise loc "Cannot unify type with pattern."
 
 let add_to_env (p : t) (env : unit FullEnvi.t) : unit FullEnvi.t =

@@ -52,10 +52,9 @@ let env_with_effects (interfaces : (Name.t * string) list)
       (CoqName.Name "false", []);
       (CoqName.Name "true", [])
     ]))
-  |> TypeDefinition.update_env
-    (TypeDefinition.Inductive (CoqName.Name "unit", [], [
-      (CoqName.Name "tt", [])
-    ]))
+  |> Typ.add [] "unit"
+    (TypeDefinition.Synonym (CoqName.Name "unit", [], Type.Tuple []))
+  |> Constructor.add [] "tt" (Builtins._unit.full_path, 0)
   |> TypeDefinition.update_env
     (TypeDefinition.Inductive (CoqName.Name "list", ["A"], [
       (CoqName.Name "[]", []);
