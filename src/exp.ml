@@ -366,8 +366,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let x = PathName.of_loc x in
           let x = FullEnvi.Constructor.bound l_x x env in
           let (typ_path, _) = FullEnvi.Constructor.find l_x x env in
-          let typ_path = FullEnvi.localize_path (FullEnvi.has_value env) env
-            typ_path in
+          let typ_path = FullEnvi.localize_path env typ_path in
           let raise_path = FullEnvi.Var.localize env ["OCaml"; "Pervasives"]
             "raise" in
           let typs = List.map (fun e_arg ->
@@ -511,8 +510,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let typ1 = snd @@ annotation e1 in
     let x = FullEnvi.Constructor.bound l (PathName.of_loc x) env in
     let (typ_path, _) = FullEnvi.Constructor.find l x env in
-    let typ_bound = FullEnvi.localize_path (FullEnvi.has_value env) env
-      typ_path in
+    let typ_bound = FullEnvi.localize_path env typ_path in
     let t_exn = Type.Apply (typ_bound, []) in
     let match_d = Type.Apply (
       FullEnvi.Descriptor.localize env ["OCaml"] "exception", [t_exn]) in
@@ -976,8 +974,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
   | Constant ((l, typ), c) -> Constant ((l, typ), c)
   | Variable ((l, typ), x) ->
     begin try
-      let typ' = FullEnvi.Var.find l x env |>
-        Type.map (FullEnvi.localize (FullEnvi.has_value env) env) in
+      let typ' =
+        Type.map (FullEnvi.localize env) @@ FullEnvi.Var.find l x env in
       let vars_map = Type.unify typ' typ in
       let typ' = Effect.map_type_vars vars_map typ' in
       let typ = Effect.Type.unify ~collapse:false typ typ' in
