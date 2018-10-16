@@ -4,33 +4,30 @@ open SmartPrint
 
 let env_with_effects (interfaces : (Name.t * string) list)
   : Type.t FullEnvi.t =
-  let bound_name path base =
-    let full_path = PathName.of_name path base in
-    { BoundName.full_path = full_path; local_path = full_path } in
   let descriptor (path, base) =
-    let x = bound_name path base in
+    let x = BoundName.of_name path base in
     Effect.Descriptor.singleton x [] in
   let d xs : Effect.Descriptor.t =
     Effect.Descriptor.union (List.map descriptor xs) in
   let typ_d (x : string) : Effect.Descriptor.t =
     Effect.Descriptor.singleton
-      (bound_name ["OCaml"; "Effect"; "State"] "state")
+      (BoundName.of_name ["OCaml"; "Effect"; "State"] "state")
       [Type.Variable x] in
   let state_type (x : string) : Type.t =
     Type.Apply
-      (bound_name ["OCaml"; "Effect"; "State"] "t", [Type.Variable x]) in
+      (BoundName.of_name ["OCaml"; "Effect"; "State"] "t", [Type.Variable x]) in
   let add_exn path base = add_exception path base in
   let arrow xs = List.fold_right (fun x typ ->
     Effect.Type.arrow (d x) typ) xs Effect.pure in
   let pure = Effect.pure in
   let mk_exn typ = Effect.Descriptor.singleton ~simple:true
-    (bound_name ["OCaml"] "exception") [typ] in
+    Builtins._exception [typ] in
   FullEnvi.empty interfaces None
   (* Values specific to the translation to Coq *)
   |> TypeDefinition.update_env
     (TypeDefinition.Inductive (CoqName.Name "nat", [], [
       (CoqName.Name "O", []);
-      (CoqName.Name "S", [Type.Apply (bound_name [] "nat", [])])
+      (CoqName.Name "S", [Type.Apply (Builtins._nat, [])])
     ]))
   |> TypeDefinition.update_env
     (TypeDefinition.Inductive (CoqName.Name "sum", ["A"; "B"], [
@@ -64,7 +61,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
       (CoqName.Name "[]", []);
       (CoqName.Name "cons",
         [Type.Variable "A";
-        Type.Apply (bound_name [] "list", [Type.Variable "A"])])
+        Type.Apply (Builtins._list, [Type.Variable "A"])])
     ]))
   |> TypeDefinition.update_env
     (TypeDefinition.Inductive (CoqName.Name "option", ["A"], [
@@ -106,8 +103,8 @@ let env_with_effects (interfaces : (Name.t * string) list)
   |> enter_module (CoqName.Name "OCaml")
   (* Values specific to the translation to Coq *)
   |> Var.add [] "assert"
-    (Type.Arrow (Type.Apply (bound_name [] "bool", []), Type.Monad (
-      mk_exn (Type.Apply (bound_name ["OCaml"] "assert_failure", [])),
+    (Type.Arrow (Type.Apply (Builtins._bool, []), Type.Monad (
+      mk_exn (Type.Apply (Builtins._assert_failure, [])),
       Type.Variable "A")))
   (* Predefined exceptions *)
   |> Descriptor.add [] "exception" ()
@@ -132,7 +129,7 @@ let env_with_effects (interfaces : (Name.t * string) list)
     (Type.Arrow (state_type "0", Type.Monad (typ_d "0", Type.Variable "0")))
   |> Var.add ["Effect"; "State"] "write"
     (Type.Arrow (state_type "0", Type.Arrow (Type.Variable "0",
-      Type.Monad (typ_d "0", Type.Apply (bound_name [] "unit", [])))))
+      Type.Monad (typ_d "0", Type.Apply (Builtins._unit, [])))))
 
   (* Pervasives *)
   (* Exceptions *)
@@ -141,14 +138,14 @@ let env_with_effects (interfaces : (Name.t * string) list)
     (Type.Arrow (Type.Variable "A",
       Type.Monad (mk_exn (Type.Variable "A"), Type.Variable "B")))
   |> Var.add ["Pervasives"] "invalid_arg"
-    (Type.Arrow (Type.Apply (bound_name [] "string", []),
+    (Type.Arrow (Type.Apply (Builtins._string, []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name ["OCaml"] "invalid_argument", [])),
+        mk_exn (Type.Apply (Builtins._invalid_argument, [])),
         Type.Variable "A")))
   |> Var.add ["Pervasives"] "failwith"
-    (Type.Arrow (Type.Apply (bound_name [] "string", []),
+    (Type.Arrow (Type.Apply (Builtins._string, []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name ["OCaml"] "failure", [])),
+        mk_exn (Type.Apply (Builtins._failure, [])),
         Type.Variable "A")))
   |> add_exn ["Pervasives"] "Exit"
   (* Comparisons *)
@@ -165,10 +162,10 @@ let env_with_effects (interfaces : (Name.t * string) list)
   (* Character operations *)
   |> Var.add ["Pervasives"] "int_of_char" pure
   |> Var.add ["Pervasives"] "char_of_int"
-    (Type.Arrow (Type.Apply (bound_name [] "Z", []),
+    (Type.Arrow (Type.Apply (Builtins._Z, []),
       Type.Monad (
-        mk_exn (Type.Apply (bound_name ["OCaml"] "invalid_argument", [])),
-        Type.Apply (bound_name [] "ascii", []))))
+        mk_exn (Type.Apply (Builtins._invalid_argument, [])),
+        Type.Apply (Builtins._ascii, []))))
   (* Unit operations *)
   |> Var.add ["Pervasives"] "ignore" pure
   (* String conversion functions *)

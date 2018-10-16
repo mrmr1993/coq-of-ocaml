@@ -3,6 +3,7 @@ open Typedtree
 open Types
 open SmartPrint
 open Utils
+open Builtins
 
 module Header = struct
   type t = {
@@ -367,8 +368,6 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let x = FullEnvi.Constructor.bound l_x x env in
           let (typ_path, _) = FullEnvi.Constructor.find l_x x env in
           let typ_path = FullEnvi.localize_path env typ_path in
-          let raise_path = FullEnvi.Var.localize env ["OCaml"; "Pervasives"]
-            "raise" in
           let typs = List.map (fun e_arg ->
             let (t_arg, _, _) = Type.of_type_expr_new_typ_vars env
               (Loc.of_location e_arg.exp_loc) typ_vars e_arg.exp_type in
@@ -376,7 +375,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           let t_x = Type.Apply (typ_path, []) in
           let t_f = Type.Arrow (t_x, typ) in
           let es = List.map (of_expression env typ_vars) es in
-          Apply (a, Variable ((l_f, t_f), raise_path),
+          Apply (a, Variable ((l_f, t_f), Localize._raise env),
             [Constructor ((l_x, t_x), x,
               [Tuple ((Loc.Unknown, Type.Tuple typs), es)])])
         | _ ->
@@ -409,20 +408,16 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
           (index, (p, None, of_expression env typ_vars e') :: l)) (None, []) in
     begin match index with
     | Some _ ->
-      let string_t = Type.Apply (FullEnvi.Typ.localize env [] "string", []) in
-      let int_t = Type.Apply (FullEnvi.Typ.localize env [] "Z", []) in
-      let raise_bound =
-        FullEnvi.Var.localize env ["OCaml"; "Pervasives"] "raise" in
-      let match_fail =
-        FullEnvi.Constructor.localize env ["OCaml"] "Match_failure" in
-      let match_fail_t = Type.Apply
-        (FullEnvi.Typ.localize env ["OCaml"] "match_failure", []) in
+      let string_t = Type.Apply (Localize._string env, []) in
+      let int_t = Type.Apply (Localize._Z env, []) in
+      let match_fail_t = Type.Apply (Localize._match_failure env, []) in
       let (fail_file, fail_line, fail_char) = Loc.to_tuple l in
       let no_match = (Pattern.Any (Type.Tuple [snd @@ annotation e; int_t]),
           Apply ((Loc.Unknown, typ),
             Variable ((Loc.Unknown, Type.Arrow (match_fail_t, typ)),
-              raise_bound),
-            [Constructor ((Loc.Unknown, match_fail_t), match_fail,
+              Localize._raise env),
+            [Constructor ((Loc.Unknown, match_fail_t),
+              Localize._Match_failure env,
               [Tuple ((Loc.Unknown, Type.Tuple [string_t; int_t; int_t]),
                 [Constant ((Loc.Unknown, string_t), Constant.String fail_file);
                 Constant ((Loc.Unknown, int_t), Constant.Int fail_line);
@@ -471,8 +466,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         true_typ.PathName.base in
       let true_typ_full = Type.Apply (true_typ, typs) in
       let typ = Type.OpenApply (name, typs, [true_typ]) in
-      Constructor ((Loc.Unknown, typ),
-        FullEnvi.Constructor.localize env [] "inl",
+      Constructor ((Loc.Unknown, typ), Localize._inl env,
       [Constructor ((l, true_typ_full), x,
         List.map (of_expression env typ_vars) es)])
     | _ -> Constructor (a, x, List.map (of_expression env typ_vars) es)
@@ -512,25 +506,20 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
     let (typ_path, _) = FullEnvi.Constructor.find l x env in
     let typ_bound = FullEnvi.localize_path env typ_path in
     let t_exn = Type.Apply (typ_bound, []) in
-    let match_d = Type.Apply (
-      FullEnvi.Descriptor.localize env ["OCaml"] "exception", [t_exn]) in
+    let match_d = Type.Apply (Localize._exception env, [t_exn]) in
     let ps = List.map (Pattern.of_pattern false env typ_vars) ps in
     let typ_p = List.map Pattern.typ ps in
     let p = Pattern.Constructor (t_exn, x,
       [Pattern.Tuple (Type.Tuple typ_p, ps)]) in
-    let typ_sum = Type.Apply (FullEnvi.Typ.localize env [] "sum",
-      [typ1; t_exn]) in
+    let typ_sum = Type.Apply (Localize._sum env, [typ1; t_exn]) in
     Match (a, Run ((Loc.Unknown, typ_sum), match_d,
       Effect.Descriptor.pure, e1), [
-        (let p = Pattern.Constructor (typ_sum,
-          FullEnvi.Constructor.localize env [] "inl",
+        (let p = Pattern.Constructor (typ_sum, Localize._inl env,
           [Pattern.Variable (typ1, FullEnvi.Var.coq_name "x" env)]) in
         let env = Pattern.add_to_env p env in
         let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
         (p, Variable ((Loc.Unknown, typ), x)));
-        (let p = Pattern.Constructor (typ_sum,
-          FullEnvi.Constructor.localize env [] "inr",
-          [p]) in
+        (let p = Pattern.Constructor (typ_sum, Localize._inr env, [p]) in
         let env = Pattern.add_to_env p env in
         let e2 = of_expression env typ_vars e2 in
         (p, e2))])
@@ -554,10 +543,9 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
   | Texp_setfield _ -> Error.raise l "Set field not handled."
   | Texp_array _ -> Error.raise l "Arrays not handled."
   | Texp_assert e ->
-    let assert_function = FullEnvi.Var.localize env ["OCaml"] "assert" in
     let e = of_expression env typ_vars e in
     Apply (a, Variable ((l, Type.Arrow (snd @@ annotation e, typ)),
-      assert_function), [e])
+      Localize._assert env), [e])
   | _ -> Error.raise l "Expression not handled."
 
 (** Generate a variable and a "match" on this variable from a list of
@@ -883,8 +871,7 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
           (CoqName.ocaml_name header.Header.name ^ "_rec") () env_in_def in
         ({ header with Header.name = name_rec }, e)) } in
     let env_after_def' = Definition.env_in_def def' env in
-    let nat_type = Type.Apply (FullEnvi.Typ.localize env_after_def' [] "nat",
-      []) in
+    let nat_type = Type.Apply (Localize._nat env_after_def', []) in
     (* Add the argument "counter" and monadise the bodies. *)
     let def' = { def' with Definition.cases =
       def'.Definition.cases |> List.map (fun (header, e) ->
@@ -919,14 +906,12 @@ and monadise_let_rec_definition (typ_vars : Name.Set.t) (env : unit FullEnvi.t)
       let nt_type = snd (annotation e_name_rec) in
       let e_name_rec = Match ((Loc.Unknown, nt_type),
         var (CoqName.ocaml_name counter) counter_typ env, [
-        (Pattern.Constructor
-            (nat_type, FullEnvi.Constructor.localize env [] "O", []),
+        (Pattern.Constructor (nat_type, Localize._O env, []),
           Apply ((Loc.Unknown, nt_type), var "not_terminated"
               (Type.Arrow (Type.Tuple [], nt_type)) env,
             [Tuple ((Loc.Unknown, Type.Tuple []), [])]));
-        (Pattern.Constructor
-            (nat_type, FullEnvi.Constructor.localize env [] "S",
-              [Pattern.Variable (nat_type, counter)]),
+        (Pattern.Constructor (nat_type, Localize._S env,
+            [Pattern.Variable (nat_type, counter)]),
           e_name_rec)]) in
       (header, e_name_rec))
       (Definition.names def) def'.Definition.cases } in
@@ -1106,11 +1091,9 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let (d, e1, e2) = match compound [e1; e2] with
       | (d, [e1; e2], _) -> (d, e1, e2)
       | _ -> failwith "Wrong answer from 'compound'." in
-    let counter = FullEnvi.Descriptor.localize env [] "Counter" in
-    let nonterm = FullEnvi.Descriptor.localize env [] "NonTermination" in
     let loop_d = Effect.Descriptor.union [
-        Effect.Descriptor.singleton counter [];
-        Effect.Descriptor.singleton nonterm [];
+        Effect.Descriptor.singleton (Localize._Counter env) [];
+        Effect.Descriptor.singleton (Localize._NonTermination env) [];
       ] in
     (* We don't use the actual type of [e2] here, since OCaml ignores it, and
        thus it won't necessarily unify with [unit]. We choose not to insert an
@@ -1134,7 +1117,7 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let exn = Type.Variable "_" in
     let typ = Effect.Type.unify typ @@
       Effect.join (Effect.Descriptor.remove x d_e) @@
-      Type.Apply (FullEnvi.Typ.localize env [] "sum", [typ_e; exn]) in
+      Type.Apply (Localize._sum env, [typ_e; exn]) in
     Run ((l, typ), x, d, e)
   | Return _ | Bind _ | Lift _ ->
     Error.raise Loc.Unknown
@@ -1291,22 +1274,17 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
       match es' with
       | [e1; e2] ->
         let e = lift (descriptor e) d (monadise env e) in
-        let for_name = if down then "for_to" else "for_downto" in
-        let bound_for = FullEnvi.Var.localize env ["OCaml"; "Basics"] for_name in
+        let bound_for =
+          Localize.(if down then _for_to env else _for_downto env) in
         Apply (l, Variable (Loc.Unknown, bound_for),
           [e1; e2; Function (Loc.Unknown, name, e)])
       | _ -> failwith "Wrong answer from 'monadise_list'.")
   | While ((l, d), e1, e2) ->
-    let counter = FullEnvi.Descriptor.localize env [] "Counter" in
-    let nonterm = FullEnvi.Descriptor.localize env [] "NonTermination" in
-    let read_counter = FullEnvi.Var.localize env [] "read_counter" in
-    let not_terminated = FullEnvi.Var.localize env [] "not_terminated" in
-    let tt = FullEnvi.Constructor.localize env [] "tt" in
-    let nat = Type.Apply (FullEnvi.Typ.localize env [] "nat", []) in
-    let o = FullEnvi.Constructor.localize env [] "O" in
-    let s = FullEnvi.Constructor.localize env [] "S" in
-    let counter_d = Effect.Descriptor.singleton counter [] in
-    let nonterm_d = Effect.Descriptor.singleton nonterm [] in
+    let tt = Localize._tt env in
+    let nat = Type.Apply (Localize._nat env, []) in
+    let counter_d = Effect.Descriptor.singleton (Localize._Counter env) [] in
+    let nonterm_d =
+      Effect.Descriptor.singleton (Localize._NonTermination env) [] in
     let (while_name, while_bound, env) = FullEnvi.Var.fresh "while" () env in
     let (counter_name, counter_bound, env) =
       FullEnvi.Var.fresh "counter" () env in
@@ -1327,11 +1305,12 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
             typ = Monad (while_d, Type.Tuple [])
           },
           Match (Loc.Unknown, Variable (Loc.Unknown, counter_bound), [
-            (Pattern.Constructor (nat, o, []),
+            (Pattern.Constructor (nat, Localize._O env, []),
             lift nonterm_d while_d
-              (Apply (Loc.Unknown, Variable (Loc.Unknown, not_terminated),
+              (Apply (Loc.Unknown,
+                Variable (Loc.Unknown, Localize._not_terminated env),
                 [Constructor (Loc.Unknown, tt, [])])));
-            (Pattern.Constructor (nat, s,
+            (Pattern.Constructor (nat, Localize._S env,
               [Pattern.Variable (nat, counter_name)]),
             bind d1 while_d while_d (monadise env e1) (Some check_name)
               (IfThenElse (Loc.Unknown, Variable (Loc.Unknown, check_bound),
@@ -1342,7 +1321,8 @@ let rec monadise (env : unit FullEnvi.t) (e : (Loc.t * Type.t) t) : Loc.t t =
             )))
           ])]},
       bind counter_d while_d d
-        (Apply (Loc.Unknown, Variable (Loc.Unknown, read_counter),
+        (Apply (Loc.Unknown,
+          Variable (Loc.Unknown, Localize._read_counter env),
           [Constructor (Loc.Unknown, tt, [])]))
         (Some counter_name)
         (Apply (Loc.Unknown, Variable (Loc.Unknown, while_bound),

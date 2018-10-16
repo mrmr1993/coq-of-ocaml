@@ -23,6 +23,10 @@ let pp (x : t) : SmartPrint.t =
 let stable_compare (x : t) (y : t) : int =
   compare x.full_path y.full_path
 
+let of_name (path : Name.t list) (base : Name.t) =
+  let full_path = PathName.of_name path base in
+  { full_path; local_path = full_path }
+
 type t' = t
 module Set = Set.Make(struct
   type t = t'
