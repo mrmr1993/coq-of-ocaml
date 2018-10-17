@@ -518,6 +518,25 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         let env = Pattern.add_to_env p env in
         let e2 = of_expression env typ_vars e2 in
         (p, e2))])
+  | Texp_try (e1,
+    [{c_lhs = {pat_desc = (Tpat_any | Tpat_var _)} as p; c_rhs = e2}]) ->
+    let e1 = of_expression env typ_vars e1 in
+    let typ1 = snd @@ annotation e1 in
+    let typ_sum = Type.Apply (Localize._sum env,
+      [typ1; Type.OpenApply (Localize._exn env, [], [])]) in
+    let match_d = Type.Apply (Localize._exception env, [Type.Variable "_"]) in
+    let p = Pattern.of_pattern false env typ_vars p in
+    Match (a, Run ((Loc.Unknown, typ_sum), match_d,
+      Effect.Descriptor.pure, e1), [
+        (let p = Pattern.Constructor (typ_sum, Localize._inl env,
+          [Pattern.Variable (typ1, FullEnvi.Var.coq_name "x" env)]) in
+        let env = Pattern.add_to_env p env in
+        let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
+        (p, Variable ((Loc.Unknown, typ), x)));
+        (let p = Pattern.Constructor (typ_sum, Localize._inr env, [p]) in
+        let env = Pattern.add_to_env p env in
+        let e2 = of_expression env typ_vars e2 in
+        (p, e2))])
   | Texp_for (_, p, e1, e2, dir, e) ->
     let down = match dir with
       | Asttypes.Upto -> true
@@ -1108,6 +1127,8 @@ let rec effects (env : Type.t FullEnvi.t) (e : (Loc.t * Type.t) t)
     let e = effects env e in
     let (d_e, typ_e) = Effect.split @@ snd @@ annotation e in
     let exn = Type.Variable "_" in
+    let x =
+      Effect.Descriptor.find_candidate (Type.unify_monad_opt env) x d_e in
     let typ = Type.unify_monad env typ @@
       Effect.join (Effect.Descriptor.remove x d_e) @@
       Type.Apply (Localize._sum env, [typ_e; exn]) in

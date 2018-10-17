@@ -50,6 +50,17 @@ module Descriptor = struct
       no_args = d.no_args |> List.filter (fun y -> CommonType.compare x y <> 0)
     }
 
+  let find_candidate (f : CommonType.t -> CommonType.t -> CommonType.t option)
+    (x : CommonType.t) (d : t) : CommonType.t =
+    let rec find_candidate dl =
+      match dl with
+      | [] -> failwith "Could not find a candidate descriptor."
+      | d :: dl ->
+        match f d x with
+        | Some d -> d
+        | None -> find_candidate dl in
+    find_candidate d.no_args
+
   let elements (d : t) : BoundName.t list =
     d.no_args |> List.map (fun typ ->
       match typ with
@@ -61,7 +72,10 @@ module Descriptor = struct
       match l with
       | [] -> 0
       | x :: xs -> if f x then 0 else 1 + find_index xs f in
-    find_index d.no_args (fun y -> CommonType.compare x y = 0)
+    find_index d.no_args (fun y -> CommonType.compare x y = 0) +
+      match d.with_args with
+      | [] -> 0
+      | _ -> 1
 
   let set_unioned_arg (arg : Name.t) (d : t) : t =
     { d with args_arg = Some arg }

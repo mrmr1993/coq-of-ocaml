@@ -33,3 +33,9 @@ Definition x3 (b : bool) : M [ exception failure ] Z :=
   | inl x => ret x
   | inr (Error tt) => ret 12
   end.
+
+Definition x4 : Z :=
+  match Exception.run 0 (Pervasives.failwith "arg" % string) tt with
+  | inl x => x
+  | inr _ => 12
+  end.

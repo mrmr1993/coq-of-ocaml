@@ -13,3 +13,7 @@ let x2 _ =
 let x3 b =
   try (if b then failwith "arg" else raise Error) with
   | Error -> 12
+
+let x4 =
+  try failwith "arg" with
+  | _ -> 12

@@ -22,6 +22,7 @@ let _list = BoundName.of_name [] "list"
 let _assert = BoundName.of_name ["OCaml"] "assert"
 
 let _exception = BoundName.of_name ["OCaml"] "exception"
+let _exn = BoundName.of_name ["OCaml"] "exn"
 let _Match_failure = BoundName.of_name ["OCaml"] "Match_failure"
 let _match_failure = BoundName.of_name ["OCaml"] "match_failure"
 let _assert_failure = BoundName.of_name ["OCaml"] "assert_failure"
@@ -55,6 +56,7 @@ module Localize = struct
   let _assert env = FullEnvi.localize env _assert
 
   let _exception env = FullEnvi.localize env _exception
+  let _exn env = FullEnvi.localize env _exn
   let _Match_failure env = FullEnvi.localize env _Match_failure
   let _match_failure env = FullEnvi.localize env _match_failure
   let _assert_failure env = FullEnvi.localize env _assert_failure
