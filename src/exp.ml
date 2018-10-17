@@ -518,11 +518,14 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         let env = Pattern.add_to_env p env in
         let e2 = of_expression env typ_vars e2 in
         (p, e2))])
-  | Texp_try (e1, [{c_lhs = {pat_desc = Tpat_any}; c_rhs = e2}]) ->
+  | Texp_try (e1,
+    [{c_lhs = {pat_desc = (Tpat_any | Tpat_var _)} as p; c_rhs = e2}]) ->
     let e1 = of_expression env typ_vars e1 in
     let typ1 = snd @@ annotation e1 in
-    let typ_sum = Type.Apply (Localize._sum env, [typ1; Type.Variable "_"]) in
+    let typ_sum = Type.Apply (Localize._sum env,
+      [typ1; Type.OpenApply (Localize._exn env, [], [])]) in
     let match_d = Type.Apply (Localize._exception env, [Type.Variable "_"]) in
+    let p = Pattern.of_pattern false env typ_vars p in
     Match (a, Run ((Loc.Unknown, typ_sum), match_d,
       Effect.Descriptor.pure, e1), [
         (let p = Pattern.Constructor (typ_sum, Localize._inl env,
@@ -530,8 +533,7 @@ let rec of_expression (env : unit FullEnvi.t) (typ_vars : Name.t Name.Map.t)
         let env = Pattern.add_to_env p env in
         let x = FullEnvi.Var.bound l (PathName.of_name [] "x") env in
         (p, Variable ((Loc.Unknown, typ), x)));
-        (let p = Pattern.Constructor (typ_sum, Localize._inr env,
-          [Pattern.Any (Type.Variable "_")]) in
+        (let p = Pattern.Constructor (typ_sum, Localize._inr env, [p]) in
         let env = Pattern.add_to_env p env in
         let e2 = of_expression env typ_vars e2 in
         (p, e2))])
