@@ -98,6 +98,7 @@ let of_ocaml (interfaces : (Name.t * string) list)
   (structure : Typedtree.structure) (mode : string option)
   (mode_files : mode_files) (module_name : string) : unit =
   try
+    Printexc.record_backtrace true;
     let env_with_effects = PervasivesModule.env_with_effects interfaces |>
       FullEnvi.enter_module (CoqName.Name module_name) in
     let env = FullEnvi.map (fun _ -> ()) env_with_effects in
@@ -132,10 +133,13 @@ let of_ocaml (interfaces : (Name.t * string) list)
       (result_map (interface module_name) interface_l) @
       (result_map (monadise env) (monadise_l @
       (result_map coq coq_l)))))))
- with
-  | Error.Make x ->
-    prerr_endline @@ to_string 80 2 @@ (!^ "Error:" ^^ Error.pp x);
-    exit 2
+ with err ->
+   Printexc.print_backtrace stderr;
+   match err with
+   | Error.Make x ->
+     prerr_endline @@ to_string 80 2 @@ (!^ "Error:" ^^ Error.pp x);
+     exit 2
+   | _ -> raise err
 
 (** Parse a .cmt file to a typed AST. *)
 let parse_cmt (file_name : string) : Typedtree.structure =
